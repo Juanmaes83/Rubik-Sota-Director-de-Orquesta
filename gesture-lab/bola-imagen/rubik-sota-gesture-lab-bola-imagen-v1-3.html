@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota Gesture Lab 01 — Bola de Imagen v1.3. Botón Home en Vista completa y mano abierta más fiable sobre la base v1.2.1." />
+  <title>Rubik Sota Gesture Lab 01 · Bola de Imagen v1.3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #030303;
+      --bg-2: #090909;
+      --fg: #ffffff;
+      --muted: rgba(255,255,255,0.66);
+      --muted-2: rgba(255,255,255,0.42);
+      --line: rgba(255,255,255,0.16);
+      --line-strong: rgba(255,255,255,0.34);
+      --panel: rgba(13,13,13,0.76);
+      --glass: rgba(255,255,255,0.07);
+      --accent: #00ffcc;
+      --accent-2: #d8ff3e;
+      --danger: #ff3366;
+      --gold: #e8d8a8;
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+      --shadow: 0 30px 90px rgba(0,0,0,0.62);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--fg);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(0,255,204,0.16), transparent 32%),
+        radial-gradient(circle at 82% 8%, rgba(216,255,62,0.10), transparent 28%),
+        radial-gradient(circle at 82% 84%, rgba(255,51,102,0.12), transparent 28%),
+        var(--bg);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: radial-gradient(circle at 50% 42%, black, transparent 76%);
+      opacity: 0.46;
+    }
+
+    button, input, label { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem clamp(1rem, 3vw, 3rem);
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,0.48);
+      backdrop-filter: blur(22px);
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 0.78rem;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      background: linear-gradient(135deg, rgba(0,255,204,0.18), rgba(255,255,255,0.045));
+      box-shadow: inset 0 0 28px rgba(0,255,204,0.10), 0 0 28px rgba(0,255,204,0.05);
+      font-weight: 900;
+      letter-spacing: -0.08em;
+    }
+
+    .brand-name {
+      display: block;
+      font-weight: 900;
+      letter-spacing: -0.055em;
+      line-height: 1;
+    }
+
+    .brand-sub {
+      display: block;
+      margin-top: 0.22rem;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      background: var(--glass);
+      color: var(--fg);
+      padding: 0.66rem 0.96rem;
+      font-weight: 800;
+      font-size: 0.84rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.48rem;
+      white-space: nowrap;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255,255,255,0.11); }
+    .btn:disabled { opacity: 0.46; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .btn-primary:hover { color: #000; background: rgba(255,255,255,0.88); }
+    .btn-accent { border-color: rgba(0,255,204,0.42); box-shadow: inset 0 0 26px rgba(0,255,204,0.08); }
+    .btn-danger { border-color: rgba(255,51,102,0.5); color: #ff9db5; }
+    .file-input { display: none; }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.82fr) minmax(480px, 1.38fr);
+      gap: clamp(1rem, 2.6vw, 2.2rem);
+      padding: clamp(1rem, 3vw, 3rem);
+      min-height: calc(100vh - 78px);
+    }
+
+    .copy-panel, .lab-panel, .control-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.072), rgba(255,255,255,0.026));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .copy-panel {
+      padding: clamp(1.25rem, 2.6vw, 2rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.4rem;
+      position: relative;
+    }
+
+    .copy-panel::after {
+      content: "";
+      position: absolute;
+      left: 10%;
+      right: -18%;
+      bottom: -24%;
+      height: 40%;
+      background: radial-gradient(circle, rgba(0,255,204,0.13), transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent);
+    }
+
+    h1 {
+      margin-top: 1.25rem;
+      font-size: clamp(2.45rem, 5.6vw, 6.2rem);
+      line-height: 0.92;
+      letter-spacing: -0.085em;
+      font-weight: 720;
+    }
+
+    .serif {
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.065em;
+    }
+
+    .lead {
+      margin-top: 1.1rem;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: clamp(0.98rem, 1.3vw, 1.12rem);
+      max-width: 620px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 0.76rem;
+      margin-top: 1.25rem;
+    }
+
+    .status-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(0,0,0,0.2);
+      padding: 0.92rem;
+    }
+
+    .status-card strong { display: block; font-size: 0.82rem; margin-bottom: 0.25rem; }
+    .status-card span { display: block; color: var(--muted); line-height: 1.38; font-size: 0.75rem; }
+
+    .lab-wrap {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      min-height: 680px;
+    }
+
+    .lab-panel {
+      position: relative;
+      min-height: 560px;
+      background: #050505;
+      isolation: isolate;
+    }
+
+    .lab-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 40%, transparent 0, transparent 42%, rgba(0,0,0,0.32) 78%),
+        linear-gradient(0deg, rgba(0,0,0,0.55), transparent 38%),
+        linear-gradient(90deg, rgba(0,0,0,0.34), transparent 42%, rgba(0,0,0,0.18));
+    }
+
+    #webglStage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+
+    #webglStage:active { cursor: grabbing; }
+
+    .camera-preview-card {
+      position: absolute;
+      z-index: 6;
+      right: 1rem;
+      top: 1rem;
+      width: 210px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.58);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 18px 46px rgba(0,0,0,0.36);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .camera-preview-card.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+    }
+
+    .camera-preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.54rem 0.65rem;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.84);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 900;
+    }
+
+    .camera-preview-body {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      height: auto;
+      background: #000;
+    }
+
+    #cameraPreview {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #000;
+    }
+
+    .camera-preview-status {
+      padding: 0.55rem 0.65rem;
+      color: rgba(255,255,255,0.70);
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
+
+    .gesture-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 1px solid rgba(0,255,204,0.30);
+      border-radius: var(--radius-pill);
+      padding: 0.28rem 0.48rem;
+      color: #fff;
+      background: rgba(0,255,204,0.08);
+    }
+
+    .privacy-note {
+      margin-top: 0.72rem;
+      padding: 0.78rem;
+      border: 1px solid rgba(0,255,204,0.16);
+      border-radius: 16px;
+      color: var(--muted);
+      background: rgba(0,255,204,0.035);
+      line-height: 1.42;
+      font-size: 0.78rem;
+    }
+
+
+    .lab-panel.is-webgl-blocked::after {
+      content: attr(data-webgl-message);
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      color: #fff;
+      background: rgba(0,0,0,0.84);
+      backdrop-filter: blur(14px);
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .btn.is-busy {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .lab-overlay {
+      position: absolute;
+      z-index: 4;
+      inset: auto 1rem 1rem 1rem;
+      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 1rem;
+    }
+
+    .scene-caption { max-width: 62%; }
+    .scene-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 900; font-size: 0.72rem; }
+    .scene-title { margin-top: 0.36rem; font-size: clamp(1.45rem, 2.4vw, 2.45rem); line-height: 1; font-weight: 900; letter-spacing: -0.06em; }
+    .scene-desc { margin-top: 0.38rem; color: rgba(255,255,255,0.70); line-height: 1.45; font-size: 0.88rem; }
+
+    .hud-stack { display: grid; justify-items: end; gap: 0.5rem; }
+    .hud-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.46rem;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(0,0,0,0.54);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-pill);
+      padding: 0.48rem 0.65rem;
+      color: rgba(255,255,255,0.84);
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+
+    .hud-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+    .hud-dot.warn { background: var(--gold); box-shadow: 0 0 14px rgba(232,216,168,0.75); }
+
+    .control-panel {
+      margin-top: 0.9rem;
+      padding: 1rem;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: minmax(260px, 1fr) auto;
+      align-items: center;
+    }
+
+    .slider-block {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .slider-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 900;
+    }
+
+    .progress-readout { color: var(--fg); letter-spacing: -0.04em; }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .control-actions {
+      display: flex;
+      gap: 0.55rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--line);
+      padding: 1rem clamp(1rem, 3vw, 3rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: var(--muted);
+      background: rgba(0,0,0,0.38);
+      backdrop-filter: blur(18px);
+      font-size: 0.9rem;
+    }
+
+    .footer strong { color: var(--fg); }
+
+    .toast-layer {
+      position: fixed;
+      z-index: 100;
+      right: 1rem;
+      top: 5.2rem;
+      display: grid;
+      gap: 0.62rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      width: min(340px, calc(100vw - 2rem));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(0,0,0,0.78);
+      color: #fff;
+      backdrop-filter: blur(18px);
+      padding: 0.84rem 0.95rem;
+      box-shadow: 0 18px 42px rgba(0,0,0,0.38);
+      font-size: 0.84rem;
+      line-height: 1.35;
+      animation: toastIn 0.22s ease-out;
+    }
+
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .tech-note {
+      margin-top: 1rem;
+      padding: 0.95rem;
+      border: 1px solid rgba(216,255,62,0.18);
+      border-radius: 18px;
+      color: var(--muted);
+      background: rgba(216,255,62,0.045);
+      line-height: 1.45;
+      font-size: 0.82rem;
+    }
+
+    .tech-note strong { color: var(--fg); }
+
+    @media (max-width: 1120px) {
+      .main { grid-template-columns: 1fr; }
+      .lab-wrap { min-height: 620px; }
+      .lab-panel { min-height: 520px; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar { align-items: flex-start; flex-wrap: wrap; }
+      .top-actions { width: 100%; justify-content: flex-start; }
+      .main { padding: 1rem; }
+      .copy-panel, .lab-panel, .control-panel { border-radius: 24px; }
+      .status-grid { grid-template-columns: 1fr; }
+      .lab-panel { min-height: 430px; }
+      .lab-overlay { flex-direction: column; align-items: flex-start; }
+      .scene-caption { max-width: 100%; }
+      .hud-stack { justify-items: start; }
+      .control-panel { grid-template-columns: 1fr; }
+      .control-actions { justify-content: flex-start; }
+      .toast-layer { left: 1rem; right: 1rem; top: auto; bottom: 1rem; }
+      .camera-preview-card { width: 176px; right: 0.75rem; top: 0.75rem; }
+      .camera-preview-body { height: 112px; }
+    }
+
+    @media (max-width: 500px) {
+      .brand-sub { white-space: normal; }
+      h1 { font-size: clamp(2.35rem, 16vw, 4.3rem); }
+      .btn { width: 100%; }
+      .top-actions .btn { width: auto; }
+      .control-actions .btn { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
+
+    .lab-panel:fullscreen,
+    .lab-panel.is-fullscreen {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      max-height: none;
+      min-height: 0;
+      border-radius: 0;
+      border: none;
+      background: #050505;
+    }
+
+    .lab-panel:fullscreen .camera-preview-card,
+    .lab-panel.is-fullscreen .camera-preview-card {
+      width: 160px;
+      opacity: 0.78;
+    }
+
+    .lab-panel:fullscreen .lab-overlay,
+    .lab-panel.is-fullscreen .lab-overlay {
+      inset: auto 1rem 1rem 1rem;
+    }
+
+    .lab-panel:fullscreen .scene-caption,
+    .lab-panel.is-fullscreen .scene-caption {
+      max-width: 46%;
+    }
+
+    .fs-close-btn {
+      position: absolute;
+      z-index: 30;
+      top: 1rem;
+      left: 1rem;
+      border: 1px solid rgba(255,255,255,0.32);
+      border-radius: var(--radius-pill);
+      background: rgba(0,0,0,0.72);
+      color: #fff;
+      padding: 0.7rem 1rem;
+      font-weight: 800;
+      font-size: 0.86rem;
+      backdrop-filter: blur(14px);
+      cursor: pointer;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+    }
+
+    .fs-close-btn.is-hidden { display: none; }
+    .lab-panel:fullscreen .fs-close-btn,
+    .lab-panel.is-fullscreen .fs-close-btn,
+    .lab-panel.is-immersive .fs-close-btn {
+      display: inline-flex;
+      padding: 0.82rem 1.15rem;
+      font-size: 0.92rem;
+    }
+
+    .fs-home-btn {
+      position: absolute;
+      z-index: 30;
+      top: 4.4rem;
+      left: 1rem;
+      border: 1px solid rgba(0,255,204,0.42);
+      border-radius: var(--radius-pill);
+      background: rgba(0,255,204,0.12);
+      color: #fff;
+      padding: 0.7rem 1.05rem;
+      font-weight: 800;
+      font-size: 0.86rem;
+      backdrop-filter: blur(14px);
+      cursor: pointer;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+    }
+
+    .fs-home-btn.is-hidden { display: none; }
+    .lab-panel:fullscreen .fs-home-btn,
+    .lab-panel.is-fullscreen .fs-home-btn,
+    .lab-panel.is-immersive .fs-home-btn {
+      display: inline-flex;
+    }
+
+    .rec-indicator {
+      position: absolute;
+      z-index: 8;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.78rem;
+      border: 1px solid rgba(255,51,102,0.5);
+      border-radius: var(--radius-pill);
+      background: rgba(0,0,0,0.62);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      backdrop-filter: blur(14px);
+    }
+
+    .rec-indicator.is-hidden { display: none; }
+
+    .rec-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--danger);
+      box-shadow: 0 0 14px var(--danger);
+      animation: recPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes recPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    .fs-rec-controls {
+      position: absolute;
+      z-index: 28;
+      top: 1rem;
+      right: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.5rem 0.65rem;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: var(--radius-pill);
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+    }
+
+    .fs-rec-controls.is-hidden { display: none; }
+
+    .fs-rec-controls .btn {
+      padding: 0.55rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .fs-rec-timer {
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      padding: 0 0.3rem;
+    }
+
+    .lab-panel:fullscreen .fs-rec-controls,
+    .lab-panel.is-fullscreen .fs-rec-controls,
+    .lab-panel.is-immersive .fs-rec-controls {
+      display: inline-flex;
+    }
+
+    .lab-panel.is-immersive {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-width: none;
+      max-height: none;
+      min-height: 0;
+      margin: 0;
+      border-radius: 0;
+      border: none;
+      background: #050505;
+      z-index: 9999;
+    }
+
+    .lab-panel.is-immersive .camera-preview-card {
+      width: 150px;
+      opacity: 0.82;
+    }
+
+    .lab-panel.is-immersive .scene-caption {
+      max-width: 56%;
+    }
+
+    .lab-panel.is-immersive .fs-rec-controls .btn {
+      padding: 0.7rem 0.95rem;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 500px) {
+      .lab-panel:fullscreen .fs-rec-controls,
+      .lab-panel.is-fullscreen .fs-rec-controls,
+      .lab-panel.is-immersive .fs-rec-controls {
+        top: auto;
+        bottom: 1rem;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: calc(100vw - 1.4rem);
+      }
+      .lab-panel.is-immersive .fs-close-btn {
+        top: 0.75rem;
+        left: 0.75rem;
+        right: auto;
+        padding: 0.78rem 1.05rem;
+      }
+      .lab-panel.is-immersive .fs-home-btn {
+        top: 0.75rem;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        padding: 0.6rem 0.9rem;
+        font-size: 0.82rem;
+      }
+      .lab-panel.is-immersive .camera-preview-card {
+        width: 124px;
+        right: 0.6rem;
+        top: 0.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand-lockup" aria-label="Rubik Sota Gesture Lab">
+        <div class="brand-mark">RS</div>
+        <div>
+          <span class="brand-name">Rubik Sota Gesture Lab</span>
+          <span class="brand-sub">01 · Bola de Imagen · v1.3 botón Home + mano abierta más fiable</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <label class="btn btn-primary" id="uploadLabel" for="imageInput">Subir imagen</label>
+        <input class="file-input" id="imageInput" type="file" accept="image/*" />
+        <button class="btn btn-accent" id="fitViewBtn" type="button">Centrar vista</button>
+        <button class="btn" id="toggleCameraBtn" type="button">Activar cámara</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="copy-panel" aria-label="Descripción del experimento">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> Prototipo gestual · Three.js · MediaPipe refinado</div>
+          <h1>Haz bola una <span class="serif">imagen.</span></h1>
+          <p class="lead">
+            v1.3 sobre v1.2.1: añade botón Home dentro de Vista completa para volver al índice del proyecto y refuerza el reconocimiento de mano abierta (OPEN) para volver de bola a imagen plana de forma fiable.
+          </p>
+
+          <div class="status-grid">
+            <div class="status-card"><strong>Fase actual</strong><span>Three.js + imagen optimizada + MediaPipe Hands refinado. El slider manual queda como fallback sin cámara.</span></div>
+            <div class="status-card"><strong>Objetivo</strong><span>Comprobar si la mano siente control real sobre la deformación y la rotación de la imagen.</span></div>
+            <div class="status-card"><strong>Prueba clave</strong><span>Mano abierta: plano. Puño cerrado: bola. Movimiento de palma: rotación del objeto.</span></div>
+            <div class="status-card"><strong>Novedad v1.3</strong><span>Botón Home dentro de Vista completa y umbral OPEN más agresivo para que la mano abierta vuelva claramente a imagen plana.</span></div>
+          </div>
+
+          <div class="tech-note">
+            <strong>Nota técnica:</strong> v1.3 añade un “override OPEN”: si se detectan ≥3 dedos extendidos o apertura suave alta durante 2 frames, el gesto estable se fuerza a OPEN, se limpia el historial de swipe y se baja targetProgress a 0. El botón Home detiene grabación de forma segura y navega a `../../index.html`.
+          </div>
+        </div>
+
+        <div class="status-grid" aria-label="Estado técnico del prototipo">
+          <div class="status-card"><strong id="vertexCountLabel">0</strong><span>vértices deformables</span></div>
+          <div class="status-card"><strong id="textureStatusLabel">Demo interna</strong><span>textura activa</span></div>
+        </div>
+      </section>
+
+      <section class="lab-wrap" aria-label="Escenario Three.js del Gesture Lab">
+        <div class="lab-panel" id="stagePanel">
+          <canvas id="webglStage" aria-label="Escenario 3D donde la imagen se transforma en bola"></canvas>
+
+          <button class="fs-close-btn is-hidden" id="fullscreenCloseBtn" type="button" aria-label="Cerrar vista completa">Cerrar</button>
+          <button class="fs-home-btn is-hidden" id="fullscreenHomeBtn" type="button" aria-label="Volver al índice del proyecto">Home</button>
+          <div class="rec-indicator is-hidden" id="recIndicator" aria-live="polite">
+            <span class="rec-dot"></span>
+            <span>REC</span>
+            <span id="recTimer">00:00 / 00:15</span>
+          </div>
+          <div class="fs-rec-controls is-hidden" id="fullscreenRecordingControls" aria-label="Grabación en vista completa">
+            <button class="btn btn-accent" id="fsRecordBtn" type="button">Grabar</button>
+            <button class="btn" id="fsStopRecordBtn" type="button" disabled>Detener</button>
+            <span class="fs-rec-timer" id="fsRecTimer">00:00 / 00:15</span>
+            <a class="btn" id="fsDownloadClipBtn" href="#" download="rubik-sota-gesture-lab-v1-2-1-clip.webm" hidden>Descargar clip</a>
+          </div>
+
+          <video id="cameraVideo" playsinline muted hidden></video>
+          <div class="camera-preview-card is-hidden" id="cameraPreviewCard" aria-label="Previsualización de cámara gestual">
+            <div class="camera-preview-head">
+              <span>Hand tracking</span>
+              <span class="gesture-badge" id="gestureBadge">OFF</span>
+            </div>
+            <div class="camera-preview-body">
+              <canvas id="cameraPreview" width="320" height="240" aria-label="Vista previa de la cámara con landmarks de mano"></canvas>
+            </div>
+            <div class="camera-preview-status" id="cameraPreviewStatus">Cámara inactiva. Pulsa “Activar cámara”.</div>
+          </div>
+
+
+          <div class="lab-overlay">
+            <div class="scene-caption">
+              <div class="scene-kicker">Gesture Lab 01</div>
+              <div class="scene-title" id="sceneStateTitle">Imagen plana</div>
+              <div class="scene-desc" id="sceneStateDesc">Mueve el slider para deformar la imagen. Arrastra sobre el escenario para rotar la pieza.</div>
+            </div>
+            <div class="hud-stack">
+              <div class="hud-pill"><span class="hud-dot"></span><span id="renderStatusText">Three.js activo</span></div>
+              <div class="hud-pill"><span class="hud-dot warn"></span><span id="modeStatusText">Control manual</span></div>
+              <div class="hud-pill"><span id="fpsText">FPS: --</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-panel" aria-label="Controles manuales de deformación">
+          <div class="slider-block">
+            <div class="slider-head">
+              <span>Deformación plano → bola</span>
+              <span class="progress-readout" id="progressReadout">0%</span>
+            </div>
+            <input id="crumpleRange" type="range" min="0" max="100" value="0" />
+          </div>
+          <div class="control-actions">
+            <button class="btn" id="flatBtn" type="button">Plano</button>
+            <button class="btn btn-primary" id="ballBtn" type="button">Bola</button>
+            <button class="btn" id="autoRotateBtn" type="button">Auto rotación: ON</button>
+            <button class="btn" id="largeViewBtn" type="button">Modo grande: OFF</button>
+            <button class="btn" id="fullscreenBtn" type="button">Vista completa</button>
+            <button class="btn btn-accent" id="recordBtn" type="button">Grabar clip</button>
+            <button class="btn" id="stopRecordBtn" type="button" disabled>Detener</button>
+            <a class="btn" id="downloadClipBtn" href="#" download="rubik-sota-gesture-lab-v1-2-clip.webm" hidden>Descargar clip</a>
+            <button class="btn btn-danger" id="resetBtn" type="button">Reset</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div><strong>Rubik Sota</strong> · Gesture Lab 01 · Bola de Imagen v1.3</div>
+      <div>v1.2.1: vista completa móvil. v1.3: botón Home + mano abierta más fiable.</div>
+    </footer>
+  </div>
+
+  <div class="toast-layer" id="toastLayer" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module">
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+    const els = {
+      canvas: document.getElementById("webglStage"),
+      stagePanel: document.getElementById("stagePanel"),
+      imageInput: document.getElementById("imageInput"),
+      uploadLabel: document.getElementById("uploadLabel"),
+      fitViewBtn: document.getElementById("fitViewBtn"),
+      toggleCameraBtn: document.getElementById("toggleCameraBtn"),
+      cameraVideo: document.getElementById("cameraVideo"),
+      cameraPreview: document.getElementById("cameraPreview"),
+      cameraPreviewCard: document.getElementById("cameraPreviewCard"),
+      cameraPreviewStatus: document.getElementById("cameraPreviewStatus"),
+      gestureBadge: document.getElementById("gestureBadge"),
+      crumpleRange: document.getElementById("crumpleRange"),
+      progressReadout: document.getElementById("progressReadout"),
+      flatBtn: document.getElementById("flatBtn"),
+      ballBtn: document.getElementById("ballBtn"),
+      autoRotateBtn: document.getElementById("autoRotateBtn"),
+      largeViewBtn: document.getElementById("largeViewBtn"),
+      fullscreenBtn: document.getElementById("fullscreenBtn"),
+      fullscreenCloseBtn: document.getElementById("fullscreenCloseBtn"),
+      fullscreenHomeBtn: document.getElementById("fullscreenHomeBtn"),
+      recordBtn: document.getElementById("recordBtn"),
+      stopRecordBtn: document.getElementById("stopRecordBtn"),
+      downloadClipBtn: document.getElementById("downloadClipBtn"),
+      recIndicator: document.getElementById("recIndicator"),
+      recTimer: document.getElementById("recTimer"),
+      fsRecordBtn: document.getElementById("fsRecordBtn"),
+      fsStopRecordBtn: document.getElementById("fsStopRecordBtn"),
+      fsRecTimer: document.getElementById("fsRecTimer"),
+      fsDownloadClipBtn: document.getElementById("fsDownloadClipBtn"),
+      fullscreenRecordingControls: document.getElementById("fullscreenRecordingControls"),
+      resetBtn: document.getElementById("resetBtn"),
+      sceneStateTitle: document.getElementById("sceneStateTitle"),
+      sceneStateDesc: document.getElementById("sceneStateDesc"),
+      renderStatusText: document.getElementById("renderStatusText"),
+      modeStatusText: document.getElementById("modeStatusText"),
+      fpsText: document.getElementById("fpsText"),
+      vertexCountLabel: document.getElementById("vertexCountLabel"),
+      textureStatusLabel: document.getElementById("textureStatusLabel"),
+      toastLayer: document.getElementById("toastLayer")
+    };
+
+    const state = {
+      scene: null,
+      camera: null,
+      renderer: null,
+      mesh: null,
+      material: null,
+      defaultTexture: null,
+      activeTexture: null,
+      activeTextureIsDefault: true,
+      originalPositions: null,
+      targetPositions: null,
+      currentProgress: 0,
+      targetProgress: 0,
+      autoRotate: true,
+      drag: {
+        active: false,
+        lastX: 0,
+        lastY: 0,
+        yaw: -0.18,
+        pitch: 0.08,
+        velocityX: 0,
+        velocityY: 0
+      },
+      meshSize: { width: 4, height: 2.65 },
+      lastFrame: performance.now(),
+      fps: { last: performance.now(), frames: 0, value: 0 },
+      resizeObserver: null,
+      contextLost: false,
+      isProcessingImage: false,
+      hands: null,
+      cameraStream: null,
+      cameraActive: false,
+      cameraStarting: false,
+      cameraToken: 0,
+      handLoopRunning: false,
+      handSendBusy: false,
+      lastHandSend: 0,
+      handTargetFrameMs: 1000 / 22,
+      lastHandTime: 0,
+      lastPalm: null,
+      contextReloadTimer: null,
+      gesture: {
+        stable: "OFF",
+        candidate: "OFF",
+        frames: 0,
+        confidence: 0,
+        opennessEma: null
+      },
+      swipe: {
+        history: [],
+        lastTriggerTime: 0,
+        cooldownMs: 850,
+        minDistance: 0.18,
+        maxVerticalDrift: 0.11,
+        maxWindowMs: 520,
+        minVelocity: 0.55
+      },
+      handCam: {
+        anchorPalm: null,
+        anchorYaw: 0,
+        anchorPitch: 0,
+        targetYaw: -0.18,
+        targetPitch: 0.08,
+        yawRange: 1.6,
+        pitchRange: 1.0,
+        deadzone: 0.012,
+        smoothing: 0.18
+      },
+      throwMotion: {
+        active: false,
+        offsetX: 0,
+        velocityX: 0,
+        direction: 0
+      },
+      viewMode: {
+        large: false,
+        fullscreen: false
+      },
+      recording: {
+        active: false,
+        recorder: null,
+        chunks: [],
+        stream: null,
+        startedAt: 0,
+        timerId: null,
+        maxDurationMs: 15000,
+        downloadUrl: null,
+        mimeType: ""
+      }
+    };
+
+    const LOW_POWER_MESH = window.innerWidth < 768 || (window.devicePixelRatio || 1) > 2.25;
+
+    const SETTINGS = {
+      segmentsX: LOW_POWER_MESH ? 48 : 72,
+      segmentsY: LOW_POWER_MESH ? 48 : 72,
+      baseHeight: 3.0,
+      maxWidth: 5.4,
+      maxHeight: 4.0,
+      sphereRadius: 1.5,
+      easing: 0.18,
+      maxPixelRatio: 2,
+      maxTextureSize: 2048,
+      cameraZ: 5.0,
+      largeScale: 1.35
+    };
+
+    function seededNoise(index) {
+      const x = Math.sin(index * 127.1 + 311.7) * 43758.5453123;
+      return x - Math.floor(x);
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function easeInOut(t) {
+      return t * t * (3 - 2 * t);
+    }
+
+    function showToast(message, duration = 2600) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+      els.toastLayer.appendChild(toast);
+      window.setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(-8px)";
+        window.setTimeout(() => toast.remove(), 220);
+      }, duration);
+    }
+
+    function setProcessingState(isProcessing, message = null) {
+      state.isProcessingImage = Boolean(isProcessing);
+      els.imageInput.disabled = state.isProcessingImage;
+      if (els.uploadLabel) {
+        els.uploadLabel.classList.toggle("is-busy", state.isProcessingImage);
+        els.uploadLabel.textContent = state.isProcessingImage ? "Procesando..." : "Subir imagen";
+      }
+      if (message) els.textureStatusLabel.textContent = message;
+    }
+
+    function hasWebGLSupport() {
+      try {
+        const testCanvas = document.createElement("canvas");
+        return Boolean(
+          window.WebGLRenderingContext &&
+          (testCanvas.getContext("webgl") || testCanvas.getContext("experimental-webgl"))
+        );
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function setWebglBlocked(message) {
+      els.stagePanel.classList.add("is-webgl-blocked");
+      els.stagePanel.setAttribute("data-webgl-message", message);
+    }
+
+    function clearWebglBlocked() {
+      els.stagePanel.classList.remove("is-webgl-blocked");
+      els.stagePanel.removeAttribute("data-webgl-message");
+    }
+
+    function handleContextLost(event) {
+      event.preventDefault();
+      state.contextLost = true;
+      els.renderStatusText.textContent = "WebGL perdido";
+      els.imageInput.disabled = true;
+      setWebglBlocked("WebGL se ha detenido temporalmente. Recargando la experiencia visual...");
+      showToast("Contexto WebGL perdido. Recargando para recuperar la escena.", 4200);
+      if (state.contextReloadTimer) window.clearTimeout(state.contextReloadTimer);
+      state.contextReloadTimer = window.setTimeout(() => {
+        if (state.contextLost) window.location.reload();
+      }, 1800);
+    }
+
+    function handleContextRestored() {
+      state.contextLost = false;
+      if (state.contextReloadTimer) {
+        window.clearTimeout(state.contextReloadTimer);
+        state.contextReloadTimer = null;
+      }
+      clearWebglBlocked();
+      els.renderStatusText.textContent = "WebGL restaurado";
+      els.imageInput.disabled = false;
+      showToast("WebGL restaurado. Recargando recursos visuales.", 2600);
+      window.setTimeout(() => window.location.reload(), 500);
+    }
+
+
+
+    function distance2D(a, b) {
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function getPalmCenter(landmarks) {
+      const ids = [0, 5, 9, 13, 17];
+      const sum = ids.reduce((acc, id) => {
+        acc.x += landmarks[id].x;
+        acc.y += landmarks[id].y;
+        return acc;
+      }, { x: 0, y: 0 });
+      return { x: sum.x / ids.length, y: sum.y / ids.length };
+    }
+
+    function classifyHandGesture(landmarks) {
+      const palm = getPalmCenter(landmarks);
+      const wrist = landmarks[0];
+      const middleMcp = landmarks[9];
+      const palmScale = Math.max(0.04, distance2D(wrist, middleMcp));
+      const fingers = [
+        { tip: 8, pip: 6 },
+        { tip: 12, pip: 10 },
+        { tip: 16, pip: 14 },
+        { tip: 20, pip: 18 }
+      ];
+
+      let extended = 0;
+      let openness = 0;
+      for (const finger of fingers) {
+        const tipDist = distance2D(landmarks[finger.tip], palm);
+        const pipDist = distance2D(landmarks[finger.pip], palm);
+        openness += tipDist / palmScale;
+        if (tipDist > pipDist * 1.08 && tipDist > palmScale * 1.16) extended += 1;
+      }
+      openness /= fingers.length;
+      state.gesture.opennessEma = state.gesture.opennessEma === null
+        ? openness
+        : state.gesture.opennessEma * 0.52 + openness * 0.48;
+      const smoothedOpenness = state.gesture.opennessEma;
+
+      let gesture = "HOLDING";
+      let confidence = clamp((smoothedOpenness - 1.25) / 1.0, 0, 1);
+      if (extended >= 3 || smoothedOpenness > 1.65 || (extended >= 2 && smoothedOpenness > 1.55)) {
+        gesture = "OPEN";
+        confidence = clamp(0.68 + extended * 0.12, 0, 1);
+      } else if (extended <= 1 && smoothedOpenness < 1.78) {
+        gesture = "FIST";
+        confidence = clamp(1.08 - smoothedOpenness * 0.32, 0, 1);
+      }
+
+      return { gesture, confidence, openness: smoothedOpenness, palm, extended };
+    }
+
+    function stabilizeGesture(nextGesture, confidence) {
+      if (state.gesture.candidate === nextGesture) {
+        state.gesture.frames += 1;
+      } else {
+        state.gesture.candidate = nextGesture;
+        state.gesture.frames = 1;
+      }
+      state.gesture.confidence = confidence;
+      const required = nextGesture === "OPEN" ? 2 : (nextGesture === "FIST" ? 4 : 5);
+      if (state.gesture.frames >= required) {
+        state.gesture.stable = nextGesture;
+      }
+      return state.gesture.stable;
+    }
+
+    function drawCameraPreview(results, gestureInfo = null) {
+      const canvas = els.cameraPreview;
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      ctx.clearRect(0, 0, width, height);
+
+      if (els.cameraVideo.readyState >= 2) {
+        ctx.save();
+        ctx.translate(width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(els.cameraVideo, 0, 0, width, height);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      const landmarks = results?.multiHandLandmarks?.[0];
+      if (!landmarks) return;
+
+      ctx.save();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(0,255,204,0.82)";
+      ctx.fillStyle = "rgba(216,255,62,0.95)";
+      const connections = [
+        [0,1],[1,2],[2,3],[3,4],
+        [0,5],[5,6],[6,7],[7,8],
+        [5,9],[9,10],[10,11],[11,12],
+        [9,13],[13,14],[14,15],[15,16],
+        [13,17],[17,18],[18,19],[19,20],
+        [0,17]
+      ];
+      for (const [a, b] of connections) {
+        const ax = (1 - landmarks[a].x) * width;
+        const ay = landmarks[a].y * height;
+        const bx = (1 - landmarks[b].x) * width;
+        const by = landmarks[b].y * height;
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(bx, by);
+        ctx.stroke();
+      }
+      for (const point of landmarks) {
+        ctx.beginPath();
+        ctx.arc((1 - point.x) * width, point.y * height, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (gestureInfo?.palm) {
+        ctx.fillStyle = gestureInfo.gesture === "FIST" ? "rgba(255,51,102,0.95)" : "rgba(0,255,204,0.95)";
+        ctx.beginPath();
+        ctx.arc((1 - gestureInfo.palm.x) * width, gestureInfo.palm.y * height, 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function resetSwipeHistory() {
+      state.swipe.history.length = 0;
+    }
+
+    function triggerThrow(direction) {
+      const impulse = clamp(0.85 + Math.abs(direction) * 0.35, 0.6, 1.4);
+      state.throwMotion.active = true;
+      state.throwMotion.direction = direction;
+      state.throwMotion.velocityX = direction * impulse;
+      state.swipe.lastTriggerTime = performance.now();
+      state.swipe.history.length = 0;
+      const label = direction > 0 ? "Swipe derecha: lanzamiento" : "Swipe izquierda: lanzamiento";
+      showToast(label, 1600);
+      if (state.cameraActive) {
+        els.modeStatusText.textContent = label;
+      }
+    }
+
+    function detectPalmSwipe(displayPalm, stableGesture) {
+      const now = performance.now();
+      if (stableGesture === "OPEN") {
+        state.swipe.history.length = 0;
+        return;
+      }
+      const progressOk = state.currentProgress > 0.70 || state.targetProgress > 0.70;
+      const gestureOk = stableGesture === "FIST" || progressOk;
+      if (!gestureOk) {
+        state.swipe.history.length = 0;
+        return;
+      }
+      if (now - state.swipe.lastTriggerTime < state.swipe.cooldownMs) return;
+
+      const history = state.swipe.history;
+      history.push({ x: displayPalm.x, y: displayPalm.y, t: now });
+      while (history.length && now - history[0].t > state.swipe.maxWindowMs) {
+        history.shift();
+      }
+      if (history.length < 2) return;
+
+      const first = history[0];
+      const last = history[history.length - 1];
+      const deltaX = last.x - first.x;
+      const deltaY = last.y - first.y;
+      const elapsed = last.t - first.t;
+      if (elapsed <= 0 || elapsed > state.swipe.maxWindowMs) return;
+      const velocity = Math.abs(deltaX) / (elapsed / 1000);
+
+      if (
+        Math.abs(deltaX) >= state.swipe.minDistance &&
+        Math.abs(deltaY) <= state.swipe.maxVerticalDrift &&
+        velocity >= state.swipe.minVelocity
+      ) {
+        const direction = deltaX > 0 ? 1 : -1;
+        triggerThrow(direction);
+      }
+    }
+
+    function applyGestureControl(gesture, palm) {
+      if (!palm) return;
+      if (gesture === "OPEN") {
+        setProgress(0);
+        state.swipe.history.length = 0;
+      } else if (gesture === "FIST") {
+        setProgress(100);
+      }
+
+      const displayPalm = { x: 1 - palm.x, y: palm.y };
+
+      if (!state.handCam.anchorPalm) {
+        state.handCam.anchorPalm = { x: displayPalm.x, y: displayPalm.y };
+        state.handCam.anchorYaw = state.drag.yaw;
+        state.handCam.anchorPitch = state.drag.pitch;
+        state.handCam.targetYaw = state.drag.yaw;
+        state.handCam.targetPitch = state.drag.pitch;
+      } else {
+        const offsetX = displayPalm.x - state.handCam.anchorPalm.x;
+        const offsetY = displayPalm.y - state.handCam.anchorPalm.y;
+        const dzX = Math.abs(offsetX) < state.handCam.deadzone ? 0 : offsetX;
+        const dzY = Math.abs(offsetY) < state.handCam.deadzone ? 0 : offsetY;
+        state.handCam.targetYaw = state.handCam.anchorYaw + dzX * state.handCam.yawRange;
+        state.handCam.targetPitch = clamp(
+          state.handCam.anchorPitch + dzY * state.handCam.pitchRange,
+          -0.78,
+          0.78
+        );
+
+        if (Math.abs(offsetX) > 0.32 || Math.abs(offsetY) > 0.28) {
+          state.handCam.anchorPalm.x = lerp(state.handCam.anchorPalm.x, displayPalm.x, 0.04);
+          state.handCam.anchorPalm.y = lerp(state.handCam.anchorPalm.y, displayPalm.y, 0.04);
+          state.handCam.anchorYaw = state.handCam.targetYaw;
+          state.handCam.anchorPitch = state.handCam.targetPitch;
+        }
+      }
+
+      state.drag.velocityX = 0;
+      state.drag.velocityY = 0;
+      state.lastPalm = displayPalm;
+      detectPalmSwipe(displayPalm, gesture);
+    }
+
+    function resetHandCamAnchor() {
+      state.handCam.anchorPalm = null;
+    }
+
+    function updateGestureUi(status, detail = "") {
+      els.gestureBadge.textContent = status;
+      els.cameraPreviewStatus.textContent = detail || status;
+      if (state.cameraActive) {
+        const shortDetail = detail && detail.includes("ext ") ? detail.replace(/^Detectado: [A-Z]+ · /, "") : "";
+        els.modeStatusText.textContent = shortDetail ? `${status} · ${shortDetail}` : `Gesto: ${status}`;
+      } else {
+        els.modeStatusText.textContent = "Control manual";
+      }
+    }
+
+    function handleHandResults(results) {
+      const landmarks = results.multiHandLandmarks && results.multiHandLandmarks[0];
+      if (!landmarks) {
+        const elapsed = performance.now() - state.lastHandTime;
+        if (elapsed > 700) {
+          state.lastPalm = null;
+          state.gesture.stable = "HOLDING";
+          state.gesture.opennessEma = null;
+          resetSwipeHistory();
+          resetHandCamAnchor();
+          updateGestureUi("SIN MANO", "No veo tu mano. Acércala a la cámara con buena luz; mantengo el último estado visual.");
+        }
+        drawCameraPreview(results, null);
+        return;
+      }
+
+      state.lastHandTime = performance.now();
+      const info = classifyHandGesture(landmarks);
+      const strongOpen = info.gesture === "OPEN" && (info.extended >= 3 || info.openness >= 1.9);
+      if (strongOpen) {
+        state.gesture.openOverrideFrames = (state.gesture.openOverrideFrames || 0) + 1;
+      } else {
+        state.gesture.openOverrideFrames = 0;
+      }
+      let stableGesture = stabilizeGesture(info.gesture, info.confidence);
+      if (state.gesture.openOverrideFrames >= 2) {
+        state.gesture.stable = "OPEN";
+        state.gesture.candidate = "OPEN";
+        state.gesture.frames = Math.max(state.gesture.frames, 2);
+        stableGesture = "OPEN";
+      }
+      applyGestureControl(stableGesture, info.palm);
+      const opennessPct = Math.round(info.openness * 100) / 100;
+      updateGestureUi(stableGesture, `Detectado: ${stableGesture} · conf ${Math.round(info.confidence * 100)}% · ext ${info.extended} · op ${opennessPct.toFixed(2)}`);
+      drawCameraPreview(results, { ...info, gesture: stableGesture });
+    }
+
+    async function initHands() {
+      if (state.hands) return state.hands;
+      const HandsCtor = window.Hands;
+      if (!HandsCtor) {
+        throw new Error("MEDIAPIPE_NOT_AVAILABLE");
+      }
+      state.hands = new HandsCtor({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+      });
+      state.hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.66,
+        minTrackingConfidence: 0.62
+      });
+      state.hands.onResults(handleHandResults);
+      return state.hands;
+    }
+
+    async function handTrackingLoop(token) {
+      if (!state.cameraActive || token !== state.cameraToken) {
+        state.handLoopRunning = false;
+        return;
+      }
+      state.handLoopRunning = true;
+      const now = performance.now();
+      const shouldSendFrame = now - state.lastHandSend >= state.handTargetFrameMs;
+      if (shouldSendFrame && !state.handSendBusy && els.cameraVideo.readyState >= 2 && state.hands) {
+        state.lastHandSend = now;
+        state.handSendBusy = true;
+        try {
+          await state.hands.send({ image: els.cameraVideo });
+        } catch (error) {
+          console.error(error);
+          showToast("Error procesando la mano. Reinicia la cámara si continúa.", 2600);
+        } finally {
+          state.handSendBusy = false;
+        }
+      }
+      window.requestAnimationFrame(() => handTrackingLoop(token));
+    }
+
+    async function startCamera() {
+      if (state.cameraStarting || state.cameraActive) return;
+      state.cameraStarting = true;
+      state.cameraToken += 1;
+      const token = state.cameraToken;
+      els.toggleCameraBtn.disabled = true;
+      els.toggleCameraBtn.textContent = "Activando...";
+      updateGestureUi("CARGANDO", "Solicitando cámara. Acepta el permiso del navegador.");
+      els.cameraPreviewCard.classList.remove("is-hidden");
+
+      try {
+        await initHands();
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: "user",
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          }
+        });
+        if (token !== state.cameraToken) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        state.cameraStream = stream;
+        els.cameraVideo.srcObject = stream;
+        await els.cameraVideo.play();
+        state.cameraActive = true;
+        state.drag.active = false;
+        state.drag.velocityX = 0;
+        state.drag.velocityY = 0;
+        state.lastPalm = null;
+        state.lastHandSend = 0;
+        state.gesture.opennessEma = null;
+        state.lastHandTime = performance.now();
+        els.toggleCameraBtn.textContent = "Apagar cámara";
+        els.toggleCameraBtn.disabled = false;
+        updateGestureUi("BUSCANDO", "Cámara activa. Muestra la mano: palma = plano, puño = bola.");
+        showToast("Cámara activada. Procesamiento local en navegador.", 2600);
+        handTrackingLoop(token);
+      } catch (error) {
+        console.error(error);
+        state.cameraActive = false;
+        els.cameraPreviewCard.classList.add("is-hidden");
+        let message = "No se pudo activar la cámara.";
+        if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+          message = "La cámara requiere HTTPS o localhost.";
+        }
+        showToast(message, 4200);
+        updateGestureUi("ERROR", message);
+        els.toggleCameraBtn.textContent = "Activar cámara";
+        els.toggleCameraBtn.disabled = false;
+      } finally {
+        state.cameraStarting = false;
+      }
+    }
+
+    function stopCamera() {
+      state.cameraToken += 1;
+      state.cameraActive = false;
+      state.cameraStarting = false;
+      state.handLoopRunning = false;
+      state.handSendBusy = false;
+      state.lastPalm = null;
+      state.gesture.opennessEma = null;
+      resetSwipeHistory();
+      resetHandCamAnchor();
+      if (state.cameraStream) {
+        state.cameraStream.getTracks().forEach((track) => track.stop());
+        state.cameraStream = null;
+      }
+      els.cameraVideo.pause();
+      els.cameraVideo.srcObject = null;
+      els.cameraPreviewCard.classList.add("is-hidden");
+      els.toggleCameraBtn.textContent = "Activar cámara";
+      els.toggleCameraBtn.disabled = false;
+      updateGestureUi("OFF", "Cámara inactiva. Control manual disponible con slider.");
+      showToast("Cámara apagada. Vuelves al control manual.", 2200);
+    }
+
+    function loadImageElementFromFile(file) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("No se pudo decodificar la imagen."));
+        };
+        img.src = url;
+      });
+    }
+
+    async function decodeImageSource(file) {
+      if ("createImageBitmap" in window) {
+        try {
+          return await createImageBitmap(file);
+        } catch (_) {
+          return await loadImageElementFromFile(file);
+        }
+      }
+      return await loadImageElementFromFile(file);
+    }
+
+    async function createOptimizedImageCanvas(file, maxSize = SETTINGS.maxTextureSize) {
+      const source = await decodeImageSource(file);
+      const sourceWidth = source.width || source.videoWidth || 1;
+      const sourceHeight = source.height || source.videoHeight || 1;
+      const scale = Math.min(1, maxSize / Math.max(sourceWidth, sourceHeight));
+      const width = Math.max(1, Math.round(sourceWidth * scale));
+      const height = Math.max(1, Math.round(sourceHeight * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d", { alpha: false });
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(source, 0, 0, width, height);
+      if (typeof source.close === "function") source.close();
+      return { canvas, width, height, wasResized: scale < 0.999 };
+    }
+
+    function createDefaultTexture() {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1600;
+      canvas.height = 1000;
+      const ctx = canvas.getContext("2d");
+
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, "#f7f1dc");
+      gradient.addColorStop(0.42, "#ffffff");
+      gradient.addColorStop(1, "#00ffcc");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.globalAlpha = 0.5;
+      for (let i = 0; i < 34; i += 1) {
+        ctx.beginPath();
+        ctx.arc(
+          canvas.width * seededNoise(i + 10),
+          canvas.height * seededNoise(i + 20),
+          18 + seededNoise(i + 30) * 170,
+          0,
+          Math.PI * 2
+        );
+        ctx.fillStyle = i % 2 ? "rgba(0,0,0,0.08)" : "rgba(0,255,204,0.22)";
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = "rgba(0,0,0,0.84)";
+      ctx.font = "900 122px Inter, Arial, sans-serif";
+      ctx.letterSpacing = "-6px";
+      ctx.fillText("RUBIK SOTA", 96, 420);
+
+      ctx.font = "italic 110px Georgia, serif";
+      ctx.fillText("Gesture Lab", 96, 540);
+
+      ctx.font = "700 42px Inter, Arial, sans-serif";
+      ctx.fillStyle = "rgba(0,0,0,0.62)";
+      ctx.fillText("Bola de Imagen · v1.3", 100, 650);
+
+      ctx.font = "500 30px Inter, Arial, sans-serif";
+      ctx.fillStyle = "rgba(0,0,0,0.52)";
+      ctx.fillText("Sube tu imagen y deforma el plano hasta convertirlo en una bola visual.", 100, 720);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 8;
+      texture.needsUpdate = true;
+      return texture;
+    }
+
+    function calculateMeshSizeFromAspect(aspect) {
+      let width;
+      let height;
+      if (aspect >= 1) {
+        width = SETTINGS.maxWidth;
+        height = width / aspect;
+        if (height > SETTINGS.maxHeight) {
+          height = SETTINGS.maxHeight;
+          width = height * aspect;
+        }
+      } else {
+        height = SETTINGS.maxHeight;
+        width = height * aspect;
+        if (width > SETTINGS.maxWidth) {
+          width = SETTINGS.maxWidth;
+          height = width / aspect;
+        }
+      }
+      return {
+        width: clamp(width, 1.45, SETTINGS.maxWidth),
+        height: clamp(height, 1.45, SETTINGS.maxHeight)
+      };
+    }
+
+    function createTargetPositions(geometry, width, height) {
+      const position = geometry.attributes.position;
+      const original = new Float32Array(position.array.length);
+      const target = new Float32Array(position.array.length);
+      original.set(position.array);
+
+      const halfW = width / 2;
+      const halfH = height / 2;
+      const radiusBase = SETTINGS.sphereRadius;
+
+      for (let i = 0; i < position.count; i += 1) {
+        const ix = i * 3;
+        const x = position.array[ix];
+        const y = position.array[ix + 1];
+        const nx = x / halfW;
+        const ny = y / halfH;
+        const dist = Math.sqrt(nx * nx + ny * ny);
+        const safeDist = Math.max(dist, 0.0001);
+        const clampedDist = clamp(dist, 0, 1.32);
+
+        const angle = clamp(clampedDist, 0, 1) * Math.PI * 0.72;
+        const dirX = (nx / safeDist) * Math.sin(angle);
+        const dirY = (ny / safeDist) * Math.sin(angle);
+        const dirZ = Math.cos(angle);
+
+        const wrinkleA = (seededNoise(i + 1) - 0.5) * 0.26;
+        const wrinkleB = Math.sin(nx * 12.0 + seededNoise(i + 2) * 5.8) * 0.055;
+        const wrinkleC = Math.cos(ny * 13.5 + seededNoise(i + 3) * 5.1) * 0.055;
+        const edgePull = Math.pow(clamp(dist, 0, 1.6), 1.25) * 0.20;
+        const radius = radiusBase + wrinkleA + wrinkleB + wrinkleC - edgePull;
+
+        const foldX = Math.sin(ny * 7.5 + seededNoise(i + 4) * 2.0) * 0.10;
+        const foldY = Math.cos(nx * 7.0 + seededNoise(i + 5) * 2.0) * 0.10;
+        const twist = Math.sin((nx + ny) * 4.6) * 0.15;
+
+        target[ix] = dirX * radius + foldX + twist * ny;
+        target[ix + 1] = dirY * radius + foldY - twist * nx;
+        target[ix + 2] = dirZ * radius - 0.32 + (seededNoise(i + 6) - 0.5) * 0.22;
+      }
+
+      return { original, target };
+    }
+
+    function disposeMesh() {
+      if (state.mesh) {
+        state.scene.remove(state.mesh);
+        if (state.mesh.geometry) state.mesh.geometry.dispose();
+        state.mesh = null;
+      }
+    }
+
+    function buildMesh(width, height) {
+      disposeMesh();
+
+      const geometry = new THREE.PlaneGeometry(width, height, SETTINGS.segmentsX, SETTINGS.segmentsY);
+      const targetData = createTargetPositions(geometry, width, height);
+      state.originalPositions = targetData.original;
+      state.targetPositions = targetData.target;
+
+      state.material = state.material || new THREE.MeshStandardMaterial({
+        map: state.activeTexture || state.defaultTexture,
+        roughness: 0.72,
+        metalness: 0.0,
+        side: THREE.DoubleSide,
+        color: 0xffffff
+      });
+      state.material.map = state.activeTexture || state.defaultTexture;
+      state.material.needsUpdate = true;
+
+      state.mesh = new THREE.Mesh(geometry, state.material);
+      state.mesh.rotation.x = state.drag.pitch;
+      state.mesh.rotation.y = state.drag.yaw;
+      state.mesh.position.set(0, 0, 0);
+      state.scene.add(state.mesh);
+      state.meshSize = { width, height };
+
+      els.vertexCountLabel.textContent = `${geometry.attributes.position.count}`;
+      updateGeometryProgress(true);
+      if (state.viewMode && state.viewMode.large) {
+        state.mesh.scale.setScalar(SETTINGS.largeScale);
+      }
+    }
+
+    function updateGeometryProgress(force = false) {
+      if (!state.mesh || !state.originalPositions || !state.targetPositions) return;
+
+      const diff = Math.abs(state.currentProgress - state.targetProgress);
+      if (!force && diff < 0.0004) return;
+
+      state.currentProgress = force
+        ? state.targetProgress
+        : lerp(state.currentProgress, state.targetProgress, SETTINGS.easing);
+
+      const eased = easeInOut(state.currentProgress);
+      const position = state.mesh.geometry.attributes.position;
+      const arr = position.array;
+
+      for (let i = 0; i < arr.length; i += 3) {
+        arr[i] = lerp(state.originalPositions[i], state.targetPositions[i], eased);
+        arr[i + 1] = lerp(state.originalPositions[i + 1], state.targetPositions[i + 1], eased);
+        arr[i + 2] = lerp(state.originalPositions[i + 2], state.targetPositions[i + 2], eased);
+      }
+
+      position.needsUpdate = true;
+      state.mesh.geometry.computeVertexNormals();
+
+      updateUiState();
+    }
+
+    function updateUiState() {
+      const value = Math.round(state.targetProgress * 100);
+      els.progressReadout.textContent = `${value}%`;
+      els.crumpleRange.value = `${value}`;
+
+      if (value < 18) {
+        els.sceneStateTitle.textContent = "Imagen plana";
+        els.sceneStateDesc.textContent = "Mano abierta mantiene la imagen extendida como un plano 3D.";
+      } else if (value < 72) {
+        els.sceneStateTitle.textContent = "Arrugando imagen";
+        els.sceneStateDesc.textContent = "Transición suave hacia la bola. Gesto parcial o control manual del slider.";
+      } else {
+        els.sceneStateTitle.textContent = "Bola visual compacta";
+        els.sceneStateDesc.textContent = "Puño cerrado mantiene la bola. Mueve la mano para rotarla con control gestual.";
+      }
+    }
+
+    function setProgress(value) {
+      const normalized = clamp(Number(value) / 100, 0, 1);
+      state.targetProgress = normalized;
+      updateUiState();
+    }
+
+    function fitCameraToMesh() {
+      if (!state.camera) return;
+      state.camera.position.set(0, 0, state.viewMode && state.viewMode.large ? SETTINGS.cameraZ - 0.7 : SETTINGS.cameraZ);
+      state.camera.lookAt(0, 0, 0);
+      state.drag.yaw = -0.18;
+      state.drag.pitch = 0.08;
+      state.drag.velocityX = 0;
+      state.drag.velocityY = 0;
+      if (state.mesh) {
+        state.mesh.rotation.set(state.drag.pitch, state.drag.yaw, 0);
+        state.mesh.position.set(0, 0, 0);
+      }
+    }
+
+    function initThree() {
+      if (!hasWebGLSupport()) {
+        throw new Error("WEBGL_NOT_AVAILABLE");
+      }
+
+      state.scene = new THREE.Scene();
+      state.scene.background = new THREE.Color(0x050505);
+      state.scene.fog = new THREE.Fog(0x050505, 5.5, 12);
+
+      state.camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+      state.camera.position.set(0, 0, state.viewMode && state.viewMode.large ? SETTINGS.cameraZ - 0.7 : SETTINGS.cameraZ);
+
+      state.renderer = new THREE.WebGLRenderer({
+        canvas: els.canvas,
+        antialias: true,
+        alpha: false,
+        preserveDrawingBuffer: false
+      });
+      state.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, SETTINGS.maxPixelRatio));
+      state.renderer.outputColorSpace = THREE.SRGBColorSpace;
+      state.renderer.shadowMap.enabled = true;
+      state.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      state.renderer.domElement.addEventListener("webglcontextlost", handleContextLost, false);
+      state.renderer.domElement.addEventListener("webglcontextrestored", handleContextRestored, false);
+
+      const ambient = new THREE.AmbientLight(0xffffff, 0.72);
+      state.scene.add(ambient);
+
+      const key = new THREE.DirectionalLight(0xffffff, 2.2);
+      key.position.set(3.5, 5, 4.6);
+      key.castShadow = true;
+      state.scene.add(key);
+
+      const rim = new THREE.PointLight(0x00ffcc, 2.8, 8);
+      rim.position.set(-3.3, 1.4, 3.2);
+      state.scene.add(rim);
+
+      const back = new THREE.PointLight(0xd8ff3e, 1.2, 8);
+      back.position.set(3.2, -2.2, -1.6);
+      state.scene.add(back);
+
+      const floorGeometry = new THREE.CircleGeometry(3.6, 96);
+      const floorMaterial = new THREE.MeshBasicMaterial({
+        color: 0x00ffcc,
+        transparent: true,
+        opacity: 0.055,
+        side: THREE.DoubleSide
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.position.set(0, -1.9, -0.2);
+      floor.rotation.x = -Math.PI / 2;
+      state.scene.add(floor);
+
+      state.defaultTexture = createDefaultTexture();
+      state.activeTexture = state.defaultTexture;
+      state.activeTextureIsDefault = true;
+      state.material = new THREE.MeshStandardMaterial({
+        map: state.defaultTexture,
+        roughness: 0.72,
+        metalness: 0,
+        side: THREE.DoubleSide
+      });
+
+      buildMesh(5.0, 3.1);
+      resizeRenderer();
+      animate();
+      els.renderStatusText.textContent = "Three.js activo";
+    }
+
+    function resizeRenderer() {
+      if (!state.renderer || !state.camera) return;
+      const rect = els.stagePanel.getBoundingClientRect();
+      const width = Math.max(320, Math.floor(rect.width));
+      const height = Math.max(320, Math.floor(rect.height));
+      state.renderer.setSize(width, height, false);
+      state.camera.aspect = width / height;
+      state.camera.updateProjectionMatrix();
+    }
+
+    function animate(now = performance.now()) {
+      requestAnimationFrame(animate);
+      const delta = Math.min(0.05, (now - state.lastFrame) / 1000);
+      state.lastFrame = now;
+      if (state.contextLost) return;
+
+      updateGeometryProgress(false);
+
+      if (state.mesh) {
+        if (state.autoRotate && !state.drag.active && !state.cameraActive) {
+          const autoSpeed = 0.16 + state.currentProgress * 0.12;
+          state.drag.yaw += delta * autoSpeed;
+        }
+
+        if (state.cameraActive && state.handCam.anchorPalm) {
+          state.drag.yaw = lerp(state.drag.yaw, state.handCam.targetYaw, state.handCam.smoothing);
+          state.drag.pitch = lerp(state.drag.pitch, state.handCam.targetPitch, state.handCam.smoothing);
+          state.drag.velocityX = 0;
+          state.drag.velocityY = 0;
+        } else {
+          state.drag.yaw += state.drag.velocityX * delta;
+          state.drag.pitch += state.drag.velocityY * delta;
+          state.drag.velocityX *= 0.90;
+          state.drag.velocityY *= 0.90;
+        }
+        state.drag.pitch = clamp(state.drag.pitch, -0.78, 0.78);
+
+        state.mesh.rotation.y = state.drag.yaw;
+        state.mesh.rotation.x = state.drag.pitch;
+        state.mesh.rotation.z = Math.sin(now * 0.00065) * 0.025 * state.currentProgress;
+
+        if (state.throwMotion.active) {
+          state.throwMotion.offsetX += state.throwMotion.velocityX * delta;
+          state.throwMotion.velocityX *= 0.92;
+          state.throwMotion.offsetX = lerp(state.throwMotion.offsetX, 0, delta * 1.6);
+          state.throwMotion.velocityX = clamp(state.throwMotion.velocityX, -2.6, 2.6);
+          const offsetLimit = state.viewMode.large ? 1.6 : 2.2;
+          state.throwMotion.offsetX = clamp(state.throwMotion.offsetX, -offsetLimit, offsetLimit);
+          if (Math.abs(state.throwMotion.offsetX) < 0.004 && Math.abs(state.throwMotion.velocityX) < 0.02) {
+            state.throwMotion.active = false;
+            state.throwMotion.offsetX = 0;
+            state.throwMotion.velocityX = 0;
+            state.throwMotion.direction = 0;
+            state.mesh.position.x = 0;
+          } else {
+            state.mesh.position.x = state.throwMotion.offsetX;
+          }
+        } else {
+          state.mesh.position.x = 0;
+        }
+      }
+
+      state.fps.frames += 1;
+      if (now - state.fps.last > 600) {
+        state.fps.value = Math.round((state.fps.frames * 1000) / (now - state.fps.last));
+        els.fpsText.textContent = `FPS: ${state.fps.value}`;
+        state.fps.frames = 0;
+        state.fps.last = now;
+      }
+
+      state.renderer.render(state.scene, state.camera);
+    }
+
+    async function loadImageFile(file) {
+      if (!file || state.isProcessingImage) return;
+      if (!file.type.startsWith("image/")) {
+        showToast("Sube un archivo de imagen válido.");
+        return;
+      }
+      if (file.size > 40 * 1024 * 1024) {
+        showToast("Imagen demasiado pesada para esta v1.3. Prueba con menos de 40 MB.");
+        return;
+      }
+
+      setProcessingState(true, "Procesando imagen...");
+      try {
+        const optimized = await createOptimizedImageCanvas(file, SETTINGS.maxTextureSize);
+        const texture = new THREE.CanvasTexture(optimized.canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = state.renderer?.capabilities?.getMaxAnisotropy?.() || 8;
+        texture.needsUpdate = true;
+
+        if (state.activeTexture && !state.activeTextureIsDefault) {
+          state.activeTexture.dispose();
+        }
+
+        state.activeTexture = texture;
+        state.activeTextureIsDefault = false;
+        state.material.map = texture;
+        state.material.needsUpdate = true;
+
+        const aspect = optimized.width / optimized.height;
+        const size = calculateMeshSizeFromAspect(aspect);
+        buildMesh(size.width, size.height);
+        setProgress(Number(els.crumpleRange.value));
+
+        const safeName = file.name.length > 22 ? `${file.name.slice(0, 19)}...` : file.name;
+        els.textureStatusLabel.textContent = optimized.wasResized ? `${safeName} · optimizada` : safeName;
+        showToast(optimized.wasResized ? "Imagen optimizada y aplicada como textura." : "Imagen aplicada como textura deformable.");
+      } catch (error) {
+        console.error(error);
+        showToast("No se pudo cargar la imagen. Prueba con otro archivo.");
+        els.textureStatusLabel.textContent = "Error de imagen";
+      } finally {
+        setProcessingState(false);
+      }
+    }
+
+    function resetDemo() {
+      if (state.activeTexture && !state.activeTextureIsDefault) {
+        state.activeTexture.dispose();
+      }
+      state.activeTexture = state.defaultTexture;
+      state.activeTextureIsDefault = true;
+      state.material.map = state.defaultTexture;
+      state.material.needsUpdate = true;
+      els.textureStatusLabel.textContent = "Demo interna";
+      state.targetProgress = 0;
+      state.currentProgress = 0;
+      state.throwMotion.active = false;
+      state.throwMotion.offsetX = 0;
+      state.throwMotion.velocityX = 0;
+      state.throwMotion.direction = 0;
+      resetSwipeHistory();
+      buildMesh(5.0, 3.1);
+      fitCameraToMesh();
+      updateUiState();
+      showToast("Demo reseteada.");
+    }
+
+    function setupPointerControls() {
+      els.canvas.addEventListener("pointerdown", (event) => {
+        if (state.cameraActive) {
+          state.drag.active = false;
+          state.drag.velocityX = 0;
+          state.drag.velocityY = 0;
+          return;
+        }
+        state.drag.active = true;
+        state.drag.lastX = event.clientX;
+        state.drag.lastY = event.clientY;
+        state.drag.velocityX = 0;
+        state.drag.velocityY = 0;
+        if (els.canvas.setPointerCapture) {
+          try { els.canvas.setPointerCapture(event.pointerId); } catch (_) {}
+        }
+        event.preventDefault();
+      });
+
+      els.canvas.addEventListener("pointermove", (event) => {
+        if (!state.drag.active || state.cameraActive) return;
+        const dx = event.clientX - state.drag.lastX;
+        const dy = event.clientY - state.drag.lastY;
+        state.drag.lastX = event.clientX;
+        state.drag.lastY = event.clientY;
+
+        state.drag.yaw += dx * 0.008;
+        state.drag.pitch += dy * 0.006;
+        state.drag.velocityX = dx * 0.018;
+        state.drag.velocityY = dy * 0.012;
+      });
+
+      function endDrag(event) {
+        state.drag.active = false;
+        if (event && els.canvas.releasePointerCapture) {
+          try { els.canvas.releasePointerCapture(event.pointerId); } catch (_) {}
+        }
+      }
+
+      els.canvas.addEventListener("pointerup", endDrag);
+      els.canvas.addEventListener("pointercancel", endDrag);
+      els.canvas.addEventListener("pointerleave", () => { state.drag.active = false; });
+    }
+
+    function getSupportedMimeType() {
+      if (typeof MediaRecorder === "undefined") return "";
+      const candidates = [
+        "video/webm;codecs=vp9",
+        "video/webm;codecs=vp8",
+        "video/webm"
+      ];
+      for (const type of candidates) {
+        try {
+          if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) return type;
+        } catch (_) {}
+      }
+      return "";
+    }
+
+    function formatRecordingTime(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const m = Math.floor(total / 60).toString().padStart(2, "0");
+      const s = (total % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function cleanupRecordingUrl() {
+      if (state.recording.downloadUrl) {
+        URL.revokeObjectURL(state.recording.downloadUrl);
+        state.recording.downloadUrl = null;
+      }
+    }
+
+    function updateRecordingUi() {
+      const rec = state.recording;
+      els.recIndicator.classList.toggle("is-hidden", !rec.active);
+      els.recordBtn.disabled = rec.active;
+      els.recordBtn.textContent = rec.active ? "Grabando..." : "Grabar clip";
+      els.stopRecordBtn.disabled = !rec.active;
+      els.fsRecordBtn.disabled = rec.active;
+      els.fsRecordBtn.textContent = rec.active ? "Grabando..." : "Grabar clip";
+      els.fsStopRecordBtn.disabled = !rec.active;
+      let timerText;
+      if (rec.active) {
+        const elapsed = performance.now() - rec.startedAt;
+        timerText = `${formatRecordingTime(elapsed)} / ${formatRecordingTime(rec.maxDurationMs)}`;
+      } else {
+        timerText = `00:00 / ${formatRecordingTime(rec.maxDurationMs)}`;
+      }
+      els.recTimer.textContent = timerText;
+      els.fsRecTimer.textContent = timerText;
+    }
+
+    function startRecording() {
+      const rec = state.recording;
+      if (rec.active) return;
+      const canvas = els.canvas;
+      if (!canvas || typeof canvas.captureStream !== "function" || typeof MediaRecorder === "undefined") {
+        showToast("Grabación no disponible en este navegador.", 3200);
+        return;
+      }
+      const mimeType = getSupportedMimeType();
+      if (!mimeType) {
+        showToast("Grabación no disponible en este navegador.", 3200);
+        return;
+      }
+      try {
+        cleanupRecordingUrl();
+        els.downloadClipBtn.hidden = true;
+        els.downloadClipBtn.removeAttribute("href");
+        els.fsDownloadClipBtn.hidden = true;
+        els.fsDownloadClipBtn.removeAttribute("href");
+        rec.chunks = [];
+        rec.stream = canvas.captureStream(30);
+        rec.recorder = new MediaRecorder(rec.stream, { mimeType });
+        rec.mimeType = mimeType;
+        rec.recorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) rec.chunks.push(event.data);
+        };
+        rec.recorder.onstop = () => {
+          try {
+            const blob = new Blob(rec.chunks, { type: rec.mimeType || "video/webm" });
+            const url = URL.createObjectURL(blob);
+            cleanupRecordingUrl();
+            rec.downloadUrl = url;
+            els.downloadClipBtn.href = url;
+            els.downloadClipBtn.hidden = false;
+            els.fsDownloadClipBtn.href = url;
+            els.fsDownloadClipBtn.hidden = false;
+            showToast(`Clip listo (${(blob.size / (1024 * 1024)).toFixed(2)} MB). Pulsa “Descargar clip”.`, 3200);
+          } catch (error) {
+            console.error(error);
+            showToast("No se pudo generar el clip.", 3200);
+          }
+          if (rec.stream) {
+            rec.stream.getTracks().forEach((t) => { try { t.stop(); } catch (_) {} });
+            rec.stream = null;
+          }
+          if (rec.timerId) {
+            window.clearInterval(rec.timerId);
+            rec.timerId = null;
+          }
+          rec.active = false;
+          rec.recorder = null;
+          els.imageInput.disabled = state.isProcessingImage;
+          if (els.uploadLabel) els.uploadLabel.classList.toggle("is-busy", state.isProcessingImage);
+          updateRecordingUi();
+        };
+        rec.recorder.start(250);
+        rec.active = true;
+        rec.startedAt = performance.now();
+        rec.timerId = window.setInterval(() => {
+          updateRecordingUi();
+          if (performance.now() - rec.startedAt >= rec.maxDurationMs) {
+            stopRecording();
+          }
+        }, 250);
+        els.imageInput.disabled = true;
+        if (els.uploadLabel) els.uploadLabel.classList.add("is-busy");
+        updateRecordingUi();
+        showToast("Grabando clip del canvas (máx. 15 s).", 2400);
+      } catch (error) {
+        console.error(error);
+        showToast("Grabación no disponible en este navegador.", 3200);
+        rec.active = false;
+        rec.recorder = null;
+        if (rec.stream) {
+          rec.stream.getTracks().forEach((t) => { try { t.stop(); } catch (_) {} });
+          rec.stream = null;
+        }
+        updateRecordingUi();
+      }
+    }
+
+    function stopRecording() {
+      const rec = state.recording;
+      if (!rec.active || !rec.recorder) return;
+      try {
+        if (rec.recorder.state !== "inactive") rec.recorder.stop();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function applyViewMode() {
+      if (state.mesh) {
+        const scale = state.viewMode.large ? SETTINGS.largeScale : 1.0;
+        state.mesh.scale.setScalar(scale);
+      }
+      if (state.camera) {
+        const z = state.viewMode.large ? SETTINGS.cameraZ - 0.7 : SETTINGS.cameraZ;
+        state.camera.position.z = z;
+      }
+      const limit = state.viewMode.large ? 1.6 : 2.2;
+      if (Math.abs(state.throwMotion.offsetX) > limit) {
+        state.throwMotion.offsetX = clamp(state.throwMotion.offsetX, -limit, limit);
+      }
+    }
+
+    function toggleLargeView() {
+      state.viewMode.large = !state.viewMode.large;
+      els.largeViewBtn.textContent = `Modo grande: ${state.viewMode.large ? "ON" : "OFF"}`;
+      applyViewMode();
+      showToast(state.viewMode.large ? "Modo grande activado." : "Modo grande desactivado.");
+    }
+
+    function fullscreenSupported() {
+      return Boolean(
+        els.stagePanel.requestFullscreen ||
+        els.stagePanel.webkitRequestFullscreen ||
+        document.documentElement.requestFullscreen
+      );
+    }
+
+    function isFullscreen() {
+      return Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    }
+
+    function updateImmersiveUi() {
+      const immersive = state.viewMode.fullscreen;
+      els.stagePanel.classList.toggle("is-immersive", immersive);
+      els.fullscreenBtn.textContent = immersive ? "Salir vista completa" : "Vista completa";
+      els.fullscreenCloseBtn.classList.toggle("is-hidden", !immersive);
+      els.fullscreenHomeBtn.classList.toggle("is-hidden", !immersive);
+      els.fullscreenRecordingControls.classList.toggle("is-hidden", !immersive);
+    }
+
+    function goHome() {
+      try {
+        if (state.recording && state.recording.active) stopRecording();
+      } catch (_) {}
+      try { cleanupRecordingUrl(); } catch (_) {}
+      try {
+        if (state.cameraActive || state.cameraStarting) stopCamera();
+      } catch (_) {}
+      try {
+        if (state.viewMode.fullscreen) exitImmersive();
+      } catch (_) {}
+      window.location.href = "../../index.html";
+    }
+
+    function enterImmersive() {
+      state.viewMode.fullscreen = true;
+      updateImmersiveUi();
+      resizeRenderer();
+      if (fullscreenSupported() && !isFullscreen()) {
+        try {
+          const req = els.stagePanel.requestFullscreen || els.stagePanel.webkitRequestFullscreen;
+          if (req) {
+            const result = req.call(els.stagePanel);
+            if (result && typeof result.catch === "function") result.catch(() => {});
+          }
+        } catch (_) {}
+      }
+    }
+
+    function exitImmersive() {
+      state.viewMode.fullscreen = false;
+      updateImmersiveUi();
+      if (isFullscreen()) {
+        try {
+          const exit = document.exitFullscreen || document.webkitExitFullscreen;
+          if (exit) {
+            const result = exit.call(document);
+            if (result && typeof result.catch === "function") result.catch(() => {});
+          }
+        } catch (_) {}
+      }
+      resizeRenderer();
+    }
+
+    function toggleFullscreen() {
+      if (state.viewMode.fullscreen) {
+        exitImmersive();
+      } else {
+        enterImmersive();
+      }
+    }
+
+    function onFullscreenChange() {
+      if (!isFullscreen() && state.viewMode.fullscreen) {
+        state.viewMode.fullscreen = false;
+        updateImmersiveUi();
+      } else if (isFullscreen() && !state.viewMode.fullscreen) {
+        state.viewMode.fullscreen = true;
+        updateImmersiveUi();
+      }
+      resizeRenderer();
+    }
+
+    function setupEvents() {
+      els.imageInput.addEventListener("change", (event) => {
+        const file = event.target.files && event.target.files[0];
+        loadImageFile(file);
+        event.target.value = "";
+      });
+
+      els.crumpleRange.addEventListener("input", (event) => {
+        setProgress(event.target.value);
+      });
+
+      els.flatBtn.addEventListener("click", () => {
+        setProgress(0);
+        showToast("Estado plano activado.");
+      });
+
+      els.ballBtn.addEventListener("click", () => {
+        setProgress(100);
+        showToast("Bola visual activada.");
+      });
+
+      els.autoRotateBtn.addEventListener("click", () => {
+        state.autoRotate = !state.autoRotate;
+        els.autoRotateBtn.textContent = `Auto rotación: ${state.autoRotate ? "ON" : "OFF"}`;
+        showToast(state.autoRotate ? "Auto rotación activada." : "Auto rotación desactivada.");
+      });
+
+      els.resetBtn.addEventListener("click", resetDemo);
+      els.toggleCameraBtn.addEventListener("click", () => {
+        if (state.cameraActive || state.cameraStarting) stopCamera();
+        else startCamera();
+      });
+      els.fitViewBtn.addEventListener("click", () => {
+        fitCameraToMesh();
+        showToast("Vista centrada.");
+      });
+
+      els.largeViewBtn.addEventListener("click", toggleLargeView);
+      els.fullscreenBtn.addEventListener("click", toggleFullscreen);
+      els.fullscreenCloseBtn.addEventListener("click", exitImmersive);
+      els.fullscreenHomeBtn.addEventListener("click", goHome);
+      document.addEventListener("fullscreenchange", onFullscreenChange);
+      document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+
+      els.recordBtn.addEventListener("click", startRecording);
+      els.stopRecordBtn.addEventListener("click", stopRecording);
+      els.fsRecordBtn.addEventListener("click", startRecording);
+      els.fsStopRecordBtn.addEventListener("click", stopRecording);
+
+      window.addEventListener("resize", resizeRenderer);
+      state.resizeObserver = new ResizeObserver(resizeRenderer);
+      state.resizeObserver.observe(els.stagePanel);
+
+      setupPointerControls();
+
+      window.addEventListener("beforeunload", () => {
+        if (state.cameraStream) state.cameraStream.getTracks().forEach((track) => track.stop());
+        if (state.hands && typeof state.hands.close === "function") state.hands.close();
+        if (state.resizeObserver) state.resizeObserver.disconnect();
+        if (state.activeTexture && !state.activeTextureIsDefault) state.activeTexture.dispose();
+        if (state.defaultTexture) state.defaultTexture.dispose();
+        if (state.mesh?.geometry) state.mesh.geometry.dispose();
+        if (state.material) state.material.dispose();
+        if (state.renderer) state.renderer.dispose();
+      });
+    }
+
+    function boot() {
+      try {
+        initThree();
+        setupEvents();
+        updateUiState();
+        updateRecordingUi();
+        showToast("Gesture Lab v1.3 iniciado. Vista completa con botón Home y mano abierta más fiable.", 3600);
+      } catch (error) {
+        console.error(error);
+        els.renderStatusText.textContent = "Error WebGL";
+        setWebglBlocked("WebGL no está disponible en este navegador. Prueba con Chrome o Edge actualizado.");
+        showToast("No se pudo iniciar WebGL/Three.js en este navegador.", 4200);
+      }
+    }
+
+    boot();
+  </script>
+</body>
+</html>
