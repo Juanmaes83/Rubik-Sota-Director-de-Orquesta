@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota · Portfolio experiencial interactivo con control gestual, galería, carga de contenidos propios y estadísticas en tiempo real." />
+  <title>Rubik Sota · Portfolio Experiencial V4</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --bg: #030303;
+      --bg-soft: #090909;
+      --fg: #ffffff;
+      --muted: rgba(255,255,255,0.66);
+      --muted-2: rgba(255,255,255,0.42);
+      --line: rgba(255,255,255,0.16);
+      --line-strong: rgba(255,255,255,0.32);
+      --panel: rgba(12,12,12,0.84);
+      --glass: rgba(255,255,255,0.06);
+      --accent: #00ffcc;
+      --accent-2: #d8ff3e;
+      --danger: #ff3366;
+      --gold: #e8d8a8;
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+      --shadow: 0 28px 80px rgba(0,0,0,0.62);
+      --video-brightness: 1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+    body.is-light {
+      --bg: #f4f1ea;
+      --bg-soft: #fffaf0;
+      --fg: #0a0a0a;
+      --muted: rgba(0,0,0,0.62);
+      --muted-2: rgba(0,0,0,0.42);
+      --line: rgba(0,0,0,0.14);
+      --line-strong: rgba(0,0,0,0.28);
+      --panel: rgba(255,255,255,0.86);
+      --glass: rgba(0,0,0,0.05);
+      --shadow: 0 28px 80px rgba(0,0,0,0.18);
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, a { -webkit-tap-highlight-color: transparent; font: inherit; }
+    button { cursor: pointer; }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: 1rem;
+      z-index: 9999;
+      transform: translateY(-160%);
+      background: var(--fg);
+      color: var(--bg);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-pill);
+      transition: transform 0.2s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .site-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      position: relative;
+      background:
+        radial-gradient(circle at 16% 24%, rgba(0,255,204,0.13), transparent 28%),
+        radial-gradient(circle at 82% 12%, rgba(232,216,168,0.12), transparent 28%),
+        radial-gradient(circle at 75% 88%, rgba(255,51,102,0.10), transparent 26%),
+        var(--bg);
+    }
+    .site-shell::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at 50% 50%, black, transparent 78%);
+      opacity: 0.45;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+      padding: 1rem clamp(1rem, 3vw, 3rem);
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,0.48);
+      backdrop-filter: blur(22px);
+    }
+    body.is-light .topbar { background: rgba(255,255,255,0.62); }
+    .brand-lockup { display: flex; align-items: center; gap: 0.75rem; min-width: 180px; }
+    .brand-mark {
+      width: 36px; height: 36px; border-radius: 12px;
+      display: grid; place-items: center;
+      border: 1px solid var(--line-strong);
+      background: linear-gradient(135deg, var(--glass), transparent);
+      box-shadow: inset 0 0 24px rgba(0,255,204,0.08);
+      font-weight: 900;
+    }
+    .brand-name { font-weight: 800; letter-spacing: -0.055em; line-height: 1; }
+    .brand-sub { display: block; margin-top: 0.18rem; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .nav-links { display: flex; gap: clamp(0.85rem, 2vw, 2rem); color: var(--muted); font-size: 0.92rem; }
+    .nav-links a:hover { color: var(--fg); }
+    .top-actions { display: flex; align-items: center; gap: 0.65rem; }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      background: var(--glass);
+      color: var(--fg);
+      padding: 0.62rem 0.95rem;
+      font-weight: 700;
+      font-size: 0.84rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255,255,255,0.1); }
+    .btn:disabled { opacity: 0.48; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .btn-primary:hover { background: rgba(255,255,255,0.88); color: #000; }
+    body.is-light .btn-primary:hover { background: rgba(0,0,0,0.86); color: #fff; }
+    .btn-accent { border-color: rgba(0,255,204,0.42); box-shadow: inset 0 0 24px rgba(0,255,204,0.06); }
+    .btn-danger { border-color: rgba(255,51,102,0.44); color: #ff8eaa; }
+    .btn-ghost { background: transparent; }
+    .file-input { display: none; }
+
+    .hero {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(320px, 0.92fr) minmax(420px, 1.32fr);
+      gap: clamp(1.2rem, 3vw, 2.4rem);
+      padding: clamp(1rem, 3vw, 3rem);
+      min-height: calc(100vh - 82px);
+    }
+    .copy-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2rem;
+      min-height: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.068), rgba(255,255,255,0.022));
+      backdrop-filter: blur(18px);
+      padding: clamp(1.35rem, 3vw, 2rem);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .copy-panel::after {
+      content: "";
+      position: absolute; inset: auto -20% -25% 8%; height: 36%;
+      background: radial-gradient(circle, rgba(0,255,204,0.13), transparent 65%);
+      pointer-events: none;
+    }
+    .eyebrow { display: flex; align-items: center; gap: 0.55rem; color: var(--muted); font-size: 0.86rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 18px var(--accent); }
+    h1 {
+      margin-top: 1.25rem;
+      font-size: clamp(2.65rem, 6vw, 6.7rem);
+      line-height: 0.94;
+      letter-spacing: -0.085em;
+      font-weight: 650;
+    }
+    .serif { font-family: "Playfair Display", serif; font-style: italic; font-weight: 400; letter-spacing: -0.06em; }
+    .lead {
+      max-width: 620px;
+      margin-top: 1.2rem;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.35vw, 1.18rem);
+      line-height: 1.58;
+    }
+    .microcopy-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.8rem; margin-top: 1.35rem; }
+    .micro-card { border: 1px solid var(--line); border-radius: 18px; padding: 0.95rem; background: rgba(0,0,0,0.18); }
+    body.is-light .micro-card { background: rgba(255,255,255,0.34); }
+    .micro-card strong { display: block; font-size: 0.88rem; margin-bottom: 0.25rem; }
+    .micro-card span { color: var(--muted); font-size: 0.78rem; line-height: 1.35; display: block; }
+    .copy-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; position: relative; z-index: 2; }
+
+    .stage-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      min-height: 620px;
+      background: #050505;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      position: relative;
+    }
+    .stage {
+      position: relative;
+      overflow: hidden;
+      min-height: 470px;
+      background:
+        linear-gradient(140deg, rgba(255,255,255,0.06), transparent 42%),
+        #050505;
+      isolation: isolate;
+    }
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.4), transparent 38%),
+        linear-gradient(0deg, rgba(0,0,0,0.55), transparent 38%);
+    }
+    .stage.is-impact::after {
+      content: "";
+      position: absolute; inset: -2px; z-index: 8; pointer-events: none;
+      border: 1px solid rgba(0,255,204,0.8);
+      box-shadow: inset 0 0 55px rgba(0,255,204,0.17), 0 0 55px rgba(0,255,204,0.18);
+      animation: impactPulse 520ms ease-out forwards;
+    }
+    @keyframes impactPulse { from { opacity: 0.95; } to { opacity: 0; } }
+    #mediaVideo, #mediaImage {
+      width: 100%; height: 100%; min-height: 470px;
+      object-fit: cover;
+      display: block;
+      filter: brightness(var(--video-brightness)) contrast(1.05) saturate(0.98);
+      transform: scale(1.001);
+    }
+    #mediaImage { display: none; }
+    .media-poster {
+      position: absolute; inset: 0; z-index: 1;
+      display: grid; place-items: center; text-align: center;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(0,255,204,0.12), transparent 38%),
+        linear-gradient(140deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      color: var(--fg);
+      padding: 2rem;
+    }
+    .media-poster.is-hidden { display: none; }
+    .poster-title { font-size: clamp(1.8rem, 4vw, 4rem); line-height: 0.95; letter-spacing: -0.08em; font-weight: 800; }
+    .poster-sub { color: var(--muted); margin-top: 0.7rem; max-width: 560px; line-height: 1.5; }
+    .fx-canvas { position: absolute; inset: 0; z-index: 9; pointer-events: none; width: 100%; height: 100%; }
+    .stage-overlay {
+      position: absolute; z-index: 12; inset: auto 1rem 1rem 1rem;
+      display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; pointer-events: none;
+    }
+    .project-caption { max-width: 62%; pointer-events: auto; }
+    .project-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.13em; font-size: 0.72rem; font-weight: 800; }
+    .project-title { margin-top: 0.35rem; font-weight: 800; font-size: clamp(1.25rem, 2vw, 2.05rem); letter-spacing: -0.045em; }
+    .project-desc { margin-top: 0.28rem; color: rgba(255,255,255,0.70); font-size: 0.9rem; line-height: 1.4; }
+    .status-stack { display: grid; gap: 0.5rem; justify-items: end; pointer-events: auto; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.52);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-pill);
+      padding: 0.52rem 0.72rem;
+      color: rgba(255,255,255,0.84);
+      font-size: 0.76rem;
+      white-space: nowrap;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 12px var(--danger); }
+    .status-dot.is-on { background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+    .video-fallback {
+      position: absolute; inset: 0; z-index: 30;
+      display: none; place-items: center; text-align: center;
+      padding: 2rem;
+      background: rgba(0,0,0,0.78);
+      backdrop-filter: blur(18px);
+    }
+    .video-fallback.is-visible { display: grid; }
+    .fallback-box { max-width: 480px; border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; padding: 1.25rem; background: rgba(255,255,255,0.06); }
+    .fallback-box h2 { font-size: 1.35rem; letter-spacing: -0.04em; margin-bottom: 0.55rem; }
+    .fallback-box p { color: var(--muted); line-height: 1.5; margin-bottom: 1rem; }
+
+    .experience-toolbar {
+      border-top: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.76);
+      backdrop-filter: blur(20px);
+      padding: 0.9rem;
+      display: grid;
+      grid-template-columns: 1.1fr auto;
+      gap: 0.9rem;
+      align-items: center;
+    }
+    body.is-light .experience-toolbar { background: rgba(255,255,255,0.76); }
+    .toolbar-actions { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .mini-controls { display: flex; align-items: center; gap: 0.6rem; color: var(--muted); font-size: 0.74rem; }
+    .range-control { display: grid; gap: 0.24rem; min-width: 120px; }
+    input[type="range"] { accent-color: var(--accent); width: 100%; }
+
+    .gallery-section {
+      position: relative;
+      z-index: 3;
+      padding: 0 clamp(1rem, 3vw, 3rem) clamp(1rem, 3vw, 3rem);
+      margin-top: -1.3rem;
+    }
+    .gallery-head { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
+    .gallery-head h2 { font-size: clamp(1.35rem, 2.3vw, 2.4rem); letter-spacing: -0.06em; }
+    .gallery-head p { color: var(--muted); max-width: 620px; line-height: 1.45; font-size: 0.92rem; }
+    .project-gallery {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+    .project-card {
+      position: relative;
+      min-height: 168px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+      background: #111;
+      text-align: left;
+      color: #fff;
+      isolation: isolate;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .project-card:hover, .project-card.is-active { transform: translateY(-2px); border-color: rgba(0,255,204,0.6); }
+    .project-card.is-active { box-shadow: inset 0 0 0 1px rgba(0,255,204,0.42), 0 18px 45px rgba(0,255,204,0.06); }
+    .project-thumb { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.78; filter: saturate(0.92) contrast(1.05); }
+    .project-card::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.82)); }
+    .project-card-content { position: absolute; inset: auto 0 0 0; z-index: 2; padding: 0.85rem; }
+    .project-card-type { font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); font-weight: 900; }
+    .project-card-title { display: block; margin-top: 0.28rem; font-size: 0.94rem; font-weight: 800; letter-spacing: -0.035em; }
+    .project-card-meta { display: block; margin-top: 0.2rem; color: rgba(255,255,255,0.62); font-size: 0.72rem; }
+
+    .stats-dock {
+      position: fixed; z-index: 92;
+      left: clamp(0.75rem, 2vw, 1.25rem); bottom: 1rem;
+      width: min(460px, calc(100vw - 2rem));
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.55rem;
+      pointer-events: none;
+    }
+    .stat-card {
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.62);
+      backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 0.68rem;
+      box-shadow: 0 16px 42px rgba(0,0,0,0.28);
+    }
+    body.is-light .stat-card { background: rgba(255,255,255,0.7); }
+    .stat-value { display: block; font-weight: 900; letter-spacing: -0.055em; font-size: 1.12rem; }
+    .stat-label { display: block; color: var(--muted); font-size: 0.68rem; margin-top: 0.15rem; }
+
+    .gesture-panel {
+      position: fixed; z-index: 110;
+      right: 1rem; bottom: 1rem;
+      width: 330px; height: 258px;
+      min-width: 240px; min-height: 190px;
+      max-width: min(620px, calc(100vw - 1.5rem)); max-height: min(520px, calc(100vh - 1.5rem));
+      border: 1px solid var(--line-strong);
+      border-radius: 22px;
+      background: var(--panel);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .gesture-header {
+      height: 42px; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+      padding: 0 0.75rem;
+      background: rgba(0,0,0,0.52);
+      border-bottom: 1px solid var(--line);
+      cursor: grab; touch-action: none;
+    }
+    body.is-light .gesture-header { background: rgba(255,255,255,0.42); }
+    .gesture-header:active { cursor: grabbing; }
+    .gesture-title { min-width: 0; display: flex; align-items: center; gap: 0.45rem; font-size: 0.76rem; color: var(--muted); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gesture-actions { display: flex; gap: 0.42rem; align-items: center; flex-shrink: 0; }
+    .panel-btn {
+      border: 1px solid var(--line);
+      background: var(--glass);
+      color: var(--fg);
+      border-radius: var(--radius-pill);
+      min-width: 28px; height: 28px;
+      padding: 0 0.56rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+    .panel-btn:hover { border-color: var(--line-strong); }
+    .camera-wrap { position: relative; width: 100%; height: calc(100% - 42px); background: #000; overflow: hidden; }
+    #handCanvas { width: 100%; height: 100%; display: block; background: #000; }
+    .camera-placeholder {
+      position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+      padding: 1rem;
+      background: radial-gradient(circle at 50% 40%, rgba(0,255,204,0.12), transparent 40%), #050505;
+      color: #fff;
+    }
+    .camera-placeholder.is-hidden { display: none; }
+    .camera-placeholder-inner { max-width: 260px; }
+    .camera-placeholder h3 { font-size: 1rem; letter-spacing: -0.04em; margin-bottom: 0.4rem; }
+    .camera-placeholder p { color: rgba(255,255,255,0.66); font-size: 0.78rem; line-height: 1.45; margin-bottom: 0.85rem; }
+    .gesture-label {
+      position: absolute; left: 0.65rem; bottom: 0.65rem; z-index: 4;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.62);
+      color: rgba(255,255,255,0.88);
+      border-radius: var(--radius-pill);
+      padding: 0.4rem 0.58rem;
+      font-size: 0.7rem;
+      pointer-events: none;
+    }
+    .resize-handle {
+      position: absolute; right: 0; bottom: 0;
+      width: 38px; height: 38px;
+      z-index: 6; cursor: nwse-resize; touch-action: none;
+    }
+    .resize-handle::after {
+      content: ""; position: absolute; right: 9px; bottom: 9px; width: 13px; height: 13px;
+      border-right: 2px solid rgba(255,255,255,0.48); border-bottom: 2px solid rgba(255,255,255,0.48);
+    }
+    .reopen-gesture-btn {
+      position: fixed; right: 1rem; bottom: 1rem; z-index: 111;
+      display: none;
+      border: 1px solid rgba(0,255,204,0.42);
+      background: rgba(0,0,0,0.78);
+      color: #fff;
+      backdrop-filter: blur(18px);
+      border-radius: var(--radius-pill);
+      padding: 0.78rem 1rem;
+      font-weight: 900;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.38);
+    }
+    .reopen-gesture-btn.is-visible { display: inline-flex; }
+
+    .tutorial-modal {
+      position: fixed; inset: 0; z-index: 200;
+      display: none; place-items: center;
+      padding: 1rem;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(18px);
+    }
+    .tutorial-modal.is-visible { display: grid; }
+    .tutorial-box {
+      width: min(760px, 100%);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(20,20,20,0.96), rgba(8,8,8,0.96));
+      color: #fff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .tutorial-media {
+      min-height: 220px;
+      display: grid; place-items: center;
+      background:
+        radial-gradient(circle at 36% 45%, rgba(0,255,204,0.2), transparent 26%),
+        radial-gradient(circle at 66% 45%, rgba(255,51,102,0.18), transparent 24%),
+        #060606;
+      position: relative;
+    }
+    .hand-demo {
+      display: flex; align-items: center; gap: 2.3rem; font-size: clamp(3.5rem, 10vw, 6rem);
+      filter: drop-shadow(0 18px 30px rgba(0,0,0,0.45));
+      animation: handFloat 2.4s ease-in-out infinite;
+    }
+    @keyframes handFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .tutorial-content { padding: clamp(1.2rem, 3vw, 2rem); }
+    .tutorial-content h2 { font-size: clamp(2rem, 4vw, 3.6rem); line-height: 0.95; letter-spacing: -0.08em; margin-bottom: 0.8rem; }
+    .tutorial-content p { color: rgba(255,255,255,0.7); line-height: 1.55; max-width: 620px; }
+    .tutorial-steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0.75rem; margin: 1.2rem 0; }
+    .tutorial-step { border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; padding: 0.85rem; background: rgba(255,255,255,0.06); }
+    .tutorial-step strong { display: block; font-size: 0.86rem; margin-bottom: 0.25rem; }
+    .tutorial-step span { color: rgba(255,255,255,0.62); font-size: 0.76rem; line-height: 1.35; display: block; }
+    .tutorial-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+
+    .toast-layer { position: fixed; z-index: 220; right: 1rem; top: 5.4rem; display: grid; gap: 0.6rem; pointer-events: none; }
+    .toast {
+      min-width: min(330px, calc(100vw - 2rem));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(0,0,0,0.78);
+      color: #fff;
+      backdrop-filter: blur(18px);
+      padding: 0.82rem 0.95rem;
+      box-shadow: 0 18px 42px rgba(0,0,0,0.38);
+      animation: toastIn 0.22s ease-out;
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .site-footer {
+      z-index: 2;
+      border-top: 1px solid var(--line);
+      padding: 1rem clamp(1rem, 3vw, 3rem);
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+      color: var(--muted);
+      background: rgba(0,0,0,0.42);
+      backdrop-filter: blur(18px);
+    }
+    body.is-light .site-footer { background: rgba(255,255,255,0.48); }
+    .site-footer strong { color: var(--fg); }
+    .footer-links { display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap; font-size: 0.86rem; }
+    .footer-links a, .footer-links button { color: var(--muted); background: none; border: none; padding: 0; font-size: inherit; }
+    .footer-links a:hover, .footer-links button:hover { color: var(--fg); }
+
+    @media (max-width: 1120px) {
+      .hero { grid-template-columns: 1fr; }
+      .copy-panel { min-height: auto; }
+      .stage-panel { min-height: 560px; }
+      .project-gallery { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 760px) {
+      .topbar { align-items: flex-start; flex-wrap: wrap; }
+      .nav-links { order: 3; width: 100%; overflow-x: auto; padding-bottom: 0.2rem; }
+      .top-actions { margin-left: auto; }
+      .hero { padding: 1rem; min-height: auto; }
+      .copy-panel { border-radius: 24px; }
+      .microcopy-grid, .tutorial-steps { grid-template-columns: 1fr; }
+      .stage-panel { border-radius: 24px; min-height: 520px; }
+      .stage, #mediaVideo, #mediaImage { min-height: 390px; }
+      .experience-toolbar { grid-template-columns: 1fr; }
+      .mini-controls { flex-wrap: wrap; }
+      .project-gallery { grid-template-columns: 1fr; }
+      .stage-overlay { flex-direction: column; align-items: flex-start; }
+      .project-caption { max-width: 100%; }
+      .status-stack { align-items: flex-start; justify-items: start; }
+      .stats-dock { grid-template-columns: repeat(2, minmax(0,1fr)); bottom: 5.3rem; }
+      .gesture-panel { width: calc(100vw - 1.5rem); right: 0.75rem; bottom: 0.75rem; height: 250px; }
+      .reopen-gesture-btn { right: 0.75rem; bottom: 0.75rem; }
+      .toast-layer { top: auto; bottom: 6rem; left: 1rem; right: 1rem; }
+    }
+    @media (max-width: 520px) {
+      .brand-sub { display: none; }
+      .top-actions .btn:not(#themeToggleBtn) { display: none; }
+      .stage, #mediaVideo, #mediaImage { min-height: 340px; }
+      .stats-dock { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#mainExperience">Saltar a la experiencia</a>
+
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand-lockup" href="#mainExperience" aria-label="Rubik Sota inicio">
+        <span class="brand-mark">RS</span>
+        <span>
+          <span class="brand-name">Rubik Sota</span>
+          <span class="brand-sub">Portfolio Experiencial</span>
+        </span>
+      </a>
+
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a href="#mainExperience">Experiencia</a>
+        <a href="#projectGallerySection">Proyectos</a>
+        <a href="#contact">Contacto</a>
+      </nav>
+
+      <div class="top-actions">
+        <button class="btn btn-ghost" id="themeToggleBtn" type="button" aria-label="Cambiar modo visual">☾</button>
+        <label class="btn btn-accent" for="mediaUploadInput">Subir contenido</label>
+        <input class="file-input" id="mediaUploadInput" type="file" accept="video/*,image/*" />
+        <a class="btn btn-primary" href="tel:+34629554870">Llamar</a>
+      </div>
+    </header>
+
+    <main id="mainExperience">
+      <section class="hero" aria-label="Portfolio interactivo Rubik Sota">
+        <article class="copy-panel">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-dot"></span> Web inmersiva · control gestual · portfolio vivo</div>
+            <h1>Tu obra no se mira. <span class="serif">Se activa.</span></h1>
+            <p class="lead">
+              Rubik Sota convierte un portfolio en una experiencia: sube tu reel, cambia de proyecto, controla la reproducción con la mano y presenta tu trabajo con una capa de interacción memorable.
+            </p>
+
+            <div class="microcopy-grid" aria-label="Beneficios principales">
+              <div class="micro-card"><strong>Contenido propio</strong><span>Sube vídeos o imágenes y guárdalos localmente en este navegador.</span></div>
+              <div class="micro-card"><strong>Galería viva</strong><span>Cambia de proyecto como si fuera una instalación interactiva.</span></div>
+              <div class="micro-card"><strong>Gestos reales</strong><span>Palma abierta reproduce. Puño cerrado pausa. La cámara se apaga cuando tú decides.</span></div>
+              <div class="micro-card"><strong>Impact FX</strong><span>Microefectos visuales y sonoros para que cada gesto tenga presencia.</span></div>
+            </div>
+          </div>
+
+          <div class="copy-actions">
+            <button class="btn btn-primary" id="startExperienceBtn" type="button">Entrar en la experiencia</button>
+            <button class="btn btn-accent" id="loadDemoBtn" type="button">Cargar proyecto demo</button>
+            <button class="btn btn-danger" id="clearContentBtn" type="button">Limpiar contenido cargado</button>
+          </div>
+        </article>
+
+        <article class="stage-panel" aria-label="Escenario multimedia principal">
+          <div class="stage" id="mediaStage">
+            <div class="media-poster" id="mediaPoster">
+              <div>
+                <div class="poster-title">Rubik Sota<br><span class="serif">Experience Layer</span></div>
+                <p class="poster-sub">Carga una pieza propia o usa el proyecto demo para activar el portfolio gestual.</p>
+              </div>
+            </div>
+
+            <video id="mediaVideo" playsinline muted loop preload="metadata"></video>
+            <img id="mediaImage" alt="Proyecto activo de Rubik Sota" />
+            <canvas class="fx-canvas" id="impactCanvas" aria-hidden="true"></canvas>
+
+            <div class="video-fallback" id="videoFallback" role="status" aria-live="polite">
+              <div class="fallback-box">
+                <h2>Contenido no disponible</h2>
+                <p>El archivo o vídeo no se ha podido cargar. Puedes subir otro contenido o volver al proyecto demo.</p>
+                <button class="btn btn-primary" id="fallbackDemoBtn" type="button">Cargar demo</button>
+              </div>
+            </div>
+
+            <div class="stage-overlay">
+              <div class="project-caption">
+                <div class="project-kicker" id="projectTypeLabel">Sistema Rubik Sota</div>
+                <div class="project-title" id="projectTitle">Portfolio experiencial listo</div>
+                <div class="project-desc" id="projectDescription">Sube un vídeo o imagen, activa la cámara y controla la presentación con la mano.</div>
+              </div>
+
+              <div class="status-stack">
+                <div class="status-pill"><span class="status-dot" id="cameraStatusDot"></span><span id="cameraStatusText">Cámara inactiva</span></div>
+                <div class="status-pill"><span class="status-dot" id="mediaStatusDot"></span><span id="mediaStatusText">Contenido preparado</span></div>
+                <div class="status-pill"><span id="activeGestureText">Gesto: inactivo</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="experience-toolbar">
+            <div class="toolbar-actions">
+              <button class="btn btn-primary" id="playPauseBtn" type="button">Reproducir</button>
+              <button class="btn btn-accent" id="openGesturePanelBtn" type="button">Abrir control gestual</button>
+              <button class="btn" id="showTutorialBtn" type="button">Ver tutorial</button>
+            </div>
+            <div class="mini-controls">
+              <label class="range-control">Brillo
+                <input id="brightnessRange" type="range" min="70" max="130" value="100" />
+              </label>
+              <label class="range-control">Volumen
+                <input id="volumeRange" type="range" min="0" max="100" value="0" />
+              </label>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="gallery-section" id="projectGallerySection" aria-label="Galería de proyectos">
+        <div class="gallery-head">
+          <div>
+            <h2>Galería de proyectos</h2>
+            <p>Selecciona una pieza, sube contenido propio o limpia los archivos guardados en este navegador. Todo lo local se guarda con IndexedDB, no con trucos frágiles de localStorage.</p>
+          </div>
+        </div>
+        <div class="project-gallery" id="projectGallery"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer" id="contact">
+      <div><strong>Rubik Sota</strong> · 629 554 870</div>
+      <div class="footer-links">
+        <a href="tel:+34629554870">Llamar</a>
+        <a href="https://wa.me/34629554870" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <button id="resetPanelBtn" type="button">Resetear panel</button>
+      </div>
+    </footer>
+  </div>
+
+  <aside class="gesture-panel" id="gesturePanel" aria-label="Panel de cámara y seguimiento gestual">
+    <div class="gesture-header" id="gestureDragHandle">
+      <div class="gesture-title">📷 Control gestual · Rubik Sota</div>
+      <div class="gesture-actions">
+        <button class="panel-btn" id="toggleCameraBtn" type="button">Activar</button>
+        <button class="panel-btn" id="closeGesturePanelBtn" type="button" aria-label="Cerrar panel gestual">×</button>
+      </div>
+    </div>
+    <div class="camera-wrap">
+      <canvas id="handCanvas" role="img" aria-label="Feed de cámara con seguimiento de mano para controlar el contenido"></canvas>
+      <div class="camera-placeholder" id="cameraPlaceholder">
+        <div class="camera-placeholder-inner">
+          <h3 id="placeholderTitle">Control por gestos</h3>
+          <p id="placeholderText">Activa la cámara. Abre la mano para reproducir y cierra el puño para pausar.</p>
+          <button class="btn btn-primary" id="startCameraBtn" type="button">Activar cámara</button>
+        </div>
+      </div>
+      <div class="gesture-label" id="gestureLabel">Cámara inactiva</div>
+      <div class="resize-handle" id="gestureResizeHandle" aria-hidden="true"></div>
+    </div>
+  </aside>
+
+  <button class="reopen-gesture-btn" id="reopenGestureBtn" type="button">Abrir control gestual</button>
+
+  <section class="stats-dock" aria-label="Estadísticas en tiempo real">
+    <div class="stat-card"><span class="stat-value" id="openCountStat">0</span><span class="stat-label">palmas</span></div>
+    <div class="stat-card"><span class="stat-value" id="fistCountStat">0</span><span class="stat-label">puños</span></div>
+    <div class="stat-card"><span class="stat-value" id="playTimeStat">00:00</span><span class="stat-label">reproducción</span></div>
+    <div class="stat-card"><span class="stat-value" id="accuracyStat">0%</span><span class="stat-label">lectura mano</span></div>
+  </section>
+
+  <div class="tutorial-modal" id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+    <div class="tutorial-box">
+      <div class="tutorial-media"><div class="hand-demo"><span>🖐️</span><span>✊</span></div></div>
+      <div class="tutorial-content">
+        <h2 id="tutorialTitle">Controla la experiencia con tu mano.</h2>
+        <p>Esta web usa tu cámara solo en tu navegador. No sube tu imagen a ningún servidor. La interacción sirve para presentar proyectos con una capa experiencial memorable.</p>
+        <div class="tutorial-steps">
+          <div class="tutorial-step"><strong>1. Activa cámara</strong><span>El panel inferior derecho inicia el seguimiento de mano.</span></div>
+          <div class="tutorial-step"><strong>2. Abre la mano</strong><span>La palma abierta reproduce el vídeo o activa el impacto visual.</span></div>
+          <div class="tutorial-step"><strong>3. Cierra el puño</strong><span>El puño pausa el vídeo y registra la interacción.</span></div>
+        </div>
+        <div class="tutorial-actions">
+          <button class="btn btn-primary" id="tutorialStartBtn" type="button">Entrar en la experiencia</button>
+          <button class="btn" id="tutorialCloseBtn" type="button">Cerrar tutorial</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-layer" id="toastLayer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const DB_NAME = "rubik_sota_portfolio_v4";
+      const DB_VERSION = 1;
+      const STORE_PROJECTS = "projects";
+      const PANEL_STORAGE_KEY = "rubik_sota_v4_panel_geometry";
+      const ACTIVE_PROJECT_KEY = "rubik_sota_v4_active_project";
+      const TUTORIAL_KEY = "rubik_sota_v4_tutorial_seen";
+      const THEME_KEY = "rubik_sota_v4_theme";
+      const MAX_FILE_SIZE = 250 * 1024 * 1024;
+      const HAND_LOST_TIMEOUT = 1200;
+      const REQUIRED_STABLE_FRAMES = 3;
+      const TARGET_FRAME_MS = 1000 / 30;
+      const TOAST_COOLDOWN = 2600;
+
+      const els = {
+        body: document.body,
+        mediaUploadInput: document.getElementById("mediaUploadInput"),
+        mediaStage: document.getElementById("mediaStage"),
+        mediaVideo: document.getElementById("mediaVideo"),
+        mediaImage: document.getElementById("mediaImage"),
+        mediaPoster: document.getElementById("mediaPoster"),
+        impactCanvas: document.getElementById("impactCanvas"),
+        videoFallback: document.getElementById("videoFallback"),
+        fallbackDemoBtn: document.getElementById("fallbackDemoBtn"),
+        projectTypeLabel: document.getElementById("projectTypeLabel"),
+        projectTitle: document.getElementById("projectTitle"),
+        projectDescription: document.getElementById("projectDescription"),
+        projectGallery: document.getElementById("projectGallery"),
+        loadDemoBtn: document.getElementById("loadDemoBtn"),
+        clearContentBtn: document.getElementById("clearContentBtn"),
+        startExperienceBtn: document.getElementById("startExperienceBtn"),
+        playPauseBtn: document.getElementById("playPauseBtn"),
+        openGesturePanelBtn: document.getElementById("openGesturePanelBtn"),
+        showTutorialBtn: document.getElementById("showTutorialBtn"),
+        brightnessRange: document.getElementById("brightnessRange"),
+        volumeRange: document.getElementById("volumeRange"),
+        cameraStatusDot: document.getElementById("cameraStatusDot"),
+        cameraStatusText: document.getElementById("cameraStatusText"),
+        mediaStatusDot: document.getElementById("mediaStatusDot"),
+        mediaStatusText: document.getElementById("mediaStatusText"),
+        activeGestureText: document.getElementById("activeGestureText"),
+        gesturePanel: document.getElementById("gesturePanel"),
+        gestureDragHandle: document.getElementById("gestureDragHandle"),
+        gestureResizeHandle: document.getElementById("gestureResizeHandle"),
+        closeGesturePanelBtn: document.getElementById("closeGesturePanelBtn"),
+        reopenGestureBtn: document.getElementById("reopenGestureBtn"),
+        toggleCameraBtn: document.getElementById("toggleCameraBtn"),
+        startCameraBtn: document.getElementById("startCameraBtn"),
+        cameraPlaceholder: document.getElementById("cameraPlaceholder"),
+        placeholderTitle: document.getElementById("placeholderTitle"),
+        placeholderText: document.getElementById("placeholderText"),
+        handCanvas: document.getElementById("handCanvas"),
+        gestureLabel: document.getElementById("gestureLabel"),
+        resetPanelBtn: document.getElementById("resetPanelBtn"),
+        openCountStat: document.getElementById("openCountStat"),
+        fistCountStat: document.getElementById("fistCountStat"),
+        playTimeStat: document.getElementById("playTimeStat"),
+        accuracyStat: document.getElementById("accuracyStat"),
+        tutorialModal: document.getElementById("tutorialModal"),
+        tutorialStartBtn: document.getElementById("tutorialStartBtn"),
+        tutorialCloseBtn: document.getElementById("tutorialCloseBtn"),
+        toastLayer: document.getElementById("toastLayer"),
+        themeToggleBtn: document.getElementById("themeToggleBtn")
+      };
+
+      const ctxHand = els.handCanvas.getContext("2d", { alpha: false });
+      const ctxFx = els.impactCanvas.getContext("2d");
+
+      const demoThumbOne = svgDataUri("Rubik Sota", "Inmersive Reel", "#00ffcc", "#101010");
+      const demoThumbTwo = svgDataUri("Arquitectura", "Espacio Vivo", "#e8d8a8", "#111111");
+      const demoThumbThree = svgDataUri("IA Visual", "Sistema Creativo", "#ff3366", "#101010");
+
+      const DEMO_PROJECTS = [
+        {
+          id: "demo-video-main",
+          sourceKind: "demo",
+          title: "Rubik Sota · Reel inmersivo",
+          description: "Vídeo demo para probar control por gestos, estadísticas e Impact FX.",
+          type: "video",
+          src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          thumb: demoThumbOne,
+          createdAt: "demo"
+        },
+        {
+          id: "demo-image-architecture",
+          sourceKind: "demo",
+          title: "Arquitectura sensible",
+          description: "Imagen demo para enseñar proyectos estáticos con microinteracción gestual.",
+          type: "image",
+          src: demoThumbTwo,
+          thumb: demoThumbTwo,
+          createdAt: "demo"
+        },
+        {
+          id: "demo-image-ai",
+          sourceKind: "demo",
+          title: "Sistema creativo IA",
+          description: "Una pieza visual para presentar metodología, tecnología y dirección creativa.",
+          type: "image",
+          src: demoThumbThree,
+          thumb: demoThumbThree,
+          createdAt: "demo"
+        }
+      ];
+
+      const state = {
+        db: null,
+        projects: [],
+        activeProject: null,
+        currentObjectUrl: null,
+        currentThumbUrls: new Map(),
+        userInteracted: false,
+        audioCtx: null,
+        lastToastAt: 0,
+        stats: {
+          openCount: 0,
+          fistCount: 0,
+          playSeconds: 0,
+          framesProcessed: 0,
+          framesWithHand: 0
+        },
+        playTimer: null,
+        hands: null,
+        cameraVideo: null,
+        cameraStream: null,
+        isCameraActive: false,
+        isCameraStarting: false,
+        cameraStartToken: 0,
+        frameRaf: null,
+        lastFrameAt: 0,
+        lastHandDetectedAt: 0,
+        pendingGesture: "none",
+        stableGesture: "none",
+        stableCount: 0,
+        isDragging: false,
+        isResizing: false,
+        dragOffsetX: 0,
+        dragOffsetY: 0,
+        startWidth: 0,
+        startHeight: 0,
+        startMouseX: 0,
+        startMouseY: 0,
+        fxParticles: [],
+        fxRaf: null,
+        panelObserver: null,
+        hasVibrationConsent: false
+      };
+
+      const HAND_CONNECTIONS = [
+        [0,1], [1,2], [2,3], [3,4],
+        [0,5], [5,6], [6,7], [7,8],
+        [0,9], [9,10], [10,11], [11,12],
+        [0,13], [13,14], [14,15], [15,16],
+        [0,17], [17,18], [18,19], [19,20],
+        [5,9], [9,13], [13,17]
+      ];
+
+      function svgDataUri(title, subtitle, accent, bg) {
+        const safeTitle = title.replace(/[&<>]/g, "");
+        const safeSubtitle = subtitle.replace(/[&<>]/g, "");
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><radialGradient id="g" cx="50%" cy="42%" r="60%"><stop offset="0%" stop-color="${accent}" stop-opacity="0.38"/><stop offset="60%" stop-color="${accent}" stop-opacity="0.06"/><stop offset="100%" stop-color="${bg}"/></radialGradient><linearGradient id="l" x1="0" x2="1"><stop stop-color="white" stop-opacity="0.16"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient></defs><rect width="1200" height="800" fill="${bg}"/><rect width="1200" height="800" fill="url(#g)"/><path d="M120 610 C330 460 520 720 740 500 S1060 420 1160 260" fill="none" stroke="${accent}" stroke-width="3" stroke-opacity="0.55"/><circle cx="935" cy="220" r="150" fill="url(#l)"/><text x="86" y="135" fill="${accent}" font-size="25" font-family="Arial" font-weight="800" letter-spacing="8">RUBIK SOTA</text><text x="82" y="430" fill="white" font-size="92" font-family="Arial" font-weight="900" letter-spacing="-6">${safeTitle}</text><text x="88" y="500" fill="white" fill-opacity="0.72" font-size="36" font-family="Arial">${safeSubtitle}</text><rect x="84" y="570" width="260" height="54" rx="27" fill="white" fill-opacity="0.92"/><text x="116" y="606" fill="#050505" font-size="22" font-family="Arial" font-weight="800">Experience Layer</text></svg>`;
+        return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      }
+
+      function openDatabase() {
+        return new Promise((resolve, reject) => {
+          if (!window.indexedDB) {
+            reject(new Error("IndexedDB no disponible en este navegador."));
+            return;
+          }
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onupgradeneeded = () => {
+            const db = request.result;
+            if (!db.objectStoreNames.contains(STORE_PROJECTS)) {
+              db.createObjectStore(STORE_PROJECTS, { keyPath: "id" });
+            }
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error || new Error("No se pudo abrir IndexedDB."));
+        });
+      }
+
+      function dbTransaction(mode = "readonly") {
+        return state.db.transaction(STORE_PROJECTS, mode).objectStore(STORE_PROJECTS);
+      }
+
+      function getStoredProjects() {
+        return new Promise((resolve, reject) => {
+          const request = dbTransaction("readonly").getAll();
+          request.onsuccess = () => resolve(request.result || []);
+          request.onerror = () => reject(request.error || new Error("No se pudieron leer los proyectos."));
+        });
+      }
+
+      function putStoredProject(project) {
+        return new Promise((resolve, reject) => {
+          const request = dbTransaction("readwrite").put(project);
+          request.onsuccess = () => resolve(project);
+          request.onerror = () => reject(request.error || new Error("No se pudo guardar el proyecto."));
+        });
+      }
+
+      function clearStoredProjects() {
+        return new Promise((resolve, reject) => {
+          const request = dbTransaction("readwrite").clear();
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error || new Error("No se pudo limpiar el contenido."));
+        });
+      }
+
+      function markInteraction() {
+        state.userInteracted = true;
+        state.hasVibrationConsent = true;
+        ensureAudioContext();
+      }
+
+      function ensureAudioContext() {
+        if (state.audioCtx) return state.audioCtx;
+        const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextCtor) return null;
+        try {
+          state.audioCtx = new AudioContextCtor();
+          return state.audioCtx;
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function playImpactSound(kind) {
+        const audioCtx = ensureAudioContext();
+        if (!audioCtx || !state.userInteracted) return;
+        try {
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const now = audioCtx.currentTime;
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(kind === "OPEN" ? 620 : 260, now);
+          osc.frequency.exponentialRampToValueAtTime(kind === "OPEN" ? 880 : 180, now + 0.12);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(0.035, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.18);
+        } catch (_) {}
+      }
+
+      function vibrate(pattern = 18) {
+        if (!state.hasVibrationConsent || !document.hasFocus()) return;
+        try {
+          if (navigator.vibrate) navigator.vibrate(pattern);
+        } catch (_) {}
+      }
+
+      function showToast(message, force = false) {
+        const now = Date.now();
+        if (!force && now - state.lastToastAt < TOAST_COOLDOWN) return;
+        state.lastToastAt = now;
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = message;
+        els.toastLayer.appendChild(toast);
+        window.setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateY(-8px)";
+          window.setTimeout(() => toast.remove(), 240);
+        }, 2600);
+      }
+
+      function revokeCurrentObjectUrl() {
+        if (state.currentObjectUrl) {
+          URL.revokeObjectURL(state.currentObjectUrl);
+          state.currentObjectUrl = null;
+        }
+      }
+
+      function getProjectUrl(project) {
+        if (!project) return "";
+        if (project.blob instanceof Blob) {
+          const url = URL.createObjectURL(project.blob);
+          return url;
+        }
+        return project.src || "";
+      }
+
+      function getProjectThumb(project) {
+        if (project.thumb) return project.thumb;
+        if (project.type === "image" && project.blob instanceof Blob) {
+          if (!state.currentThumbUrls.has(project.id)) {
+            state.currentThumbUrls.set(project.id, URL.createObjectURL(project.blob));
+          }
+          return state.currentThumbUrls.get(project.id);
+        }
+        return svgDataUri(project.type === "video" ? "Vídeo cargado" : "Imagen cargada", project.title || "Proyecto propio", project.type === "video" ? "#00ffcc" : "#e8d8a8", "#101010");
+      }
+
+      async function loadProjects() {
+        try {
+          state.db = await openDatabase();
+          const stored = await getStoredProjects();
+          state.projects = [...DEMO_PROJECTS, ...stored.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))];
+        } catch (error) {
+          console.error(error);
+          state.projects = [...DEMO_PROJECTS];
+          showToast("IndexedDB no está disponible. La subida funcionará solo durante la sesión.", true);
+        }
+        renderGallery();
+        const savedActiveId = localStorage.getItem(ACTIVE_PROJECT_KEY);
+        const initialProject = state.projects.find(p => p.id === savedActiveId) || state.projects[0];
+        if (initialProject) setActiveProject(initialProject.id, false);
+      }
+
+      function renderGallery() {
+        els.projectGallery.innerHTML = "";
+        state.projects.forEach(project => {
+          const card = document.createElement("button");
+          card.className = "project-card";
+          card.type = "button";
+          card.dataset.projectId = project.id;
+          card.setAttribute("aria-label", `Abrir proyecto ${project.title}`);
+          const thumb = getProjectThumb(project);
+          card.innerHTML = `
+            <div class="project-thumb" style="background-image:url('${thumb.replace(/'/g, "%27")}')"></div>
+            <span class="project-card-content">
+              <span class="project-card-type">${project.sourceKind === "user" ? "Contenido propio" : "Proyecto demo"} · ${project.type}</span>
+              <strong class="project-card-title">${escapeHtml(project.title)}</strong>
+              <span class="project-card-meta">${project.fileName ? escapeHtml(project.fileName) : "Rubik Sota Experience"}</span>
+            </span>
+          `;
+          card.addEventListener("click", () => {
+            markInteraction();
+            setActiveProject(project.id, true);
+          });
+          els.projectGallery.appendChild(card);
+        });
+        updateActiveGalleryCard();
+      }
+
+      function escapeHtml(value = "") {
+        return String(value).replace(/[&<>'"]/g, char => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+        }[char]));
+      }
+
+      function updateActiveGalleryCard() {
+        els.projectGallery.querySelectorAll(".project-card").forEach(card => {
+          card.classList.toggle("is-active", state.activeProject && card.dataset.projectId === state.activeProject.id);
+        });
+      }
+
+      function setActiveProject(projectId, announce = true) {
+        const project = state.projects.find(item => item.id === projectId);
+        if (!project) return;
+        state.activeProject = project;
+        localStorage.setItem(ACTIVE_PROJECT_KEY, project.id);
+        updateActiveGalleryCard();
+        revokeCurrentObjectUrl();
+        els.videoFallback.classList.remove("is-visible");
+        els.mediaPoster.classList.add("is-hidden");
+        els.projectTypeLabel.textContent = project.sourceKind === "user" ? "Contenido propio" : "Proyecto demo";
+        els.projectTitle.textContent = project.title || "Proyecto Rubik Sota";
+        els.projectDescription.textContent = project.description || "Pieza cargada en el portfolio experiencial.";
+
+        const url = getProjectUrl(project);
+        if (project.blob instanceof Blob) state.currentObjectUrl = url;
+
+        if (project.type === "image") {
+          stopVideoTimer();
+          els.mediaVideo.pause();
+          els.mediaVideo.removeAttribute("src");
+          els.mediaVideo.load();
+          els.mediaVideo.style.display = "none";
+          els.mediaImage.style.display = "block";
+          els.mediaImage.src = url;
+          els.mediaStatusText.textContent = "Imagen activa";
+          els.mediaStatusDot.classList.add("is-on");
+          els.playPauseBtn.textContent = "Impacto visual";
+        } else {
+          els.mediaImage.style.display = "none";
+          els.mediaImage.removeAttribute("src");
+          els.mediaVideo.style.display = "block";
+          els.mediaVideo.src = url;
+          els.mediaVideo.muted = Number(els.volumeRange.value) === 0;
+          els.mediaVideo.volume = Math.min(1, Number(els.volumeRange.value) / 100);
+          els.mediaVideo.load();
+          els.mediaStatusText.textContent = "Vídeo preparado";
+          els.mediaStatusDot.classList.remove("is-on");
+          els.playPauseBtn.textContent = "Reproducir";
+        }
+        if (announce) {
+          showToast(`Proyecto activo: ${project.title}`, true);
+          triggerImpact("SWITCH");
+        }
+      }
+
+      async function handleUpload(event) {
+        markInteraction();
+        const file = event.target.files && event.target.files[0];
+        event.target.value = "";
+        if (!file) return;
+        if (!file.type.startsWith("video/") && !file.type.startsWith("image/")) {
+          showToast("Formato no compatible. Sube una imagen o un vídeo.", true);
+          return;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+          showToast("Archivo demasiado grande. Límite recomendado: 250 MB.", true);
+          return;
+        }
+        const type = file.type.startsWith("image/") ? "image" : "video";
+        const title = cleanFileName(file.name);
+        const project = {
+          id: `user-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          sourceKind: "user",
+          title,
+          description: type === "image" ? "Imagen propia cargada en Rubik Sota Experience." : "Vídeo propio cargado en Rubik Sota Experience.",
+          type,
+          fileName: file.name,
+          mimeType: file.type,
+          size: file.size,
+          blob: file,
+          createdAt: Date.now()
+        };
+        try {
+          if (state.db) await putStoredProject(project);
+          state.projects = [project, ...state.projects];
+          renderGallery();
+          setActiveProject(project.id, true);
+          showToast("Contenido guardado localmente en este navegador.", true);
+        } catch (error) {
+          console.error(error);
+          state.projects = [project, ...state.projects];
+          renderGallery();
+          setActiveProject(project.id, true);
+          showToast("No se pudo guardar, pero se ha cargado para esta sesión.", true);
+        }
+      }
+
+      function cleanFileName(fileName) {
+        return fileName.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim().slice(0, 54) || "Proyecto propio";
+      }
+
+      async function clearUserContent() {
+        markInteraction();
+        const confirmed = window.confirm("¿Eliminar los contenidos propios guardados en este navegador? Los proyectos demo se conservarán.");
+        if (!confirmed) return;
+        try {
+          if (state.db) await clearStoredProjects();
+          state.currentThumbUrls.forEach(url => URL.revokeObjectURL(url));
+          state.currentThumbUrls.clear();
+          state.projects = [...DEMO_PROJECTS];
+          renderGallery();
+          setActiveProject(DEMO_PROJECTS[0].id, true);
+          showToast("Contenido propio eliminado. Proyectos demo restaurados.", true);
+        } catch (error) {
+          console.error(error);
+          showToast("No se pudo limpiar el contenido guardado.", true);
+        }
+      }
+
+      function loadDemoProject() {
+        markInteraction();
+        setActiveProject(DEMO_PROJECTS[0].id, true);
+        playMedia();
+      }
+
+      function playMedia() {
+        markInteraction();
+        if (!state.activeProject) return;
+        if (state.activeProject.type === "image") {
+          triggerImpact("OPEN");
+          return;
+        }
+        els.mediaVideo.play().then(() => {
+          els.mediaStatusText.textContent = "Vídeo reproduciéndose";
+          els.mediaStatusDot.classList.add("is-on");
+          els.playPauseBtn.textContent = "Pausar";
+          startVideoTimer();
+        }).catch(() => {
+          showToast("El navegador bloqueó la reproducción. Toca de nuevo Reproducir.", true);
+        });
+      }
+
+      function pauseMedia() {
+        if (state.activeProject && state.activeProject.type === "video" && !els.mediaVideo.paused) {
+          els.mediaVideo.pause();
+        }
+        els.mediaStatusText.textContent = state.activeProject && state.activeProject.type === "image" ? "Imagen activa" : "Vídeo en pausa";
+        els.mediaStatusDot.classList.toggle("is-on", state.activeProject && state.activeProject.type === "image");
+        els.playPauseBtn.textContent = state.activeProject && state.activeProject.type === "image" ? "Impacto visual" : "Reproducir";
+        stopVideoTimer();
+      }
+
+      function togglePlayPause() {
+        markInteraction();
+        if (!state.activeProject) return;
+        if (state.activeProject.type === "image") {
+          triggerImpact("OPEN");
+          playImpactSound("OPEN");
+          return;
+        }
+        if (els.mediaVideo.paused) playMedia();
+        else pauseMedia();
+      }
+
+      function startVideoTimer() {
+        if (state.playTimer) return;
+        state.playTimer = window.setInterval(() => {
+          if (state.activeProject && state.activeProject.type === "video" && !els.mediaVideo.paused) {
+            state.stats.playSeconds += 1;
+            updateStatsUi();
+          }
+        }, 1000);
+      }
+
+      function stopVideoTimer() {
+        if (state.playTimer) {
+          window.clearInterval(state.playTimer);
+          state.playTimer = null;
+        }
+      }
+
+      function updateStatsUi() {
+        els.openCountStat.textContent = String(state.stats.openCount);
+        els.fistCountStat.textContent = String(state.stats.fistCount);
+        els.playTimeStat.textContent = formatTime(state.stats.playSeconds);
+        const accuracy = state.stats.framesProcessed > 0 ? Math.round((state.stats.framesWithHand / state.stats.framesProcessed) * 100) : 0;
+        els.accuracyStat.textContent = `${accuracy}%`;
+      }
+
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
+        return `${mins}:${secs}`;
+      }
+
+      function triggerImpact(kind = "OPEN") {
+        els.mediaStage.classList.remove("is-impact");
+        void els.mediaStage.offsetWidth;
+        els.mediaStage.classList.add("is-impact");
+        spawnParticles(kind);
+        window.setTimeout(() => els.mediaStage.classList.remove("is-impact"), 540);
+      }
+
+      function resizeImpactCanvas() {
+        const rect = els.mediaStage.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        els.impactCanvas.width = Math.max(1, Math.floor(rect.width * dpr));
+        els.impactCanvas.height = Math.max(1, Math.floor(rect.height * dpr));
+        els.impactCanvas.style.width = `${rect.width}px`;
+        els.impactCanvas.style.height = `${rect.height}px`;
+        ctxFx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function spawnParticles(kind) {
+        resizeImpactCanvas();
+        const rect = els.mediaStage.getBoundingClientRect();
+        const cx = rect.width * 0.72;
+        const cy = rect.height * 0.42;
+        const color = kind === "FIST" ? "255,51,102" : kind === "SWITCH" ? "232,216,168" : "0,255,204";
+        for (let i = 0; i < 34; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 1.2 + Math.random() * 4.2;
+          state.fxParticles.push({
+            x: cx + (Math.random() - 0.5) * 120,
+            y: cy + (Math.random() - 0.5) * 90,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 1,
+            decay: 0.018 + Math.random() * 0.018,
+            size: 1.5 + Math.random() * 3.6,
+            color
+          });
+        }
+        if (!state.fxRaf) animateParticles();
+      }
+
+      function animateParticles() {
+        const rect = els.mediaStage.getBoundingClientRect();
+        ctxFx.clearRect(0, 0, rect.width, rect.height);
+        state.fxParticles = state.fxParticles.filter(p => p.life > 0.02);
+        state.fxParticles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.98;
+          p.vy *= 0.98;
+          p.life -= p.decay;
+          ctxFx.beginPath();
+          ctxFx.fillStyle = `rgba(${p.color},${Math.max(0, p.life)})`;
+          ctxFx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+          ctxFx.fill();
+        });
+        if (state.fxParticles.length > 0) {
+          state.fxRaf = requestAnimationFrame(animateParticles);
+        } else {
+          state.fxRaf = null;
+          ctxFx.clearRect(0, 0, rect.width, rect.height);
+        }
+      }
+
+      function setPlaceholder(mode, message = "") {
+        els.cameraPlaceholder.classList.remove("is-hidden");
+        if (mode === "error") {
+          els.placeholderTitle.textContent = "Cámara no disponible";
+          els.placeholderText.textContent = message || "Revisa permisos del navegador o usa HTTPS/localhost.";
+        } else if (mode === "starting") {
+          els.placeholderTitle.textContent = "Activando cámara";
+          els.placeholderText.textContent = "Preparando seguimiento de mano en este navegador.";
+        } else {
+          els.placeholderTitle.textContent = "Control por gestos";
+          els.placeholderText.textContent = "Activa la cámara. Abre la mano para reproducir y cierra el puño para pausar.";
+        }
+      }
+
+      function setCameraUi(active, starting = false) {
+        els.toggleCameraBtn.disabled = starting;
+        els.startCameraBtn.disabled = starting;
+        els.toggleCameraBtn.textContent = active ? "Apagar" : starting ? "..." : "Activar";
+        els.cameraStatusDot.classList.toggle("is-on", active);
+        els.cameraStatusText.textContent = active ? "Cámara activa" : starting ? "Activando cámara" : "Cámara inactiva";
+        if (active) els.cameraPlaceholder.classList.add("is-hidden");
+      }
+
+      function resizeHandCanvas() {
+        const rect = els.handCanvas.parentElement.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        els.handCanvas.width = Math.max(1, Math.floor(rect.width * dpr));
+        els.handCanvas.height = Math.max(1, Math.floor(rect.height * dpr));
+        els.handCanvas.style.width = `${rect.width}px`;
+        els.handCanvas.style.height = `${rect.height}px`;
+        ctxHand.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function getHandCanvasSize() {
+        const rect = els.handCanvas.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      }
+
+      async function startCamera() {
+        markInteraction();
+        if (state.isCameraActive || state.isCameraStarting) return;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          setPlaceholder("error", "Este navegador no permite acceso a cámara.");
+          showToast("La cámara no está disponible en este navegador.", true);
+          return;
+        }
+        if (typeof Hands === "undefined") {
+          setPlaceholder("error", "MediaPipe Hands no se ha cargado. Revisa conexión o CDN.");
+          showToast("No se pudo cargar el motor de seguimiento de mano.", true);
+          return;
+        }
+
+        state.isCameraStarting = true;
+        const token = ++state.cameraStartToken;
+        setCameraUi(false, true);
+        setPlaceholder("starting");
+        resizeHandCanvas();
+
+        try {
+          state.hands = new Hands({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+          state.hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.62,
+            minTrackingConfidence: 0.62
+          });
+          state.hands.onResults(onHandsResults);
+
+          state.cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
+            audio: false
+          });
+          if (token !== state.cameraStartToken || !state.isCameraStarting) {
+            stopCamera({ keepPlaceholder: true });
+            return;
+          }
+
+          state.cameraVideo = document.createElement("video");
+          state.cameraVideo.srcObject = state.cameraStream;
+          state.cameraVideo.muted = true;
+          state.cameraVideo.playsInline = true;
+          state.cameraVideo.autoplay = true;
+          await state.cameraVideo.play();
+
+          if (token !== state.cameraStartToken || !state.isCameraStarting) {
+            stopCamera({ keepPlaceholder: true });
+            return;
+          }
+
+          state.isCameraActive = true;
+          state.lastHandDetectedAt = performance.now();
+          setCameraUi(true, false);
+          els.cameraPlaceholder.classList.add("is-hidden");
+          showToast("Control gestual activo. Abre la mano para reproducir.", true);
+          processFrameLoop();
+        } catch (error) {
+          console.error(error);
+          setPlaceholder("error", "Permiso denegado, cámara ocupada o contexto no seguro. Usa HTTPS o localhost.");
+          showToast("No se pudo activar la cámara.", true);
+          stopCamera({ keepPlaceholder: true });
+        } finally {
+          state.isCameraStarting = false;
+          if (!state.isCameraActive) setCameraUi(false, false);
+        }
+      }
+
+      function stopCamera(options = {}) {
+        const { keepPlaceholder = false } = options;
+        state.cameraStartToken += 1;
+        state.isCameraStarting = false;
+        state.isCameraActive = false;
+        if (state.frameRaf) {
+          cancelAnimationFrame(state.frameRaf);
+          state.frameRaf = null;
+        }
+        if (state.cameraStream) {
+          state.cameraStream.getTracks().forEach(track => track.stop());
+          state.cameraStream = null;
+        }
+        if (state.cameraVideo) {
+          state.cameraVideo.pause();
+          state.cameraVideo.srcObject = null;
+          state.cameraVideo = null;
+        }
+        if (state.hands && typeof state.hands.close === "function") {
+          try { state.hands.close(); } catch (_) {}
+        }
+        state.hands = null;
+        resetGestureState();
+        setCameraUi(false, false);
+        if (!keepPlaceholder) setPlaceholder("idle");
+        const { width, height } = getHandCanvasSize();
+        ctxHand.clearRect(0, 0, width, height);
+        ctxHand.fillStyle = "#000";
+        ctxHand.fillRect(0, 0, width, height);
+      }
+
+      function toggleCamera() {
+        if (state.isCameraStarting) {
+          stopCamera({ keepPlaceholder: false });
+          return;
+        }
+        if (state.isCameraActive) stopCamera();
+        else startCamera();
+      }
+
+      async function processFrameLoop(timestamp = performance.now()) {
+        if (!state.isCameraActive || !state.hands || !state.cameraVideo) return;
+        if (timestamp - state.lastFrameAt >= TARGET_FRAME_MS) {
+          state.lastFrameAt = timestamp;
+          if (state.cameraVideo.readyState >= 2) {
+            try {
+              await state.hands.send({ image: state.cameraVideo });
+            } catch (error) {
+              console.error(error);
+            }
+          }
+          handleHandLost(timestamp);
+        }
+        state.frameRaf = requestAnimationFrame(processFrameLoop);
+      }
+
+      function onHandsResults(results) {
+        if (!state.isCameraActive) return;
+        const { width, height } = getHandCanvasSize();
+        state.stats.framesProcessed += 1;
+        ctxHand.clearRect(0, 0, width, height);
+        drawCameraFrame(width, height);
+
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+          state.stats.framesWithHand += 1;
+          state.lastHandDetectedAt = performance.now();
+          const landmarks = results.multiHandLandmarks[0];
+          const gesture = classifyHandGesture(landmarks);
+          updateStableGesture(gesture);
+          drawSkeleton(landmarks, width, height);
+        } else {
+          updateGestureText("SEARCHING");
+        }
+        updateStatsUi();
+      }
+
+      function drawCameraFrame(width, height) {
+        if (!state.cameraVideo || !state.cameraVideo.videoWidth) {
+          ctxHand.fillStyle = "#000";
+          ctxHand.fillRect(0, 0, width, height);
+          return;
+        }
+        ctxHand.save();
+        ctxHand.translate(width, 0);
+        ctxHand.scale(-1, 1);
+        ctxHand.drawImage(state.cameraVideo, 0, 0, width, height);
+        ctxHand.restore();
+      }
+
+      function drawSkeleton(landmarks, width, height) {
+        ctxHand.save();
+        ctxHand.lineWidth = 2.3;
+        ctxHand.strokeStyle = "#00ffcc";
+        ctxHand.shadowColor = "rgba(0,255,204,0.55)";
+        ctxHand.shadowBlur = 9;
+        ctxHand.beginPath();
+        HAND_CONNECTIONS.forEach(([a, b]) => {
+          const p1 = landmarks[a];
+          const p2 = landmarks[b];
+          if (!p1 || !p2) return;
+          ctxHand.moveTo((1 - p1.x) * width, p1.y * height);
+          ctxHand.lineTo((1 - p2.x) * width, p2.y * height);
+        });
+        ctxHand.stroke();
+        ctxHand.shadowBlur = 0;
+        landmarks.forEach(point => {
+          const x = (1 - point.x) * width;
+          const y = point.y * height;
+          ctxHand.beginPath();
+          ctxHand.fillStyle = "#ff3366";
+          ctxHand.arc(x, y, 3.4, 0, Math.PI * 2);
+          ctxHand.fill();
+          ctxHand.beginPath();
+          ctxHand.fillStyle = "#fff";
+          ctxHand.arc(x, y, 1.15, 0, Math.PI * 2);
+          ctxHand.fill();
+        });
+        ctxHand.restore();
+      }
+
+      function classifyHandGesture(landmarks) {
+        const palmIndices = [0, 5, 9, 13, 17];
+        const tipIndices = [4, 8, 12, 16, 20];
+        const palm = palmIndices.reduce((acc, index) => {
+          acc.x += landmarks[index].x;
+          acc.y += landmarks[index].y;
+          return acc;
+        }, { x: 0, y: 0 });
+        palm.x /= palmIndices.length;
+        palm.y /= palmIndices.length;
+        const avgTipDistance = tipIndices.reduce((sum, index) => {
+          const p = landmarks[index];
+          return sum + Math.hypot(p.x - palm.x, p.y - palm.y);
+        }, 0) / tipIndices.length;
+        return avgTipDistance > 0.19 ? "OPEN" : "FIST";
+      }
+
+      function updateStableGesture(gesture) {
+        if (gesture === state.pendingGesture) {
+          state.stableCount += 1;
+        } else {
+          state.pendingGesture = gesture;
+          state.stableCount = 1;
+        }
+        if (state.stableCount >= REQUIRED_STABLE_FRAMES && state.stableGesture !== gesture) {
+          state.stableGesture = gesture;
+          applyGesture(gesture);
+        }
+        updateGestureText(state.stableGesture);
+      }
+
+      function applyGesture(gesture) {
+        if (gesture === "OPEN") {
+          state.stats.openCount += 1;
+          playMedia();
+          triggerImpact("OPEN");
+          playImpactSound("OPEN");
+          vibrate(16);
+          showToast("Palma abierta: experiencia en marcha.");
+        } else if (gesture === "FIST") {
+          state.stats.fistCount += 1;
+          pauseMedia();
+          triggerImpact("FIST");
+          playImpactSound("FIST");
+          vibrate([12, 24, 12]);
+          showToast("Puño cerrado: pausa activada.");
+        }
+        updateStatsUi();
+      }
+
+      function handleHandLost(now) {
+        if (!state.isCameraActive) return;
+        if (state.lastHandDetectedAt && now - state.lastHandDetectedAt > HAND_LOST_TIMEOUT) {
+          resetGestureState();
+          updateGestureText("SEARCHING");
+        }
+      }
+
+      function resetGestureState() {
+        state.pendingGesture = "none";
+        state.stableGesture = "none";
+        state.stableCount = 0;
+        updateGestureText("none");
+      }
+
+      function updateGestureText(gesture) {
+        const text = gesture === "OPEN" ? "Gesto: palma abierta" :
+          gesture === "FIST" ? "Gesto: puño cerrado" :
+          gesture === "SEARCHING" ? "Buscando mano" :
+          state.isCameraActive ? "Gesto: esperando" : "Cámara inactiva";
+        els.gestureLabel.textContent = text;
+        els.activeGestureText.textContent = text;
+      }
+
+      function openPanel(autoStart = false) {
+        els.gesturePanel.style.display = "block";
+        els.reopenGestureBtn.classList.remove("is-visible");
+        restorePanelGeometry();
+        requestAnimationFrame(() => {
+          resizeHandCanvas();
+          requestAnimationFrame(resizeHandCanvas);
+        });
+        if (autoStart) startCamera();
+      }
+
+      function closePanel() {
+        stopCamera();
+        els.gesturePanel.style.display = "none";
+        els.reopenGestureBtn.classList.add("is-visible");
+      }
+
+      function defaultPanelGeometry() {
+        els.gesturePanel.style.width = "330px";
+        els.gesturePanel.style.height = "258px";
+        els.gesturePanel.style.right = "1rem";
+        els.gesturePanel.style.bottom = "1rem";
+        els.gesturePanel.style.left = "auto";
+        els.gesturePanel.style.top = "auto";
+      }
+
+      function savePanelGeometry() {
+        const rect = els.gesturePanel.getBoundingClientRect();
+        const geometry = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+        localStorage.setItem(PANEL_STORAGE_KEY, JSON.stringify(geometry));
+      }
+
+      function restorePanelGeometry() {
+        try {
+          const raw = localStorage.getItem(PANEL_STORAGE_KEY);
+          if (!raw) { defaultPanelGeometry(); return; }
+          const geo = JSON.parse(raw);
+          const width = clamp(Number(geo.width) || 330, 240, Math.min(620, window.innerWidth - 24));
+          const height = clamp(Number(geo.height) || 258, 190, Math.min(520, window.innerHeight - 24));
+          const left = clamp(Number(geo.left) || window.innerWidth - width - 16, 0, window.innerWidth - width);
+          const top = clamp(Number(geo.top) || window.innerHeight - height - 16, 0, window.innerHeight - height);
+          els.gesturePanel.style.width = `${width}px`;
+          els.gesturePanel.style.height = `${height}px`;
+          els.gesturePanel.style.left = `${left}px`;
+          els.gesturePanel.style.top = `${top}px`;
+          els.gesturePanel.style.right = "auto";
+          els.gesturePanel.style.bottom = "auto";
+        } catch (_) {
+          defaultPanelGeometry();
+        }
+      }
+
+      function resetPanel() {
+        localStorage.removeItem(PANEL_STORAGE_KEY);
+        defaultPanelGeometry();
+        requestAnimationFrame(() => {
+          resizeHandCanvas();
+          savePanelGeometry();
+        });
+        showToast("Panel gestual restaurado.", true);
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+      }
+
+      function setupPanelDragResize() {
+        els.gestureDragHandle.addEventListener("pointerdown", event => {
+          if (event.target.closest("button")) return;
+          state.isDragging = true;
+          const rect = els.gesturePanel.getBoundingClientRect();
+          state.dragOffsetX = event.clientX - rect.left;
+          state.dragOffsetY = event.clientY - rect.top;
+          els.gesturePanel.style.left = `${rect.left}px`;
+          els.gesturePanel.style.top = `${rect.top}px`;
+          els.gesturePanel.style.right = "auto";
+          els.gesturePanel.style.bottom = "auto";
+          els.gestureDragHandle.setPointerCapture(event.pointerId);
+          event.preventDefault();
+        });
+        els.gestureDragHandle.addEventListener("pointermove", event => {
+          if (!state.isDragging) return;
+          const left = clamp(event.clientX - state.dragOffsetX, 0, window.innerWidth - els.gesturePanel.offsetWidth);
+          const top = clamp(event.clientY - state.dragOffsetY, 0, window.innerHeight - els.gesturePanel.offsetHeight);
+          els.gesturePanel.style.left = `${left}px`;
+          els.gesturePanel.style.top = `${top}px`;
+        });
+        ["pointerup", "pointercancel"].forEach(type => {
+          els.gestureDragHandle.addEventListener(type, event => {
+            if (!state.isDragging) return;
+            state.isDragging = false;
+            try { els.gestureDragHandle.releasePointerCapture(event.pointerId); } catch (_) {}
+            savePanelGeometry();
+          });
+        });
+
+        els.gestureResizeHandle.addEventListener("pointerdown", event => {
+          state.isResizing = true;
+          state.startWidth = els.gesturePanel.offsetWidth;
+          state.startHeight = els.gesturePanel.offsetHeight;
+          state.startMouseX = event.clientX;
+          state.startMouseY = event.clientY;
+          els.gestureResizeHandle.setPointerCapture(event.pointerId);
+          event.preventDefault();
+        });
+        els.gestureResizeHandle.addEventListener("pointermove", event => {
+          if (!state.isResizing) return;
+          const width = clamp(state.startWidth + event.clientX - state.startMouseX, 240, Math.min(620, window.innerWidth - 24));
+          const height = clamp(state.startHeight + event.clientY - state.startMouseY, 190, Math.min(520, window.innerHeight - 24));
+          els.gesturePanel.style.width = `${width}px`;
+          els.gesturePanel.style.height = `${height}px`;
+          resizeHandCanvas();
+        });
+        ["pointerup", "pointercancel"].forEach(type => {
+          els.gestureResizeHandle.addEventListener(type, event => {
+            if (!state.isResizing) return;
+            state.isResizing = false;
+            try { els.gestureResizeHandle.releasePointerCapture(event.pointerId); } catch (_) {}
+            resizeHandCanvas();
+            savePanelGeometry();
+          });
+        });
+      }
+
+      function setupTutorial() {
+        const seen = localStorage.getItem(TUTORIAL_KEY) === "1";
+        if (!seen) window.setTimeout(() => showTutorial(), 500);
+      }
+
+      function showTutorial() {
+        els.tutorialModal.classList.add("is-visible");
+      }
+
+      function closeTutorial() {
+        localStorage.setItem(TUTORIAL_KEY, "1");
+        els.tutorialModal.classList.remove("is-visible");
+      }
+
+      function startFromTutorial() {
+        markInteraction();
+        closeTutorial();
+        openPanel(true);
+        playMedia();
+      }
+
+      function updateThemeUi() {
+        const light = els.body.classList.contains("is-light");
+        els.themeToggleBtn.textContent = light ? "☀" : "☾";
+        els.themeToggleBtn.setAttribute("aria-label", light ? "Cambiar a modo oscuro" : "Cambiar a modo claro");
+      }
+
+      function toggleTheme() {
+        markInteraction();
+        els.body.classList.toggle("is-light");
+        localStorage.setItem(THEME_KEY, els.body.classList.contains("is-light") ? "light" : "dark");
+        updateThemeUi();
+      }
+
+      function setupEvents() {
+        [document, window].forEach(target => {
+          target.addEventListener("pointerdown", markInteraction, { once: true, passive: true });
+          target.addEventListener("keydown", markInteraction, { once: true });
+        });
+        els.mediaUploadInput.addEventListener("change", handleUpload);
+        els.loadDemoBtn.addEventListener("click", loadDemoProject);
+        els.fallbackDemoBtn.addEventListener("click", loadDemoProject);
+        els.clearContentBtn.addEventListener("click", clearUserContent);
+        els.startExperienceBtn.addEventListener("click", () => { markInteraction(); openPanel(true); playMedia(); });
+        els.playPauseBtn.addEventListener("click", togglePlayPause);
+        els.openGesturePanelBtn.addEventListener("click", () => { markInteraction(); openPanel(false); });
+        els.reopenGestureBtn.addEventListener("click", () => { markInteraction(); openPanel(false); });
+        els.closeGesturePanelBtn.addEventListener("click", closePanel);
+        els.toggleCameraBtn.addEventListener("click", toggleCamera);
+        els.startCameraBtn.addEventListener("click", startCamera);
+        els.resetPanelBtn.addEventListener("click", resetPanel);
+        els.showTutorialBtn.addEventListener("click", showTutorial);
+        els.tutorialCloseBtn.addEventListener("click", closeTutorial);
+        els.tutorialStartBtn.addEventListener("click", startFromTutorial);
+        els.tutorialModal.addEventListener("click", event => { if (event.target === els.tutorialModal) closeTutorial(); });
+        els.themeToggleBtn.addEventListener("click", toggleTheme);
+        els.mediaVideo.addEventListener("play", () => {
+          els.mediaStatusText.textContent = "Vídeo reproduciéndose";
+          els.mediaStatusDot.classList.add("is-on");
+          els.playPauseBtn.textContent = "Pausar";
+          startVideoTimer();
+        });
+        els.mediaVideo.addEventListener("pause", () => {
+          if (state.activeProject && state.activeProject.type === "video") {
+            els.mediaStatusText.textContent = "Vídeo en pausa";
+            els.mediaStatusDot.classList.remove("is-on");
+            els.playPauseBtn.textContent = "Reproducir";
+          }
+          stopVideoTimer();
+        });
+        els.mediaVideo.addEventListener("error", () => {
+          stopVideoTimer();
+          els.videoFallback.classList.add("is-visible");
+          els.mediaStatusText.textContent = "Vídeo no disponible";
+          els.mediaStatusDot.classList.remove("is-on");
+        });
+        els.mediaImage.addEventListener("error", () => {
+          els.videoFallback.classList.add("is-visible");
+          els.mediaStatusText.textContent = "Imagen no disponible";
+          els.mediaStatusDot.classList.remove("is-on");
+        });
+        els.brightnessRange.addEventListener("input", () => {
+          const value = Number(els.brightnessRange.value) / 100;
+          document.documentElement.style.setProperty("--video-brightness", String(value));
+        });
+        els.volumeRange.addEventListener("input", () => {
+          const value = clamp(Number(els.volumeRange.value), 0, 100) / 100;
+          els.mediaVideo.volume = value;
+          els.mediaVideo.muted = value === 0;
+        });
+        window.addEventListener("resize", () => {
+          resizeImpactCanvas();
+          requestAnimationFrame(resizeHandCanvas);
+        });
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden && (state.isCameraActive || state.isCameraStarting)) stopCamera();
+        });
+        window.addEventListener("beforeunload", () => {
+          stopCamera({ keepPlaceholder: true });
+          stopVideoTimer();
+          revokeCurrentObjectUrl();
+          state.currentThumbUrls.forEach(url => URL.revokeObjectURL(url));
+          if (state.panelObserver) state.panelObserver.disconnect();
+        });
+      }
+
+      function setupObservers() {
+        state.panelObserver = new ResizeObserver(() => {
+          if (els.gesturePanel.style.display !== "none") resizeHandCanvas();
+        });
+        state.panelObserver.observe(els.gesturePanel);
+        const stageObserver = new ResizeObserver(resizeImpactCanvas);
+        stageObserver.observe(els.mediaStage);
+      }
+
+      async function init() {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === "light") els.body.classList.add("is-light");
+        updateThemeUi();
+        restorePanelGeometry();
+        resizeHandCanvas();
+        resizeImpactCanvas();
+        setupPanelDragResize();
+        setupEvents();
+        setupObservers();
+        setupTutorial();
+        updateStatsUi();
+        await loadProjects();
+      }
+
+      init().catch(error => {
+        console.error(error);
+        showToast("Error inicializando la experiencia.", true);
+      });
+    })();
+  </script>
+</body>
+</html>
