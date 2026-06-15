@@ -23,17 +23,20 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 
 ## Estado actual
 
-**Módulo activo:**
+**Módulos activos:**
 
-- 01 — Bola de Imagen
+- 01 — Bola de Imagen — Disponible · v1.3
+- 02 — Before / After Reforma — Disponible · v2.1.2
 
-**Versión estable actual:**
+**Versiones estables actuales:**
 
-- v1.3
+- Bola de Imagen v1.3
+- Before / After Reforma v2.1.2
 
-**Archivo:**
+**Archivos:**
 
 - `gesture-lab/bola-imagen/rubik-sota-gesture-lab-bola-imagen-v1-3.html`
+- `gesture-lab/before-after-reforma/rubik-sota-before-after-reforma-v2-1-2.html`
 
 **Funciones actuales:**
 
@@ -60,13 +63,26 @@ El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicac
 
 - `gesture-lab/index.html`
 
-**Demo activa:**
+**Demos activas:**
 
 - `gesture-lab/bola-imagen/rubik-sota-gesture-lab-bola-imagen-v1-3.html`
+- `gesture-lab/before-after-reforma/rubik-sota-before-after-reforma-v2-1-2.html`
 
 **Meta:**
 
-- `v2.0.1 · 1 módulo activo · 32 en planificación`
+- `v2.0.1 · 2 módulos activos · 31 en planificación`
+
+### Nota Before / After Reforma v2.1.2
+
+Before / After Reforma v2.1.2 incorpora Capture Input System con captura in-app:
+
+- hacer foto actual;
+- hacer foto futura;
+- galería;
+- optimización de imagen a 1920 px;
+- comparación cortina/fundido;
+- vista completa;
+- grabación y descarga cuando el navegador lo permite.
 
 ---
 
@@ -83,7 +99,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | Nº | Módulo | Estado |
 |----|--------|--------|
 | 01 | Bola de Imagen | Disponible · v1.3 |
-| 02 | Before / After Reforma | Próximamente · v2.1 |
+| 02 | Before / After Reforma | Disponible · v2.1.2 |
 | 03 | Community Improvement / Vecinia | Próximamente · v2.2 |
 | 04 | Real Estate Immersive Viewer | Próximamente · v2.3 |
 | 05 | Real Estate Capture Tour | Próximamente · v2.4 |
@@ -227,9 +243,10 @@ Cada módulo debe incluir, cuando aplique:
 
 - v2.0 — Hub multisectorial
 - v2.0.1 — Roadmap ampliado 33 módulos
-- v2.1 — Before / After Reforma
-- v2.1.1 — Capture Input System aplicado a Before / After
-- v2.2 — Community Improvement / Vecinia
+- v2.1 — Before / After Reforma — validado
+- v2.1.1 — Capture Input System — sustituido por v2.1.2
+- v2.1.2 — In-app Camera Capture — estable actual
+- v2.2 — Community Improvement / Vecinia — siguiente
 - v2.3 — Real Estate Immersive Viewer
 - v2.4 — Real Estate Capture Tour
 - v2.5 — Golf Experience / Home Practice
@@ -274,7 +291,8 @@ Cada módulo debe incluir, cuando aplique:
 
 **Actual:**
 
-- Hub v2.0.1 en desarrollo (33 módulos documentados).
-- Capture Input System definido como capacidad transversal.
+- Hub v2.0.1 con 33 módulos documentados.
+- Capture Input System validado in-app (v2.1.2).
 - Bola de Imagen v1.3 publicada y funcional.
-- Siguiente fase: v2.1 — Before / After Reforma.
+- Before / After Reforma v2.1.2 publicada y funcional.
+- Siguiente fase: v2.2 — Community Improvement / Vecinia.
