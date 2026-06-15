@@ -25,18 +25,21 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 
 **Módulos activos:**
 
-- 01 — Bola de Imagen — Disponible · v1.3
-- 02 — Before / After Reforma — Disponible · v2.1.2
+- 01 ? Bola de Imagen ? Disponible ? v1.3
+- 02 ? Before / After Reforma ? Disponible ? v2.1.2
+- 03 ? Community Improvement / Vecinia ? Disponible ? v2.2.1
 
 **Versiones estables actuales:**
 
 - Bola de Imagen v1.3
 - Before / After Reforma v2.1.2
+- Community Improvement / Vecinia v2.2.1
 
 **Archivos:**
 
 - `gesture-lab/bola-imagen/rubik-sota-gesture-lab-bola-imagen-v1-3.html`
 - `gesture-lab/before-after-reforma/rubik-sota-before-after-reforma-v2-1-2.html`
+- `gesture-lab/community-improvement-vecinia/rubik-sota-community-improvement-vecinia-v2-2-1.html`
 
 **Funciones actuales:**
 
@@ -67,10 +70,11 @@ El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicac
 
 - `gesture-lab/bola-imagen/rubik-sota-gesture-lab-bola-imagen-v1-3.html`
 - `gesture-lab/before-after-reforma/rubik-sota-before-after-reforma-v2-1-2.html`
+- `gesture-lab/community-improvement-vecinia/rubik-sota-community-improvement-vecinia-v2-2-1.html`
 
 **Meta:**
 
-- `v2.0.1 · 2 módulos activos · 31 en planificación`
+- `v2.0.1 · 3 m?dulos activos · 30 en planificaci?n`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -83,6 +87,25 @@ Before / After Reforma v2.1.2 incorpora Capture Input System con captura in-app:
 - comparación cortina/fundido;
 - vista completa;
 - grabación y descarga cuando el navegador lo permite.
+
+### Nota Community Improvement / Vecinia v2.2.1
+
+Community Improvement / Vecinia v2.2.1 incorpora Export & Share Layer:
+
+- captura in-app;
+- galer?a;
+- comparaci?n estado actual / propuesta;
+- selector de intervenci?n;
+- argumento para junta;
+- descarga PNG comparativa;
+- descarga PNG estado actual;
+- descarga PNG propuesta;
+- WhatsApp;
+- email;
+- copiar enlace;
+- c?digo visual / enlace;
+- modo escaparate / mupi;
+- guardado local b?sico.
 
 ---
 
@@ -100,7 +123,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 |----|--------|--------|
 | 01 | Bola de Imagen | Disponible · v1.3 |
 | 02 | Before / After Reforma | Disponible · v2.1.2 |
-| 03 | Community Improvement / Vecinia | Próximamente · v2.2 |
+| 03 | Community Improvement / Vecinia | Disponible ? v2.2.1 |
 | 04 | Real Estate Immersive Viewer | Próximamente · v2.3 |
 | 05 | Real Estate Capture Tour | Próximamente · v2.4 |
 | 06 | Golf Experience / Home Practice | Próximamente · v2.5 |
@@ -147,29 +170,27 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 ---
 
-## Prioridad estratégica
+## Prioridad estrat?gica
 
-El siguiente módulo recomendado es:
+El siguiente m?dulo recomendado es:
 
-**v2.1 — Before / After Reforma**
+**v2.3 ? Real Estate Immersive Viewer**
 
 **Motivo:**
 
-Conecta directamente con inmobiliaria, reformas, interiorismo, arquitectura, administradores de fincas, Vecinia, Immersphere y Rubik Sota.
+Despu?s de validar Bola de Imagen, Before / After Reforma y Community Improvement / Vecinia, el siguiente paso natural es llevar el patr?n a una experiencia inmobiliaria inmersiva: capturar o subir im?genes de una vivienda, navegar visualmente por zonas, presentar puntos fuertes y compartir la demo con clientes compradores o propietarios.
 
 **Flujo previsto:**
 
-1. Subir imagen del estado actual.
-2. Subir imagen del estado futuro.
-3. Revelar antes/después con gesto o swipe.
-4. Grabar clip.
-5. Usarlo como demo comercial.
+1. Subir o capturar im?genes de una vivienda.
+2. Navegar por zonas clave: sal?n, cocina, ba?o, terraza, fachada o dormitorio.
+3. Activar puntos fuertes y argumentos comerciales.
+4. Exportar imagen, enlace o clip.
+5. Compartir la demo con comprador, propietario o agencia.
 
 **Frase clave:**
 
-> El cliente no solo lee una propuesta: ve el cambio.
-
-Después de v2.1 llegará v2.1.1 (Capture Input System aplicado a Before/After), seguido de v2.2 Community Improvement / Vecinia, v2.3 Real Estate Immersive Viewer y v2.4 Real Estate Capture Tour para completar el eje inmobiliaria/comunidades.
+> De ense?ar una vivienda a dirigir una experiencia comercial.
 
 ---
 
@@ -245,9 +266,11 @@ Cada módulo debe incluir, cuando aplique:
 - v2.0.1 — Roadmap ampliado 33 módulos
 - v2.1 — Before / After Reforma — validado
 - v2.1.1 — Capture Input System — sustituido por v2.1.2
-- v2.1.2 — In-app Camera Capture — estable actual
-- v2.2 — Community Improvement / Vecinia — siguiente
-- v2.3 — Real Estate Immersive Viewer
+- v2.1.2 ? In-app Camera Capture ? estable
+- v2.2 ? Community Improvement / Vecinia ? validado
+- v2.2.1 ? Export & Share Layer ? estable actual
+- v2.2.2 ? Promote Vecinia ? documentaci?n/Hub
+- v2.3 ? Real Estate Immersive Viewer ? siguiente
 - v2.4 — Real Estate Capture Tour
 - v2.5 — Golf Experience / Home Practice
 - v2.6 — Golf Course Visualizer
@@ -295,4 +318,5 @@ Cada módulo debe incluir, cuando aplique:
 - Capture Input System validado in-app (v2.1.2).
 - Bola de Imagen v1.3 publicada y funcional.
 - Before / After Reforma v2.1.2 publicada y funcional.
-- Siguiente fase: v2.2 — Community Improvement / Vecinia.
+- Community Improvement / Vecinia v2.2.1 publicada y funcional.
+- Siguiente fase: v2.3 ? Real Estate Immersive Viewer.
