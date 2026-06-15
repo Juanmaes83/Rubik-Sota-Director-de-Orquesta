@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota Gesture Lab v2.0 — Plataforma modular de experiencias visuales controladas por gestos para 24 módulos sectoriales: inmobiliaria, reformas, deporte, turismo, retail, salud educativa, cultura, industria y eventos." />
+  <title>Rubik Sota Gesture Lab · Hub v2.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030303;
+      --bg-2: #090909;
+      --fg: #ffffff;
+      --muted: rgba(255,255,255,0.66);
+      --muted-2: rgba(255,255,255,0.42);
+      --line: rgba(255,255,255,0.14);
+      --line-strong: rgba(255,255,255,0.32);
+      --panel: rgba(13,13,13,0.76);
+      --glass: rgba(255,255,255,0.06);
+      --accent: #00ffcc;
+      --accent-2: #d8ff3e;
+      --danger: #ff3366;
+      --gold: #e8d8a8;
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+      --shadow: 0 30px 90px rgba(0,0,0,0.62);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--fg);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(0,255,204,0.14), transparent 32%),
+        radial-gradient(circle at 84% 12%, rgba(216,255,62,0.08), transparent 28%),
+        radial-gradient(circle at 78% 82%, rgba(255,51,102,0.10), transparent 30%),
+        var(--bg);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: radial-gradient(circle at 50% 38%, black, transparent 78%);
+      opacity: 0.4;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, label { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: clamp(1rem, 3vw, 2.8rem);
+      display: grid;
+      gap: clamp(2rem, 4vw, 3.4rem);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.4rem 0.2rem;
+    }
+
+    .brand { display: flex; align-items: center; gap: 0.78rem; min-width: 0; }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      background: linear-gradient(135deg, rgba(0,255,204,0.20), rgba(255,255,255,0.05));
+      box-shadow: inset 0 0 28px rgba(0,255,204,0.10), 0 0 28px rgba(0,255,204,0.06);
+      font-weight: 900;
+      letter-spacing: -0.08em;
+      font-size: 0.92rem;
+    }
+
+    .brand-name { display: block; font-weight: 900; letter-spacing: -0.055em; line-height: 1; font-size: 1.06rem; }
+    .brand-sub { display: block; margin-top: 0.22rem; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; }
+
+    .topbar .meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.46rem;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-weight: 800;
+      border: 1px solid var(--line);
+      padding: 0.5rem 0.8rem;
+      border-radius: var(--radius-pill);
+      background: var(--glass);
+    }
+
+    .meta-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.072), rgba(255,255,255,0.024));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: clamp(1.5rem, 3.4vw, 3rem);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -22%;
+      bottom: -28%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, rgba(0,255,204,0.15), transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 1.2rem;
+    }
+
+    .eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 18px var(--accent); }
+
+    h1 {
+      font-size: clamp(2.4rem, 5.8vw, 5.4rem);
+      line-height: 0.94;
+      letter-spacing: -0.075em;
+      font-weight: 800;
+      max-width: 14ch;
+    }
+
+    h1 .serif { font-family: "Playfair Display", serif; font-style: italic; font-weight: 400; letter-spacing: -0.055em; }
+
+    .hero-sub {
+      margin-top: 1.2rem;
+      color: var(--fg);
+      font-weight: 600;
+      font-size: clamp(1.05rem, 1.6vw, 1.32rem);
+      max-width: 58ch;
+    }
+
+    .hero-lead {
+      margin-top: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: clamp(0.96rem, 1.3vw, 1.08rem);
+      max-width: 70ch;
+    }
+
+    .hero-actions {
+      margin-top: 1.6rem;
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      background: var(--glass);
+      color: var(--fg);
+      padding: 0.78rem 1.1rem;
+      font-weight: 800;
+      font-size: 0.86rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.46rem;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255,255,255,0.11); }
+    .btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .btn-primary:hover { background: rgba(255,255,255,0.88); color: #000; }
+    .btn-accent { border-color: rgba(0,255,204,0.46); box-shadow: inset 0 0 26px rgba(0,255,204,0.08); }
+    .btn-ghost { background: transparent; }
+    .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.55rem, 2.6vw, 2.4rem);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+    }
+
+    .section-head .kicker {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+
+    .modules-grid {
+      display: grid;
+      gap: clamp(0.8rem, 1.4vw, 1.1rem);
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+
+    .module-card {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+      padding: 1.15rem 1.15rem 1.05rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      min-height: 0;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .module-card .top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.6rem;
+    }
+
+    .module-card .num {
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 2rem;
+      line-height: 1;
+      color: rgba(255,255,255,0.78);
+      letter-spacing: -0.04em;
+    }
+
+    .module-card .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.66rem;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted-2); }
+
+    .module-card h3 {
+      font-size: 1.05rem;
+      line-height: 1.18;
+      letter-spacing: -0.025em;
+      font-weight: 800;
+    }
+
+    .module-card dl {
+      display: grid;
+      gap: 0.32rem;
+      font-size: 0.82rem;
+      line-height: 1.42;
+      color: var(--muted);
+    }
+
+    .module-card dl div { display: grid; grid-template-columns: 78px 1fr; gap: 0.5rem; }
+    .module-card dl dt { color: rgba(255,255,255,0.6); font-weight: 800; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.10em; padding-top: 0.15rem; }
+    .module-card dl dd { color: var(--muted); }
+
+    .module-card .foot {
+      margin-top: 0.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .phase-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border: 1px solid var(--line);
+      padding: 0.45rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-weight: 800;
+      font-size: 0.7rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      letter-spacing: 0.04em;
+    }
+
+    .module-card.is-live { border-color: rgba(0,255,204,0.42); background: linear-gradient(180deg, rgba(0,255,204,0.10), rgba(0,255,204,0.025)); }
+    .module-card.is-live .status-dot { background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+    .module-card.is-live .status { color: var(--fg); }
+    .module-card.is-live:hover { transform: translateY(-3px); border-color: var(--accent); }
+
+    .module-card.is-soon .status-dot { background: var(--gold); box-shadow: 0 0 10px rgba(232,216,168,0.4); }
+    .module-card.is-soon { cursor: default; }
+
+    .module-card .open-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border: 1px solid var(--accent);
+      color: #001f1a;
+      background: var(--accent);
+      padding: 0.55rem 0.9rem;
+      border-radius: var(--radius-pill);
+      font-weight: 800;
+      font-size: 0.78rem;
+    }
+
+    .module-card .open-link:hover { background: rgba(0,255,204,0.85); }
+
+    .next-block {
+      border: 1px solid rgba(216,255,62,0.36);
+      border-radius: var(--radius-xl);
+      padding: clamp(1.4rem, 3vw, 2.4rem);
+      background:
+        radial-gradient(circle at 88% 20%, rgba(216,255,62,0.12), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+      display: grid;
+      gap: 1rem;
+    }
+
+    .next-block h2 {
+      font-size: clamp(1.7rem, 3vw, 2.5rem);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+    }
+
+    .next-block .quote {
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.25rem, 2.4vw, 1.85rem);
+      color: var(--fg);
+      letter-spacing: -0.02em;
+      max-width: 30ch;
+    }
+
+    .next-block ul { list-style: none; padding: 0; display: grid; gap: 0.5rem; color: var(--muted); font-size: 0.96rem; }
+    .next-block ul li::before { content: "→ "; color: var(--accent); font-weight: 800; }
+
+    .strategy {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+      padding: clamp(1.5rem, 3vw, 2.6rem);
+      display: grid;
+      grid-template-columns: minmax(260px, 0.95fr) minmax(260px, 1.05fr);
+      gap: clamp(1.2rem, 3vw, 2.4rem);
+      align-items: start;
+    }
+
+    .strategy h2 {
+      font-size: clamp(1.7rem, 3vw, 2.6rem);
+      line-height: 1.04;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+    }
+
+    .strategy p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: clamp(0.98rem, 1.3vw, 1.1rem);
+    }
+
+    .strategy .highlight {
+      margin-top: 1rem;
+      color: var(--fg);
+      font-weight: 700;
+      border-left: 2px solid var(--accent);
+      padding-left: 0.85rem;
+    }
+
+    .sectors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .sector-chip {
+      border: 1px solid var(--line);
+      background: var(--glass);
+      color: var(--fg);
+      padding: 0.5rem 0.85rem;
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .roadmap {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: rgba(0,0,0,0.42);
+      padding: clamp(1.4rem, 3vw, 2.4rem);
+      display: grid;
+      gap: 1rem;
+    }
+
+    .roadmap h2 {
+      font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+      letter-spacing: -0.05em;
+      font-weight: 800;
+    }
+
+    .roadmap-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.55rem;
+    }
+
+    .phase-item {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.7rem 0.85rem;
+      background: rgba(255,255,255,0.025);
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .phase-item strong { font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+    .phase-item span { font-size: 0.92rem; font-weight: 700; letter-spacing: -0.015em; color: var(--fg); }
+
+    .phase-item.is-current { border-color: rgba(0,255,204,0.46); background: linear-gradient(180deg, rgba(0,255,204,0.1), rgba(0,255,204,0.02)); }
+    .phase-item.is-current strong { color: var(--accent); }
+    .phase-item.is-next { border-color: rgba(216,255,62,0.30); }
+    .phase-item.is-next strong { color: var(--accent-2); }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      padding-top: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .footer strong { color: var(--fg); }
+
+    @media (max-width: 880px) {
+      .strategy { grid-template-columns: 1fr; }
+      h1 { max-width: none; }
+    }
+
+    @media (max-width: 520px) {
+      .topbar .meta { display: none; }
+      .modules-grid { grid-template-columns: 1fr; }
+      .hero-actions .btn { width: 100%; justify-content: center; }
+      .module-card dl div { grid-template-columns: 70px 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Rubik Sota Gesture Lab">
+        <div class="brand-mark">RS</div>
+        <div>
+          <span class="brand-name">Rubik Sota Gesture Lab</span>
+          <span class="brand-sub">Hub multisectorial · v2.0</span>
+        </div>
+      </div>
+      <div class="meta"><span class="meta-dot"></span> v2.0 · 1 módulo activo · 23 en planificación</div>
+    </header>
+
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> Plataforma modular · Gestos · Three.js · MediaPipe</div>
+      <h1 id="heroTitle">Rubik Sota <span class="serif">Gesture Lab.</span></h1>
+      <p class="hero-sub">Plataforma modular de experiencias visuales controladas por gestos para sectores reales.</p>
+      <p class="hero-lead">
+        Gesture Lab empieza con Bola de Imagen, pero está diseñado como un sistema escalable de módulos interactivos para inmobiliaria, reformas, deporte, turismo, retail, salud educativa, cultura, industria, eventos y más sectores. Una misma base — imagen, gesto, transformación, grabación y vista completa — adaptada a cada utilidad de negocio.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="./bola-imagen/rubik-sota-gesture-lab-bola-imagen-v1-3.html">Abrir Bola de Imagen →</a>
+        <a class="btn btn-ghost" href="#roadmap">Ver roadmap multisectorial</a>
+        <a class="btn btn-ghost" href="#modules">Mapa de módulos</a>
+      </div>
+    </section>
+
+    <section id="modules" aria-label="Mapa de módulos multisectoriales">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Mapa multisectorial</div>
+          <h2>Mapa de módulos multisectoriales</h2>
+        </div>
+        <div class="kicker">24 módulos · 1 activo · 23 en planificación</div>
+      </div>
+
+      <div class="modules-grid">
+
+        <a class="module-card is-live" href="./bola-imagen/rubik-sota-gesture-lab-bola-imagen-v1-3.html" aria-label="Abrir módulo 01 Bola de Imagen">
+          <div class="top">
+            <span class="num">01</span>
+            <span class="status"><span class="status-dot"></span> Disponible · v1.3</span>
+          </div>
+          <h3>Bola de Imagen</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Imagen plana → bola 3D gestual.</dd></div>
+            <div><dt>Usuario</dt><dd>Sube una imagen, abre la mano para verla plana, cierra el puño para convertirla en bola, rota con la palma, usa vista completa y graba un clip.</dd></div>
+            <div><dt>Sirve para</dt><dd>Crear impacto visual en campañas, presentaciones, redes, eventos, escaparates digitales o demos interactivas.</dd></div>
+            <div><dt>Sectores</dt><dd>Publicidad · Retail · Moda · Arte · Eventos · Museos · Educación visual</dd></div>
+          </dl>
+          <div class="foot">
+            <span class="phase-tag">Fase: Activo ahora</span>
+            <span class="open-link">Abrir demo →</span>
+          </div>
+        </a>
+
+        <article class="module-card is-soon" aria-label="Módulo 02 Before / After Reforma (próximamente)">
+          <div class="top">
+            <span class="num">02</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.1</span>
+          </div>
+          <h3>Before / After Reforma</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Antes/después visual controlado por gesto o swipe.</dd></div>
+            <div><dt>Usuario</dt><dd>Sube una imagen del estado actual y otra imagen de propuesta futura: reforma, render, decoración, limpieza, pintura, mobiliario o redistribución.</dd></div>
+            <div><dt>Sirve para</dt><dd>Vender reformas, interiorismo, rehabilitación, mantenimiento o mejoras mostrando el cambio de forma inmediata.</dd></div>
+            <div><dt>Sectores</dt><dd>Inmobiliaria · Reformas · Interiorismo · Arquitectura · Home staging · Administradores de fincas</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Siguiente módulo recomendado</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 03 Community Improvement / Vecinia (próximamente)">
+          <div class="top">
+            <span class="num">03</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.2</span>
+          </div>
+          <h3>Community Improvement / Vecinia</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Zonas comunes, fachadas, jardines, garajes o piscinas transformadas en antes/después visual.</dd></div>
+            <div><dt>Usuario</dt><dd>Compara estado actual y mejora propuesta, activa capas de mantenimiento, prioridad, calendario o impacto vecinal.</dd></div>
+            <div><dt>Sirve para</dt><dd>Explicar mejoras a comunidades, vender mantenimiento integral y facilitar decisiones en juntas de vecinos.</dd></div>
+            <div><dt>Sectores</dt><dd>Administradores de fincas · Comunidades · Vecinia · Mantenimiento · Reformas · Jardinería · Piscinas</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Alta prioridad estratégica</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 04 Golf Experience (próximamente)">
+          <div class="top">
+            <span class="num">04</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.3</span>
+          </div>
+          <h3>Golf Experience</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Campo, hoyo, golpe o recorrido explicado con trayectorias y capas visuales.</dd></div>
+            <div><dt>Usuario</dt><dd>Revela estrategia de hoyo, trayectoria de golpe, zonas de riesgo, mantenimiento del green o experiencia premium del club.</dd></div>
+            <div><dt>Sirve para</dt><dd>Vender membresías, torneos, resorts, clases, patrocinios y experiencias premium.</dd></div>
+            <div><dt>Sectores</dt><dd>Golf · Resorts · Hoteles · Turismo premium · Escuelas · Eventos deportivos · Sponsors</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Deporte premium</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 05 Pádel Tactical Lab (próximamente)">
+          <div class="top">
+            <span class="num">05</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.4</span>
+          </div>
+          <h3>Pádel Tactical Lab</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Pista de pádel interactiva con posiciones, golpes, paredes y zonas calientes.</dd></div>
+            <div><dt>Usuario</dt><dd>Explora bandeja, víbora, globo, remate, rebote en cristal, colocación de pareja o zonas de punto ganador.</dd></div>
+            <div><dt>Sirve para</dt><dd>Formación, contenido viral, venta de palas, academias, torneos y experiencias para clubes.</dd></div>
+            <div><dt>Sectores</dt><dd>Pádel · Clubes · Academias · Retail deportivo · Marcas de palas · Eventos</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Deporte social / viral</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 06 Tennis Gesture Court (próximamente)">
+          <div class="top">
+            <span class="num">06</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.5</span>
+          </div>
+          <h3>Tennis Gesture Court</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Pista, saque, golpe o producto deportivo explicado mediante zonas y capas.</dd></div>
+            <div><dt>Usuario</dt><dd>Activa dirección de saque, zonas de ataque/defensa, ejercicios, comparación de raquetas o narrativa de partido.</dd></div>
+            <div><dt>Sirve para</dt><dd>Academias, torneos, entrenadores, clubs, marcas deportivas y presentaciones de material.</dd></div>
+            <div><dt>Sectores</dt><dd>Tenis · Academias · Torneos · Retail deportivo · Marcas · Formación</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Deporte técnico</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 07 Nautical Visualizer (próximamente)">
+          <div class="top">
+            <span class="num">07</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.6</span>
+          </div>
+          <h3>Nautical Visualizer</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Barco, vela, ruta, viento o producto náutico manipulable con gestos.</dd></div>
+            <div><dt>Usuario</dt><dd>Rota una embarcación, revela partes de una vela, compara vela dañada/reparada, visualiza viento, trimado o rutas.</dd></div>
+            <div><dt>Sirve para</dt><dd>Vender mantenimiento, formación náutica, productos técnicos, turismo náutico y experiencias de club.</dd></div>
+            <div><dt>Sectores</dt><dd>Náutica · Velerías · Clubes náuticos · Escuelas · Turismo · Mantenimiento · Win Sail</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Conexión directa Win Sail</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 08 Tourism / Resort Tour (próximamente)">
+          <div class="top">
+            <span class="num">08</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.7</span>
+          </div>
+          <h3>Tourism / Resort Tour</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Destino, hotel, resort o experiencia turística revelada por capas.</dd></div>
+            <div><dt>Usuario</dt><dd>Explora habitaciones, vistas, rutas, zonas comunes, experiencias, mapa de resort o itinerarios por gestos.</dd></div>
+            <div><dt>Sirve para</dt><dd>Vender reservas, experiencias premium, eventos, turismo activo, bodas o paquetes turísticos.</dd></div>
+            <div><dt>Sectores</dt><dd>Hoteles · Resorts · Turismo · Ayuntamientos · Eventos · Agencias · Turismo activo</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Turismo experiencial</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 09 Product 360 (próximamente)">
+          <div class="top">
+            <span class="num">09</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.8</span>
+          </div>
+          <h3>Product 360</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Producto protagonista con rotación, zoom, capas y presentación interactiva.</dd></div>
+            <div><dt>Usuario</dt><dd>Rota un producto, amplía detalles, abre packaging, compara acabados, colores o versiones.</dd></div>
+            <div><dt>Sirve para</dt><dd>Mejorar catálogos, ecommerce, ferias, showrooms, escaparates digitales y lanzamientos.</dd></div>
+            <div><dt>Sectores</dt><dd>Retail · Ecommerce · Packaging · Cosmética · Tecnología · Alimentación · Joyería</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Producto / venta</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 10 Lookbook Gestual (próximamente)">
+          <div class="top">
+            <span class="num">10</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.9</span>
+          </div>
+          <h3>Lookbook Gestual</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Colecciones, prendas o moodboards explorables con gestos.</dd></div>
+            <div><dt>Usuario</dt><dd>Pasa de look a look, cambia colores, compara combinaciones, amplía detalles y explora campañas editoriales.</dd></div>
+            <div><dt>Sirve para</dt><dd>Convertir catálogos de moda en experiencias interactivas para campañas, showrooms y escaparates.</dd></div>
+            <div><dt>Sectores</dt><dd>Moda · Calzado · Complementos · Joyería · Editorial · Fotografía · Branding</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Moda / campaña visual</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 11 Food / Packaging (próximamente)">
+          <div class="top">
+            <span class="num">11</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.10</span>
+          </div>
+          <h3>Food / Packaging</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Montaje, capas o transformación visual de comida y packaging.</dd></div>
+            <div><dt>Usuario</dt><dd>Monta visualmente un plato, revela ingredientes, abre envase, compara formatos o muestra menú interactivo.</dd></div>
+            <div><dt>Sirve para</dt><dd>Vender menús, productos gourmet, delivery, bebidas, franquicias y lanzamientos gastronómicos.</dd></div>
+            <div><dt>Sectores</dt><dd>Restauración · Food delivery · Alimentación · Bebidas · Franquicias · Packaging</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Food visual / social media</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 12 Museo / Patrimonio (próximamente)">
+          <div class="top">
+            <span class="num">12</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.11</span>
+          </div>
+          <h3>Museo / Patrimonio</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Pieza, mapa, archivo visual u obra manipulable con gestos.</dd></div>
+            <div><dt>Usuario</dt><dd>Rota piezas, revela capas históricas, compara antes/ahora, amplía detalles o activa contenido interpretativo.</dd></div>
+            <div><dt>Sirve para</dt><dd>Convertir contenidos culturales estáticos en experiencias memorables e interpretativas.</dd></div>
+            <div><dt>Sectores</dt><dd>Museos · Cultura · Turismo · Patrimonio · Centros culturales · Ayuntamientos</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Cultura / interpretación</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 13 Educación Visual (próximamente)">
+          <div class="top">
+            <span class="num">13</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.12</span>
+          </div>
+          <h3>Educación Visual</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Conceptos complejos explicados mediante imágenes transformables y capas visuales.</dd></div>
+            <div><dt>Usuario</dt><dd>Activa capas, revela partes de un sistema, compara estados o graba una explicación visual.</dd></div>
+            <div><dt>Sirve para</dt><dd>Formación, divulgación, workshops, presentaciones comerciales o demostraciones técnicas.</dd></div>
+            <div><dt>Sectores</dt><dd>Educación · Formación corporativa · Ciencia · Salud · Ingeniería · Ventas B2B</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Formación / divulgación</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 14 Dental Kids / Cepillado Interactivo (próximamente)">
+          <div class="top">
+            <span class="num">14</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.13</span>
+          </div>
+          <h3>Dental Kids / Cepillado Interactivo</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Boca, dientes o personaje infantil reaccionan al gesto de cepillado.</dd></div>
+            <div><dt>Usuario</dt><dd>Mueve la mano como si estuviera cepillando, limpia zonas, elimina monstruos de placa, completa un reto de 2 minutos y desbloquea recompensas visuales.</dd></div>
+            <div><dt>Sirve para</dt><dd>Enseñar hábitos de higiene dental a niños de forma divertida, visual y memorable. No debe plantearse como diagnóstico clínico.</dd></div>
+            <div><dt>Sectores</dt><dd>Clínicas dentales · Odontopediatría · Colegios · Farmacias · Marcas de higiene dental · Campañas de salud pública</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Salud educativa gamificada</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 15 Higiene de Manos (próximamente)">
+          <div class="top">
+            <span class="num">15</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.14</span>
+          </div>
+          <h3>Higiene de Manos</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Manos virtuales con zonas que se limpian mediante gestos y feedback visual.</dd></div>
+            <div><dt>Usuario</dt><dd>Completa una limpieza por zonas, elimina suciedad o bacterias visuales y recibe recompensa al terminar.</dd></div>
+            <div><dt>Sirve para</dt><dd>Campañas sanitarias, formación escolar, hospitales, residencias, hostelería y prevención.</dd></div>
+            <div><dt>Sectores</dt><dd>Colegios · Hospitales · Clínicas · Residencias · Hostelería · Ayuntamientos · Salud pública</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Hábito preventivo</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 16 Fisioterapia Guiada (próximamente)">
+          <div class="top">
+            <span class="num">16</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.15</span>
+          </div>
+          <h3>Fisioterapia Guiada</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Movimiento guiado con feedback visual de rango, repetición y progreso.</dd></div>
+            <div><dt>Usuario</dt><dd>Repite ejercicios, completa rangos de movimiento, sigue una guía visual y desbloquea progreso.</dd></div>
+            <div><dt>Sirve para</dt><dd>Rehabilitación, fisioterapia, recuperación deportiva, ejercicios en casa y seguimiento básico no diagnóstico.</dd></div>
+            <div><dt>Sectores</dt><dd>Fisioterapia · Clínicas · Deporte · Bienestar · Rehabilitación · Formación sanitaria</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Salud funcional</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 17 Salud / Clínicas (próximamente)">
+          <div class="top">
+            <span class="num">17</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.16</span>
+          </div>
+          <h3>Salud / Clínicas</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Tratamientos, procesos o resultados explicados por capas visuales y antes/después.</dd></div>
+            <div><dt>Usuario</dt><dd>Explora fases de tratamiento, compara estados, revela procedimiento o entiende un recorrido de paciente.</dd></div>
+            <div><dt>Sirve para</dt><dd>Mejorar explicación comercial y educativa en clínicas privadas, siempre evitando claims médicos no validados.</dd></div>
+            <div><dt>Sectores</dt><dd>Clínicas estéticas · Dental · Fisioterapia · Dermatología · Bienestar · Salud privada</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Clínicas / explicación visual</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 18 Automoción (próximamente)">
+          <div class="top">
+            <span class="num">18</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.17</span>
+          </div>
+          <h3>Automoción</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Vehículo, acabado o detalle técnico interactivo con rotación y capas.</dd></div>
+            <div><dt>Usuario</dt><dd>Rota coche, cambia color, revela interior, compara versiones o activa capas de tecnología y seguridad.</dd></div>
+            <div><dt>Sirve para</dt><dd>Concesionarios, renting, ferias, presentaciones comerciales y experiencias de producto.</dd></div>
+            <div><dt>Sectores</dt><dd>Automoción · Concesionarios · Renting · Ferias · Detailing · Marcas</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Configurador visual</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 19 Industria / Cocinas / B2B (próximamente)">
+          <div class="top">
+            <span class="num">19</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.18</span>
+          </div>
+          <h3>Industria / Cocinas / B2B</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Máquinas, cocinas, instalaciones o procesos explicados por capas.</dd></div>
+            <div><dt>Usuario</dt><dd>Activa partes, revela flujos, compara soluciones, visualiza instalación o mantenimiento.</dd></div>
+            <div><dt>Sirve para</dt><dd>Ventas B2B, ferias industriales, formación técnica, catálogos y demostraciones.</dd></div>
+            <div><dt>Sectores</dt><dd>Industria · Cocinas · Fabricación · Hostelería profesional · Ingeniería · B2B</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Producto técnico / ventas B2B</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 20 Instituciones / Urbanismo (próximamente)">
+          <div class="top">
+            <span class="num">20</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.19</span>
+          </div>
+          <h3>Instituciones / Urbanismo</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Espacio público, plaza, parque, ruta o infraestructura comparada visualmente.</dd></div>
+            <div><dt>Usuario</dt><dd>Revela antes/después, activa capas de eficiencia energética, señalética, rutas o impacto ciudadano.</dd></div>
+            <div><dt>Sirve para</dt><dd>Presentar proyectos públicos, subvenciones, participación ciudadana y turismo interpretativo.</dd></div>
+            <div><dt>Sectores</dt><dd>Ayuntamientos · Urbanismo · Turismo · Infraestructura · Parajes naturales · Instituciones</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Proyectos públicos / Xorret de Catí</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 21 Eventos / Activaciones (próximamente)">
+          <div class="top">
+            <span class="num">21</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.20</span>
+          </div>
+          <h3>Eventos / Activaciones</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Pared o pantalla interactiva para transformar imágenes, lanzar objetos visuales o activar marca.</dd></div>
+            <div><dt>Usuario</dt><dd>Interactúa con logos, productos, sponsors, retos, clips o piezas visuales para generar contenido.</dd></div>
+            <div><dt>Sirve para</dt><dd>Captar atención en ferias, stands, eventos, activaciones de marca, patrocinios y contenido viral.</dd></div>
+            <div><dt>Sectores</dt><dd>Eventos · Ferias · Stands · Marcas · Sponsors · Publicidad · Retail</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Activación comercial</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 22 Nutrición Infantil (próximamente)">
+          <div class="top">
+            <span class="num">22</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.21</span>
+          </div>
+          <h3>Nutrición Infantil</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Plato saludable montado por gestos con feedback y recompensa visual.</dd></div>
+            <div><dt>Usuario</dt><dd>Selecciona alimentos, construye un plato equilibrado, aprende grupos nutricionales y desbloquea logros.</dd></div>
+            <div><dt>Sirve para</dt><dd>Educación alimentaria infantil, campañas escolares, nutricionistas y marcas saludables.</dd></div>
+            <div><dt>Sectores</dt><dd>Colegios · Nutrición · Salud pública · Familias · Marcas healthy · Ayuntamientos</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Educación saludable</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 23 Seguridad Laboral (próximamente)">
+          <div class="top">
+            <span class="num">23</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.22</span>
+          </div>
+          <h3>Seguridad Laboral</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Checklist visual de EPIs, postura, riesgos o procedimiento seguro.</dd></div>
+            <div><dt>Usuario</dt><dd>Activa casco, guantes, gafas, arnés, zonas de peligro o pasos de seguridad antes de una tarea.</dd></div>
+            <div><dt>Sirve para</dt><dd>Formación PRL, onboarding, industria, construcción, logística y prevención de accidentes.</dd></div>
+            <div><dt>Sectores</dt><dd>Construcción · Industria · Logística · PRL · Formación corporativa · B2B</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Formación preventiva</span></div>
+        </article>
+
+        <article class="module-card is-soon" aria-label="Módulo 24 Educación Ambiental (próximamente)">
+          <div class="top">
+            <span class="num">24</span>
+            <span class="status"><span class="status-dot"></span> Próximamente · v2.23</span>
+          </div>
+          <h3>Educación Ambiental</h3>
+          <dl>
+            <div><dt>Efecto</dt><dd>Entorno, residuos o ecosistema que mejora mediante gestos y decisiones visuales.</dd></div>
+            <div><dt>Usuario</dt><dd>Clasifica residuos, limpia un espacio, activa capas sostenibles o compara impacto antes/después.</dd></div>
+            <div><dt>Sirve para</dt><dd>Campañas ambientales, colegios, ayuntamientos, turismo sostenible y sensibilización ciudadana.</dd></div>
+            <div><dt>Sectores</dt><dd>Colegios · Ayuntamientos · Medio ambiente · Turismo sostenible · ONGs · Eventos públicos</dd></div>
+          </dl>
+          <div class="foot"><span class="phase-tag">Fase: Sostenibilidad / educación pública</span></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="strategy" aria-label="Visión estratégica">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-dot"></span> Estrategia · Plataforma sectorial</div>
+        <h2>De laboratorio a plataforma sectorial.</h2>
+        <p style="margin-top: 0.9rem;">
+          Gesture Lab no es una colección de efectos sueltos. Es una arquitectura modular donde cada experiencia comparte una base común — imagen, gesto, transformación, grabación y vista completa — pero se adapta a una utilidad concreta de negocio, formación, venta o comunicación.
+        </p>
+        <p class="highlight">Primero validamos Bola de Imagen. Después implementamos un módulo por fase, empezando por Before / After Reforma.</p>
+      </div>
+      <div>
+        <div class="kicker" style="margin-bottom: 0.8rem;">Sectores objetivo</div>
+        <div class="sectors" aria-label="Sectores objetivo">
+          <span class="sector-chip">Inmobiliaria</span>
+          <span class="sector-chip">Reformas</span>
+          <span class="sector-chip">Arquitectura</span>
+          <span class="sector-chip">Administradores de fincas</span>
+          <span class="sector-chip">Golf</span>
+          <span class="sector-chip">Pádel</span>
+          <span class="sector-chip">Tenis</span>
+          <span class="sector-chip">Náutica</span>
+          <span class="sector-chip">Hoteles &amp; Resorts</span>
+          <span class="sector-chip">Turismo</span>
+          <span class="sector-chip">Retail</span>
+          <span class="sector-chip">Ecommerce</span>
+          <span class="sector-chip">Moda</span>
+          <span class="sector-chip">Food</span>
+          <span class="sector-chip">Museos &amp; Cultura</span>
+          <span class="sector-chip">Educación</span>
+          <span class="sector-chip">Salud educativa</span>
+          <span class="sector-chip">Fisioterapia</span>
+          <span class="sector-chip">Automoción</span>
+          <span class="sector-chip">Industria &amp; B2B</span>
+          <span class="sector-chip">Ayuntamientos &amp; Urbanismo</span>
+          <span class="sector-chip">Eventos &amp; Activaciones</span>
+          <span class="sector-chip">PRL &amp; Construcción</span>
+          <span class="sector-chip">Medio ambiente</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="next-block" aria-label="Siguiente implementación: v2.1 Before/After Reforma">
+      <div class="eyebrow"><span class="eyebrow-dot" style="background: var(--accent-2); box-shadow: 0 0 18px var(--accent-2);"></span> Siguiente implementación · v2.1</div>
+      <h2>Siguiente implementación: v2.1 — Before / After Reforma</h2>
+      <p style="color: var(--muted); line-height: 1.6; max-width: 70ch;">
+        Será el primer módulo sectorial real de Gesture Lab. Conectará directamente con inmobiliaria, reformas, interiorismo, arquitectura, Vecinia e Immersphere.
+      </p>
+      <ul>
+        <li>Subir imagen del estado actual.</li>
+        <li>Subir imagen del estado futuro.</li>
+        <li>Revelar el antes/después con gesto o swipe.</li>
+        <li>Grabar un clip de la transición.</li>
+        <li>Usarlo como demo comercial al cliente.</li>
+      </ul>
+      <p class="quote">El cliente no solo lee una propuesta: ve el cambio.</p>
+    </section>
+
+    <section id="roadmap" class="roadmap" aria-label="Roadmap multisectorial">
+      <div class="section-head" style="margin-bottom: 0;">
+        <div>
+          <div class="kicker">Roadmap multisectorial</div>
+          <h2>Implementación paso a paso</h2>
+        </div>
+        <div class="kicker">v2.0 → v2.23 · iteración pública</div>
+      </div>
+      <div class="roadmap-list">
+        <div class="phase-item is-current"><strong>Fase actual</strong><span>v2.0 — Hub multisectorial completo</span></div>
+        <div class="phase-item is-next"><strong>Siguiente</strong><span>v2.1 — Before / After Reforma</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.2 — Community Improvement / Vecinia</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.3 — Golf Experience</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.4 — Pádel Tactical Lab</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.5 — Tennis Gesture Court</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.6 — Nautical Visualizer</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.7 — Tourism / Resort Tour</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.8 — Product 360</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.9 — Lookbook Gestual</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.10 — Food / Packaging</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.11 — Museo / Patrimonio</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.12 — Educación Visual</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.13 — Dental Kids / Cepillado Interactivo</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.14 — Higiene de Manos</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.15 — Fisioterapia Guiada</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.16 — Salud / Clínicas</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.17 — Automoción</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.18 — Industria / Cocinas / B2B</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.19 — Instituciones / Urbanismo</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.20 — Eventos / Activaciones</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.21 — Nutrición Infantil</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.22 — Seguridad Laboral</span></div>
+        <div class="phase-item"><strong>Fase</strong><span>v2.23 — Educación Ambiental</span></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div><strong>Rubik Sota</strong> · Gesture Lab Hub v2.0 · plataforma multisectorial</div>
+      <div>Activo: Bola de Imagen v1.3 · Siguiente: Before / After Reforma v2.1</div>
+    </footer>
+  </div>
+</body>
+</html>
