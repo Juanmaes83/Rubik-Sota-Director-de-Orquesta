@@ -1,0 +1,754 @@
+Rubik Sota Director de Orquesta
+
+Rubik Sota Director de Orquesta es una experiencia web interactiva y comercial diseñada para presentar proyectos visuales de forma inmersiva, controlable y memorable.
+
+No es solo un portfolio.
+No es solo una landing.
+No es solo una demo técnica.
+
+Es una herramienta para dirigir, presentar y vender experiencias visuales usando contenido propio, control gestual, modo cliente, CTA comerciales, presets, exportación de configuración, estadísticas y grabación experimental del escenario principal.
+
+Índice
+Qué es el proyecto
+Objetivo principal
+Para qué sirve
+Concepto: Director de Orquesta
+Características principales
+Cómo funciona
+Modos de uso
+Control gestual
+Carga de contenido propio
+Galería de proyectos
+Modo cliente
+Editor comercial de proyecto
+CTA comerciales
+Presets comerciales
+Exportación e importación
+Estadísticas
+Grabación experimental
+Privacidad
+Tecnologías utilizadas
+Estructura del repositorio
+Cómo ejecutar el proyecto
+Cómo desplegar en GitHub Pages
+Compatibilidad
+Limitaciones conocidas
+Roadmap
+Autoría y contacto
+Qué es el proyecto
+
+Rubik Sota Director de Orquesta es una aplicación web en un único archivo HTML que permite crear una presentación visual avanzada e interactiva.
+
+La herramienta permite cargar vídeos o imágenes, organizarlos como proyectos, editarlos comercialmente, añadir llamadas a la acción, activar modo cliente, controlar la experiencia mediante gestos de la mano, cambiar proyectos con swipe, exportar configuraciones, generar estadísticas y grabar clips experimentales del escenario visual.
+
+El proyecto está pensado para funcionar como:
+
+Portfolio interactivo.
+Demo comercial.
+Presentación experiencial.
+Herramienta de venta visual.
+Prototipo de producto comercial.
+Base para futuras versiones SaaS o plataforma online.
+Objetivo principal
+
+El objetivo es transformar una presentación visual tradicional en una experiencia dirigida.
+
+En vez de enseñar simplemente imágenes o vídeos, el usuario puede orquestar una presentación:
+
+cargar contenido;
+ordenar proyectos;
+editar narrativa;
+mostrar CTA;
+activar modo cliente;
+controlar con gestos;
+cambiar de proyecto;
+grabar clips;
+exportar configuraciones;
+medir interacciones.
+Para qué sirve
+
+Este proyecto sirve para presentar visualmente proyectos de alto impacto en sectores como:
+
+inmobiliaria premium;
+arquitectura;
+interiorismo;
+diseño;
+branding;
+publicidad;
+inteligencia artificial visual;
+producto tecnológico;
+experiencias inmersivas;
+portfolios creativos;
+presentaciones comerciales.
+
+Ejemplo de uso:
+
+Una agencia puede cargar varios vídeos de proyectos, editar el título y CTA de cada uno, activar modo cliente, presentar el contenido en pantalla completa, cambiar de proyecto con la mano y terminar con una llamada a la acción para solicitar una demo.
+
+Concepto: Director de Orquesta
+
+El nombre Director de Orquesta define la función real del proyecto.
+
+La herramienta no se limita a mostrar contenido. Lo dirige.
+
+Cada elemento cumple un papel dentro de la experiencia:
+
+el vídeo o imagen es la pieza principal;
+los gestos son la batuta;
+la galería es el repertorio;
+el modo cliente es el escenario limpio;
+los CTA son la conversión;
+las estadísticas son la lectura del comportamiento;
+la grabación convierte la experiencia en contenido compartible.
+
+El usuario se convierte en director de una presentación comercial visual.
+
+Características principales
+Experiencia visual inmersiva
+
+La web presenta el contenido en un escenario visual de alto impacto, con estética oscura, efectos de luz, overlays, microinteracciones y diseño preparado para presentaciones comerciales.
+
+Control gestual
+
+La cámara detecta gestos de la mano mediante MediaPipe Hands.
+
+Gestos principales:
+
+Palma abierta: reproduce vídeo o activa impacto visual en imágenes.
+Puño cerrado: pausa el vídeo.
+Swipe lateral con mano abierta: cambia de proyecto.
+Carga de contenido propio
+
+Permite subir:
+
+vídeos;
+imágenes;
+reels;
+renders;
+piezas de portfolio;
+material visual de cliente.
+
+Los archivos cargados se guardan localmente en el navegador mediante IndexedDB.
+
+Galería de proyectos
+
+El contenido se organiza en una galería visual. Cada proyecto puede tener título, descripción, sector, CTA y preset comercial asociado.
+
+Modo presentación
+
+Modo limpio para enseñar la experiencia en directo, ocultando parte de la interfaz técnica.
+
+Modo cliente
+
+Modo aún más limpio y comercial. Oculta controles técnicos y muestra una experiencia lista para cliente final.
+
+Editor comercial
+
+Cada proyecto puede editarse con:
+
+título;
+subtítulo;
+sector;
+descripción;
+texto CTA;
+URL CTA;
+orden;
+preset aplicado.
+CTA seguros
+
+Los CTA pueden apuntar a:
+
+URL web;
+WhatsApp;
+email;
+teléfono.
+
+El sistema bloquea protocolos inseguros como javascript:, data: o file:.
+
+Presets comerciales
+
+Incluye presets para adaptar rápidamente la experiencia a distintos sectores:
+
+Agencia creativa.
+Inmobiliaria premium.
+Arquitectura.
+IA visual.
+Producto tecnológico.
+
+También permite guardar presets personalizados.
+
+Exportación e importación
+
+Permite exportar e importar la configuración del proyecto en JSON.
+
+La exportación incluye metadatos, textos, CTA, presets y ajustes, pero no incluye archivos multimedia pesados.
+
+Estadísticas exportables
+
+La experiencia registra métricas como:
+
+palmas detectadas;
+puños detectados;
+swipes;
+comandos;
+tiempo de reproducción;
+cambios de proyecto;
+CTA pulsados;
+proyecto más visto.
+
+Estas estadísticas pueden exportarse en formato JSON y texto legible.
+
+Grabación experimental
+
+Permite grabar un clip del escenario principal en formato .webm, con un límite aproximado de 30 segundos.
+
+La grabación es experimental y funciona mejor en escritorio con Chrome o Edge.
+
+Cómo funciona
+
+El proyecto funciona como una aplicación web autónoma.
+
+No necesita backend para ejecutarse.
+
+El archivo principal es:
+
+index.html
+
+La aplicación usa tecnologías del navegador:
+
+HTML;
+CSS;
+JavaScript;
+IndexedDB;
+localStorage;
+MediaPipe Hands;
+MediaRecorder;
+Canvas;
+Web APIs nativas.
+Modos de uso
+1. Modo edición
+
+Es el modo de trabajo.
+
+Permite:
+
+subir contenido;
+editar proyectos;
+limpiar contenido;
+aplicar presets;
+exportar configuración;
+importar configuración;
+exportar estadísticas;
+crear clips;
+ajustar brillo y volumen.
+2. Modo presentación
+
+Modo pensado para enseñar la experiencia sin tanta interfaz.
+
+Permite una visualización más limpia, manteniendo controles básicos.
+
+Atajos:
+
+P = activar/desactivar modo presentación
+Esc = salir
+3. Modo cliente
+
+Modo comercial final.
+
+Oculta los controles técnicos y deja una experiencia limpia con CTA.
+
+Atajos:
+
+C = activar modo cliente
+E = volver a edición
+Esc = volver a presentación
+
+También se puede salir del modo cliente desde la píldora superior o mediante el desbloqueo del logo.
+
+Control gestual
+
+La experiencia utiliza la cámara del dispositivo para detectar la mano.
+
+Gestos disponibles
+Gesto	Acción
+Palma abierta	Reproduce vídeo o activa impacto visual
+Puño cerrado	Pausa vídeo
+Swipe derecha	Siguiente proyecto
+Swipe izquierda	Proyecto anterior
+Importante
+
+La cámara solo funciona correctamente en:
+
+localhost
+
+o en una web servida por:
+
+https://
+
+Si abres el archivo directamente con doble clic, algunas funciones pueden fallar por restricciones del navegador.
+
+Carga de contenido propio
+
+La herramienta permite subir archivos desde el ordenador.
+
+Formatos habituales aceptados:
+
+MP4;
+WebM;
+JPG;
+PNG;
+WebP;
+GIF;
+otros formatos compatibles con el navegador.
+
+Los archivos se guardan localmente en el navegador mediante IndexedDB.
+
+Esto significa que:
+
+no se suben a ningún servidor;
+no se comparten externamente;
+solo existen en el navegador/dispositivo donde se cargan.
+Galería de proyectos
+
+Cada archivo subido se añade como proyecto en la galería.
+
+La galería permite:
+
+seleccionar proyecto activo;
+cambiar entre proyectos;
+mostrar miniaturas;
+diferenciar contenido demo y contenido propio;
+ordenar los proyectos mediante metadatos;
+usar swipe para navegar.
+Modo cliente
+
+El modo cliente es una de las partes clave del proyecto.
+
+Está pensado para enseñar la experiencia a un cliente sin que vea controles internos o técnicos.
+
+En modo cliente:
+
+se oculta la navegación técnica;
+se oculta el panel de estadísticas;
+se oculta la galería;
+se oculta el dock comercial;
+se muestra el proyecto con CTA;
+se mantiene una presentación limpia.
+Cómo salir del modo cliente
+
+Opciones:
+
+E = volver a edición
+Esc = volver a presentación
+clic en píldora de salida
+5 clics en el logo
+Editor comercial de proyecto
+
+Cada proyecto puede editarse desde el panel comercial.
+
+Campos disponibles:
+
+Campo	Uso
+Título	Nombre principal del proyecto
+Subtítulo	Apoyo descriptivo
+Sector	Industria o categoría
+Descripción	Texto comercial del proyecto
+CTA texto	Texto del botón de acción
+CTA URL	Enlace del botón
+Orden	Posición en la galería
+Preset	Plantilla comercial aplicada
+
+Ejemplo:
+
+Título: Tour inmobiliario premium
+Subtítulo: Experiencia inmersiva para viviendas de alto valor
+Sector: Real Estate
+CTA: Solicitar demo
+URL: https://wa.me/34629554870
+CTA comerciales
+
+Los CTA convierten la experiencia en una herramienta de venta.
+
+Tipos aceptados:
+
+https://
+mailto:
+tel:
+https://wa.me/
+localhost
+127.0.0.1
+
+Protocolos bloqueados:
+
+javascript:
+data:
+file:
+
+Si el usuario escribe una URL sin protocolo, el sistema intenta convertirla automáticamente a https://.
+
+Ejemplo:
+
+rubiksota.com
+
+se convierte en:
+
+https://rubiksota.com
+Presets comerciales
+
+Los presets permiten adaptar rápidamente el tono y la estructura del proyecto.
+
+Presets incluidos:
+
+Agencia creativa
+
+Pensado para campañas, branding, reels, piezas visuales y presentaciones creativas.
+
+Inmobiliaria premium
+
+Pensado para tours, propiedades, renders, vivienda de alto valor y experiencias de venta inmobiliaria.
+
+Arquitectura
+
+Pensado para proyectos, espacios, planos, renders y propuestas de estudio.
+
+IA visual
+
+Pensado para demos generativas, prompts, vídeo IA, imagen IA y creatividad aumentada.
+
+Producto tecnológico
+
+Pensado para SaaS, interfaces, prototipos, software y presentaciones digitales.
+
+También se pueden guardar presets personalizados.
+
+Exportación e importación
+Exportar configuración
+
+La exportación genera un archivo JSON con:
+
+versión del esquema;
+fecha de creación;
+proyectos;
+metadatos;
+textos;
+CTA;
+ajustes;
+presets personalizados;
+tema;
+brillo;
+volumen;
+modo activo.
+
+No incluye archivos multimedia pesados.
+
+Importar configuración
+
+La importación permite pegar un JSON previamente exportado.
+
+El sistema valida la estructura antes de aplicar los cambios.
+
+Si la configuración hace referencia a archivos locales que no existen en el nuevo navegador, será necesario volver a subirlos.
+
+Estadísticas
+
+La herramienta registra estadísticas de interacción.
+
+Métricas disponibles:
+
+palmas abiertas detectadas;
+puños detectados;
+swipes;
+cambios de proyecto;
+comandos ejecutados;
+comandos de teclado;
+tiempo de reproducción;
+modo presentación;
+modo cliente;
+CTA pulsados;
+proyecto más visto.
+Privacidad de estadísticas
+
+Las estadísticas son locales y anónimas.
+
+No incluyen:
+
+imagen de cámara;
+vídeo de webcam;
+datos biométricos;
+datos personales;
+nombre del dispositivo;
+ubicación.
+Grabación experimental
+
+El sistema incluye una función experimental para grabar el escenario principal.
+
+Características:
+
+duración máxima aproximada: 30 segundos;
+formato: .webm;
+graba el stage principal;
+no graba la webcam;
+no garantiza audio;
+funciona mejor en Chrome o Edge de escritorio;
+en móvil puede no estar disponible.
+Limitación importante
+
+La grabación depende de APIs del navegador como MediaRecorder y canvas.captureStream.
+
+No todos los navegadores soportan estas funciones igual.
+
+Privacidad
+
+La privacidad es una parte importante del proyecto.
+
+Cámara
+
+La cámara se usa solo en el navegador.
+
+No se sube imagen de cámara a ningún servidor.
+
+Archivos
+
+Los archivos que subes se guardan en tu propio navegador mediante IndexedDB.
+
+No se envían a ningún servidor.
+
+Estadísticas
+
+Las estadísticas son locales, agregadas y anónimas.
+
+Exportaciones
+
+Los archivos JSON exportados no incluyen vídeo ni imagen pesada. Solo incluyen configuración y metadatos.
+
+Tecnologías utilizadas
+Tecnología	Uso
+HTML5	Estructura principal
+CSS3	Diseño visual, responsive, modos
+JavaScript Vanilla	Lógica de aplicación
+MediaPipe Hands	Seguimiento de mano
+IndexedDB	Guardado local de proyectos y presets
+localStorage	Preferencias ligeras
+Canvas API	Efectos visuales y grabación
+MediaRecorder API	Grabación experimental
+Web APIs nativas	Cámara, vídeo, eventos, persistencia
+Estructura del repositorio
+
+Estructura recomendada:
+
+Rubik-Sota-Director-de-Orquesta/
+│
+├── index.html
+└── README.md
+
+El archivo principal debe llamarse:
+
+index.html
+
+El archivo de documentación debe llamarse:
+
+README.md
+Cómo ejecutar el proyecto
+Opción recomendada: servidor local
+
+Desde la carpeta del proyecto:
+
+python -m http.server 8000
+
+Después abrir:
+
+http://localhost:8000
+Por qué no abrir con doble clic
+
+Si abres el archivo directamente como:
+
+file:///...
+
+algunas funciones pueden fallar, especialmente:
+
+cámara;
+IndexedDB;
+grabación;
+permisos del navegador;
+carga de medios.
+Cómo desplegar en GitHub Pages
+Paso 1
+
+Subir estos archivos al repositorio:
+
+index.html
+README.md
+Paso 2
+
+Entrar en:
+
+Settings → Pages
+Paso 3
+
+En “Build and deployment”, seleccionar:
+
+Deploy from a branch
+Paso 4
+
+Seleccionar:
+
+Branch: main
+Folder: /root
+Paso 5
+
+Guardar.
+
+GitHub generará una URL parecida a:
+
+https://usuario.github.io/Rubik-Sota-Director-de-Orquesta/
+Compatibilidad
+Recomendado
+Navegador	Estado
+Chrome escritorio	Recomendado
+Edge escritorio	Recomendado
+Firefox escritorio	Compatible, con posibles limitaciones
+Safari macOS	Compatible parcialmente
+Safari iOS	Limitado para grabación
+Chrome Android	Compatible, con posibles limitaciones de rendimiento
+Cámara
+
+La cámara requiere:
+
+HTTPS
+
+o:
+
+localhost
+Grabación
+
+La grabación funciona mejor en:
+
+Chrome / Edge escritorio
+Limitaciones conocidas
+La grabación es experimental.
+La grabación no promete audio.
+Los archivos multimedia no se incluyen en la exportación JSON.
+Los archivos cargados se guardan solo en el navegador actual.
+Si se borra la caché o los datos del navegador, se pueden perder proyectos locales.
+La detección gestual depende de iluminación, cámara y posición de la mano.
+En móviles antiguos puede haber menor rendimiento.
+Safari/iOS puede limitar cámara, grabación o reproducción automática.
+Roadmap
+V6.0 / V6.0.1
+
+Estado actual.
+
+Incluye:
+
+modo cliente;
+modo presentación;
+editor de proyecto;
+CTA seguro;
+exportación/importación;
+presets;
+estadísticas exportables;
+grabación experimental;
+DataService local.
+V6.1 — Pulido comercial
+
+Posibles mejoras:
+
+eliminar proyectos individualmente;
+reordenar galería manualmente;
+mejorar preview de clips grabados;
+botón visible de salida en modo cliente;
+mejor control de presets;
+mayor claridad en exportaciones.
+V6.2 — Grabación avanzada
+
+Posibles mejoras:
+
+grabación con audio opcional;
+selección de formato;
+mejora de overlays del clip;
+plantilla final de cierre;
+exportación de clip con marca.
+V7 — Producto online
+
+Posibles mejoras:
+
+backend;
+login;
+proyectos por cliente;
+enlaces compartibles;
+almacenamiento en nube;
+analíticas reales;
+panel de administración;
+integración con Cloudinary, Supabase o similar.
+Casos de uso
+Inmobiliaria premium
+
+Presentar propiedades, tours, renders o vídeos de espacios con modo cliente y CTA a WhatsApp.
+
+Arquitectura
+
+Mostrar proyectos, propuestas, renders, planos o recorridos de manera visual e interactiva.
+
+Agencia creativa
+
+Presentar campañas, vídeos, piezas de branding o conceptos creativos con una experiencia más memorable que una presentación tradicional.
+
+IA visual
+
+Mostrar generación de imágenes, vídeos IA, prompts, renders y experimentos creativos con una interfaz diferencial.
+
+Producto tecnológico
+
+Presentar interfaces, SaaS, prototipos o experiencias web de forma inmersiva.
+
+Buenas prácticas de uso
+
+Para una demo profesional:
+
+Subir 3-5 proyectos visuales.
+Editar título y descripción de cada proyecto.
+Añadir CTA real.
+Aplicar preset comercial.
+Activar modo cliente.
+Probar teclado y gestos.
+Grabar clip corto si el navegador lo permite.
+Exportar configuración como respaldo.
+Contacto
+
+Proyecto desarrollado para:
+
+Rubik Sota
+629 554 870
+
+Contacto rápido:
+
+https://wa.me/34629554870
+Estado del proyecto
+
+Versión recomendada actual:
+
+Rubik Sota Director de Orquesta — V6.0.1 Stable Candidate
+
+Estado:
+
+Listo para despliegue en GitHub Pages / Vercel y pruebas comerciales reales.
+Nota final
+
+Rubik Sota Director de Orquesta nace como una herramienta para demostrar que una presentación comercial puede ser algo más que una secuencia de imágenes.
+
+Puede ser una experiencia.
+
+Puede ser interactiva.
+
+Puede tener narrativa.
+
+Puede tener CTA.
+
+Puede generar datos.
+
+Puede grabarse.
+
+Y, sobre todo, puede vender mejor.
+
+Menos laboratorio.
+Más herramienta de venta.
