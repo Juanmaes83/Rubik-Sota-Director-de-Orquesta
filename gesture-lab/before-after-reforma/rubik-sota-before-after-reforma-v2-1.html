@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota Gesture Lab 02 — Before / After Reforma v2.1. Comparación visual antes/después con gestos, swipe, vista completa y grabación de clip para inmobiliaria, reformas, interiorismo y Vecinia." />
+  <title>Rubik Sota Gesture Lab 02 · Before / After Reforma v2.1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #030303;
+      --bg-2: #090909;
+      --fg: #ffffff;
+      --muted: rgba(255,255,255,0.66);
+      --muted-2: rgba(255,255,255,0.42);
+      --line: rgba(255,255,255,0.14);
+      --line-strong: rgba(255,255,255,0.32);
+      --glass: rgba(255,255,255,0.06);
+      --accent: #00ffcc;
+      --accent-2: #d8ff3e;
+      --danger: #ff3366;
+      --gold: #e8d8a8;
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+      --shadow: 0 30px 90px rgba(0,0,0,0.62);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--fg);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(0,255,204,0.14), transparent 32%),
+        radial-gradient(circle at 84% 8%, rgba(216,255,62,0.08), transparent 28%),
+        radial-gradient(circle at 78% 86%, rgba(255,51,102,0.10), transparent 30%),
+        var(--bg);
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: radial-gradient(circle at 50% 40%, black, transparent 78%);
+      opacity: 0.42;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, label { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: clamp(1rem, 3vw, 2.4rem);
+      display: grid;
+      gap: clamp(1.4rem, 3vw, 2.4rem);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.3rem 0.2rem;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 0.78rem; min-width: 0; }
+    .brand-mark {
+      width: 44px; height: 44px; border-radius: 14px;
+      display: grid; place-items: center;
+      border: 1px solid var(--line-strong);
+      background: linear-gradient(135deg, rgba(0,255,204,0.20), rgba(255,255,255,0.05));
+      box-shadow: inset 0 0 28px rgba(0,255,204,0.10), 0 0 28px rgba(0,255,204,0.06);
+      font-weight: 900; letter-spacing: -0.08em; font-size: 0.92rem;
+    }
+    .brand-name { display: block; font-weight: 900; letter-spacing: -0.05em; line-height: 1; font-size: 1.04rem; }
+    .brand-sub { display: block; margin-top: 0.22rem; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; }
+    .top-actions { display: flex; gap: 0.46rem; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      background: var(--glass);
+      color: var(--fg);
+      padding: 0.6rem 0.9rem;
+      font-weight: 800; font-size: 0.8rem;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255,255,255,0.11); }
+    .btn:disabled { opacity: 0.48; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .btn-primary:hover { background: rgba(255,255,255,0.88); color: #000; }
+    .btn-accent { border-color: rgba(0,255,204,0.46); box-shadow: inset 0 0 26px rgba(0,255,204,0.08); }
+    .btn-danger { border-color: rgba(255,51,102,0.5); color: #ff9db5; }
+    .btn-ghost { background: transparent; }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.022));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: clamp(1.4rem, 3vw, 2.6rem);
+      position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; right: -22%; bottom: -28%;
+      width: 60%; height: 60%;
+      background: radial-gradient(circle, rgba(0,255,204,0.15), transparent 65%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      color: var(--muted); font-size: 0.78rem; letter-spacing: 0.14em;
+      text-transform: uppercase; font-weight: 800; margin-bottom: 1rem;
+    }
+    .eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 18px var(--accent); }
+    h1 {
+      font-size: clamp(2rem, 4.6vw, 4.4rem);
+      line-height: 0.96; letter-spacing: -0.065em; font-weight: 800;
+      max-width: 22ch;
+    }
+    h1 .serif { font-family: "Playfair Display", serif; font-style: italic; font-weight: 400; letter-spacing: -0.045em; }
+    .hero-sub { margin-top: 1.05rem; color: var(--fg); font-weight: 600; font-size: clamp(1.02rem, 1.5vw, 1.25rem); max-width: 58ch; }
+    .hero-lead { margin-top: 0.8rem; color: var(--muted); line-height: 1.6; font-size: clamp(0.96rem, 1.3vw, 1.06rem); max-width: 70ch; }
+    .badges { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .badge {
+      border: 1px solid var(--line); background: var(--glass);
+      color: var(--fg); padding: 0.4rem 0.7rem; border-radius: var(--radius-pill);
+      font-weight: 800; font-size: 0.74rem; letter-spacing: 0.04em;
+    }
+    .badge-accent { border-color: rgba(0,255,204,0.42); color: var(--accent); background: rgba(0,255,204,0.08); }
+
+    .upload {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.6rem, 1.2vw, 1rem);
+    }
+    .upload-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+      padding: 1rem;
+      display: grid; gap: 0.55rem;
+    }
+    .upload-card.is-future { border-color: rgba(0,255,204,0.34); background: linear-gradient(180deg, rgba(0,255,204,0.08), rgba(0,255,204,0.02)); }
+    .upload-kicker { font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+    .upload-card h3 { font-size: 1.05rem; letter-spacing: -0.02em; font-weight: 800; }
+    .upload-row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .upload-meta { color: var(--muted); font-size: 0.76rem; }
+    .file-input { display: none; }
+
+    .lab-wrap { display: grid; gap: 0.9rem; }
+    .lab-panel {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: #050505;
+      overflow: hidden;
+      min-height: 480px;
+      isolation: isolate;
+    }
+    .lab-panel::before {
+      content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 38%, transparent 0, transparent 42%, rgba(0,0,0,0.32) 78%),
+        linear-gradient(0deg, rgba(0,0,0,0.55), transparent 38%);
+    }
+    #stageCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: ew-resize; }
+
+    .camera-preview-card {
+      position: absolute; z-index: 6; right: 1rem; top: 1rem; width: 200px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px; overflow: hidden;
+      background: rgba(0,0,0,0.58);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 18px 46px rgba(0,0,0,0.36);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .camera-preview-card.is-hidden { opacity: 0; pointer-events: none; transform: translateY(-8px); }
+    .camera-preview-head {
+      display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.84); font-size: 0.66rem;
+      text-transform: uppercase; letter-spacing: 0.12em; font-weight: 900;
+    }
+    .camera-preview-body { position: relative; aspect-ratio: 4 / 3; background: #000; }
+    #cameraPreview { width: 100%; height: 100%; display: block; background: #000; }
+    .camera-preview-status { padding: 0.5rem 0.6rem; color: rgba(255,255,255,0.70); font-size: 0.7rem; line-height: 1.35; }
+    .gesture-badge { display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid rgba(0,255,204,0.30); border-radius: var(--radius-pill); padding: 0.24rem 0.48rem; color: #fff; background: rgba(0,255,204,0.08); }
+
+    .lab-overlay {
+      position: absolute; z-index: 4; inset: auto 1rem 1rem 1rem;
+      pointer-events: none; display: flex; justify-content: space-between; align-items: end; gap: 1rem;
+    }
+    .scene-caption { max-width: 60%; }
+    .scene-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 900; font-size: 0.72rem; }
+    .scene-title { margin-top: 0.36rem; font-size: clamp(1.35rem, 2.2vw, 2.1rem); line-height: 1; font-weight: 900; letter-spacing: -0.05em; }
+    .scene-desc { margin-top: 0.36rem; color: rgba(255,255,255,0.70); line-height: 1.45; font-size: 0.86rem; }
+    .hud-stack { display: grid; justify-items: end; gap: 0.5rem; }
+    .hud-pill {
+      display: inline-flex; align-items: center; gap: 0.46rem;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(0,0,0,0.54);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-pill);
+      padding: 0.42rem 0.6rem;
+      color: rgba(255,255,255,0.84); font-size: 0.7rem;
+      white-space: nowrap;
+    }
+    .hud-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+    .hud-dot.warn { background: var(--gold); box-shadow: 0 0 14px rgba(232,216,168,0.75); }
+    .hud-dot.off { background: var(--muted-2); box-shadow: none; }
+
+    .control-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018));
+      padding: 1rem;
+      display: grid; gap: 0.9rem;
+    }
+    .slider-block { display: grid; gap: 0.45rem; }
+    .slider-head {
+      display: flex; justify-content: space-between; align-items: center; gap: 0.8rem;
+      color: var(--muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 900;
+    }
+    .progress-readout { color: var(--fg); letter-spacing: -0.04em; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .control-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+    .mode-toggle {
+      display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-pill); overflow: hidden;
+    }
+    .mode-toggle button {
+      background: transparent; color: var(--muted); border: none;
+      padding: 0.55rem 0.85rem; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.04em;
+    }
+    .mode-toggle button.is-active { background: var(--fg); color: var(--bg); }
+
+    .toast-layer { position: fixed; z-index: 100; right: 1rem; top: 5.2rem; display: grid; gap: 0.6rem; pointer-events: none; }
+    .toast {
+      width: min(340px, calc(100vw - 2rem));
+      border: 1px solid var(--line); border-radius: 18px;
+      background: rgba(0,0,0,0.78); color: #fff;
+      backdrop-filter: blur(18px);
+      padding: 0.78rem 0.95rem;
+      box-shadow: 0 18px 42px rgba(0,0,0,0.38);
+      font-size: 0.84rem; line-height: 1.35;
+      animation: toastIn 0.22s ease-out;
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Immersive overlays */
+    .lab-panel.is-immersive {
+      position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh;
+      max-width: none; max-height: none; border-radius: 0; border: none;
+      z-index: 9999; background: #050505;
+    }
+    .fs-close-btn, .fs-home-btn {
+      position: absolute; z-index: 30; padding: 0.78rem 1.1rem;
+      border-radius: var(--radius-pill); font-weight: 800; font-size: 0.86rem;
+      backdrop-filter: blur(14px); cursor: pointer;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+      color: #fff;
+    }
+    .fs-close-btn { top: 1rem; left: 1rem; border: 1px solid rgba(255,255,255,0.32); background: rgba(0,0,0,0.72); }
+    .fs-home-btn { top: 1rem; left: 50%; transform: translateX(-50%); border: 1px solid rgba(0,255,204,0.42); background: rgba(0,255,204,0.12); }
+    .fs-close-btn.is-hidden, .fs-home-btn.is-hidden { display: none; }
+    .lab-panel.is-immersive .fs-close-btn,
+    .lab-panel.is-immersive .fs-home-btn { display: inline-flex; }
+
+    .fs-controls {
+      position: absolute; z-index: 28;
+      top: 1rem; right: 1rem;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.5rem 0.6rem;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: var(--radius-pill);
+      background: rgba(0,0,0,0.72); backdrop-filter: blur(14px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+    }
+    .fs-controls.is-hidden { display: none; }
+    .fs-controls .btn { padding: 0.55rem 0.78rem; font-size: 0.78rem; }
+    .fs-timer { color: #fff; font-weight: 800; font-size: 0.76rem; letter-spacing: 0.06em; padding: 0 0.3rem; }
+    .lab-panel.is-immersive .fs-controls { display: inline-flex; }
+
+    .rec-indicator {
+      position: absolute; z-index: 8;
+      top: 1rem; left: 50%; transform: translateX(-50%);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.4rem 0.72rem;
+      border: 1px solid rgba(255,51,102,0.5);
+      border-radius: var(--radius-pill);
+      background: rgba(0,0,0,0.62);
+      color: #fff; font-weight: 800; font-size: 0.74rem;
+      letter-spacing: 0.06em; backdrop-filter: blur(14px);
+    }
+    .rec-indicator.is-hidden { display: none; }
+    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 14px var(--danger); animation: recPulse 1s ease-in-out infinite; }
+    @keyframes recPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    @media (max-width: 880px) {
+      .upload { grid-template-columns: 1fr; }
+      .scene-caption { max-width: 100%; }
+      .lab-overlay { flex-direction: column; align-items: flex-start; }
+      .hud-stack { justify-items: start; }
+    }
+    @media (max-width: 520px) {
+      .lab-panel { min-height: 420px; }
+      .camera-preview-card { width: 132px; right: 0.6rem; top: 0.6rem; }
+      .lab-panel.is-immersive .camera-preview-card { width: 116px; }
+      .lab-panel.is-immersive .fs-controls {
+        top: auto; bottom: 1rem; right: auto; left: 50%; transform: translateX(-50%);
+        flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 1.4rem);
+      }
+      .lab-panel.is-immersive .fs-home-btn { font-size: 0.78rem; padding: 0.55rem 0.85rem; }
+      .lab-panel.is-immersive .fs-close-btn { top: 0.75rem; left: 0.75rem; padding: 0.7rem 0.95rem; }
+      .control-actions .btn { flex: 1 1 auto; justify-content: center; }
+    }
+
+    .copy-block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+      padding: clamp(1.4rem, 3vw, 2.4rem);
+      display: grid; gap: 1rem;
+    }
+    .copy-block h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); letter-spacing: -0.05em; font-weight: 800; }
+    .copy-block p { color: var(--muted); line-height: 1.6; font-size: clamp(0.98rem, 1.3vw, 1.08rem); }
+    .sectors-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem; }
+    .sectors-chips .sector-chip { border: 1px solid var(--line); background: var(--glass); padding: 0.48rem 0.85rem; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.82rem; }
+    .copy-block .quote {
+      font-family: "Playfair Display", serif; font-style: italic; font-weight: 400;
+      font-size: clamp(1.3rem, 2.4vw, 1.9rem); color: var(--fg); letter-spacing: -0.02em;
+      border-left: 2px solid var(--accent); padding-left: 0.95rem; max-width: 32ch;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line); padding-top: 1.2rem;
+      display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+      color: var(--muted); font-size: 0.86rem;
+    }
+    .footer strong { color: var(--fg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">RS</div>
+        <div>
+          <span class="brand-name">Rubik Sota Gesture Lab</span>
+          <span class="brand-sub">02 · Before / After Reforma · v2.1</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="btn" id="homeBtn" href="../index.html">← Hub</a>
+        <button class="btn" id="toggleCameraBtn" type="button">Activar cámara</button>
+        <button class="btn" id="fullscreenBtn" type="button">Vista completa</button>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> Gesture Lab 02 · Inmobiliaria · Reformas · Vecinia</div>
+      <h1 id="heroTitle">02 — Before / After <span class="serif">Reforma.</span></h1>
+      <p class="hero-sub">Revela una transformación visual entre el estado actual y la propuesta futura.</p>
+      <p class="hero-lead">Sube una imagen del antes y otra del después. Usa el gesto, el slider o el swipe para mostrar el cambio de forma clara, rápida y comercial.</p>
+      <div class="badges">
+        <span class="badge badge-accent">v2.1</span>
+        <span class="badge">Inmobiliaria</span>
+        <span class="badge">Reformas</span>
+        <span class="badge">Interiorismo</span>
+        <span class="badge">Vecinia</span>
+      </div>
+    </section>
+
+    <section class="upload" aria-label="Subir imágenes antes y después">
+      <div class="upload-card">
+        <span class="upload-kicker">Antes</span>
+        <h3>Estado actual</h3>
+        <p class="upload-meta" id="beforeMeta">Demo interna activa. Sube tu imagen.</p>
+        <div class="upload-row">
+          <label class="btn btn-primary" id="beforeUploadLabel" for="beforeInput">Subir imagen actual</label>
+          <input class="file-input" id="beforeInput" type="file" accept="image/*" />
+          <button class="btn btn-ghost" id="beforeClearBtn" type="button">Quitar</button>
+        </div>
+      </div>
+      <div class="upload-card is-future">
+        <span class="upload-kicker">Después</span>
+        <h3>Propuesta futura</h3>
+        <p class="upload-meta" id="afterMeta">Demo interna activa. Sube tu imagen.</p>
+        <div class="upload-row">
+          <label class="btn btn-primary" id="afterUploadLabel" for="afterInput">Subir imagen futura</label>
+          <input class="file-input" id="afterInput" type="file" accept="image/*" />
+          <button class="btn btn-ghost" id="afterClearBtn" type="button">Quitar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-wrap" aria-label="Escenario comparativo">
+      <div class="lab-panel" id="stagePanel">
+        <canvas id="stageCanvas" aria-label="Comparación visual antes/después"></canvas>
+
+        <video id="cameraVideo" playsinline muted hidden></video>
+        <div class="camera-preview-card is-hidden" id="cameraPreviewCard">
+          <div class="camera-preview-head">
+            <span>Hand tracking</span>
+            <span class="gesture-badge" id="gestureBadge">OFF</span>
+          </div>
+          <div class="camera-preview-body">
+            <canvas id="cameraPreview" width="320" height="240"></canvas>
+          </div>
+          <div class="camera-preview-status" id="cameraPreviewStatus">Cámara inactiva.</div>
+        </div>
+
+        <button class="fs-close-btn is-hidden" id="fullscreenCloseBtn" type="button">Cerrar</button>
+        <button class="fs-home-btn is-hidden" id="fullscreenHomeBtn" type="button">Home</button>
+
+        <div class="rec-indicator is-hidden" id="recIndicator" aria-live="polite">
+          <span class="rec-dot"></span><span>REC</span>
+          <span id="recTimer">00:00 / 00:15</span>
+        </div>
+
+        <div class="fs-controls is-hidden" id="fsControls">
+          <button class="btn" id="fsBeforeBtn" type="button">Antes</button>
+          <button class="btn" id="fsAfterBtn" type="button">Después</button>
+          <button class="btn" id="fsMidBtn" type="button">50/50</button>
+          <button class="btn btn-accent" id="fsRecordBtn" type="button">Grabar</button>
+          <button class="btn" id="fsStopRecordBtn" type="button" disabled>Detener</button>
+          <span class="fs-timer" id="fsRecTimer">00:00 / 00:15</span>
+          <a class="btn" id="fsDownloadBtn" href="#" download="rubik-sota-before-after-reforma-v2-1-clip.webm" hidden>Descargar</a>
+        </div>
+
+        <div class="lab-overlay">
+          <div class="scene-caption">
+            <div class="scene-kicker">Before / After Reforma</div>
+            <div class="scene-title" id="sceneTitle">Comparación visual</div>
+            <div class="scene-desc" id="sceneDesc">Mueve el slider para revelar la propuesta futura. Sube imágenes propias para una demo real.</div>
+          </div>
+          <div class="hud-stack">
+            <div class="hud-pill"><span class="hud-dot off" id="cameraDot"></span><span id="cameraStatusText">Cámara: inactiva</span></div>
+            <div class="hud-pill"><span class="hud-dot warn"></span><span id="gestureStatusText">Gesto: —</span></div>
+            <div class="hud-pill"><span id="revealText">Reveal: 0%</span></div>
+            <div class="hud-pill"><span id="modeText">Modo: Cortina</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-panel">
+        <div class="slider-block">
+          <div class="slider-head">
+            <span>Revelar después</span>
+            <span class="progress-readout" id="progressReadout">0%</span>
+          </div>
+          <input id="revealRange" type="range" min="0" max="100" value="0" />
+        </div>
+        <div class="control-actions">
+          <button class="btn" id="beforeBtn" type="button">Ver antes</button>
+          <button class="btn btn-primary" id="afterBtn" type="button">Ver después</button>
+          <button class="btn" id="midBtn" type="button">Comparar 50/50</button>
+          <button class="btn btn-danger" id="resetBtn" type="button">Reset</button>
+          <div class="mode-toggle" role="tablist" aria-label="Modo de comparación">
+            <button id="modeCurtainBtn" class="is-active" type="button" aria-pressed="true">Cortina</button>
+            <button id="modeBlendBtn" type="button" aria-pressed="false">Fundido</button>
+          </div>
+          <button class="btn btn-accent" id="recordBtn" type="button">Grabar clip</button>
+          <button class="btn" id="stopRecordBtn" type="button" disabled>Detener</button>
+          <a class="btn" id="downloadBtn" href="#" download="rubik-sota-before-after-reforma-v2-1-clip.webm" hidden>Descargar clip</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="copy-block" aria-label="Para qué sirve">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> Para qué sirve · Aplicación comercial</div>
+      <h2>Vende la transformación, no la propuesta.</h2>
+      <p>Este módulo está pensado para vender reformas, rehabilitación, interiorismo, mantenimiento, home staging y mejoras en comunidades. Permite mostrar el valor de una intervención de forma inmediata y visual.</p>
+      <div>
+        <div class="upload-kicker" style="margin-bottom: 0.6rem;">Sectores</div>
+        <div class="sectors-chips">
+          <span class="sector-chip">Inmobiliaria</span>
+          <span class="sector-chip">Reformas</span>
+          <span class="sector-chip">Interiorismo</span>
+          <span class="sector-chip">Arquitectura</span>
+          <span class="sector-chip">Home staging</span>
+          <span class="sector-chip">Administradores de fincas</span>
+          <span class="sector-chip">Vecinia</span>
+          <span class="sector-chip">Mantenimiento de comunidades</span>
+        </div>
+      </div>
+      <p class="quote">El cliente no solo lee una propuesta: ve el cambio.</p>
+    </section>
+
+    <footer class="footer">
+      <div><strong>Rubik Sota</strong> · Gesture Lab 02 · Before / After Reforma v2.1</div>
+      <div>Activo: v2.1 · Hub: <a href="../index.html" style="color: var(--accent);">Gesture Lab</a></div>
+    </footer>
+  </div>
+
+  <div class="toast-layer" id="toastLayer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    const els = {
+      stagePanel: document.getElementById("stagePanel"),
+      canvas: document.getElementById("stageCanvas"),
+      beforeInput: document.getElementById("beforeInput"),
+      afterInput: document.getElementById("afterInput"),
+      beforeMeta: document.getElementById("beforeMeta"),
+      afterMeta: document.getElementById("afterMeta"),
+      beforeClearBtn: document.getElementById("beforeClearBtn"),
+      afterClearBtn: document.getElementById("afterClearBtn"),
+      revealRange: document.getElementById("revealRange"),
+      progressReadout: document.getElementById("progressReadout"),
+      beforeBtn: document.getElementById("beforeBtn"),
+      afterBtn: document.getElementById("afterBtn"),
+      midBtn: document.getElementById("midBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      modeCurtainBtn: document.getElementById("modeCurtainBtn"),
+      modeBlendBtn: document.getElementById("modeBlendBtn"),
+      recordBtn: document.getElementById("recordBtn"),
+      stopRecordBtn: document.getElementById("stopRecordBtn"),
+      downloadBtn: document.getElementById("downloadBtn"),
+      fullscreenBtn: document.getElementById("fullscreenBtn"),
+      fullscreenCloseBtn: document.getElementById("fullscreenCloseBtn"),
+      fullscreenHomeBtn: document.getElementById("fullscreenHomeBtn"),
+      fsControls: document.getElementById("fsControls"),
+      fsBeforeBtn: document.getElementById("fsBeforeBtn"),
+      fsAfterBtn: document.getElementById("fsAfterBtn"),
+      fsMidBtn: document.getElementById("fsMidBtn"),
+      fsRecordBtn: document.getElementById("fsRecordBtn"),
+      fsStopRecordBtn: document.getElementById("fsStopRecordBtn"),
+      fsDownloadBtn: document.getElementById("fsDownloadBtn"),
+      fsRecTimer: document.getElementById("fsRecTimer"),
+      recIndicator: document.getElementById("recIndicator"),
+      recTimer: document.getElementById("recTimer"),
+      cameraVideo: document.getElementById("cameraVideo"),
+      cameraPreview: document.getElementById("cameraPreview"),
+      cameraPreviewCard: document.getElementById("cameraPreviewCard"),
+      cameraPreviewStatus: document.getElementById("cameraPreviewStatus"),
+      gestureBadge: document.getElementById("gestureBadge"),
+      toggleCameraBtn: document.getElementById("toggleCameraBtn"),
+      sceneTitle: document.getElementById("sceneTitle"),
+      sceneDesc: document.getElementById("sceneDesc"),
+      cameraDot: document.getElementById("cameraDot"),
+      cameraStatusText: document.getElementById("cameraStatusText"),
+      gestureStatusText: document.getElementById("gestureStatusText"),
+      revealText: document.getElementById("revealText"),
+      modeText: document.getElementById("modeText"),
+      toastLayer: document.getElementById("toastLayer")
+    };
+
+    const state = {
+      ctx: null,
+      beforeImage: null,
+      afterImage: null,
+      beforeIsDefault: true,
+      afterIsDefault: true,
+      currentReveal: 0,
+      targetReveal: 0,
+      mode: "curtain",
+      pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      width: 0,
+      height: 0,
+      drag: { active: false, pointerId: null },
+      gesture: { stable: "OFF", candidate: "OFF", frames: 0, opennessEma: null, openOverrideFrames: 0 },
+      cameraActive: false,
+      cameraStarting: false,
+      cameraStream: null,
+      cameraToken: 0,
+      hands: null,
+      handLoopRunning: false,
+      handSendBusy: false,
+      lastHandSend: 0,
+      lastHandTime: 0,
+      handTargetFrameMs: 1000 / 22,
+      lastPalm: null,
+      anchor: { palm: null, reveal: 0 },
+      swipe: { history: [], lastTrigger: 0 },
+      viewMode: { fullscreen: false },
+      recording: {
+        active: false, recorder: null, chunks: [], stream: null,
+        startedAt: 0, timerId: null, maxDurationMs: 15000,
+        downloadUrl: null, mimeType: ""
+      }
+    };
+
+    function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function showToast(msg, duration = 2400) {
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.textContent = msg;
+      els.toastLayer.appendChild(el);
+      setTimeout(() => { el.style.opacity = "0"; el.style.transform = "translateY(-8px)"; setTimeout(() => el.remove(), 220); }, duration);
+    }
+
+    function createPlaceholder(label, palette) {
+      const c = document.createElement("canvas");
+      c.width = 1280; c.height = 800;
+      const ctx = c.getContext("2d");
+      const g = ctx.createLinearGradient(0, 0, c.width, c.height);
+      g.addColorStop(0, palette[0]);
+      g.addColorStop(0.6, palette[1]);
+      g.addColorStop(1, palette[2]);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, c.width, c.height);
+
+      ctx.globalAlpha = 0.18;
+      ctx.fillStyle = "#000";
+      for (let i = 0; i < 18; i++) {
+        const x = (i * 137) % c.width;
+        const y = ((i * 53) % c.height);
+        ctx.fillRect(x, y, 240, 6);
+      }
+      ctx.globalAlpha = 1;
+
+      // sketched room
+      ctx.strokeStyle = "rgba(0,0,0,0.42)";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(120, 600); ctx.lineTo(1160, 600); ctx.lineTo(1160, 200); ctx.lineTo(120, 200); ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(120, 600); ctx.lineTo(40, 720); ctx.lineTo(1240, 720); ctx.lineTo(1160, 600);
+      ctx.stroke();
+      // window
+      ctx.strokeRect(360, 280, 240, 200);
+      ctx.beginPath(); ctx.moveTo(480, 280); ctx.lineTo(480, 480); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(360, 380); ctx.lineTo(600, 380); ctx.stroke();
+      // furniture
+      ctx.fillStyle = "rgba(0,0,0,0.22)";
+      ctx.fillRect(740, 520, 320, 80);
+
+      // label
+      ctx.fillStyle = "rgba(0,0,0,0.78)";
+      ctx.font = "900 112px Inter, Arial, sans-serif";
+      ctx.fillText(label, 80, 160);
+      ctx.font = "italic 44px Georgia, serif";
+      ctx.fillStyle = "rgba(0,0,0,0.62)";
+      ctx.fillText("Demo interna · sube tu imagen", 80, 770);
+
+      return c;
+    }
+
+    function ensureDefaults() {
+      if (!state.beforeImage) {
+        state.beforeImage = createPlaceholder("ANTES", ["#c8b896", "#aa9670", "#7a6248"]);
+        state.beforeIsDefault = true;
+      }
+      if (!state.afterImage) {
+        state.afterImage = createPlaceholder("DESPUÉS", ["#f5f1e6", "#cfeee2", "#9be8d2"]);
+        state.afterIsDefault = true;
+      }
+    }
+
+    function fitContain(imgW, imgH, boxW, boxH) {
+      const scale = Math.min(boxW / imgW, boxH / imgH);
+      const w = imgW * scale;
+      const h = imgH * scale;
+      return { x: (boxW - w) / 2, y: (boxH - h) / 2, w, h };
+    }
+
+    function drawImageContain(ctx, img, boxW, boxH) {
+      if (!img) return;
+      const iw = img.naturalWidth || img.width;
+      const ih = img.naturalHeight || img.height;
+      if (!iw || !ih) return;
+      const fit = fitContain(iw, ih, boxW, boxH);
+      ctx.drawImage(img, fit.x, fit.y, fit.w, fit.h);
+    }
+
+    function renderStage() {
+      const ctx = state.ctx;
+      if (!ctx) return;
+      const w = state.width;
+      const h = state.height;
+      ctx.save();
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(0, 0, w, h);
+
+      const eased = state.currentReveal;
+
+      if (state.mode === "blend") {
+        ctx.globalAlpha = 1;
+        drawImageContain(ctx, state.beforeImage, w, h);
+        ctx.globalAlpha = eased;
+        drawImageContain(ctx, state.afterImage, w, h);
+        ctx.globalAlpha = 1;
+      } else {
+        // curtain
+        const divider = eased * w;
+        // before full
+        drawImageContain(ctx, state.beforeImage, w, h);
+        // after on right side
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(divider, 0, w - divider, h);
+        ctx.clip();
+        drawImageContain(ctx, state.afterImage, w, h);
+        ctx.restore();
+        // divider line
+        ctx.fillStyle = "rgba(255,255,255,0.92)";
+        ctx.fillRect(divider - 1, 0, 2, h);
+        // handle
+        const hy = h / 2;
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(0,0,0,0.72)";
+        ctx.arc(divider, hy, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,0.92)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(divider, hy, 22, 0, Math.PI * 2);
+        ctx.stroke();
+        // arrows
+        ctx.fillStyle = "rgba(255,255,255,0.92)";
+        ctx.beginPath();
+        ctx.moveTo(divider - 12, hy);
+        ctx.lineTo(divider - 4, hy - 6);
+        ctx.lineTo(divider - 4, hy + 6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(divider + 12, hy);
+        ctx.lineTo(divider + 4, hy - 6);
+        ctx.lineTo(divider + 4, hy + 6);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // mode badge top-left in canvas
+      ctx.font = "800 14px Inter, Arial, sans-serif";
+      ctx.fillStyle = "rgba(255,255,255,0.84)";
+      ctx.fillText(state.mode === "blend" ? "FUNDIDO" : "CORTINA", 18, 26);
+
+      ctx.restore();
+    }
+
+    function resizeCanvas() {
+      const rect = els.stagePanel.getBoundingClientRect();
+      const dpr = state.pixelRatio;
+      const cssW = Math.max(320, Math.floor(rect.width));
+      const cssH = Math.max(280, Math.floor(rect.height));
+      els.canvas.width = cssW * dpr;
+      els.canvas.height = cssH * dpr;
+      els.canvas.style.width = cssW + "px";
+      els.canvas.style.height = cssH + "px";
+      state.width = cssW * dpr;
+      state.height = cssH * dpr;
+      const ctx = els.canvas.getContext("2d");
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(1, 1);
+      state.ctx = ctx;
+      // use device pixels directly for fillImage; coords are device pixels
+      renderStage();
+    }
+
+    function setReveal(value, instant = false) {
+      const v = clamp(value / 100, 0, 1);
+      state.targetReveal = v;
+      if (instant) state.currentReveal = v;
+      els.revealRange.value = `${Math.round(v * 100)}`;
+      updateUi();
+    }
+
+    function updateUi() {
+      const pct = Math.round(state.targetReveal * 100);
+      els.progressReadout.textContent = `${pct}%`;
+      els.revealText.textContent = `Reveal: ${pct}%`;
+      els.modeText.textContent = `Modo: ${state.mode === "blend" ? "Fundido" : "Cortina"}`;
+      if (pct < 12) {
+        els.sceneTitle.textContent = "Estado actual";
+        els.sceneDesc.textContent = "Sólo se muestra la imagen del antes. Mueve el slider o usa gestos para revelar la propuesta.";
+      } else if (pct > 88) {
+        els.sceneTitle.textContent = "Propuesta futura";
+        els.sceneDesc.textContent = "Se muestra el después al completo. Vuelve al antes para comparar.";
+      } else {
+        els.sceneTitle.textContent = "Comparación visual";
+        els.sceneDesc.textContent = `Se revela ${pct}% del después. Sigue moviendo para llegar al cambio completo.`;
+      }
+    }
+
+    function setMode(mode) {
+      state.mode = mode === "blend" ? "blend" : "curtain";
+      els.modeCurtainBtn.classList.toggle("is-active", state.mode === "curtain");
+      els.modeBlendBtn.classList.toggle("is-active", state.mode === "blend");
+      els.modeCurtainBtn.setAttribute("aria-pressed", state.mode === "curtain");
+      els.modeBlendBtn.setAttribute("aria-pressed", state.mode === "blend");
+      updateUi();
+    }
+
+    function loadFileToImage(file) {
+      return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith("image/")) { reject(new Error("not image")); return; }
+        if (file.size > 40 * 1024 * 1024) { reject(new Error("too big")); return; }
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => resolve({ img, url });
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("decode")); };
+        img.src = url;
+      });
+    }
+
+    async function handleUpload(which, file) {
+      try {
+        const { img } = await loadFileToImage(file);
+        if (which === "before") {
+          state.beforeImage = img;
+          state.beforeIsDefault = false;
+          els.beforeMeta.textContent = file.name.length > 32 ? file.name.slice(0, 29) + "..." : file.name;
+          showToast("Imagen del antes cargada.", 2000);
+        } else {
+          state.afterImage = img;
+          state.afterIsDefault = false;
+          els.afterMeta.textContent = file.name.length > 32 ? file.name.slice(0, 29) + "..." : file.name;
+          showToast("Imagen del después cargada.", 2000);
+        }
+        if (state.beforeIsDefault || state.afterIsDefault) {
+          showToast("Aún faltan imágenes: la otra cara usa demo interna.", 3000);
+        }
+      } catch (err) {
+        if (err.message === "too big") showToast("Imagen demasiado pesada para esta v2.1. Prueba con menos de 40 MB.", 3200);
+        else showToast("No se pudo cargar la imagen. Prueba con otro archivo.", 2800);
+      }
+    }
+
+    function clearImage(which) {
+      if (which === "before") {
+        state.beforeImage = null;
+        state.beforeIsDefault = true;
+        els.beforeMeta.textContent = "Demo interna activa. Sube tu imagen.";
+      } else {
+        state.afterImage = null;
+        state.afterIsDefault = true;
+        els.afterMeta.textContent = "Demo interna activa. Sube tu imagen.";
+      }
+      ensureDefaults();
+      showToast(which === "before" ? "Antes restablecido a demo." : "Después restablecido a demo.", 1800);
+    }
+
+    /* ===== MediaPipe Hands ===== */
+
+    function distance2D(a, b) { const dx = a.x - b.x; const dy = a.y - b.y; return Math.sqrt(dx * dx + dy * dy); }
+    function getPalmCenter(lm) {
+      const ids = [0, 5, 9, 13, 17];
+      const sum = ids.reduce((acc, id) => ({ x: acc.x + lm[id].x, y: acc.y + lm[id].y }), { x: 0, y: 0 });
+      return { x: sum.x / ids.length, y: sum.y / ids.length };
+    }
+
+    function classifyHand(lm) {
+      const palm = getPalmCenter(lm);
+      const wrist = lm[0];
+      const mid = lm[9];
+      const palmScale = Math.max(0.04, distance2D(wrist, mid));
+      const fingers = [{tip:8,pip:6},{tip:12,pip:10},{tip:16,pip:14},{tip:20,pip:18}];
+      let extended = 0, openness = 0;
+      for (const f of fingers) {
+        const tipD = distance2D(lm[f.tip], palm);
+        const pipD = distance2D(lm[f.pip], palm);
+        openness += tipD / palmScale;
+        if (tipD > pipD * 1.08 && tipD > palmScale * 1.16) extended++;
+      }
+      openness /= fingers.length;
+      state.gesture.opennessEma = state.gesture.opennessEma === null ? openness : state.gesture.opennessEma * 0.52 + openness * 0.48;
+      const sm = state.gesture.opennessEma;
+      let g = "HOLDING";
+      if (extended >= 3 || sm > 1.65 || (extended >= 2 && sm > 1.55)) g = "OPEN";
+      else if (extended <= 1 && sm < 1.78) g = "FIST";
+      return { gesture: g, palm, extended, openness: sm };
+    }
+
+    function stabilize(next) {
+      if (state.gesture.candidate === next) state.gesture.frames++;
+      else { state.gesture.candidate = next; state.gesture.frames = 1; }
+      const required = next === "OPEN" ? 2 : (next === "FIST" ? 4 : 5);
+      if (state.gesture.frames >= required) state.gesture.stable = next;
+      return state.gesture.stable;
+    }
+
+    function drawCameraPreview(results) {
+      const canvas = els.cameraPreview;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      if (els.cameraVideo.readyState >= 2) {
+        ctx.save(); ctx.translate(w, 0); ctx.scale(-1, 1);
+        ctx.drawImage(els.cameraVideo, 0, 0, w, h);
+        ctx.restore();
+      } else { ctx.fillStyle = "#000"; ctx.fillRect(0, 0, w, h); }
+      const lm = results?.multiHandLandmarks?.[0];
+      if (!lm) return;
+      ctx.save();
+      ctx.lineWidth = 2; ctx.strokeStyle = "rgba(0,255,204,0.82)"; ctx.fillStyle = "rgba(216,255,62,0.95)";
+      const conn = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+      for (const [a,b] of conn) {
+        const ax = (1 - lm[a].x) * w, ay = lm[a].y * h, bx = (1 - lm[b].x) * w, by = lm[b].y * h;
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+      }
+      for (const p of lm) { ctx.beginPath(); ctx.arc((1 - p.x) * w, p.y * h, 3, 0, Math.PI * 2); ctx.fill(); }
+      ctx.restore();
+    }
+
+    function detectSwipe(displayPalm, stableGesture) {
+      const now = performance.now();
+      if (stableGesture === "OPEN") { state.swipe.history.length = 0; return; }
+      const gestureOk = stableGesture === "FIST" || state.currentReveal > 0.7;
+      if (!gestureOk) { state.swipe.history.length = 0; return; }
+      if (now - state.swipe.lastTrigger < 850) return;
+      const h = state.swipe.history;
+      h.push({ x: displayPalm.x, y: displayPalm.y, t: now });
+      while (h.length && now - h[0].t > 520) h.shift();
+      if (h.length < 2) return;
+      const first = h[0], last = h[h.length - 1];
+      const dx = last.x - first.x, dy = last.y - first.y;
+      const elapsed = last.t - first.t;
+      if (elapsed <= 0 || elapsed > 520) return;
+      const velocity = Math.abs(dx) / (elapsed / 1000);
+      if (Math.abs(dx) >= 0.18 && Math.abs(dy) <= 0.11 && velocity >= 0.55) {
+        if (dx > 0) { setReveal(100); showToast("Swipe derecha: revelar después.", 1600); }
+        else { setReveal(0); showToast("Swipe izquierda: volver al antes.", 1600); }
+        state.swipe.lastTrigger = now;
+        state.swipe.history.length = 0;
+      }
+    }
+
+    function applyGestureControl(gesture, palm) {
+      if (!palm) return;
+      if (gesture === "OPEN") { setReveal(0); state.swipe.history.length = 0; }
+      else if (gesture === "FIST") setReveal(100);
+
+      const display = { x: 1 - palm.x, y: palm.y };
+      if (!state.anchor.palm) {
+        state.anchor.palm = { x: display.x, y: display.y };
+        state.anchor.reveal = state.targetReveal;
+      } else {
+        const offX = display.x - state.anchor.palm.x;
+        if (Math.abs(offX) > 0.015 && gesture === "HOLDING") {
+          const targetReveal = clamp(state.anchor.reveal + offX * 2.0, 0, 1);
+          setReveal(targetReveal * 100);
+        }
+      }
+      state.lastPalm = display;
+      detectSwipe(display, gesture);
+    }
+
+    function updateGestureHud(stable) {
+      els.gestureBadge.textContent = stable;
+      els.gestureStatusText.textContent = `Gesto: ${stable}`;
+      els.cameraPreviewStatus.textContent = `Detectado: ${stable}`;
+    }
+
+    function handleHandResults(results) {
+      const lm = results.multiHandLandmarks && results.multiHandLandmarks[0];
+      if (!lm) {
+        const elapsed = performance.now() - state.lastHandTime;
+        if (elapsed > 700) {
+          state.lastPalm = null;
+          state.anchor.palm = null;
+          state.gesture.stable = "HOLDING";
+          state.gesture.opennessEma = null;
+          state.swipe.history.length = 0;
+          updateGestureHud("SIN MANO");
+        }
+        drawCameraPreview(results);
+        return;
+      }
+      state.lastHandTime = performance.now();
+      const info = classifyHand(lm);
+      const strongOpen = info.gesture === "OPEN" && (info.extended >= 3 || info.openness >= 1.9);
+      state.gesture.openOverrideFrames = strongOpen ? state.gesture.openOverrideFrames + 1 : 0;
+      let stable = stabilize(info.gesture);
+      if (state.gesture.openOverrideFrames >= 2) {
+        state.gesture.stable = "OPEN"; state.gesture.candidate = "OPEN"; state.gesture.frames = Math.max(state.gesture.frames, 2);
+        stable = "OPEN";
+      }
+      applyGestureControl(stable, info.palm);
+      updateGestureHud(stable);
+      drawCameraPreview(results);
+    }
+
+    async function initHands() {
+      if (state.hands) return state.hands;
+      const Ctor = window.Hands;
+      if (!Ctor) throw new Error("MEDIAPIPE_NOT_AVAILABLE");
+      state.hands = new Ctor({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+      state.hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.66, minTrackingConfidence: 0.62 });
+      state.hands.onResults(handleHandResults);
+      return state.hands;
+    }
+
+    async function handLoop(token) {
+      if (!state.cameraActive || token !== state.cameraToken) { state.handLoopRunning = false; return; }
+      state.handLoopRunning = true;
+      const now = performance.now();
+      if (now - state.lastHandSend >= state.handTargetFrameMs && !state.handSendBusy && els.cameraVideo.readyState >= 2 && state.hands) {
+        state.lastHandSend = now;
+        state.handSendBusy = true;
+        try { await state.hands.send({ image: els.cameraVideo }); } catch (e) { console.error(e); }
+        finally { state.handSendBusy = false; }
+      }
+      requestAnimationFrame(() => handLoop(token));
+    }
+
+    async function startCamera() {
+      if (state.cameraStarting || state.cameraActive) return;
+      state.cameraStarting = true;
+      state.cameraToken++;
+      const token = state.cameraToken;
+      els.toggleCameraBtn.disabled = true;
+      els.toggleCameraBtn.textContent = "Activando...";
+      els.cameraPreviewCard.classList.remove("is-hidden");
+      try {
+        await initHands();
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } });
+        if (token !== state.cameraToken) { stream.getTracks().forEach(t => t.stop()); return; }
+        state.cameraStream = stream;
+        els.cameraVideo.srcObject = stream;
+        await els.cameraVideo.play();
+        state.cameraActive = true;
+        state.lastPalm = null;
+        state.anchor.palm = null;
+        state.lastHandSend = 0;
+        state.lastHandTime = performance.now();
+        els.toggleCameraBtn.textContent = "Apagar cámara";
+        els.toggleCameraBtn.disabled = false;
+        els.cameraDot.classList.remove("off");
+        els.cameraStatusText.textContent = "Cámara: activa";
+        showToast("Cámara activada. Procesamiento local.", 2200);
+        handLoop(token);
+      } catch (e) {
+        console.error(e);
+        state.cameraActive = false;
+        els.cameraPreviewCard.classList.add("is-hidden");
+        let msg = "No se pudo activar la cámara.";
+        if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") msg = "La cámara requiere HTTPS o localhost.";
+        showToast(msg, 3600);
+        els.toggleCameraBtn.textContent = "Activar cámara";
+        els.toggleCameraBtn.disabled = false;
+      } finally {
+        state.cameraStarting = false;
+      }
+    }
+
+    function stopCamera() {
+      state.cameraToken++;
+      state.cameraActive = false;
+      state.cameraStarting = false;
+      state.handLoopRunning = false;
+      state.lastPalm = null;
+      state.anchor.palm = null;
+      state.swipe.history.length = 0;
+      if (state.cameraStream) { state.cameraStream.getTracks().forEach(t => t.stop()); state.cameraStream = null; }
+      els.cameraVideo.pause();
+      els.cameraVideo.srcObject = null;
+      els.cameraPreviewCard.classList.add("is-hidden");
+      els.toggleCameraBtn.textContent = "Activar cámara";
+      els.toggleCameraBtn.disabled = false;
+      els.cameraDot.classList.add("off");
+      els.cameraStatusText.textContent = "Cámara: inactiva";
+      updateGestureHud("OFF");
+      showToast("Cámara apagada.", 1800);
+    }
+
+    /* ===== Immersive ===== */
+
+    function fullscreenSupported() {
+      return Boolean(els.stagePanel.requestFullscreen || els.stagePanel.webkitRequestFullscreen);
+    }
+    function isFullscreen() {
+      return Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    }
+    function updateImmersiveUi() {
+      const v = state.viewMode.fullscreen;
+      els.stagePanel.classList.toggle("is-immersive", v);
+      els.fullscreenBtn.textContent = v ? "Salir vista completa" : "Vista completa";
+      els.fullscreenCloseBtn.classList.toggle("is-hidden", !v);
+      els.fullscreenHomeBtn.classList.toggle("is-hidden", !v);
+      els.fsControls.classList.toggle("is-hidden", !v);
+    }
+    function enterImmersive() {
+      state.viewMode.fullscreen = true;
+      updateImmersiveUi();
+      resizeCanvas();
+      if (fullscreenSupported() && !isFullscreen()) {
+        try {
+          const req = els.stagePanel.requestFullscreen || els.stagePanel.webkitRequestFullscreen;
+          if (req) { const r = req.call(els.stagePanel); if (r && typeof r.catch === "function") r.catch(() => {}); }
+        } catch (_) {}
+      }
+    }
+    function exitImmersive() {
+      state.viewMode.fullscreen = false;
+      updateImmersiveUi();
+      if (isFullscreen()) {
+        try { const ex = document.exitFullscreen || document.webkitExitFullscreen; if (ex) { const r = ex.call(document); if (r && typeof r.catch === "function") r.catch(() => {}); } } catch (_) {}
+      }
+      resizeCanvas();
+    }
+    function toggleImmersive() { if (state.viewMode.fullscreen) exitImmersive(); else enterImmersive(); }
+    function onFullscreenChange() {
+      if (!isFullscreen() && state.viewMode.fullscreen) { state.viewMode.fullscreen = false; updateImmersiveUi(); }
+      else if (isFullscreen() && !state.viewMode.fullscreen) { state.viewMode.fullscreen = true; updateImmersiveUi(); }
+      resizeCanvas();
+    }
+
+    function goHome() {
+      try { if (state.recording.active) stopRecording(); } catch (_) {}
+      try { cleanupRecordingUrl(); } catch (_) {}
+      try { if (state.cameraActive || state.cameraStarting) stopCamera(); } catch (_) {}
+      try { if (state.viewMode.fullscreen) exitImmersive(); } catch (_) {}
+      window.location.href = "../index.html";
+    }
+
+    /* ===== Recording ===== */
+
+    function getSupportedMimeType() {
+      if (typeof MediaRecorder === "undefined") return "";
+      const cands = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+      for (const t of cands) { try { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) return t; } catch (_) {} }
+      return "";
+    }
+    function formatTime(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const m = Math.floor(total / 60).toString().padStart(2, "0");
+      const s = (total % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    }
+    function cleanupRecordingUrl() {
+      if (state.recording.downloadUrl) { URL.revokeObjectURL(state.recording.downloadUrl); state.recording.downloadUrl = null; }
+    }
+    function updateRecordingUi() {
+      const r = state.recording;
+      els.recIndicator.classList.toggle("is-hidden", !r.active);
+      els.recordBtn.disabled = r.active;
+      els.recordBtn.textContent = r.active ? "Grabando..." : "Grabar clip";
+      els.stopRecordBtn.disabled = !r.active;
+      els.fsRecordBtn.disabled = r.active;
+      els.fsRecordBtn.textContent = r.active ? "Grabando..." : "Grabar";
+      els.fsStopRecordBtn.disabled = !r.active;
+      let timer;
+      if (r.active) {
+        const elapsed = performance.now() - r.startedAt;
+        timer = `${formatTime(elapsed)} / ${formatTime(r.maxDurationMs)}`;
+      } else {
+        timer = `00:00 / ${formatTime(r.maxDurationMs)}`;
+      }
+      els.recTimer.textContent = timer;
+      els.fsRecTimer.textContent = timer;
+    }
+    function startRecording() {
+      const r = state.recording;
+      if (r.active) return;
+      if (typeof els.canvas.captureStream !== "function" || typeof MediaRecorder === "undefined") { showToast("Grabación no disponible en este navegador.", 3200); return; }
+      const mime = getSupportedMimeType();
+      if (!mime) { showToast("Grabación no disponible en este navegador.", 3200); return; }
+      try {
+        cleanupRecordingUrl();
+        els.downloadBtn.hidden = true; els.downloadBtn.removeAttribute("href");
+        els.fsDownloadBtn.hidden = true; els.fsDownloadBtn.removeAttribute("href");
+        r.chunks = [];
+        r.stream = els.canvas.captureStream(30);
+        r.recorder = new MediaRecorder(r.stream, { mimeType: mime });
+        r.mimeType = mime;
+        r.recorder.ondataavailable = (ev) => { if (ev.data && ev.data.size > 0) r.chunks.push(ev.data); };
+        r.recorder.onstop = () => {
+          try {
+            const blob = new Blob(r.chunks, { type: r.mimeType || "video/webm" });
+            const url = URL.createObjectURL(blob);
+            cleanupRecordingUrl();
+            r.downloadUrl = url;
+            els.downloadBtn.href = url; els.downloadBtn.hidden = false;
+            els.fsDownloadBtn.href = url; els.fsDownloadBtn.hidden = false;
+            showToast(`Clip listo (${(blob.size / (1024 * 1024)).toFixed(2)} MB). Pulsa “Descargar clip”.`, 3000);
+          } catch (e) { console.error(e); showToast("No se pudo generar el clip.", 3000); }
+          if (r.stream) { r.stream.getTracks().forEach(t => { try { t.stop(); } catch (_) {} }); r.stream = null; }
+          if (r.timerId) { clearInterval(r.timerId); r.timerId = null; }
+          r.active = false; r.recorder = null;
+          updateRecordingUi();
+        };
+        r.recorder.start(250);
+        r.active = true;
+        r.startedAt = performance.now();
+        r.timerId = setInterval(() => {
+          updateRecordingUi();
+          if (performance.now() - r.startedAt >= r.maxDurationMs) stopRecording();
+        }, 250);
+        updateRecordingUi();
+        showToast("Grabando clip del canvas (máx. 15 s).", 2200);
+      } catch (e) {
+        console.error(e);
+        showToast("Grabación no disponible en este navegador.", 3200);
+        r.active = false; r.recorder = null;
+        if (r.stream) { r.stream.getTracks().forEach(t => { try { t.stop(); } catch (_) {} }); r.stream = null; }
+        updateRecordingUi();
+      }
+    }
+    function stopRecording() {
+      const r = state.recording;
+      if (!r.active || !r.recorder) return;
+      try { if (r.recorder.state !== "inactive") r.recorder.stop(); } catch (e) { console.error(e); }
+    }
+
+    /* ===== Pointer drag on canvas ===== */
+    function setupPointerControls() {
+      els.canvas.addEventListener("pointerdown", (event) => {
+        if (state.cameraActive) return;
+        state.drag.active = true;
+        state.drag.pointerId = event.pointerId;
+        try { els.canvas.setPointerCapture(event.pointerId); } catch (_) {}
+        applyPointer(event);
+        event.preventDefault();
+      });
+      els.canvas.addEventListener("pointermove", (event) => {
+        if (!state.drag.active || state.cameraActive) return;
+        applyPointer(event);
+      });
+      const end = (event) => {
+        if (!state.drag.active) return;
+        state.drag.active = false;
+        try { els.canvas.releasePointerCapture(event.pointerId); } catch (_) {}
+      };
+      els.canvas.addEventListener("pointerup", end);
+      els.canvas.addEventListener("pointercancel", end);
+    }
+    function applyPointer(event) {
+      const rect = els.canvas.getBoundingClientRect();
+      const x = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+      setReveal(x * 100);
+    }
+
+    /* ===== Animation ===== */
+    function animate() {
+      requestAnimationFrame(animate);
+      state.currentReveal = lerp(state.currentReveal, state.targetReveal, 0.18);
+      renderStage();
+      if (state.recording.active) updateRecordingUi();
+    }
+
+    /* ===== Events ===== */
+    function setupEvents() {
+      els.beforeInput.addEventListener("change", (e) => { const f = e.target.files && e.target.files[0]; if (f) handleUpload("before", f); e.target.value = ""; });
+      els.afterInput.addEventListener("change", (e) => { const f = e.target.files && e.target.files[0]; if (f) handleUpload("after", f); e.target.value = ""; });
+      els.beforeClearBtn.addEventListener("click", () => clearImage("before"));
+      els.afterClearBtn.addEventListener("click", () => clearImage("after"));
+
+      els.revealRange.addEventListener("input", (e) => setReveal(Number(e.target.value)));
+      els.beforeBtn.addEventListener("click", () => setReveal(0));
+      els.afterBtn.addEventListener("click", () => setReveal(100));
+      els.midBtn.addEventListener("click", () => setReveal(50));
+      els.resetBtn.addEventListener("click", () => { setReveal(0, true); setMode("curtain"); showToast("Reset aplicado.", 1600); });
+
+      els.modeCurtainBtn.addEventListener("click", () => setMode("curtain"));
+      els.modeBlendBtn.addEventListener("click", () => setMode("blend"));
+
+      els.toggleCameraBtn.addEventListener("click", () => { if (state.cameraActive || state.cameraStarting) stopCamera(); else startCamera(); });
+      els.fullscreenBtn.addEventListener("click", toggleImmersive);
+      els.fullscreenCloseBtn.addEventListener("click", exitImmersive);
+      els.fullscreenHomeBtn.addEventListener("click", goHome);
+
+      els.recordBtn.addEventListener("click", startRecording);
+      els.stopRecordBtn.addEventListener("click", stopRecording);
+      els.fsRecordBtn.addEventListener("click", startRecording);
+      els.fsStopRecordBtn.addEventListener("click", stopRecording);
+      els.fsBeforeBtn.addEventListener("click", () => setReveal(0));
+      els.fsAfterBtn.addEventListener("click", () => setReveal(100));
+      els.fsMidBtn.addEventListener("click", () => setReveal(50));
+
+      document.addEventListener("fullscreenchange", onFullscreenChange);
+      document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+
+      window.addEventListener("resize", resizeCanvas);
+      const ro = new ResizeObserver(resizeCanvas);
+      ro.observe(els.stagePanel);
+
+      setupPointerControls();
+    }
+
+    function boot() {
+      ensureDefaults();
+      resizeCanvas();
+      setupEvents();
+      setReveal(0, true);
+      setMode("curtain");
+      updateRecordingUi();
+      animate();
+      showToast("Before / After Reforma v2.1 listo. Sube imágenes o usa demo interna.", 3200);
+    }
+
+    boot();
+  </script>
+</body>
+</html>
