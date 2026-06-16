@@ -30,6 +30,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 03 - Community Improvement / Vecinia - Disponible - v2.2.1
 - 04 - Real Estate Immersive Viewer - Disponible - v2.3
 - 05 - Real Estate Capture Tour - Disponible - v2.4
+- 06 - Golf Experience / Home Practice - Disponible - v2.5
 
 **Versiones estables actuales:**
 
@@ -38,6 +39,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - Community Improvement / Vecinia v2.2.1
 - Real Estate Immersive Viewer v2.3
 - Real Estate Capture Tour v2.4
+- Golf Experience / Home Practice v2.5
 
 **Archivos:**
 
@@ -46,6 +48,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - `gesture-lab/community-improvement-vecinia/rubik-sota-community-improvement-vecinia-v2-2-1.html`
 - `gesture-lab/real-estate-immersive-viewer/rubik-sota-real-estate-immersive-viewer-v2-3.html`
 - `gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html`
+- `gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html`
 
 **Funciones actuales:**
 
@@ -79,10 +82,11 @@ El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicac
 - `gesture-lab/community-improvement-vecinia/rubik-sota-community-improvement-vecinia-v2-2-1.html`
 - `gesture-lab/real-estate-immersive-viewer/rubik-sota-real-estate-immersive-viewer-v2-3.html`
 - `gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html`
+- `gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html`
 
 **Meta:**
 
-- `v2.0.1 - 5 modulos activos - 28 en planificacion`
+- `v2.0.1 - 6 modulos activos - 27 en planificacion`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -101,9 +105,9 @@ Before / After Reforma v2.1.2 incorpora Capture Input System con captura in-app:
 Community Improvement / Vecinia v2.2.1 incorpora Export & Share Layer:
 
 - captura in-app;
-- galer-a;
-- comparacion estado actual / propuesta;
-- selector de intervenci-n;
+- galería;
+- comparación estado actual / propuesta;
+- selector de intervención;
 - argumento para junta;
 - descarga PNG comparativa;
 - descarga PNG estado actual;
@@ -111,9 +115,9 @@ Community Improvement / Vecinia v2.2.1 incorpora Export & Share Layer:
 - WhatsApp;
 - email;
 - copiar enlace;
-- codigo visual / enlace;
+- código visual / enlace;
 - modo escaparate / mupi;
-- guardado local b-sico.
+- guardado local básico.
 
 ### Nota Real Estate Immersive Viewer v2.3
 
@@ -150,6 +154,26 @@ Real Estate Capture Tour v2.4 incorpora captura guiada de vivienda por estancias
 - WhatsApp, email, copiar enlace y guardado local;
 - localStorage key: rubik-sota-real-estate-capture-tour-v2-4-snapshot.
 
+### Nota Golf Experience / Home Practice v2.5
+
+Golf Experience / Home Practice v2.5 incorpora practica visual guiada:
+
+- datos de sesion: jugador, coach, tipo de practica, palo usado, objetivo y notas internas;
+- flujo guiado de 4 pasos: captura posicion, selecciona fase, ajusta guia visual y exporta feedback;
+- seis fases: Setup, Grip, Backswing, Impacto, Follow Through y Resultado;
+- captura in-app con getUserMedia y fallback a input nativo;
+- subida de imagen desde galeria;
+- imagen actual y referencia/correccion por fase;
+- checklist tecnico por fase (postura, pies, grip, cabeza, peso, fluidez);
+- estado de fase: Pendiente, Revisado, Listo;
+- guias visuales simples sobre canvas: linea objetivo, eje corporal, pies, trayectoria y equilibrio (orientativas, no medicion biomecanica);
+- canvas comparativo con Cortina, Fundido y Split 50/50;
+- resumen de progreso de practica;
+- descarga PNG;
+- grabacion WebM si el navegador lo permite;
+- WhatsApp, email, copiar enlace y guardado local;
+- localStorage key: rubik-sota-golf-experience-home-practice-v2-5-snapshot.
+
 ---
 
 ## Capture Input System
@@ -169,7 +193,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 03 | Community Improvement / Vecinia | Disponible - v2.2.1 |
 | 04 | Real Estate Immersive Viewer | Disponible - v2.3 |
 | 05 | Real Estate Capture Tour | Disponible - v2.4 |
-| 06 | Golf Experience / Home Practice | Próximamente · v2.5 |
+| 06 | Golf Experience / Home Practice | Disponible - v2.5 |
 | 07 | Golf Course Visualizer | Próximamente · v2.6 |
 | 08 | Pádel Tactical Lab | Próximamente · v2.14 |
 | 09 | Tennis Gesture Court | Próximamente · v2.15 |
@@ -213,27 +237,27 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 ---
 
-## Prioridad estrat-gica
+## Prioridad estratégica
 
-El siguiente m-dulo recomendado es:
+El siguiente módulo recomendado es:
 
-**v2.5 - Golf Experience / Home Practice**
+**v2.6 - Golf Course Visualizer**
 
 **Motivo:**
 
-Tras validar el bloque inmobiliario con v2.3 y v2.4, el siguiente paso es probar Gesture Lab en un vertical deportivo: practica visual, posicion, gesto, campo y feedback interactivo. Esto demuestra que la arquitectura no sirve solo para inmuebles, sino tambien para entrenamiento, deporte, educacion visual y experiencias de producto.
+Tras validar la practica personal con v2.5, el siguiente paso es ampliar la vertical golf hacia campo, hoyo, green, bunker, viento, trayectoria y estrategia visual. Esto demuestra una segunda capa del sistema: no solo practicar el gesto, sino explicar el entorno de juego.
 
 **Flujo previsto:**
 
-1. Seleccionar modo de practica (campo, hoyo, golpe o postura).
-2. Subir o capturar imagen del jugador, campo o golpe.
-3. Mostrar referencia visual.
-4. Comparar posicion, trayectoria o escenario.
-5. Exportar una pieza visual para feedback o contenido.
+1. Seleccionar hoyo, zona o escenario.
+2. Subir o capturar imagen de campo, green o referencia visual.
+3. Mostrar capas de trayectoria, viento, riesgo y objetivo.
+4. Comparar estrategia recomendada vs alternativa.
+5. Exportar una pieza visual para clase, club, academia o contenido.
 
 **Frase clave:**
 
-> De vender una vivienda a entrenar un golpe con la misma arquitectura.
+> De entrenar el golpe a leer el campo con la misma arquitectura.
 
 ---
 
@@ -314,8 +338,8 @@ Cada módulo debe incluir, cuando aplique:
 - v2.2.1 - Export & Share Layer - estable
 - v2.2.2 - Promote Vecinia - documentacion/Hub
 - v2.3 - Real Estate Immersive Viewer - estable
-- v2.4 - Real Estate Capture Tour - estable actual
-- v2.5 - Golf Experience / Home Practice - siguiente
+- v2.4 - Real Estate Capture Tour - estable
+- v2.5 - Golf Experience / Home Practice - estable actual
 - v2.6 — Golf Course Visualizer
 - v2.7 — Food Assembly: Sushi + Burger + Pizza
 - v2.8 — Lookbook Gestual / Moda
@@ -364,4 +388,5 @@ Cada módulo debe incluir, cuando aplique:
 - Community Improvement / Vecinia v2.2.1 publicada y funcional.
 - Real Estate Immersive Viewer v2.3 publicada y funcional.
 - Real Estate Capture Tour v2.4 publicada y funcional.
-- Siguiente fase: v2.5 - Golf Experience / Home Practice.
+- Golf Experience / Home Practice v2.5 publicada y funcional.
+- Siguiente fase: v2.6 - Golf Course Visualizer.
