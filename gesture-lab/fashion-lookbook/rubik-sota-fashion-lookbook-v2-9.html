@@ -1,0 +1,1438 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rubik Sota Fashion Lookbook v2.9</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070908;
+      --panel: rgba(13, 17, 16, 0.62);
+      --panel-strong: rgba(15, 19, 18, 0.94);
+      --line: rgba(226, 235, 229, 0.16);
+      --fg: #f4f3ef;
+      --muted: rgba(244, 243, 239, 0.68);
+      --soft: rgba(244, 243, 239, 0.46);
+      --accent: #20f0c7;
+      --accent-2: #d8ff3e;
+      --danger: #ff5a7a;
+      --shadow: 0 32px 90px rgba(0, 0, 0, 0.48);
+      --radius: 8px;
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--fg);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+        radial-gradient(circle at 82% 8%, rgba(32, 240, 199, 0.13), transparent 28rem),
+        radial-gradient(circle at 12% 35%, rgba(216, 255, 62, 0.07), transparent 24rem),
+        linear-gradient(135deg, #030504 0%, #0b0f0d 48%, #11120e 100%);
+      background-size: 92px 92px, auto, auto, auto;
+      font-family: var(--sans);
+      letter-spacing: 0;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .page {
+      width: min(1520px, 100%);
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0 18px;
+      background: linear-gradient(180deg, rgba(7,9,8,0.82), rgba(7,9,8,0.44) 72%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(32, 240, 199, 0.22), rgba(216, 255, 62, 0.10)),
+        #08100e;
+      color: var(--accent);
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .brand-title { min-width: 0; }
+    .brand-title strong {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.98rem;
+    }
+    .brand-title span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.64rem 0.88rem;
+      color: var(--fg);
+      background: rgba(255, 255, 255, 0.045);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(32, 240, 199, 0.42); background: rgba(32, 240, 199, 0.10); }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn-primary {
+      color: #06100d;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font-weight: 900;
+    }
+    .btn-danger { border-color: rgba(255, 90, 122, 0.35); color: #ffd4dc; }
+    .btn.is-active { border-color: var(--accent); color: var(--accent); background: rgba(32, 240, 199, 0.11); }
+
+    .hero {
+      min-height: calc(100vh - 96px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(360px, 1.14fr);
+      gap: clamp(18px, 3vw, 44px);
+      align-items: stretch;
+      padding-bottom: 24px;
+    }
+
+    .editorial-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+      padding: clamp(22px, 5vw, 58px) 0;
+    }
+
+    .kicker {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .kicker::before {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1 {
+      margin: 18px 0 0;
+      max-width: 760px;
+      font-family: var(--serif);
+      font-size: clamp(3.2rem, 9vw, 9rem);
+      line-height: 0.86;
+      font-weight: 400;
+    }
+
+    .campaign-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+      color: var(--soft);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .campaign-line span {
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 999px;
+      padding: 0.38rem 0.58rem;
+      background: rgba(255,255,255,0.035);
+    }
+
+    .hero-lede {
+      max-width: 660px;
+      margin: 22px 0 0;
+      color: rgba(244, 243, 239, 0.78);
+      font-size: clamp(1rem, 1.6vw, 1.25rem);
+      line-height: 1.65;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 26px;
+      max-width: 680px;
+    }
+    .meta-tile {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+      backdrop-filter: blur(16px);
+    }
+    .meta-tile strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 1.55rem;
+      font-weight: 400;
+    }
+    .meta-tile span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .editorial-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 710px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #111;
+      box-shadow: var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.035);
+      isolation: isolate;
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 68% 24%, rgba(255,255,255,0.24), transparent 15rem),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.13), transparent 28%),
+        var(--look-bg, linear-gradient(135deg, #1f2933, #5f6f64, #cbbf9f));
+      z-index: -3;
+      transition: background 360ms ease;
+    }
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.52), transparent 52%),
+        linear-gradient(0deg, rgba(0,0,0,0.64), transparent 38%, rgba(255,255,255,0.05)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.035), rgba(255,255,255,0.035) 1px, transparent 1px, transparent 62px);
+      z-index: -2;
+    }
+
+    .look-art {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      transition: transform 420ms ease, opacity 260ms ease;
+    }
+    .look-art.is-switching { transform: scale(1.018); opacity: 0.72; }
+
+    .silhouette {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(45vw, 470px);
+      height: min(74vh, 660px);
+      transform: translate(-48%, -45%);
+      filter: drop-shadow(0 42px 80px rgba(0,0,0,0.52));
+    }
+    .silhouette .head,
+    .silhouette .torso,
+    .silhouette .leg-left,
+    .silhouette .leg-right,
+    .silhouette .coat,
+    .silhouette .bag,
+    .silhouette .scarf,
+    .silhouette .collar,
+    .silhouette .sleeve-left,
+    .silhouette .sleeve-right,
+    .silhouette .waist-line,
+    .silhouette .hem-panel,
+    .silhouette .shoe-left,
+    .silhouette .shoe-right,
+    .silhouette .shadow-line {
+      position: absolute;
+      background: var(--tone-1, #f1ddc1);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .head { width: 10.5%; aspect-ratio: 0.78; left: 44.8%; top: 1%; border-radius: 48% 48% 42% 42%; background: linear-gradient(160deg, rgba(255,255,255,0.28), var(--tone-3, #f5f0dc)); }
+    .torso { width: 22%; height: 38%; left: 39%; top: 18%; border-radius: 42% 42% 12% 12%; clip-path: polygon(18% 0, 82% 0, 92% 100%, 8% 100%); background: linear-gradient(145deg, rgba(255,255,255,0.20), var(--tone-1), var(--tone-2)); }
+    .coat { width: 52%; height: 58%; left: 24%; top: 19%; clip-path: polygon(24% 0, 76% 0, 91% 38%, 77% 100%, 57% 91%, 50% 29%, 43% 91%, 23% 100%, 9% 38%); background: linear-gradient(145deg, rgba(255,255,255,0.20), color-mix(in srgb, var(--tone-2) 78%, #000 22%)); }
+    .collar { width: 22%; height: 12%; left: 39%; top: 17%; clip-path: polygon(0 0, 46% 28%, 100% 0, 82% 100%, 51% 54%, 18% 100%); background: linear-gradient(140deg, rgba(255,255,255,0.38), var(--tone-3)); }
+    .sleeve-left { width: 15%; height: 44%; left: 27%; top: 26%; border-radius: 999px 999px 26px 26px; transform: rotate(8deg); background: linear-gradient(180deg, color-mix(in srgb, var(--tone-2) 76%, #000 24%), rgba(0,0,0,0.28)); }
+    .sleeve-right { width: 15%; height: 43%; right: 27%; top: 26%; border-radius: 999px 999px 26px 26px; transform: rotate(-9deg); background: linear-gradient(180deg, color-mix(in srgb, var(--tone-2) 70%, #fff 12%), rgba(0,0,0,0.20)); }
+    .waist-line { width: 28%; height: 1.6%; left: 36%; top: 53%; border: 0; border-radius: 999px; background: rgba(255,255,255,0.48); }
+    .hem-panel { width: 38%; height: 24%; left: 31%; top: 56%; clip-path: polygon(8% 0, 92% 0, 78% 100%, 22% 100%); background: linear-gradient(180deg, rgba(255,255,255,0.10), color-mix(in srgb, var(--tone-1) 68%, #000 32%)); }
+    .leg-left { width: 8.5%; height: 36%; left: 39%; top: 61%; border-radius: 0 0 36px 36px; transform: skewX(-4deg); background: linear-gradient(180deg, var(--tone-4, #111), rgba(0,0,0,0.82)); }
+    .leg-right { width: 8.5%; height: 36%; right: 39%; top: 61%; border-radius: 0 0 36px 36px; transform: skewX(4deg); background: linear-gradient(180deg, var(--tone-4, #111), rgba(0,0,0,0.82)); }
+    .bag { width: 15%; height: 17%; right: 13%; top: 51%; border-radius: 38% 38% 14% 14%; background: linear-gradient(145deg, var(--tone-3, #fff), rgba(0,0,0,0.18)); }
+    .scarf { width: 19%; height: 5%; left: 40%; top: 14.8%; border-radius: 999px; transform: rotate(-7deg); background: linear-gradient(90deg, var(--accent), var(--tone-3)); }
+    .shoe-left { width: 18%; height: 4%; left: 31%; top: 95%; border-radius: 999px; background: rgba(0,0,0,0.82); }
+    .shoe-right { width: 18%; height: 4%; right: 31%; top: 95%; border-radius: 999px; background: rgba(0,0,0,0.82); }
+    .shadow-line { width: 70%; height: 3%; left: 15%; bottom: -1%; border: 0; border-radius: 999px; background: rgba(0,0,0,0.34); filter: blur(6px); }
+
+    .stage-content {
+      position: relative;
+      height: 100%;
+      min-height: inherit;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-content: space-between;
+      padding: clamp(20px, 3.5vw, 42px);
+    }
+
+    .stage-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .look-number {
+      font-family: var(--serif);
+      font-size: clamp(5rem, 13vw, 10.5rem);
+      line-height: 0.78;
+      color: rgba(255, 255, 255, 0.82);
+      font-weight: 400;
+      text-shadow: 0 10px 44px rgba(0,0,0,0.38);
+    }
+    .collection-pill {
+      max-width: 240px;
+      text-align: right;
+      color: rgba(255,255,255,0.74);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.72rem;
+    }
+
+    .stage-bottom {
+      display: grid;
+      gap: 16px;
+      max-width: 620px;
+    }
+    .look-title {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2.6rem, 7vw, 6.6rem);
+      line-height: 0.9;
+      font-weight: 400;
+      text-wrap: balance;
+      text-shadow: 0 18px 52px rgba(0,0,0,0.50);
+    }
+    .look-claim {
+      margin: 0;
+      max-width: 560px;
+      color: rgba(255,255,255,0.78);
+      font-size: clamp(1rem, 1.4vw, 1.18rem);
+      line-height: 1.55;
+    }
+
+    .look-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag {
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 0.42rem 0.62rem;
+      background: rgba(0,0,0,0.28);
+      color: rgba(255,255,255,0.82);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .workbench {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1.22fr);
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.022)),
+        var(--panel);
+      box-shadow: 0 18px 58px rgba(0,0,0,0.24);
+      backdrop-filter: blur(18px);
+    }
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 0;
+    }
+    .panel-head h2, .panel-head h3 {
+      margin: 0;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--accent);
+    }
+    .panel-head span { color: var(--muted); font-size: 0.82rem; }
+
+    .look-list {
+      display: grid;
+      gap: 8px;
+      padding: 18px;
+    }
+    .look-card {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 86px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      padding: 10px;
+      color: var(--fg);
+      background: rgba(255,255,255,0.035);
+      text-align: left;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+    .look-card:hover,
+    .look-card.is-active {
+      border-color: rgba(32, 240, 199, 0.46);
+      background: rgba(32, 240, 199, 0.10);
+    }
+    .look-card:hover { transform: translateX(3px); }
+    .mini-art {
+      width: 54px;
+      height: 62px;
+      border-radius: var(--radius);
+      background: var(--mini-bg);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+    .look-card strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .look-card small { display: block; margin-top: 4px; color: var(--muted); }
+    .look-card em {
+      font-family: var(--serif);
+      font-size: 1.38rem;
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .look-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .look-summary { grid-column: span 7; padding: 20px; }
+    .style-panel { grid-column: span 5; padding: 20px; }
+    .detail-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .info-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: rgba(255,255,255,0.035);
+    }
+    .info-box strong { display: block; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .info-box span { display: block; margin-top: 8px; font-family: var(--serif); font-size: 1.4rem; }
+
+    .color-row, .garment-list, .accessory-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.38rem 0.58rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.035);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .swatch i {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.32);
+      background: var(--color);
+      flex: 0 0 auto;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.44rem 0.66rem;
+      background: rgba(255,255,255,0.04);
+      color: rgba(244,243,239,0.82);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .score {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .score-number {
+      font-family: var(--serif);
+      font-size: 4.4rem;
+      line-height: 1;
+      color: var(--accent-2);
+    }
+    .score-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+    .score-bar span {
+      display: block;
+      height: 100%;
+      width: var(--score);
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .gesture-map {
+      margin-top: 18px;
+      padding: 22px;
+    }
+    .gesture-note {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+    .gesture-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .gesture-btn {
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.84rem;
+      color: var(--fg);
+      background: rgba(255,255,255,0.035);
+      text-align: left;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+    .gesture-btn:hover { transform: translateY(-1px); border-color: rgba(32,240,199,0.42); background: rgba(32,240,199,0.09); }
+    .gesture-btn small { display: block; margin-top: 4px; color: var(--muted); }
+
+    .business {
+      margin: 18px 0 44px;
+      padding: 22px;
+    }
+    .business-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .business-card {
+      min-height: 112px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: rgba(255,255,255,0.035);
+    }
+    .business-card strong { display: block; margin-bottom: 8px; }
+    .business-card span { color: var(--muted); font-size: 0.84rem; line-height: 1.45; }
+
+    .drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0,0,0,0.66);
+      backdrop-filter: blur(12px);
+    }
+    .drawer.is-open { display: flex; }
+    .modal {
+      width: min(980px, 100%);
+      max-height: min(860px, 92vh);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      box-shadow: var(--shadow);
+    }
+    .modal-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px;
+      background: rgba(16,22,21,0.96);
+      border-bottom: 1px solid var(--line);
+    }
+    .modal-head h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 400; }
+    .modal-body { padding: 18px; }
+
+    .detail-items {
+      display: grid;
+      gap: 10px;
+    }
+    .detail-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) repeat(3, minmax(92px, auto));
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: rgba(255,255,255,0.04);
+    }
+    .detail-item strong { display: block; }
+    .detail-item span { color: var(--muted); font-size: 0.84rem; }
+    .detail-tips {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .compare-look {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: rgba(255,255,255,0.04);
+    }
+    .compare-look h3 { margin: 0 0 10px; font-family: var(--serif); font-size: 2rem; font-weight: 400; }
+    .compare-table {
+      width: 100%;
+      margin-top: 14px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius);
+    }
+    .compare-table th,
+    .compare-table td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .compare-table th { color: var(--accent); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .qr-wrap {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+    }
+    .fake-qr {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 4px;
+      width: 240px;
+      aspect-ratio: 1;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: #f4f3ef;
+      box-shadow: 0 18px 42px rgba(0,0,0,0.35);
+    }
+    .fake-qr span {
+      border-radius: 2px;
+      background: #07110f;
+      opacity: var(--on, 0.08);
+    }
+
+    .toast-layer {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 100;
+      display: grid;
+      gap: 8px;
+      width: min(360px, calc(100vw - 36px));
+    }
+    .toast {
+      border: 1px solid rgba(32, 240, 199, 0.35);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      color: var(--fg);
+      background: rgba(8, 14, 13, 0.94);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.34);
+      animation: toastIn 220ms ease both;
+    }
+    @keyframes toastIn { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    @media (max-width: 1180px) {
+      .hero, .workbench { grid-template-columns: 1fr; }
+      .stage { min-height: 620px; }
+      .look-summary, .style-panel { grid-column: span 12; }
+      .business-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 12px; }
+      .topbar { position: relative; align-items: flex-start; flex-direction: column; }
+      .top-actions { justify-content: flex-start; }
+      .hero { min-height: auto; gap: 14px; }
+      .stage { min-height: 560px; }
+      .hero-meta, .detail-row, .detail-tips, .compare-grid, .qr-wrap { grid-template-columns: 1fr; }
+      .action-grid, .gesture-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .business-grid { grid-template-columns: 1fr; }
+      .detail-item { grid-template-columns: 1fr; }
+      .collection-pill { max-width: 160px; }
+      .qr-wrap .fake-qr { width: min(240px, 100%); }
+    }
+
+    @media (max-width: 480px) {
+      .btn, .gesture-btn { width: 100%; }
+      .action-grid, .gesture-grid { grid-template-columns: 1fr; }
+      .look-card { grid-template-columns: 46px minmax(0, 1fr); }
+      .look-card em { display: none; }
+      .stage { min-height: 520px; }
+      .silhouette { width: 300px; height: 470px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar" aria-label="Cabecera Fashion Lookbook">
+      <div class="brand">
+        <div class="mark">RS</div>
+        <div class="brand-title">
+          <strong>Rubik Sota Fashion Lookbook v2.9</strong>
+          <span>Campana editorial interactiva para retail premium</span>
+        </div>
+      </div>
+      <nav class="top-actions" aria-label="Acciones principales">
+        <button class="btn" id="prevTopBtn" type="button">Anterior</button>
+        <button class="btn" id="nextTopBtn" type="button">Siguiente</button>
+        <button class="btn btn-primary" id="detailsTopBtn" type="button">Ver detalles</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-label="Portada editorial">
+        <div class="editorial-copy">
+          <div>
+            <span class="kicker" id="collectionKicker">Coleccion Signal 29</span>
+            <h1>Fashion Lookbook</h1>
+            <div class="campaign-line" aria-label="Contexto editorial">
+              <span>Temporada v2.9</span>
+              <span>Retail premium</span>
+              <span>Escaparate vivo</span>
+            </div>
+            <p class="hero-lede">
+              Una campana editorial interactiva para presentar colecciones, looks y accesorios con ritmo de escaparate, tacto de showroom y continuidad movil.
+            </p>
+            <div class="hero-meta" aria-label="Indicadores comerciales">
+              <div class="meta-tile"><strong id="favoriteCount">0</strong><span>favoritos locales</span></div>
+              <div class="meta-tile"><strong id="compareCount">0</strong><span>looks para comparar</span></div>
+              <div class="meta-tile"><strong id="scoreHero">92</strong><span>afinidad de estilo</span></div>
+            </div>
+            <div class="editorial-actions">
+              <button class="btn btn-primary" id="heroCtaBtn" type="button">Explorar look</button>
+              <button class="btn" id="heroQrBtn" type="button">Continuar en movil</button>
+              <button class="btn" id="heroCompareBtn" type="button">Comparar</button>
+            </div>
+          </div>
+          <p class="hero-lede">
+            Explora una narrativa de temporada con looks completos, favoritos y comparacion sin convertir la moda en una tabla de producto.
+          </p>
+        </div>
+
+        <article class="stage" id="lookStage" aria-label="Look actual">
+          <div class="look-art" id="lookArt" aria-hidden="true">
+            <div class="silhouette">
+              <div class="head"></div>
+              <div class="scarf"></div>
+              <div class="sleeve-left"></div>
+              <div class="sleeve-right"></div>
+              <div class="coat"></div>
+              <div class="torso"></div>
+              <div class="collar"></div>
+              <div class="waist-line"></div>
+              <div class="hem-panel"></div>
+              <div class="leg-left"></div>
+              <div class="leg-right"></div>
+              <div class="bag"></div>
+              <div class="shoe-left"></div>
+              <div class="shoe-right"></div>
+              <div class="shadow-line"></div>
+            </div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-head">
+              <div class="look-number" id="lookNumber">01</div>
+              <div class="collection-pill" id="lookMood">Summer Signal / Resort city</div>
+            </div>
+            <div class="stage-bottom">
+              <div class="look-chip-row" id="stageTags"></div>
+              <h2 class="look-title" id="lookName">Summer Signal</h2>
+              <p class="look-claim" id="lookHeadline">Sastreria ligera, acento solar y una silueta que funciona desde escaparate hasta terraza.</p>
+              <div class="look-chip-row" id="stagePalette"></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="workbench" aria-label="Selector y vista de look">
+        <aside class="panel" aria-label="Selector de looks">
+          <div class="panel-head">
+              <h2>Secuencia editorial</h2>
+              <span>6 looks de campana</span>
+          </div>
+          <div class="look-list" id="lookList"></div>
+        </aside>
+
+        <section class="look-grid" aria-label="Vista de look completo">
+          <article class="panel look-summary">
+            <div class="panel-head">
+              <h2>Composicion del look</h2>
+              <span id="occasionLabel">Escaparate</span>
+            </div>
+            <div style="padding: 18px;">
+              <p id="lookDescription" class="hero-lede" style="margin: 0;"></p>
+              <div class="detail-row">
+                <div class="info-box"><strong>Precio estimado</strong><span id="lookPrice">EUR 0</span></div>
+                <div class="info-box"><strong>Ocasion</strong><span id="lookOccasion">-</span></div>
+              </div>
+              <h3 style="margin: 18px 0 0;">Prendas incluidas</h3>
+              <div class="garment-list" id="garmentList"></div>
+              <h3 style="margin: 18px 0 0;">Accesorios recomendados</h3>
+              <div class="accessory-list" id="accessoryList"></div>
+              <div class="action-grid" aria-label="Acciones del look">
+                <button class="btn" id="prevLookBtn" type="button">Look anterior</button>
+                <button class="btn" id="nextLookBtn" type="button">Siguiente look</button>
+                <button class="btn btn-primary" id="openDetailsBtn" type="button">Ver detalles</button>
+                <button class="btn" id="favoriteBtn" type="button">Guardar favorito</button>
+                <button class="btn" id="compareBtn" type="button">Comparar</button>
+                <button class="btn" id="qrBtn" type="button">Compartir / QR demo</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel style-panel">
+            <div class="panel-head">
+              <h2>Afinidad de estilo</h2>
+              <span>Lectura comercial</span>
+            </div>
+            <div style="padding: 18px;">
+              <div class="score">
+                <div class="score-number" id="styleScore">92</div>
+                <div>
+                  <div class="score-bar"><span id="scoreBar"></span></div>
+                  <p class="gesture-note" id="editorialPhrase">Una entrada visual con lectura inmediata desde calle.</p>
+                </div>
+              </div>
+              <h3 style="margin: 22px 0 0;">Paleta de color</h3>
+              <div class="color-row" id="colorRow"></div>
+              <h3 style="margin: 22px 0 0;">Valor comercial</h3>
+              <p class="gesture-note" id="businessValue"></p>
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <section class="panel gesture-map" aria-label="Capa preparada para gestos">
+        <div class="panel-head" style="padding: 0;">
+          <h2>Preparado para gestos</h2>
+          <span>sin camara real</span>
+        </div>
+        <p class="gesture-note">Gestos preparados para integracion futura. El control tactil, raton y teclado esta activo ahora.</p>
+        <div class="gesture-grid">
+          <button class="gesture-btn" type="button" data-gesture-action="next">Swipe izquierda <small>siguiente look</small></button>
+          <button class="gesture-btn" type="button" data-gesture-action="prev">Swipe derecha <small>look anterior</small></button>
+          <button class="gesture-btn" type="button" data-gesture-action="details">Pinza <small>abrir detalle</small></button>
+          <button class="gesture-btn" type="button" data-gesture-action="explore">Mano abierta <small>volver a explorar</small></button>
+          <button class="gesture-btn" type="button" data-gesture-action="favorite">Pulgar arriba <small>favorito experimental</small></button>
+          <button class="gesture-btn" type="button" data-gesture-action="compare">Dos dedos / V <small>comparar experimental</small></button>
+        </div>
+      </section>
+
+      <section class="panel business" aria-label="Aplicaciones comerciales">
+        <div class="panel-head" style="padding: 0;">
+          <h2>Aplicaciones comerciales</h2>
+          <span>moda, retail y showrooms</span>
+        </div>
+        <div class="business-grid">
+          <div class="business-card"><strong>Escaparate interactivo</strong><span>Atrae mirada en calle con una portada viva, CTA claro y continuidad movil.</span></div>
+          <div class="business-card"><strong>Showroom de coleccion</strong><span>Ordena estilismos, materiales y accesorios en una experiencia de venta asistida.</span></div>
+          <div class="business-card"><strong>Campana de temporada</strong><span>Transforma una direccion creativa en recorrido navegable para tienda y digital signage.</span></div>
+          <div class="business-card"><strong>Mupi retail</strong><span>Funciona en pantalla grande con lectura rapida, botones tactiles y comparacion simple.</span></div>
+          <div class="business-card"><strong>Catalogo editorial</strong><span>Presenta looks completos con narrativa visual, no fichas aisladas de producto.</span></div>
+          <div class="business-card"><strong>Activacion en tienda</strong><span>Impulsa favoritos, comparacion y paso a movil mediante QR demo de continuidad.</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer" id="detailsPanel" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="detailsTitle">Detalle del look</h2>
+        <button class="btn" id="closeDetailsBtn" type="button">Cerrar</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-items" id="detailItems"></div>
+        <div class="detail-tips">
+          <div class="info-box"><strong>Consejo de estilo</strong><span id="styleTip"></span></div>
+          <div class="info-box"><strong>Complemento recomendado</strong><span id="complementTip"></span></div>
+        </div>
+        <div class="editorial-actions">
+          <button class="btn btn-primary" id="whatsappBtn" type="button">Enviar look por WhatsApp</button>
+          <button class="btn" id="detailsQrBtn" type="button">Abrir QR demo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer" id="comparePanel" role="dialog" aria-modal="true" aria-labelledby="compareTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="compareTitle">Comparacion de looks</h2>
+        <button class="btn" id="closeCompareBtn" type="button">Cerrar</button>
+      </div>
+      <div class="modal-body" id="compareBody"></div>
+    </div>
+  </div>
+
+  <div class="drawer" id="qrPanel" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="qrTitle">Continuidad movil</h2>
+        <button class="btn" id="closeQrBtn" type="button">Cerrar</button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-wrap">
+          <div class="fake-qr" id="fakeQr" aria-label="QR demo visual"></div>
+          <div>
+            <span class="kicker">QR demo</span>
+            <p class="hero-lede">Escanea para continuar en movil. Este patron es una pieza visual de demostracion, no un QR real.</p>
+            <div class="info-box"><strong>Codigo demo</strong><span id="demoCode">RS-LKB-2901</span></div>
+            <div class="editorial-actions">
+              <button class="btn btn-primary" id="copyLinkBtn" type="button">Copiar enlace</button>
+              <button class="btn" id="qrDetailsBtn" type="button">Ver detalle del look</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-layer" id="toastLayer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    const LOOKS = [
+      {
+        id: "summer-signal",
+        name: "Summer Signal",
+        collection: "Coleccion Signal 29",
+        mood: "Resort urbano",
+        occasion: "Escaparate",
+        headline: "Sastreria ligera, acento solar y una silueta que funciona desde escaparate hasta terraza.",
+        description: "Una propuesta de verano urbano con lino estructurado, sandalia limpia y accesorios de alto contraste para atraer mirada desde distancia.",
+        colors: [{ name: "Ivory", hex: "#f3ead8" }, { name: "Signal lime", hex: "#d8ff3e" }, { name: "Deep ink", hex: "#171b1f" }],
+        garments: [
+          { name: "Blazer de lino", material: "Lino tecnico", color: "Ivory", price: 210, stock: "medio", tip: "Llevar abierto para una lectura mas editorial." },
+          { name: "Pantalon fluido", material: "Viscosa premium", color: "Deep ink", price: 145, stock: "alto", tip: "Dobladillo limpio para escaparate." },
+          { name: "Top satinado", material: "Saten mate", color: "Signal lime", price: 88, stock: "bajo", tip: "Usar como punto focal de campana." }
+        ],
+        accessories: ["Bolso geometrico", "Sandalia minimal", "Gafas translucidas"],
+        price: 443,
+        styleScore: 94,
+        tags: ["retail premium", "verano", "alto impacto"],
+        cta: "Guardar look de campana",
+        businessValue: "Ideal para escaparate por contraste cromatico y lectura inmediata desde calle.",
+        styleTip: "Mantener la chaqueta abierta y elevar el acento lima en accesorios secundarios.",
+        complementTip: "Bolso geometrico en acabado marfil para no competir con el top."
+      },
+      {
+        id: "urban-linen",
+        name: "Urban Linen",
+        collection: "Lino en movimiento",
+        mood: "Showroom de dia",
+        occasion: "Showroom",
+        headline: "Lino tactil, capas neutras y una elegancia relajada para venta asistida.",
+        description: "Un look de showroom que permite explicar textura, caida y combinatoria sin saturar la pantalla.",
+        colors: [{ name: "Oat", hex: "#c7b99e" }, { name: "Sage", hex: "#8ea28f" }, { name: "Graphite", hex: "#2f3534" }],
+        garments: [
+          { name: "Camisa larga", material: "Lino lavado", color: "Oat", price: 132, stock: "alto", tip: "Mostrar manga remangada para tactilidad." },
+          { name: "Bermuda sastre", material: "Algodon compacto", color: "Graphite", price: 118, stock: "medio", tip: "Combinar con sandalia plana." },
+          { name: "Chaleco ligero", material: "Lino blend", color: "Sage", price: 154, stock: "medio", tip: "Funciona como pieza de cierre." }
+        ],
+        accessories: ["Cinturon tejido", "Tote suave", "Mule plano"],
+        price: 404,
+        styleScore: 88,
+        tags: ["natural", "showroom", "textura"],
+        cta: "Enviar propuesta",
+        businessValue: "Facilita conversacion en tienda porque separa textura, capas y ocasion.",
+        styleTip: "Trabajar con tonos cercanos y dejar el sage como capa de lectura.",
+        complementTip: "Tote suave en grafito para reforzar utilidad urbana."
+      },
+      {
+        id: "night-resort",
+        name: "Night Resort",
+        collection: "Edicion After Sun",
+        mood: "Noche resort",
+        occasion: "Evento",
+        headline: "Brillo contenido, negro liquido y cobre para una noche de destino.",
+        description: "Un look de alto margen visual para eventos, cenas y campanas nocturnas sin caer en exceso de brillo.",
+        colors: [{ name: "Liquid black", hex: "#09090b" }, { name: "Copper", hex: "#b46f43" }, { name: "Pearl", hex: "#e9dfcf" }],
+        garments: [
+          { name: "Vestido columna", material: "Crepe satinado", color: "Liquid black", price: 260, stock: "bajo", tip: "Dejar espacio visual alrededor de la silueta." },
+          { name: "Chaqueta corta", material: "Jacquard ligero", color: "Copper", price: 235, stock: "medio", tip: "Aporta valor percibido en pantalla." },
+          { name: "Sandalia fina", material: "Piel lisa", color: "Pearl", price: 165, stock: "alto", tip: "Eleva el look sin robar foco." }
+        ],
+        accessories: ["Clutch cobre", "Pendiente largo", "Anillo organico"],
+        price: 660,
+        styleScore: 96,
+        tags: ["evento", "noche", "alto margen"],
+        cta: "Reservar look",
+        businessValue: "Perfecto para evento y campana nocturna por su lectura aspiracional.",
+        styleTip: "Usar una sola pieza cobre y repetir el tono en un accesorio pequeno.",
+        complementTip: "Clutch cobre con textura para reforzar campana de noche."
+      },
+      {
+        id: "soft-utility",
+        name: "Soft Utility",
+        collection: "Utility suave",
+        mood: "Fin de semana",
+        occasion: "Venta rapida",
+        headline: "Bolsillos, capas suaves y una silueta preparada para rotacion comercial.",
+        description: "Una lectura de utilidad premium para tiendas con rotacion alta: piezas reconocibles, combinables y muy fotografiables.",
+        colors: [{ name: "Mist", hex: "#d9ded8" }, { name: "Olive", hex: "#6f7b54" }, { name: "Clay", hex: "#a7785a" }],
+        garments: [
+          { name: "Sobrecamisa utility", material: "Algodon organico", color: "Olive", price: 174, stock: "alto", tip: "Abrir bolsillos para lectura de detalle." },
+          { name: "Falda cargo", material: "Sarga suave", color: "Mist", price: 126, stock: "medio", tip: "Aporta novedad sin complejidad." },
+          { name: "Camiseta premium", material: "Algodon pesado", color: "Clay", price: 54, stock: "alto", tip: "Producto de venta rapida." }
+        ],
+        accessories: ["Sneaker tonal", "Bandolera compacta", "Gorra soft"],
+        price: 354,
+        styleScore: 86,
+        tags: ["utilidad", "rotacion", "casual premium"],
+        cta: "Crear pack de tienda",
+        businessValue: "Favorece venta rapida por precio accesible y prendas reconocibles.",
+        styleTip: "Sumar un accesorio compacto para cerrar el look sin elevar demasiado el ticket.",
+        complementTip: "Bandolera compacta en clay para repetir el tono de camiseta."
+      },
+      {
+        id: "coastal-tailoring",
+        name: "Coastal Tailoring",
+        collection: "Sastre costero",
+        mood: "Formal suave",
+        occasion: "Campana editorial",
+        headline: "Sastre costero, azul mineral y blancos con aire de hotel mediterraneo.",
+        description: "Un territorio editorial para colecciones resort, con formalidad ligera y una paleta muy limpia para fotografia.",
+        colors: [{ name: "Sea blue", hex: "#517f95" }, { name: "Chalk", hex: "#eee9de" }, { name: "Driftwood", hex: "#a8967a" }],
+        garments: [
+          { name: "Traje fluido", material: "Lana fria", color: "Sea blue", price: 318, stock: "medio", tip: "Separar piezas en detalle para upsell." },
+          { name: "Camisa voile", material: "Algodon voile", color: "Chalk", price: 126, stock: "alto", tip: "Transmite frescura editorial." },
+          { name: "Mocasin suave", material: "Ante tecnico", color: "Driftwood", price: 180, stock: "medio", tip: "Cierra el tono resort." }
+        ],
+        accessories: ["Panama soft", "Bolso canvas", "Panuelo mineral"],
+        price: 624,
+        styleScore: 91,
+        tags: ["sastreria", "resort", "editorial"],
+        cta: "Abrir narrativa resort",
+        businessValue: "Sirve para campana editorial al comunicar coleccion completa, no prenda aislada.",
+        styleTip: "Mantener camisa desabrochada arriba para evitar rigidez de oficina.",
+        complementTip: "Panuelo mineral para conectar la paleta con accesorios."
+      },
+      {
+        id: "electric-weekend",
+        name: "Electric Weekend",
+        collection: "Fin de semana electrico",
+        mood: "Calle pop",
+        occasion: "Activacion",
+        headline: "Energia cromatica, denim oscuro y detalle electrico para activaciones de marca.",
+        description: "Un look de participacion que funciona en pantalla grande por contraste, movimiento y accesorios faciles de recordar.",
+        colors: [{ name: "Electric cyan", hex: "#20f0c7" }, { name: "Denim night", hex: "#16283d" }, { name: "White flash", hex: "#f6f7ee" }],
+        garments: [
+          { name: "Bomber corta", material: "Nylon mate", color: "Electric cyan", price: 198, stock: "medio", tip: "Pieza hero para activacion." },
+          { name: "Denim recto", material: "Denim premium", color: "Denim night", price: 138, stock: "alto", tip: "Base de conversion comercial." },
+          { name: "Top tecnico", material: "Punto elastico", color: "White flash", price: 72, stock: "alto", tip: "Aporta lectura limpia." }
+        ],
+        accessories: ["Sneaker blanco", "Mini bag cyan", "Pulsera rigida"],
+        price: 408,
+        styleScore: 90,
+        tags: ["activacion", "calle", "alto contraste"],
+        cta: "Lanzar activacion",
+        businessValue: "Ideal para activacion en tienda por energia visual y recuerdo de color.",
+        styleTip: "Reducir accesorios a dos piezas para mantener el impacto cyan.",
+        complementTip: "Sneaker blanco para equilibrar la bomber electrica."
+      }
+    ];
+
+    const els = {
+      collectionKicker: document.getElementById("collectionKicker"),
+      favoriteCount: document.getElementById("favoriteCount"),
+      compareCount: document.getElementById("compareCount"),
+      scoreHero: document.getElementById("scoreHero"),
+      lookStage: document.getElementById("lookStage"),
+      lookArt: document.getElementById("lookArt"),
+      lookNumber: document.getElementById("lookNumber"),
+      lookMood: document.getElementById("lookMood"),
+      lookName: document.getElementById("lookName"),
+      lookHeadline: document.getElementById("lookHeadline"),
+      stageTags: document.getElementById("stageTags"),
+      stagePalette: document.getElementById("stagePalette"),
+      lookList: document.getElementById("lookList"),
+      occasionLabel: document.getElementById("occasionLabel"),
+      lookDescription: document.getElementById("lookDescription"),
+      lookPrice: document.getElementById("lookPrice"),
+      lookOccasion: document.getElementById("lookOccasion"),
+      garmentList: document.getElementById("garmentList"),
+      accessoryList: document.getElementById("accessoryList"),
+      styleScore: document.getElementById("styleScore"),
+      scoreBar: document.getElementById("scoreBar"),
+      editorialPhrase: document.getElementById("editorialPhrase"),
+      businessValue: document.getElementById("businessValue"),
+      colorRow: document.getElementById("colorRow"),
+      favoriteBtn: document.getElementById("favoriteBtn"),
+      detailsPanel: document.getElementById("detailsPanel"),
+      detailsTitle: document.getElementById("detailsTitle"),
+      detailItems: document.getElementById("detailItems"),
+      styleTip: document.getElementById("styleTip"),
+      complementTip: document.getElementById("complementTip"),
+      comparePanel: document.getElementById("comparePanel"),
+      compareBody: document.getElementById("compareBody"),
+      qrPanel: document.getElementById("qrPanel"),
+      fakeQr: document.getElementById("fakeQr"),
+      demoCode: document.getElementById("demoCode"),
+      toastLayer: document.getElementById("toastLayer")
+    };
+
+    const state = {
+      currentIndex: 0,
+      favorites: [],
+      compare: []
+    };
+
+    function money(value) {
+      return "EUR " + Number(value || 0).toLocaleString("es-ES");
+    }
+
+    function currentLook() {
+      return LOOKS[state.currentIndex] || LOOKS[0];
+    }
+
+    function renderLook() {
+      const look = currentLook();
+      const number = String(state.currentIndex + 1).padStart(2, "0");
+      const gradient = "linear-gradient(135deg, " + look.colors.map((c) => c.hex).join(", ") + ")";
+      els.lookStage.style.setProperty("--look-bg", gradient);
+      els.lookStage.style.setProperty("--tone-1", look.colors[0].hex);
+      els.lookStage.style.setProperty("--tone-2", look.colors[1].hex);
+      els.lookStage.style.setProperty("--tone-3", look.colors[2].hex);
+      els.lookStage.style.setProperty("--tone-4", look.colors[2].hex);
+
+      els.collectionKicker.textContent = look.collection;
+      els.lookNumber.textContent = number;
+      els.lookMood.textContent = look.mood + " / " + look.occasion;
+      els.lookName.textContent = look.name;
+      els.lookHeadline.textContent = look.headline;
+      els.occasionLabel.textContent = look.occasion;
+      els.lookDescription.textContent = look.description;
+      els.lookPrice.textContent = money(look.price);
+      els.lookOccasion.textContent = look.occasion;
+      els.styleScore.textContent = look.styleScore;
+      els.scoreHero.textContent = look.styleScore;
+      els.scoreBar.style.setProperty("--score", look.styleScore + "%");
+      els.editorialPhrase.textContent = look.headline;
+      els.businessValue.textContent = look.businessValue;
+      els.demoCode.textContent = "RS-LKB-29" + number;
+
+      els.stageTags.innerHTML = look.tags.map((tag) => '<span class="tag">' + tag + '</span>').join("");
+      els.stagePalette.innerHTML = look.colors.map((color) => '<span class="swatch"><i style="--color:' + color.hex + '"></i>' + color.name + '</span>').join("");
+      els.colorRow.innerHTML = els.stagePalette.innerHTML;
+      els.garmentList.innerHTML = look.garments.map((item) => '<span class="pill">' + item.name + '</span>').join("");
+      els.accessoryList.innerHTML = look.accessories.map((item) => '<span class="pill">' + item + '</span>').join("");
+      els.favoriteBtn.textContent = state.favorites.includes(look.id) ? "Favorito guardado" : "Guardar favorito";
+      els.favoriteBtn.classList.toggle("is-active", state.favorites.includes(look.id));
+      renderLookList();
+      updateCounters();
+      renderQrPattern(look);
+      els.lookArt.classList.add("is-switching");
+      window.setTimeout(() => els.lookArt.classList.remove("is-switching"), 220);
+    }
+
+    function renderLookList() {
+      els.lookList.innerHTML = LOOKS.map((look, index) => {
+        const number = String(index + 1).padStart(2, "0");
+        const active = index === state.currentIndex ? " is-active" : "";
+        const mini = "linear-gradient(135deg, " + look.colors.map((c) => c.hex).join(", ") + ")";
+        return '<button class="look-card' + active + '" type="button" data-look-index="' + index + '">' +
+          '<span class="mini-art" style="--mini-bg:' + mini + '"></span>' +
+          '<span><strong>Look ' + number + " - " + look.name + '</strong><small>' + look.mood + " / " + money(look.price) + '</small></span>' +
+          '<em>' + number + '</em>' +
+        '</button>';
+      }).join("");
+    }
+
+    function nextLook() {
+      state.currentIndex = (state.currentIndex + 1) % LOOKS.length;
+      renderLook();
+      showToast("Siguiente look: " + currentLook().name);
+    }
+
+    function prevLook() {
+      state.currentIndex = (state.currentIndex - 1 + LOOKS.length) % LOOKS.length;
+      renderLook();
+      showToast("Look anterior: " + currentLook().name);
+    }
+
+    function openDetails() {
+      const look = currentLook();
+      els.detailsTitle.textContent = "Detalle: " + look.name;
+      els.detailItems.innerHTML = look.garments.map((item) => (
+        '<div class="detail-item">' +
+          '<div><strong>' + item.name + '</strong><span>' + item.tip + '</span></div>' +
+          '<span>' + item.material + '</span>' +
+          '<span>' + item.color + '</span>' +
+          '<span>' + money(item.price) + " / stock " + item.stock + '</span>' +
+        '</div>'
+      )).join("");
+      els.styleTip.textContent = look.styleTip;
+      els.complementTip.textContent = look.complementTip;
+      els.detailsPanel.classList.add("is-open");
+      showToast("Detalle abierto");
+    }
+
+    function closeDetails() {
+      els.detailsPanel.classList.remove("is-open");
+    }
+
+    function toggleFavorite() {
+      const look = currentLook();
+      const index = state.favorites.indexOf(look.id);
+      if (index >= 0) {
+        state.favorites.splice(index, 1);
+        showToast("Favorito retirado");
+      } else {
+        state.favorites.push(look.id);
+        showToast("Look guardado como favorito");
+      }
+      renderLook();
+    }
+
+    function addToCompare() {
+      const look = currentLook();
+      const existing = state.compare.indexOf(look.id);
+      if (existing >= 0) {
+        showToast("Este look ya esta en comparacion");
+      } else {
+        if (state.compare.length >= 2) state.compare.shift();
+        state.compare.push(look.id);
+        showToast("Look anadido a comparacion");
+      }
+      updateCounters();
+      if (state.compare.length === 2) renderCompare();
+    }
+
+    function renderCompare() {
+      const selected = state.compare.map((id) => LOOKS.find((look) => look.id === id)).filter(Boolean);
+      if (selected.length < 2) {
+        els.compareBody.innerHTML = '<p class="hero-lede">Selecciona dos looks para comparar color, ocasion, precio y estilo.</p>';
+      } else {
+        const a = selected[0];
+        const b = selected[1];
+        const recommendation = a.styleScore >= b.styleScore ? "Mejor para escaparate: " + a.name : "Mejor para evento: " + b.name;
+        els.compareBody.innerHTML =
+          '<div class="compare-grid">' +
+            renderCompareLook(a, "Look A") +
+            renderCompareLook(b, "Look B") +
+          '</div>' +
+          '<table class="compare-table">' +
+            '<tr><th>Diferencia</th><th>' + a.name + '</th><th>' + b.name + '</th></tr>' +
+            '<tr><td>Color</td><td>' + a.colors.map((c) => c.name).join(", ") + '</td><td>' + b.colors.map((c) => c.name).join(", ") + '</td></tr>' +
+            '<tr><td>Ocasion</td><td>' + a.occasion + '</td><td>' + b.occasion + '</td></tr>' +
+            '<tr><td>Nivel formal</td><td>' + formalLevel(a) + '</td><td>' + formalLevel(b) + '</td></tr>' +
+            '<tr><td>Precio</td><td>' + money(a.price) + '</td><td>' + money(b.price) + '</td></tr>' +
+            '<tr><td>Accesorios</td><td>' + a.accessories.join(", ") + '</td><td>' + b.accessories.join(", ") + '</td></tr>' +
+            '<tr><td>Estilo</td><td>' + a.mood + '</td><td>' + b.mood + '</td></tr>' +
+          '</table>' +
+          '<div class="info-box" style="margin-top: 14px;"><strong>Recomendacion final</strong><span>' + recommendation + '</span></div>';
+      }
+      els.comparePanel.classList.add("is-open");
+    }
+
+    function renderCompareLook(look, label) {
+      return '<div class="compare-look"><span class="kicker">' + label + '</span><h3>' + look.name + '</h3><p class="gesture-note">' + look.headline + '</p><div class="color-row">' +
+        look.colors.map((color) => '<span class="swatch"><i style="--color:' + color.hex + '"></i>' + color.name + '</span>').join("") +
+        '</div></div>';
+    }
+
+    function formalLevel(look) {
+      if (look.occasion === "Evento" || look.name.indexOf("Tailoring") >= 0) return "alto";
+      if (look.occasion === "Showroom" || look.name.indexOf("Linen") >= 0) return "medio";
+      return "relajado";
+    }
+
+    function openQrPanel() {
+      renderQrPattern(currentLook());
+      els.qrPanel.classList.add("is-open");
+      showToast("QR demo abierto");
+    }
+
+    function closeQrPanel() {
+      els.qrPanel.classList.remove("is-open");
+    }
+
+    function simulateGesture(action) {
+      const map = {
+        next: nextLook,
+        prev: prevLook,
+        details: openDetails,
+        explore: () => { closeDetails(); closeQrPanel(); els.comparePanel.classList.remove("is-open"); showToast("Modo explorar activo"); },
+        favorite: () => { toggleFavorite(); showToast("Thumbs up experimental"); },
+        compare: () => { addToCompare(); showToast("Victory experimental"); }
+      };
+      if (map[action]) map[action]();
+    }
+
+    function showToast(message) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+      els.toastLayer.appendChild(toast);
+      window.setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(8px)";
+        window.setTimeout(() => toast.remove(), 180);
+      }, 1800);
+    }
+
+    function renderQrPattern(look) {
+      const seed = look.id.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+      let html = "";
+      for (let i = 0; i < 81; i++) {
+        const anchor = (i < 20 && i % 9 < 3) || (i > 53 && i % 9 < 3) || (i < 27 && i % 9 > 5);
+        const on = anchor || ((i * 17 + seed) % 7 < 3);
+        html += '<span style="--on:' + (on ? 1 : 0.08) + '"></span>';
+      }
+      els.fakeQr.innerHTML = html;
+    }
+
+    function updateCounters() {
+      els.favoriteCount.textContent = state.favorites.length;
+      els.compareCount.textContent = state.compare.length;
+    }
+
+    function bindEvents() {
+      document.getElementById("nextTopBtn").addEventListener("click", nextLook);
+      document.getElementById("prevTopBtn").addEventListener("click", prevLook);
+      document.getElementById("detailsTopBtn").addEventListener("click", openDetails);
+      document.getElementById("heroCtaBtn").addEventListener("click", openDetails);
+      document.getElementById("heroQrBtn").addEventListener("click", openQrPanel);
+      document.getElementById("heroCompareBtn").addEventListener("click", addToCompare);
+      document.getElementById("prevLookBtn").addEventListener("click", prevLook);
+      document.getElementById("nextLookBtn").addEventListener("click", nextLook);
+      document.getElementById("openDetailsBtn").addEventListener("click", openDetails);
+      document.getElementById("favoriteBtn").addEventListener("click", toggleFavorite);
+      document.getElementById("compareBtn").addEventListener("click", addToCompare);
+      document.getElementById("qrBtn").addEventListener("click", openQrPanel);
+      document.getElementById("closeDetailsBtn").addEventListener("click", closeDetails);
+      document.getElementById("closeCompareBtn").addEventListener("click", () => els.comparePanel.classList.remove("is-open"));
+      document.getElementById("closeQrBtn").addEventListener("click", closeQrPanel);
+      document.getElementById("detailsQrBtn").addEventListener("click", openQrPanel);
+      document.getElementById("qrDetailsBtn").addEventListener("click", openDetails);
+      document.getElementById("whatsappBtn").addEventListener("click", () => showToast("Look preparado para enviar por WhatsApp"));
+      document.getElementById("copyLinkBtn").addEventListener("click", () => showToast("Enlace guardado localmente"));
+      els.lookList.addEventListener("click", (event) => {
+        const card = event.target.closest("[data-look-index]");
+        if (!card) return;
+        state.currentIndex = Number(card.dataset.lookIndex) || 0;
+        renderLook();
+      });
+      document.querySelectorAll("[data-gesture-action]").forEach((button) => {
+        button.addEventListener("click", () => simulateGesture(button.dataset.gestureAction));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") nextLook();
+        if (event.key === "ArrowLeft") prevLook();
+        if (event.key === "Escape") { closeDetails(); closeQrPanel(); els.comparePanel.classList.remove("is-open"); }
+        if (event.key.toLowerCase() === "f") toggleFavorite();
+        if (event.key.toLowerCase() === "c") addToCompare();
+      });
+      [els.detailsPanel, els.comparePanel, els.qrPanel].forEach((panel) => {
+        panel.addEventListener("click", (event) => {
+          if (event.target === panel) panel.classList.remove("is-open");
+        });
+      });
+    }
+
+    bindEvents();
+    renderLook();
+  </script>
+</body>
+</html>
