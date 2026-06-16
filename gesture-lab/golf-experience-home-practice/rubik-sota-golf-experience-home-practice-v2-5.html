@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota Gesture Lab 06 - Golf Experience / Home Practice v2.5. Captura postura, grip o fase de golpe y genera una guia visual de practica con feedback exportable (PNG, clip, WhatsApp, email). Sin medicion biomecanica real." />
+  <title>Rubik Sota Gesture Lab 06 - Golf Experience / Home Practice v2.5</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030303;
+      --fg: #ffffff;
+      --muted: rgba(255,255,255,0.66);
+      --muted-2: rgba(255,255,255,0.42);
+      --line: rgba(255,255,255,0.14);
+      --line-strong: rgba(255,255,255,0.32);
+      --glass: rgba(255,255,255,0.06);
+      --accent: #00ffcc;
+      --accent-2: #d8ff3e;
+      --danger: #ff3366;
+      --gold: #e8d8a8;
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+      --shadow: 0 30px 90px rgba(0,0,0,0.62);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      min-height: 100vh; color: var(--fg);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(0,255,204,0.14), transparent 32%),
+        radial-gradient(circle at 84% 8%, rgba(216,255,62,0.08), transparent 28%),
+        radial-gradient(circle at 78% 86%, rgba(255,51,102,0.10), transparent 30%),
+        var(--bg);
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 70px 70px; mask-image: radial-gradient(circle at 50% 40%, black, transparent 78%); opacity: 0.42;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, label, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    input, textarea, select { color: inherit; }
+
+    .shell { position: relative; z-index: 1; max-width: 1320px; margin: 0 auto; padding: clamp(1rem, 3vw, 2.4rem); display: grid; gap: clamp(1.4rem, 3vw, 2.4rem); }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.3rem 0.2rem; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 0.78rem; min-width: 0; }
+    .brand-mark { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; border: 1px solid var(--line-strong); background: linear-gradient(135deg, rgba(0,255,204,0.20), rgba(255,255,255,0.05)); box-shadow: inset 0 0 28px rgba(0,255,204,0.10), 0 0 28px rgba(0,255,204,0.06); font-weight: 900; letter-spacing: -0.08em; font-size: 0.92rem; }
+    .brand-name { display: block; font-weight: 900; letter-spacing: -0.05em; line-height: 1; font-size: 1.04rem; }
+    .brand-sub { display: block; margin-top: 0.22rem; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; }
+    .top-actions { display: flex; gap: 0.46rem; flex-wrap: wrap; }
+
+    .btn { border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--glass); color: var(--fg); padding: 0.6rem 0.9rem; font-weight: 800; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem; transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease; white-space: nowrap; }
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255,255,255,0.11); }
+    .btn:disabled { opacity: 0.48; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .btn-primary:hover { background: rgba(255,255,255,0.88); color: #000; }
+    .btn-accent { border-color: rgba(0,255,204,0.46); background: rgba(0,255,204,0.10); color: var(--accent); }
+    .btn-accent:hover { background: rgba(0,255,204,0.18); }
+    .btn-warn { border-color: rgba(216,255,62,0.42); background: rgba(216,255,62,0.10); color: var(--accent-2); }
+    .btn-warn:hover { background: rgba(216,255,62,0.18); }
+    .btn-danger { border-color: rgba(255,51,102,0.5); color: #ff9db5; }
+    .btn-ghost { background: transparent; }
+
+    .hero { border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.022)); box-shadow: var(--shadow); backdrop-filter: blur(18px); padding: clamp(1.4rem, 3vw, 2.6rem); position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; right: -22%; bottom: -28%; width: 60%; height: 60%; background: radial-gradient(circle, rgba(0,255,204,0.15), transparent 65%); pointer-events: none; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--muted); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 800; margin-bottom: 1rem; }
+    .eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 18px var(--accent); }
+    h1 { font-size: clamp(2rem, 4.6vw, 4.4rem); line-height: 0.96; letter-spacing: -0.065em; font-weight: 800; max-width: 24ch; }
+    h1 .serif { font-family: "Playfair Display", serif; font-style: italic; font-weight: 400; letter-spacing: -0.045em; }
+    .hero-sub { margin-top: 1.05rem; color: var(--fg); font-weight: 600; font-size: clamp(1.02rem, 1.5vw, 1.25rem); max-width: 60ch; }
+    .hero-lead { margin-top: 0.8rem; color: var(--muted); line-height: 1.6; font-size: clamp(0.96rem, 1.3vw, 1.06rem); max-width: 72ch; }
+    .badges { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .badge { border: 1px solid var(--line); background: var(--glass); color: var(--fg); padding: 0.4rem 0.7rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.74rem; letter-spacing: 0.04em; }
+    .badge-accent { border-color: rgba(0,255,204,0.42); color: var(--accent); background: rgba(0,255,204,0.08); }
+
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.7rem; }
+    .info-card { border: 1px solid var(--line); border-radius: var(--radius-lg); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); padding: 0.9rem 0.95rem; display: grid; gap: 0.3rem; }
+    .info-card strong { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+    .info-card span { font-size: 0.9rem; font-weight: 600; color: var(--fg); line-height: 1.42; }
+
+    .panel { border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); padding: 1.1rem 1.1rem 1.2rem 1.1rem; display: grid; gap: 0.7rem; }
+    .panel .label { font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+
+    .steps { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+    .step-chip { border: 1px solid var(--line); background: rgba(255,255,255,0.03); color: var(--muted); padding: 0.5rem 0.8rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.78rem; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; display: inline-flex; align-items: center; gap: 0.46rem; }
+    .step-chip .step-num { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.08); font-size: 0.74rem; font-weight: 900; }
+    .step-chip:hover { background: rgba(255,255,255,0.08); }
+    .step-chip.is-active { background: var(--accent); color: #001f1a; border-color: var(--accent); }
+    .step-chip.is-active .step-num { background: rgba(0,0,0,0.18); color: #001f1a; }
+
+    .vivienda-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.7rem; }
+    .field { display: grid; gap: 0.35rem; }
+    .field span { font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+    .field input, .field select, .field textarea { background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: var(--radius-md); color: var(--fg); padding: 0.65rem 0.78rem; font-size: 0.88rem; outline: none; width: 100%; }
+    .field textarea { min-height: 64px; resize: vertical; font-family: inherit; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .chip { border: 1px solid var(--line); background: var(--glass); color: var(--fg); padding: 0.46rem 0.8rem; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .chip:hover { background: rgba(255,255,255,0.1); border-color: var(--line-strong); }
+    .chip.is-active { background: var(--accent); color: #001f1a; border-color: var(--accent); }
+    .chip-status { width: 8px; height: 8px; border-radius: 50%; background: var(--muted-2); }
+    .chip-status.is-revisado { background: var(--gold); box-shadow: 0 0 8px rgba(232,216,168,0.5); }
+    .chip-status.is-listo { background: var(--accent); box-shadow: 0 0 8px rgba(0,255,204,0.6); }
+    .chip.is-active .chip-status { background: rgba(0,0,0,0.4); box-shadow: none; }
+
+    .phase-message { color: var(--muted); font-size: 0.86rem; line-height: 1.5; border-left: 2px solid rgba(0,255,204,0.42); padding-left: 0.8rem; }
+
+    .checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.4rem; }
+    .check-item { display: inline-flex; align-items: center; gap: 0.55rem; border: 1px solid var(--line); background: rgba(255,255,255,0.025); padding: 0.55rem 0.7rem; border-radius: var(--radius-pill); cursor: pointer; font-weight: 600; font-size: 0.8rem; color: var(--muted); transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+    .check-item input { width: 16px; height: 16px; accent-color: var(--accent); }
+    .check-item.is-checked { color: var(--fg); border-color: rgba(0,255,204,0.42); background: rgba(0,255,204,0.08); }
+
+    .upload { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.6rem, 1.2vw, 1rem); }
+    .upload-card { border: 1px solid var(--line); border-radius: var(--radius-lg); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); padding: 1rem; display: grid; gap: 0.55rem; }
+    .upload-card.is-future { border-color: rgba(0,255,204,0.34); background: linear-gradient(180deg, rgba(0,255,204,0.08), rgba(0,255,204,0.02)); }
+    .upload-kicker { font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+    .upload-card h3 { font-size: 1.05rem; letter-spacing: -0.02em; font-weight: 800; }
+    .upload-row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .upload-meta { color: var(--muted); font-size: 0.76rem; }
+    .file-input { display: none; }
+
+    .guides-row { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+    .guides-row .field { flex: 0 0 220px; }
+    .guides-row label { color: var(--muted); font-size: 0.72rem; }
+
+    .lab-wrap { display: grid; gap: 0.9rem; }
+    .lab-panel { position: relative; border: 1px solid var(--line); border-radius: var(--radius-xl); background: #050505; overflow: hidden; min-height: 480px; isolation: isolate; }
+    .lab-panel::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(circle at 50% 38%, transparent 0, transparent 42%, rgba(0,0,0,0.32) 78%), linear-gradient(0deg, rgba(0,0,0,0.55), transparent 38%); }
+    #stageCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: ew-resize; }
+
+    .lab-overlay { position: absolute; z-index: 4; inset: auto 1rem 1rem 1rem; pointer-events: none; display: flex; justify-content: space-between; align-items: end; gap: 1rem; }
+    .scene-caption { max-width: 60%; }
+    .scene-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 900; font-size: 0.72rem; }
+    .scene-title { margin-top: 0.36rem; font-size: clamp(1.35rem, 2.2vw, 2.1rem); line-height: 1; font-weight: 900; letter-spacing: -0.05em; }
+    .scene-desc { margin-top: 0.36rem; color: rgba(255,255,255,0.70); line-height: 1.45; font-size: 0.86rem; }
+    .hud-stack { display: grid; justify-items: end; gap: 0.5rem; }
+    .hud-pill { display: inline-flex; align-items: center; gap: 0.46rem; border: 1px solid rgba(255,255,255,0.20); background: rgba(0,0,0,0.54); backdrop-filter: blur(16px); border-radius: var(--radius-pill); padding: 0.42rem 0.6rem; color: rgba(255,255,255,0.84); font-size: 0.7rem; white-space: nowrap; }
+
+    .control-panel { border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)); padding: 1rem; display: grid; gap: 0.9rem; }
+    .slider-block { display: grid; gap: 0.45rem; }
+    .slider-head { display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; color: var(--muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 900; }
+    .progress-readout { color: var(--fg); letter-spacing: -0.04em; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .control-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+    .mode-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-pill); overflow: hidden; }
+    .mode-toggle button { background: transparent; color: var(--muted); border: none; padding: 0.55rem 0.85rem; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.04em; }
+    .mode-toggle button.is-active { background: var(--fg); color: var(--bg); }
+
+    .share-row { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+
+    .summary-block { border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); padding: 1.2rem; display: grid; gap: 0.9rem; }
+    .summary-head { display: flex; justify-content: space-between; align-items: end; gap: 0.8rem; flex-wrap: wrap; }
+    .summary-progress { flex: 1 1 240px; }
+    .progress-bar { height: 8px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+    .progress-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 999px; transition: width 0.3s ease; width: 0%; }
+    .progress-text { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.5rem; }
+    .summary-card { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.7rem 0.8rem; background: rgba(255,255,255,0.025); display: grid; gap: 0.3rem; }
+    .summary-card strong { font-size: 0.74rem; letter-spacing: -0.01em; color: var(--fg); font-weight: 800; }
+    .summary-card .status-line { font-size: 0.72rem; color: var(--muted); display: inline-flex; align-items: center; gap: 0.42rem; }
+    .summary-card .status-line .chip-status { width: 8px; height: 8px; border-radius: 50%; background: var(--muted-2); }
+    .summary-card .status-line .chip-status.is-revisado { background: var(--gold); box-shadow: 0 0 8px rgba(232,216,168,0.5); }
+    .summary-card .status-line .chip-status.is-listo { background: var(--accent); box-shadow: 0 0 8px rgba(0,255,204,0.6); }
+    .summary-next { font-size: 0.84rem; color: var(--fg); font-weight: 700; border-left: 2px solid var(--accent-2); padding-left: 0.85rem; }
+
+    .toast-layer { position: fixed; z-index: 100; right: 1rem; top: 5.2rem; display: grid; gap: 0.6rem; pointer-events: none; }
+    .toast { width: min(340px, calc(100vw - 2rem)); border: 1px solid var(--line); border-radius: 18px; background: rgba(0,0,0,0.78); color: #fff; backdrop-filter: blur(18px); padding: 0.78rem 0.95rem; box-shadow: 0 18px 42px rgba(0,0,0,0.38); font-size: 0.84rem; line-height: 1.35; animation: toastIn 0.22s ease-out; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .lab-panel.is-immersive { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; border-radius: 0; border: none; z-index: 9999; background: #050505; }
+    .fs-close-btn, .fs-home-btn { position: absolute; z-index: 30; padding: 0.78rem 1.1rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.86rem; backdrop-filter: blur(14px); cursor: pointer; box-shadow: 0 12px 28px rgba(0,0,0,0.38); color: #fff; }
+    .fs-close-btn { top: 1rem; left: 1rem; border: 1px solid rgba(255,255,255,0.32); background: rgba(0,0,0,0.72); }
+    .fs-home-btn { top: 1rem; left: 50%; transform: translateX(-50%); border: 1px solid rgba(0,255,204,0.42); background: rgba(0,255,204,0.12); }
+    .fs-close-btn.is-hidden, .fs-home-btn.is-hidden { display: none; }
+    .lab-panel.is-immersive .fs-close-btn, .lab-panel.is-immersive .fs-home-btn { display: inline-flex; }
+    .fs-controls { position: absolute; z-index: 28; top: 1rem; right: 1rem; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.5rem 0.6rem; border: 1px solid rgba(255,255,255,0.22); border-radius: var(--radius-pill); background: rgba(0,0,0,0.72); backdrop-filter: blur(14px); box-shadow: 0 12px 28px rgba(0,0,0,0.38); }
+    .fs-controls.is-hidden { display: none; }
+    .fs-controls .btn { padding: 0.55rem 0.78rem; font-size: 0.78rem; }
+    .lab-panel.is-immersive .fs-controls { display: inline-flex; }
+
+    .rec-indicator { position: absolute; z-index: 8; top: 1rem; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.72rem; border: 1px solid rgba(255,51,102,0.5); border-radius: var(--radius-pill); background: rgba(0,0,0,0.62); color: #fff; font-weight: 800; font-size: 0.74rem; letter-spacing: 0.06em; backdrop-filter: blur(14px); }
+    .rec-indicator.is-hidden { display: none; }
+    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 14px var(--danger); animation: recPulse 1s ease-in-out infinite; }
+    @keyframes recPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    .capture-modal { position: fixed; inset: 0; z-index: 10000; display: none; align-items: stretch; justify-content: stretch; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); }
+    .capture-modal.is-open { display: flex; }
+    .capture-modal .capture-shell { position: relative; flex: 1; display: grid; grid-template-rows: auto 1fr auto; max-width: 100%; }
+    .capture-modal .capture-head { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; padding: 0.9rem 1rem; border-bottom: 1px solid var(--line); background: rgba(0,0,0,0.55); }
+    .capture-modal .capture-title { font-weight: 900; letter-spacing: -0.02em; font-size: 1rem; }
+    .capture-modal .capture-status { color: var(--muted); font-size: 0.78rem; }
+    .capture-modal .capture-body { position: relative; background: #000; overflow: hidden; display: grid; place-items: center; }
+    .capture-modal video { width: 100%; height: 100%; max-height: 100%; object-fit: contain; background: #000; }
+    .capture-modal .capture-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.9rem 1rem; flex-wrap: wrap; background: rgba(0,0,0,0.55); border-top: 1px solid var(--line); }
+    .capture-modal .capture-foot .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .capture-modal .btn-capture-main { background: var(--accent); color: #001f1a; border-color: var(--accent); padding: 0.86rem 1.2rem; font-weight: 900; font-size: 0.92rem; }
+    .capture-modal .btn-capture-main:disabled { opacity: 0.55; }
+
+    .footer { border-top: 1px solid var(--line); padding-top: 1.2rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: 0.86rem; }
+    .footer strong { color: var(--fg); }
+
+    @media (max-width: 880px) {
+      .upload { grid-template-columns: 1fr; }
+      .scene-caption { max-width: 100%; }
+      .lab-overlay { flex-direction: column; align-items: flex-start; }
+      .hud-stack { justify-items: start; }
+    }
+    @media (max-width: 520px) {
+      .lab-panel { min-height: 420px; }
+      .lab-panel.is-immersive .fs-controls { top: auto; bottom: 1rem; right: auto; left: 50%; transform: translateX(-50%); flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 1.4rem); }
+      .lab-panel.is-immersive .fs-home-btn { font-size: 0.78rem; padding: 0.55rem 0.85rem; }
+      .lab-panel.is-immersive .fs-close-btn { top: 0.75rem; left: 0.75rem; padding: 0.7rem 0.95rem; }
+      .control-actions .btn, .share-row .btn { flex: 1 1 auto; justify-content: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">RS</div>
+        <div>
+          <span class="brand-name">Rubik Sota Gesture Lab</span>
+          <span class="brand-sub">06 - Golf Experience / Home Practice - v2.5</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="btn" id="homeBtn" href="../index.html">Volver al Hub</a>
+        <button class="btn btn-accent" id="openCameraBtn" type="button">Activar camara</button>
+        <button class="btn" id="fullscreenBtn" type="button">Vista completa</button>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> Gesture Lab 06 - Golf - Practica visual guiada</div>
+      <h1 id="heroTitle">Golf Experience / <span class="serif">Home Practice.</span></h1>
+      <p class="hero-sub">Captura tu postura, prepara el golpe y genera una guia visual de practica lista para compartir.</p>
+      <p class="hero-lead">Herramienta visual para jugadores, coaches y academias que convierte una practica de golf en una sesion guiada: fase del golpe, postura, linea objetivo, checklist tecnico, feedback y exportacion. No mide swing real ni reemplaza analisis biomecanico profesional.</p>
+      <div class="badges">
+        <span class="badge badge-accent">Modulo 06</span>
+        <span class="badge badge-accent">v2.5</span>
+        <span class="badge">Golf Practice</span>
+        <span class="badge">Home Training</span>
+        <span class="badge">Visual Feedback</span>
+        <span class="badge">Sin backend</span>
+      </div>
+    </section>
+
+    <section class="info-grid" aria-label="Bloque explicativo">
+      <div class="info-card">
+        <strong>Para quien</strong>
+        <span>Jugadores amateur, coaches, academias, clubes, tiendas deportivas y marcas de golf.</span>
+      </div>
+      <div class="info-card">
+        <strong>Que resuelve</strong>
+        <span>Convierte instrucciones tecnicas dispersas en una guia visual clara para practicar postura, grip, alineacion y fases del golpe.</span>
+      </div>
+      <div class="info-card">
+        <strong>Salida comercial</strong>
+        <span>Sesion visual, PNG, clip corto, feedback para alumno, WhatsApp, email, enlace y guardado local.</span>
+      </div>
+      <div class="info-card">
+        <strong>Estado MVP</strong>
+        <span>Captura local, guia visual 2D, checklist tecnico, comparacion, exportacion y share layer.</span>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Flujo guiado">
+      <span class="label">Flujo guiado</span>
+      <div class="steps" id="stepChips" role="tablist">
+        <button class="step-chip is-active" data-step="1" type="button"><span class="step-num">1</span> Captura posicion</button>
+        <button class="step-chip" data-step="2" type="button"><span class="step-num">2</span> Selecciona fase</button>
+        <button class="step-chip" data-step="3" type="button"><span class="step-num">3</span> Ajusta guia visual</button>
+        <button class="step-chip" data-step="4" type="button"><span class="step-num">4</span> Exporta feedback</button>
+      </div>
+      <p class="phase-message" id="stepHint">Paso 1: Captura una imagen del jugador. Sube desde galeria o haz foto in-app.</p>
+    </section>
+
+    <section class="panel" aria-label="Datos de la sesion">
+      <span class="label">Datos de la sesion</span>
+      <div class="vivienda-grid">
+        <label class="field">
+          <span>Jugador</span>
+          <input id="sPlayer" type="text" placeholder="Ej: Alvaro M." maxlength="60" />
+        </label>
+        <label class="field">
+          <span>Coach / academia</span>
+          <input id="sCoach" type="text" placeholder="Ej: RS Golf Academy" maxlength="80" />
+        </label>
+        <label class="field">
+          <span>Tipo de practica</span>
+          <select id="sType">
+            <option value="Setup">Setup</option>
+            <option value="Swing">Swing</option>
+            <option value="Grip">Grip</option>
+            <option value="Impacto">Impacto</option>
+            <option value="Rutina completa">Rutina completa</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Palo usado</span>
+          <select id="sClub">
+            <option value="Driver">Driver</option>
+            <option value="Hierro">Hierro</option>
+            <option value="Wedge">Wedge</option>
+            <option value="Putter">Putter</option>
+            <option value="Sin palo">Sin palo</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Objetivo de la sesion</span>
+          <input id="sGoal" type="text" placeholder="Ej: Mejorar equilibrio en backswing" maxlength="120" />
+        </label>
+        <label class="field">
+          <span>Nivel</span>
+          <select id="sLevel">
+            <option value="inicial">Inicial</option>
+            <option value="medio">Medio</option>
+            <option value="avanzado">Avanzado</option>
+          </select>
+        </label>
+        <label class="field" style="grid-column: 1 / -1;">
+          <span>Notas internas del coach</span>
+          <textarea id="sNotes" placeholder="Notas internas del coach. No se comparten con el alumno." maxlength="600"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Selector de fase">
+      <span class="label">Fases del golpe</span>
+      <div class="chips" id="phaseChips" role="tablist"></div>
+      <p class="phase-message" id="phaseMessage"></p>
+    </section>
+
+    <section class="upload" aria-label="Capturar imagenes de la fase activa">
+      <div class="upload-card">
+        <span class="upload-kicker">Posicion actual</span>
+        <h3 id="beforeTitle">Imagen del jugador</h3>
+        <p class="upload-meta" id="beforeMeta">Demo interna activa. Sube imagen o haz foto.</p>
+        <div class="upload-row">
+          <label class="btn btn-primary" for="beforeInput">Subir imagen</label>
+          <input class="file-input" id="beforeInput" type="file" accept="image/*" />
+          <button class="btn btn-accent" id="beforeCaptureBtn" type="button">Hacer foto</button>
+          <input class="file-input" id="beforeFallbackInput" type="file" accept="image/*" capture="environment" />
+          <button class="btn btn-ghost" id="beforeClearBtn" type="button">Quitar</button>
+        </div>
+      </div>
+      <div class="upload-card is-future">
+        <span class="upload-kicker">Referencia / correccion</span>
+        <h3 id="afterTitle">Referencia visual</h3>
+        <p class="upload-meta" id="afterMeta">Opcional. Sube referencia o correccion visual.</p>
+        <div class="upload-row">
+          <label class="btn btn-primary" for="afterInput">Subir imagen</label>
+          <input class="file-input" id="afterInput" type="file" accept="image/*" />
+          <button class="btn btn-accent" id="afterCaptureBtn" type="button">Hacer foto</button>
+          <input class="file-input" id="afterFallbackInput" type="file" accept="image/*" capture="environment" />
+          <button class="btn btn-ghost" id="afterClearBtn" type="button">Quitar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Feedback de la fase">
+      <span class="label">Feedback de la fase</span>
+      <div class="vivienda-grid">
+        <label class="field">
+          <span>Punto fuerte</span>
+          <input id="zPoint" type="text" placeholder="Ej: Postura estable y equilibrada" maxlength="120" />
+        </label>
+        <label class="field">
+          <span>Ajuste recomendado</span>
+          <input id="zBenefit" type="text" placeholder="Ej: Mantener la cabeza mas estable" maxlength="120" />
+        </label>
+      </div>
+      <div class="chips" id="statusChips" role="tablist" aria-label="Estado de la fase">
+        <button class="chip is-active" data-status="pendiente" type="button">Pendiente</button>
+        <button class="chip" data-status="revisado" type="button">Revisado</button>
+        <button class="chip" data-status="listo" type="button">Listo</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Checklist tecnico">
+      <span class="label">Checklist tecnico de la fase</span>
+      <div class="checklist" id="checklist">
+        <label class="check-item"><input type="checkbox" data-check="posturaEstable" /> Postura estable</label>
+        <label class="check-item"><input type="checkbox" data-check="piesAlineados" /> Pies alineados</label>
+        <label class="check-item"><input type="checkbox" data-check="gripCorrecto" /> Grip correcto</label>
+        <label class="check-item"><input type="checkbox" data-check="cabezaEstable" /> Cabeza estable</label>
+        <label class="check-item"><input type="checkbox" data-check="pesoEquilibrado" /> Peso equilibrado</label>
+        <label class="check-item"><input type="checkbox" data-check="movimientoFluido" /> Movimiento fluido</label>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Guias visuales sobre canvas">
+      <span class="label">Guias visuales sobre canvas</span>
+      <div class="guides-row">
+        <label class="check-item" id="guidesToggleItem">
+          <input type="checkbox" id="guidesToggle" checked /> Mostrar guias visuales
+        </label>
+        <label class="field" style="flex: 1 1 220px; max-width: 320px;">
+          <span>Opacidad de guias</span>
+          <input id="guidesOpacity" type="range" min="0" max="100" value="70" />
+        </label>
+      </div>
+      <p class="phase-message">Las guias son orientativas: linea objetivo, eje corporal, zona de pies, trayectoria y marcador de equilibrio. No son medicion biomecanica automatica.</p>
+    </section>
+
+    <section class="lab-wrap" aria-label="Canvas de practica">
+      <div class="lab-panel" id="stagePanel">
+        <canvas id="stageCanvas" aria-label="Comparacion posicion actual vs referencia"></canvas>
+
+        <button class="fs-close-btn is-hidden" id="fullscreenCloseBtn" type="button">Cerrar</button>
+        <button class="fs-home-btn is-hidden" id="fullscreenHomeBtn" type="button">Home</button>
+
+        <div class="rec-indicator is-hidden" id="recIndicator" aria-live="polite">
+          <span class="rec-dot"></span><span>REC</span>
+          <span id="recTimer">00:00 / 00:15</span>
+        </div>
+
+        <div class="fs-controls is-hidden" id="fsControls">
+          <button class="btn" id="fsBeforeBtn" type="button">Actual</button>
+          <button class="btn" id="fsAfterBtn" type="button">Referencia</button>
+          <button class="btn" id="fsMidBtn" type="button">50/50</button>
+          <button class="btn btn-accent" id="fsDownloadPngBtn" type="button">PNG</button>
+          <button class="btn btn-warn" id="fsRecordBtn" type="button">Grabar</button>
+          <button class="btn" id="fsStopRecordBtn" type="button" disabled>Detener</button>
+          <a class="btn" id="fsDownloadVideoBtn" href="#" download="rubik-sota-golf-experience-home-practice-v2-5-clip.webm" hidden>Video</a>
+        </div>
+
+        <div class="lab-overlay">
+          <div class="scene-caption">
+            <div class="scene-kicker" id="phaseKicker">Golf Home Practice - Setup</div>
+            <div class="scene-title" id="sceneTitle">Comparacion visual</div>
+            <div class="scene-desc" id="sceneDesc">Mueve el slider para comparar tu posicion actual con la referencia. Activa la guia visual para revisar alineacion.</div>
+          </div>
+          <div class="hud-stack">
+            <div class="hud-pill"><span id="phaseStatusText">Fase: Setup</span></div>
+            <div class="hud-pill"><span id="revealText">Referencia: 0%</span></div>
+            <div class="hud-pill"><span id="modeText">Modo: Cortina</span></div>
+            <div class="hud-pill"><span id="levelText">Nivel: Inicial</span></div>
+            <div class="hud-pill"><span id="captureStateText">Estado: Pendiente</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-panel">
+        <div class="slider-block">
+          <div class="slider-head">
+            <span>Mostrar referencia visual</span>
+            <span class="progress-readout" id="progressReadout">0%</span>
+          </div>
+          <input id="revealRange" type="range" min="0" max="100" value="0" />
+        </div>
+        <div class="control-actions">
+          <button class="btn" id="beforeBtn" type="button">Ver imagen actual</button>
+          <button class="btn btn-primary" id="afterBtn" type="button">Ver referencia / correccion</button>
+          <button class="btn" id="midBtn" type="button">Comparar 50/50</button>
+          <button class="btn btn-danger" id="resetBtn" type="button">Reset</button>
+          <div class="mode-toggle" role="tablist" aria-label="Modo de comparacion">
+            <button id="modeCurtainBtn" class="is-active" type="button" aria-pressed="true">Cortina</button>
+            <button id="modeBlendBtn" type="button" aria-pressed="false">Fundido</button>
+            <button id="modeSplitBtn" type="button" aria-pressed="false">Split 50/50</button>
+          </div>
+        </div>
+        <div class="share-row" aria-label="Exportar y compartir">
+          <button class="btn btn-accent" id="downloadPngBtn" type="button">Descargar PNG</button>
+          <button class="btn btn-warn" id="recordBtn" type="button">Grabar video</button>
+          <button class="btn" id="stopRecordBtn" type="button" disabled>Detener</button>
+          <a class="btn" id="downloadVideoBtn" href="#" download="rubik-sota-golf-experience-home-practice-v2-5-clip.webm" hidden>Descargar video</a>
+          <button class="btn btn-warn" id="shareWhatsAppBtn" type="button">Compartir WhatsApp</button>
+          <button class="btn" id="shareEmailBtn" type="button">Enviar email</button>
+          <button class="btn" id="copyLinkBtn" type="button">Copiar enlace</button>
+          <button class="btn" id="saveBtn" type="button">Guardar datos</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary-block" aria-label="Resumen de la sesion">
+      <div class="summary-head">
+        <div>
+          <div class="label" style="font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); font-weight: 800;">Resumen de sesion</div>
+          <h2 style="margin-top: 0.4rem; font-size: clamp(1.3rem, 2.4vw, 1.85rem); letter-spacing: -0.04em; font-weight: 800;">Progreso de la practica</h2>
+        </div>
+        <div class="summary-progress">
+          <div class="progress-bar"><span id="progressBar"></span></div>
+          <div class="progress-text" id="progressLabel">0/6 fases revisadas - 0% listo</div>
+        </div>
+      </div>
+      <div class="summary-grid" id="summaryGrid"></div>
+      <div class="summary-next" id="summaryNext">Siguiente fase recomendada: Setup.</div>
+    </section>
+
+    <footer class="footer">
+      <div><strong>Rubik Sota</strong> - Gesture Lab 06 - Golf Experience / Home Practice v2.5</div>
+      <div>Activo: v2.5 - Hub: <a href="../index.html" style="color: var(--accent);">Gesture Lab</a></div>
+    </footer>
+  </div>
+
+  <div class="toast-layer" id="toastLayer" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="capture-modal" id="captureModal" role="dialog" aria-modal="true" aria-labelledby="captureTitle" aria-hidden="true">
+    <div class="capture-shell">
+      <div class="capture-head">
+        <span class="capture-title" id="captureTitle">Capturar imagen</span>
+        <span class="capture-status" id="captureStatus">Activando camara...</span>
+      </div>
+      <div class="capture-body">
+        <video id="captureVideo" playsinline muted autoplay></video>
+      </div>
+      <div class="capture-foot">
+        <div class="actions">
+          <button class="btn btn-capture-main" id="captureShotBtn" type="button" disabled>Capturar</button>
+          <label class="btn" for="captureFallbackInput">Usar galeria</label>
+          <input class="file-input" id="captureFallbackInput" type="file" accept="image/*" />
+        </div>
+        <button class="btn btn-ghost" id="captureCancelBtn" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "rubik-sota-golf-experience-home-practice-v2-5-snapshot";
+    const EXPORT_PREFIX = "rubik-sota-golf-experience-home-practice-v2-5";
+
+    const PHASES_ORDER = ["setup","grip","backswing","impacto","follow","resultado"];
+    const PHASE_DEFS = {
+      setup:      { label: "Setup",          title: "Setup base",            objective: "Base inicial del golpe", message: "Base inicial del golpe. Revisa postura, pies, equilibrio y alineacion con el objetivo.",                  before: ["#7a8a86","#4d5d5a","#2a3633"], after: ["#cde8c4","#7ed1a0","#2ea672"] },
+      grip:       { label: "Grip",           title: "Grip y conexion",       objective: "Conexion con el palo",   message: "Conexion con el palo. Comprueba manos, presion y orientacion antes de iniciar el swing.",                  before: ["#7a7468","#4e4940","#262119"], after: ["#eef0e8","#c9dcc2","#86b48f"] },
+      backswing:  { label: "Backswing",      title: "Backswing controlado",  objective: "Preparacion de energia", message: "Preparacion de energia. Observa rotacion, estabilidad y posicion de brazos.",                              before: ["#6a5a4a","#42352a","#1d1610"], after: ["#f3e6dc","#d8b8a0","#a06848"] },
+      impacto:    { label: "Impacto",        title: "Impacto al objetivo",   objective: "Momento clave",          message: "Momento clave. Revisa transferencia de peso, cara del palo y linea del cuerpo.",                           before: ["#5a5a5a","#3a3a3a","#181818"], after: ["#e6f0f4","#a8d2e2","#5a8fb5"] },
+      follow:     { label: "Follow Through", title: "Follow Through final",  objective: "Final del movimiento",   message: "Final del movimiento. Evalua extension, equilibrio y continuidad del swing.",                             before: ["#8a8068","#615640","#3d3422"], after: ["#f0e8d6","#cfeee2","#9ad6c4"] },
+      resultado:  { label: "Resultado",      title: "Resultado y feedback",  objective: "Feedback final",         message: "Feedback final. Resume sensaciones, direccion, trayectoria y siguiente ajuste.",                           before: ["#7a7060","#4d4538","#2a2419"], after: ["#f4ecd6","#d8c9a4","#a8865c"] }
+    };
+
+    const LEVELS = {
+      inicial:   { label: "Inicial",   color: "#e8d8a8" },
+      medio:     { label: "Medio",     color: "#d8ff3e" },
+      avanzado:  { label: "Avanzado",  color: "#00ffcc" }
+    };
+
+    const STATUS_LABELS = { pendiente: "Pendiente", revisado: "Revisado", listo: "Listo" };
+
+    const STEP_HINTS = {
+      1: "Paso 1: Captura una imagen del jugador. Sube desde galeria o haz foto in-app.",
+      2: "Paso 2: Selecciona la fase del golpe (Setup, Grip, Backswing, Impacto, Follow Through o Resultado).",
+      3: "Paso 3: Ajusta la guia visual sobre el canvas. Activa o desactiva linea objetivo, eje, pies y trayectoria.",
+      4: "Paso 4: Exporta PNG, graba clip y comparte por WhatsApp, email o enlace."
+    };
+
+    const CHECKLIST_KEYS = ["posturaEstable","piesAlineados","gripCorrecto","cabezaEstable","pesoEquilibrado","movimientoFluido"];
+
+    function defaultPhaseState() {
+      const cl = {};
+      for (let i = 0; i < CHECKLIST_KEYS.length; i++) cl[CHECKLIST_KEYS[i]] = false;
+      return { beforeImage: null, afterImage: null, beforeIsDefault: true, afterIsDefault: true, status: "pendiente", point: "", benefit: "", checklist: cl };
+    }
+
+    const els = {
+      stagePanel: document.getElementById("stagePanel"),
+      canvas: document.getElementById("stageCanvas"),
+      homeBtn: document.getElementById("homeBtn"),
+      openCameraBtn: document.getElementById("openCameraBtn"),
+      fullscreenBtn: document.getElementById("fullscreenBtn"),
+      stepChips: document.getElementById("stepChips"),
+      stepHint: document.getElementById("stepHint"),
+      sPlayer: document.getElementById("sPlayer"),
+      sCoach: document.getElementById("sCoach"),
+      sType: document.getElementById("sType"),
+      sClub: document.getElementById("sClub"),
+      sGoal: document.getElementById("sGoal"),
+      sLevel: document.getElementById("sLevel"),
+      sNotes: document.getElementById("sNotes"),
+      phaseChips: document.getElementById("phaseChips"),
+      phaseMessage: document.getElementById("phaseMessage"),
+      beforeInput: document.getElementById("beforeInput"),
+      afterInput: document.getElementById("afterInput"),
+      beforeFallbackInput: document.getElementById("beforeFallbackInput"),
+      afterFallbackInput: document.getElementById("afterFallbackInput"),
+      beforeCaptureBtn: document.getElementById("beforeCaptureBtn"),
+      afterCaptureBtn: document.getElementById("afterCaptureBtn"),
+      beforeClearBtn: document.getElementById("beforeClearBtn"),
+      afterClearBtn: document.getElementById("afterClearBtn"),
+      beforeMeta: document.getElementById("beforeMeta"),
+      afterMeta: document.getElementById("afterMeta"),
+      beforeTitle: document.getElementById("beforeTitle"),
+      afterTitle: document.getElementById("afterTitle"),
+      zPoint: document.getElementById("zPoint"),
+      zBenefit: document.getElementById("zBenefit"),
+      statusChips: document.getElementById("statusChips"),
+      checklist: document.getElementById("checklist"),
+      guidesToggle: document.getElementById("guidesToggle"),
+      guidesToggleItem: document.getElementById("guidesToggleItem"),
+      guidesOpacity: document.getElementById("guidesOpacity"),
+      revealRange: document.getElementById("revealRange"),
+      progressReadout: document.getElementById("progressReadout"),
+      beforeBtn: document.getElementById("beforeBtn"),
+      afterBtn: document.getElementById("afterBtn"),
+      midBtn: document.getElementById("midBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      modeCurtainBtn: document.getElementById("modeCurtainBtn"),
+      modeBlendBtn: document.getElementById("modeBlendBtn"),
+      modeSplitBtn: document.getElementById("modeSplitBtn"),
+      downloadPngBtn: document.getElementById("downloadPngBtn"),
+      recordBtn: document.getElementById("recordBtn"),
+      stopRecordBtn: document.getElementById("stopRecordBtn"),
+      downloadVideoBtn: document.getElementById("downloadVideoBtn"),
+      shareWhatsAppBtn: document.getElementById("shareWhatsAppBtn"),
+      shareEmailBtn: document.getElementById("shareEmailBtn"),
+      copyLinkBtn: document.getElementById("copyLinkBtn"),
+      saveBtn: document.getElementById("saveBtn"),
+      fullscreenCloseBtn: document.getElementById("fullscreenCloseBtn"),
+      fullscreenHomeBtn: document.getElementById("fullscreenHomeBtn"),
+      fsControls: document.getElementById("fsControls"),
+      fsBeforeBtn: document.getElementById("fsBeforeBtn"),
+      fsAfterBtn: document.getElementById("fsAfterBtn"),
+      fsMidBtn: document.getElementById("fsMidBtn"),
+      fsDownloadPngBtn: document.getElementById("fsDownloadPngBtn"),
+      fsRecordBtn: document.getElementById("fsRecordBtn"),
+      fsStopRecordBtn: document.getElementById("fsStopRecordBtn"),
+      fsDownloadVideoBtn: document.getElementById("fsDownloadVideoBtn"),
+      phaseKicker: document.getElementById("phaseKicker"),
+      sceneTitle: document.getElementById("sceneTitle"),
+      sceneDesc: document.getElementById("sceneDesc"),
+      phaseStatusText: document.getElementById("phaseStatusText"),
+      revealText: document.getElementById("revealText"),
+      modeText: document.getElementById("modeText"),
+      levelText: document.getElementById("levelText"),
+      captureStateText: document.getElementById("captureStateText"),
+      recIndicator: document.getElementById("recIndicator"),
+      recTimer: document.getElementById("recTimer"),
+      summaryGrid: document.getElementById("summaryGrid"),
+      summaryNext: document.getElementById("summaryNext"),
+      progressBar: document.getElementById("progressBar"),
+      progressLabel: document.getElementById("progressLabel"),
+      toastLayer: document.getElementById("toastLayer"),
+      captureModal: document.getElementById("captureModal"),
+      captureTitle: document.getElementById("captureTitle"),
+      captureStatus: document.getElementById("captureStatus"),
+      captureVideo: document.getElementById("captureVideo"),
+      captureShotBtn: document.getElementById("captureShotBtn"),
+      captureCancelBtn: document.getElementById("captureCancelBtn"),
+      captureFallbackInput: document.getElementById("captureFallbackInput")
+    };
+
+    const state = {
+      ctx: null,
+      currentReveal: 0,
+      targetReveal: 0,
+      mode: "curtain",
+      step: 1,
+      activePhase: "setup",
+      level: "inicial",
+      session: { player: "", coach: "", type: "Setup", club: "Driver", goal: "", notes: "" },
+      phases: {},
+      guides: { show: true, opacity: 0.7 },
+      pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      width: 0,
+      height: 0,
+      drag: { active: false, pointerId: null },
+      viewMode: { fullscreen: false },
+      capture: { active: false, slot: null, stream: null },
+      recording: { active: false, recorder: null, chunks: [], stream: null, startedAt: 0, timerId: null, maxDurationMs: 15000, downloadUrl: null, mimeType: "" }
+    };
+
+    for (let i = 0; i < PHASES_ORDER.length; i++) state.phases[PHASES_ORDER[i]] = defaultPhaseState();
+
+    function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function safeText(s) { return (s || "").replace(/\s+/g, " ").trim(); }
+
+    function showToast(msg, duration) {
+      if (typeof duration !== "number") duration = 2400;
+      const el = document.createElement("div");
+      el.className = "toast"; el.textContent = msg;
+      els.toastLayer.appendChild(el);
+      setTimeout(function () { el.style.opacity = "0"; el.style.transform = "translateY(-8px)"; setTimeout(function () { el.remove(); }, 220); }, duration);
+    }
+
+    /* ===== Demo placeholder ===== */
+    function createPlaceholder(label, palette) {
+      const c = document.createElement("canvas");
+      c.width = 1280; c.height = 800;
+      const ctx = c.getContext("2d");
+      const g = ctx.createLinearGradient(0, 0, c.width, c.height);
+      g.addColorStop(0, palette[0]); g.addColorStop(0.6, palette[1]); g.addColorStop(1, palette[2]);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.globalAlpha = 0.18; ctx.fillStyle = "#000";
+      for (let i = 0; i < 22; i++) ctx.fillRect((i * 137) % c.width, (i * 53) % c.height, 240, 6);
+      ctx.globalAlpha = 1;
+      // ground line
+      ctx.strokeStyle = "rgba(0,0,0,0.42)"; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(60, 660); ctx.lineTo(1220, 660); ctx.stroke();
+      // silhouette golfer
+      ctx.fillStyle = "rgba(0,0,0,0.42)";
+      ctx.beginPath(); ctx.arc(580, 320, 36, 0, Math.PI * 2); ctx.fill(); // head
+      ctx.fillRect(560, 356, 40, 180); // torso
+      ctx.fillRect(560, 536, 16, 124); // leg
+      ctx.fillRect(584, 536, 16, 124); // leg
+      ctx.fillRect(596, 380, 130, 12); // arm extended
+      ctx.fillStyle = "rgba(0,0,0,0.28)"; ctx.fillRect(720, 380, 4, 220); // club shaft
+      ctx.fillStyle = "rgba(0,0,0,0.78)"; ctx.font = "900 88px Inter, Arial, sans-serif"; ctx.fillText(label, 70, 160);
+      ctx.font = "italic 34px Georgia, serif"; ctx.fillStyle = "rgba(0,0,0,0.62)";
+      ctx.fillText("Demo interna - sube o captura tu imagen", 70, 770);
+      return c;
+    }
+
+    function ensurePhaseDefaults(id) {
+      const z = state.phases[id], def = PHASE_DEFS[id];
+      if (z.beforeIsDefault) z.beforeImage = createPlaceholder("POSICION - " + def.label.toUpperCase(), def.before);
+      if (z.afterIsDefault) z.afterImage = createPlaceholder("REFERENCIA - " + def.label.toUpperCase(), def.after);
+    }
+
+    /* ===== Render ===== */
+    function fitContain(iw, ih, bw, bh) { const s = Math.min(bw / iw, bh / ih); const w = iw * s, h = ih * s; return { x: (bw - w) / 2, y: (bh - h) / 2, w: w, h: h }; }
+    function drawImageContain(ctx, img, bw, bh) {
+      if (!img) return;
+      const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+      if (!iw || !ih) return;
+      const f = fitContain(iw, ih, bw, bh);
+      ctx.drawImage(img, f.x, f.y, f.w, f.h);
+    }
+
+    function drawGuides(ctx, w, h, opacity) {
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      const groundY = h * 0.82;
+      // ground line
+      ctx.strokeStyle = "rgba(0,255,204,0.9)"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(w * 0.08, groundY); ctx.lineTo(w * 0.92, groundY); ctx.stroke();
+      // body axis
+      const cx = w / 2;
+      ctx.strokeStyle = "rgba(216,255,62,0.85)"; ctx.lineWidth = 2;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath(); ctx.moveTo(cx, h * 0.18); ctx.lineTo(cx, groundY); ctx.stroke();
+      ctx.setLineDash([]);
+      // feet zone
+      ctx.strokeStyle = "rgba(0,255,204,0.7)"; ctx.lineWidth = 2;
+      const feetW = w * 0.18;
+      ctx.strokeRect(cx - feetW / 2, groundY - 8, feetW, 16);
+      // target line arrow
+      ctx.strokeStyle = "rgba(0,255,204,0.85)"; ctx.lineWidth = 2;
+      const ty = h * 0.5;
+      ctx.beginPath(); ctx.moveTo(cx, ty); ctx.lineTo(w * 0.92, ty); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(w * 0.92, ty);
+      ctx.lineTo(w * 0.89, ty - 8);
+      ctx.lineTo(w * 0.89, ty + 8);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(0,255,204,0.85)"; ctx.fill();
+      // balance marker
+      ctx.fillStyle = "rgba(216,255,62,0.8)";
+      ctx.beginPath(); ctx.arc(cx, groundY + 22, 7, 0, Math.PI * 2); ctx.fill();
+      // labels
+      ctx.font = "700 12px Inter, Arial, sans-serif";
+      ctx.fillStyle = "rgba(0,255,204,0.95)";
+      ctx.fillText("LINEA OBJETIVO", w * 0.62, ty - 10);
+      ctx.fillStyle = "rgba(216,255,62,0.95)";
+      ctx.fillText("EJE CORPORAL", cx + 8, h * 0.22);
+      ctx.fillStyle = "rgba(0,255,204,0.95)";
+      ctx.fillText("PIES", cx - feetW / 2, groundY - 12);
+      ctx.restore();
+    }
+
+    function renderStage() {
+      const ctx = state.ctx; if (!ctx) return;
+      const w = state.width, h = state.height;
+      ctx.save();
+      ctx.fillStyle = "#050505"; ctx.fillRect(0, 0, w, h);
+      const r = state.currentReveal;
+      const z = state.phases[state.activePhase];
+      const before = z.beforeImage, after = z.afterImage;
+
+      if (state.mode === "blend") {
+        ctx.globalAlpha = 1; drawImageContain(ctx, before, w, h);
+        ctx.globalAlpha = r; drawImageContain(ctx, after, w, h); ctx.globalAlpha = 1;
+      } else if (state.mode === "split") {
+        const half = w / 2;
+        ctx.save(); ctx.beginPath(); ctx.rect(0, 0, half, h); ctx.clip(); drawImageContain(ctx, before, w, h); ctx.restore();
+        ctx.save(); ctx.beginPath(); ctx.rect(half, 0, w - half, h); ctx.clip(); drawImageContain(ctx, after, w, h); ctx.restore();
+        ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.fillRect(half - 1, 0, 2, h);
+      } else {
+        const divider = r * w;
+        drawImageContain(ctx, before, w, h);
+        ctx.save(); ctx.beginPath(); ctx.rect(divider, 0, w - divider, h); ctx.clip(); drawImageContain(ctx, after, w, h); ctx.restore();
+        ctx.fillStyle = "rgba(255,255,255,0.92)"; ctx.fillRect(divider - 1, 0, 2, h);
+        const hy = h / 2;
+        ctx.beginPath(); ctx.fillStyle = "rgba(0,0,0,0.72)"; ctx.arc(divider, hy, 22, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,0.92)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(divider, hy, 22, 0, Math.PI * 2); ctx.stroke();
+      }
+
+      if (state.guides.show) drawGuides(ctx, w, h, state.guides.opacity);
+
+      // top-left mode + phase badge
+      ctx.font = "800 14px Inter, Arial, sans-serif"; ctx.fillStyle = "rgba(255,255,255,0.86)";
+      const modeLabel = state.mode === "blend" ? "FUNDIDO" : state.mode === "split" ? "SPLIT 50/50" : "CORTINA";
+      const zlabel = PHASE_DEFS[state.activePhase].label.toUpperCase();
+      ctx.fillText(modeLabel + " - " + zlabel, 18, 26);
+
+      // bottom-left feedback overlay
+      const s = state.session;
+      const lvl = LEVELS[state.level] || LEVELS.inicial;
+      const lines = [];
+      if (s.player) lines.push("Jugador: " + s.player);
+      if (s.coach) lines.push("Coach: " + s.coach);
+      if (s.club) lines.push("Palo: " + s.club);
+      if (z.point) lines.push("Punto fuerte: " + z.point);
+      if (z.benefit) lines.push("Ajuste: " + z.benefit);
+      lines.push("Nivel: " + lvl.label + " - Estado: " + STATUS_LABELS[z.status]);
+
+      ctx.font = "700 13px Inter, Arial, sans-serif";
+      const pad = 10, lineH = 20;
+      const boxH = lines.length * lineH + pad * 2;
+      ctx.fillStyle = "rgba(0,0,0,0.66)";
+      ctx.fillRect(14, h - boxH - 14, 520, boxH);
+      ctx.fillStyle = "rgba(255,255,255,0.95)";
+      for (let i = 0; i < lines.length; i++) ctx.fillText(lines[i], 14 + pad, h - boxH - 14 + pad + 14 + i * lineH);
+      ctx.fillStyle = lvl.color;
+      ctx.beginPath(); ctx.arc(14 + 520 - 16, h - boxH - 14 + 16, 6, 0, Math.PI * 2); ctx.fill();
+
+      ctx.restore();
+    }
+
+    function resizeCanvas() {
+      const rect = els.stagePanel.getBoundingClientRect();
+      const dpr = state.pixelRatio;
+      const cssW = Math.max(320, Math.floor(rect.width));
+      const cssH = Math.max(280, Math.floor(rect.height));
+      els.canvas.width = cssW * dpr; els.canvas.height = cssH * dpr;
+      els.canvas.style.width = cssW + "px"; els.canvas.style.height = cssH + "px";
+      state.width = cssW * dpr; state.height = cssH * dpr;
+      const ctx = els.canvas.getContext("2d");
+      ctx.setTransform(1, 0, 0, 1, 0, 0); state.ctx = ctx;
+      renderStage();
+    }
+
+    /* ===== State setters ===== */
+    function setReveal(value, instant) {
+      const v = clamp(Number(value) / 100, 0, 1);
+      state.targetReveal = v;
+      if (instant === true) state.currentReveal = v;
+      els.revealRange.value = String(Math.round(v * 100));
+      updateUi();
+    }
+    function updateUi() {
+      const pct = Math.round(state.targetReveal * 100);
+      els.progressReadout.textContent = pct + "%";
+      els.revealText.textContent = "Referencia: " + pct + "%";
+      const modeLabel = state.mode === "blend" ? "Fundido" : state.mode === "split" ? "Split 50/50" : "Cortina";
+      els.modeText.textContent = "Modo: " + modeLabel;
+      const z = state.phases[state.activePhase];
+      const def = PHASE_DEFS[state.activePhase];
+      const lvl = LEVELS[state.level] || LEVELS.inicial;
+      els.levelText.textContent = "Nivel: " + lvl.label;
+      els.captureStateText.textContent = "Estado: " + STATUS_LABELS[z.status];
+      els.phaseKicker.textContent = "Golf Home Practice - " + def.label;
+      els.phaseStatusText.textContent = "Fase: " + def.label;
+      if (state.mode === "split") { els.sceneTitle.textContent = "Split 50/50"; els.sceneDesc.textContent = "Izquierda: posicion actual. Derecha: referencia visual."; }
+      else if (pct < 12) { els.sceneTitle.textContent = "Posicion actual"; els.sceneDesc.textContent = "Imagen del jugador. Mueve el slider para revelar la referencia."; }
+      else if (pct > 88) { els.sceneTitle.textContent = def.title; els.sceneDesc.textContent = "Referencia visual al completo. Vuelve a la posicion actual para comparar."; }
+      else { els.sceneTitle.textContent = "Comparacion visual"; els.sceneDesc.textContent = "Se revela " + pct + "% de la referencia."; }
+    }
+    function setMode(mode) {
+      state.mode = (mode === "blend" || mode === "split") ? mode : "curtain";
+      els.modeCurtainBtn.classList.toggle("is-active", state.mode === "curtain");
+      els.modeBlendBtn.classList.toggle("is-active", state.mode === "blend");
+      els.modeSplitBtn.classList.toggle("is-active", state.mode === "split");
+      els.modeCurtainBtn.setAttribute("aria-pressed", String(state.mode === "curtain"));
+      els.modeBlendBtn.setAttribute("aria-pressed", String(state.mode === "blend"));
+      els.modeSplitBtn.setAttribute("aria-pressed", String(state.mode === "split"));
+      updateUi();
+    }
+    function setStep(n) {
+      state.step = Math.max(1, Math.min(4, Number(n) || 1));
+      els.stepChips.querySelectorAll(".step-chip").forEach(function (b) { b.classList.toggle("is-active", Number(b.dataset.step) === state.step); });
+      els.stepHint.textContent = STEP_HINTS[state.step];
+    }
+
+    function renderPhaseChips() {
+      els.phaseChips.innerHTML = "";
+      for (let i = 0; i < PHASES_ORDER.length; i++) {
+        const id = PHASES_ORDER[i];
+        const def = PHASE_DEFS[id];
+        const z = state.phases[id];
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip" + (id === state.activePhase ? " is-active" : "");
+        b.dataset.phase = id;
+        const dot = document.createElement("span");
+        dot.className = "chip-status" + (z.status === "revisado" ? " is-revisado" : z.status === "listo" ? " is-listo" : "");
+        b.appendChild(dot);
+        b.appendChild(document.createTextNode(def.label));
+        els.phaseChips.appendChild(b);
+      }
+    }
+    function syncInputsFromPhase() {
+      const z = state.phases[state.activePhase];
+      const def = PHASE_DEFS[state.activePhase];
+      els.phaseMessage.textContent = def.message;
+      els.beforeTitle.textContent = "Posicion - " + def.label;
+      els.afterTitle.textContent = "Referencia - " + def.label;
+      els.beforeMeta.textContent = z.beforeIsDefault ? "Demo interna activa. Sube imagen o haz foto." : "Imagen cargada para " + def.label + ".";
+      els.afterMeta.textContent = z.afterIsDefault ? "Opcional. Sube referencia o correccion visual." : "Referencia cargada para " + def.label + ".";
+      els.zPoint.value = z.point;
+      els.zBenefit.value = z.benefit;
+      els.statusChips.querySelectorAll(".chip").forEach(function (b) { b.classList.toggle("is-active", b.dataset.status === z.status); });
+      els.checklist.querySelectorAll(".check-item").forEach(function (item) {
+        const cb = item.querySelector("input[type=checkbox]");
+        const key = cb.dataset.check;
+        cb.checked = !!z.checklist[key];
+        item.classList.toggle("is-checked", cb.checked);
+      });
+    }
+    function setActivePhase(id) {
+      if (!PHASE_DEFS[id]) id = "setup";
+      state.activePhase = id;
+      ensurePhaseDefaults(id);
+      renderPhaseChips();
+      syncInputsFromPhase();
+      renderSummary();
+      updateUi();
+    }
+    function setLevel(lvl) {
+      state.level = LEVELS[lvl] ? lvl : "inicial";
+      els.sLevel.value = state.level;
+      updateUi();
+    }
+    function setStatus(status) {
+      const z = state.phases[state.activePhase];
+      z.status = STATUS_LABELS[status] ? status : "pendiente";
+      els.statusChips.querySelectorAll(".chip").forEach(function (b) { b.classList.toggle("is-active", b.dataset.status === z.status); });
+      renderPhaseChips(); renderSummary(); updateUi();
+    }
+
+    function renderSummary() {
+      els.summaryGrid.innerHTML = "";
+      let done = 0, listo = 0;
+      for (let i = 0; i < PHASES_ORDER.length; i++) {
+        const id = PHASES_ORDER[i];
+        const z = state.phases[id];
+        const def = PHASE_DEFS[id];
+        if (z.status === "revisado") done++;
+        if (z.status === "listo") { done++; listo++; }
+        const card = document.createElement("div");
+        card.className = "summary-card";
+        const s = document.createElement("strong"); s.textContent = def.label;
+        const line = document.createElement("div"); line.className = "status-line";
+        const dot = document.createElement("span");
+        dot.className = "chip-status" + (z.status === "revisado" ? " is-revisado" : z.status === "listo" ? " is-listo" : "");
+        const txt = document.createElement("span"); txt.textContent = STATUS_LABELS[z.status];
+        line.appendChild(dot); line.appendChild(txt);
+        card.appendChild(s); card.appendChild(line);
+        els.summaryGrid.appendChild(card);
+      }
+      const total = PHASES_ORDER.length;
+      const pct = Math.round((done / total) * 100);
+      els.progressBar.style.width = pct + "%";
+      els.progressLabel.textContent = done + "/" + total + " fases revisadas - " + pct + "% listo";
+      let next = null;
+      for (let i = 0; i < PHASES_ORDER.length; i++) { const id = PHASES_ORDER[i]; if (state.phases[id].status === "pendiente") { next = PHASE_DEFS[id].label; break; } }
+      if (next) els.summaryNext.textContent = "Siguiente fase recomendada: " + next + ".";
+      else els.summaryNext.textContent = "Sesion completa. Fases listas: " + listo + "/" + total + ". Pulsa Exportar y comparte.";
+    }
+
+    /* ===== Checklist ===== */
+    function bindChecklist() {
+      els.checklist.querySelectorAll(".check-item").forEach(function (item) {
+        const cb = item.querySelector("input[type=checkbox]");
+        cb.addEventListener("change", function () {
+          const z = state.phases[state.activePhase];
+          z.checklist[cb.dataset.check] = cb.checked;
+          item.classList.toggle("is-checked", cb.checked);
+        });
+      });
+    }
+
+    /* ===== Image loading + optimization ===== */
+    function loadFileToImage(file) {
+      return new Promise(function (resolve, reject) {
+        if (!file || !file.type.startsWith("image/")) { reject(new Error("not image")); return; }
+        if (file.size > 40 * 1024 * 1024) { reject(new Error("too big")); return; }
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = function () { resolve({ img: img, url: url }); };
+        img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("decode")); };
+        img.src = url;
+      });
+    }
+    function resizeImageIfNeeded(img, maxSide) {
+      const max = maxSide || 1920;
+      const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+      if (!w || !h) return img;
+      const longest = Math.max(w, h);
+      if (longest <= max) return img;
+      const scale = max / longest;
+      const cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+      const c = document.createElement("canvas"); c.width = cw; c.height = ch;
+      const ctx = c.getContext("2d", { alpha: false });
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, 0, 0, cw, ch);
+      return c;
+    }
+    async function processImageFile(file, slot) {
+      const r = await loadFileToImage(file);
+      const optimized = resizeImageIfNeeded(r.img, 1920);
+      const def = PHASE_DEFS[state.activePhase];
+      const label = (file.name && file.name.length) ? (file.name.length > 32 ? file.name.slice(0, 29) + "..." : file.name) : (slot === "before" ? "Posicion actual" : "Referencia visual");
+      const z = state.phases[state.activePhase];
+      if (slot === "before") {
+        z.beforeImage = optimized; z.beforeIsDefault = false;
+        els.beforeMeta.textContent = label + " - " + def.label;
+        if (z.status === "pendiente") { z.status = "revisado"; els.statusChips.querySelectorAll(".chip").forEach(function (b) { b.classList.toggle("is-active", b.dataset.status === z.status); }); renderPhaseChips(); renderSummary(); updateUi(); }
+      } else {
+        z.afterImage = optimized; z.afterIsDefault = false;
+        els.afterMeta.textContent = label + " - " + def.label;
+      }
+      return { wasResized: optimized !== r.img };
+    }
+    async function handleUpload(which, file, source) {
+      try {
+        const r = await processImageFile(file, which);
+        const verb = source === "capture" ? "Foto" : "Imagen";
+        const target = which === "before" ? "actual" : "referencia";
+        const extra = r.wasResized ? " (optimizada a 1920 px)" : "";
+        showToast(verb + " " + target + " cargada en " + PHASE_DEFS[state.activePhase].label + extra + ".", 2200);
+      } catch (err) {
+        if (err.message === "too big") showToast("Imagen demasiado pesada. Prueba con menos de 40 MB.", 3200);
+        else showToast("No se pudo cargar la imagen.", 2800);
+      }
+    }
+    function clearImage(which) {
+      const z = state.phases[state.activePhase];
+      if (which === "before") { z.beforeImage = null; z.beforeIsDefault = true; }
+      else { z.afterImage = null; z.afterIsDefault = true; }
+      ensurePhaseDefaults(state.activePhase);
+      syncInputsFromPhase();
+      showToast(which === "before" ? "Posicion restablecida a demo." : "Referencia restablecida a demo.", 1800);
+    }
+
+    /* ===== In-app camera capture ===== */
+    function setCaptureStatus(t) { els.captureStatus.textContent = t; }
+    function stopCaptureStream() {
+      if (state.capture.stream) { try { state.capture.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {} state.capture.stream = null; }
+      try { els.captureVideo.pause(); } catch (_) {} els.captureVideo.srcObject = null;
+    }
+    function closeCaptureModal() {
+      stopCaptureStream();
+      state.capture.active = false; state.capture.slot = null;
+      els.captureModal.classList.remove("is-open"); els.captureModal.setAttribute("aria-hidden", "true");
+      els.captureShotBtn.disabled = true; setCaptureStatus("");
+    }
+    function isSecureContextOk() { return location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1"; }
+    function isGetUserMediaAvailable() { return Boolean(navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === "function" && isSecureContextOk()); }
+    async function startCaptureCamera() {
+      els.captureShotBtn.disabled = true; setCaptureStatus("Activando camara...");
+      let stream = null;
+      try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
+      catch (_) {
+        try { stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); }
+        catch (e2) { console.error(e2); setCaptureStatus("No se pudo acceder a la camara"); showToast("No se pudo acceder a la camara. Usa Usar galeria.", 3600); return; }
+      }
+      if (!state.capture.active) { try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {} return; }
+      state.capture.stream = stream; els.captureVideo.srcObject = stream;
+      try { await els.captureVideo.play(); } catch (_) {}
+      setCaptureStatus("Camara lista. Encuadra y pulsa Capturar.");
+      els.captureShotBtn.disabled = false;
+    }
+    async function openCaptureModal(slot) {
+      if (!isGetUserMediaAvailable()) {
+        const input = slot === "before" ? els.beforeFallbackInput : els.afterFallbackInput;
+        if (input) {
+          showToast("Camara no disponible aqui. Abriendo selector de imagen del sistema.", 3000);
+          input.click();
+          return;
+        }
+      }
+      if (state.capture.active) return;
+      state.capture.active = true; state.capture.slot = slot;
+      const phaseName = PHASE_DEFS[state.activePhase].label;
+      els.captureTitle.textContent = (slot === "before" ? "Capturar posicion - " : "Capturar referencia - ") + phaseName;
+      els.captureShotBtn.disabled = true;
+      els.captureModal.classList.add("is-open"); els.captureModal.setAttribute("aria-hidden", "false");
+      try { await startCaptureCamera(); } catch (e) { console.error(e); showToast("No se pudo abrir la camara. Usa Usar galeria.", 3200); }
+    }
+    function captureStillFrame() {
+      const v = els.captureVideo;
+      if (!state.capture.active || !state.capture.stream || v.readyState < 2) return;
+      const w = v.videoWidth || 1280, h = v.videoHeight || 720;
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      c.getContext("2d", { alpha: false }).drawImage(v, 0, 0, w, h);
+      const slot = state.capture.slot;
+      const opt = resizeImageIfNeeded(c, 1920);
+      const z = state.phases[state.activePhase];
+      const zd = PHASE_DEFS[state.activePhase];
+      if (slot === "before") {
+        z.beforeImage = opt; z.beforeIsDefault = false;
+        els.beforeMeta.textContent = "Foto in-app - " + zd.label;
+        if (z.status === "pendiente") { z.status = "revisado"; els.statusChips.querySelectorAll(".chip").forEach(function (b) { b.classList.toggle("is-active", b.dataset.status === z.status); }); }
+        showToast("Posicion capturada en " + zd.label + ".", 2200);
+      } else {
+        z.afterImage = opt; z.afterIsDefault = false;
+        els.afterMeta.textContent = "Foto in-app - " + zd.label;
+        showToast("Referencia capturada en " + zd.label + ".", 2200);
+      }
+      renderPhaseChips(); renderSummary(); updateUi();
+      closeCaptureModal();
+    }
+
+    /* ===== Immersive ===== */
+    function fullscreenSupported() { return Boolean(els.stagePanel.requestFullscreen || els.stagePanel.webkitRequestFullscreen); }
+    function isFullscreen() { return Boolean(document.fullscreenElement || document.webkitFullscreenElement); }
+    function updateImmersiveUi() {
+      const v = state.viewMode.fullscreen;
+      els.stagePanel.classList.toggle("is-immersive", v);
+      els.fullscreenBtn.textContent = v ? "Salir vista completa" : "Vista completa";
+      els.fullscreenCloseBtn.classList.toggle("is-hidden", !v);
+      els.fullscreenHomeBtn.classList.toggle("is-hidden", !v);
+      els.fsControls.classList.toggle("is-hidden", !v);
+    }
+    function enterImmersive() {
+      state.viewMode.fullscreen = true; updateImmersiveUi(); resizeCanvas();
+      if (fullscreenSupported() && !isFullscreen()) {
+        try { const req = els.stagePanel.requestFullscreen || els.stagePanel.webkitRequestFullscreen; if (req) { const r = req.call(els.stagePanel); if (r && typeof r.catch === "function") r.catch(function () {}); } } catch (_) {}
+      }
+    }
+    function exitImmersive() {
+      state.viewMode.fullscreen = false; updateImmersiveUi();
+      if (isFullscreen()) { try { const ex = document.exitFullscreen || document.webkitExitFullscreen; if (ex) { const r = ex.call(document); if (r && typeof r.catch === "function") r.catch(function () {}); } } catch (_) {} }
+      resizeCanvas();
+    }
+    function toggleImmersive() { if (state.viewMode.fullscreen) exitImmersive(); else enterImmersive(); }
+    function onFullscreenChange() {
+      if (!isFullscreen() && state.viewMode.fullscreen) { state.viewMode.fullscreen = false; updateImmersiveUi(); }
+      else if (isFullscreen() && !state.viewMode.fullscreen) { state.viewMode.fullscreen = true; updateImmersiveUi(); }
+      resizeCanvas();
+    }
+    function goHome() {
+      try { if (state.recording.active) stopRecording(); } catch (_) {}
+      try { if (state.capture.active) closeCaptureModal(); } catch (_) {}
+      try { if (state.viewMode.fullscreen) exitImmersive(); } catch (_) {}
+      window.location.href = "../index.html";
+    }
+
+    /* ===== PNG export ===== */
+    function downloadPng() {
+      try {
+        const url = els.canvas.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = EXPORT_PREFIX + "-" + state.activePhase + ".png";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        showToast("PNG descargado (" + PHASE_DEFS[state.activePhase].label + ").", 2400);
+      } catch (e) { console.error(e); showToast("No se pudo generar el PNG.", 2800); }
+    }
+
+    /* ===== Video recording ===== */
+    function getSupportedMimeType() {
+      if (typeof MediaRecorder === "undefined") return "";
+      const cands = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+      for (let i = 0; i < cands.length; i++) { const t = cands[i]; try { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) return t; } catch (_) {} }
+      return "";
+    }
+    function formatTime(ms) { const total = Math.max(0, Math.floor(ms / 1000)); const m = Math.floor(total / 60).toString().padStart(2,"0"); const s = (total % 60).toString().padStart(2,"0"); return m + ":" + s; }
+    function cleanupRecordingUrl() { if (state.recording.downloadUrl) { URL.revokeObjectURL(state.recording.downloadUrl); state.recording.downloadUrl = null; } }
+    function updateRecordingUi() {
+      const r = state.recording;
+      els.recIndicator.classList.toggle("is-hidden", !r.active);
+      els.recordBtn.disabled = r.active; els.recordBtn.textContent = r.active ? "Grabando..." : "Grabar video";
+      els.stopRecordBtn.disabled = !r.active;
+      els.fsRecordBtn.disabled = r.active; els.fsRecordBtn.textContent = r.active ? "Grabando..." : "Grabar";
+      els.fsStopRecordBtn.disabled = !r.active;
+      let timer = "00:00 / " + formatTime(r.maxDurationMs);
+      if (r.active) { const e = performance.now() - r.startedAt; timer = formatTime(e) + " / " + formatTime(r.maxDurationMs); }
+      els.recTimer.textContent = timer;
+    }
+    function startRecording() {
+      const r = state.recording;
+      if (r.active) return;
+      if (typeof els.canvas.captureStream !== "function" || typeof MediaRecorder === "undefined") { showToast("Grabacion no disponible en este navegador.", 3200); return; }
+      const mime = getSupportedMimeType();
+      if (!mime) { showToast("Grabacion no disponible en este navegador.", 3200); return; }
+      try {
+        cleanupRecordingUrl();
+        els.downloadVideoBtn.hidden = true; els.downloadVideoBtn.removeAttribute("href");
+        els.fsDownloadVideoBtn.hidden = true; els.fsDownloadVideoBtn.removeAttribute("href");
+        r.chunks = []; r.stream = els.canvas.captureStream(30);
+        r.recorder = new MediaRecorder(r.stream, { mimeType: mime }); r.mimeType = mime;
+        r.recorder.ondataavailable = function (ev) { if (ev.data && ev.data.size > 0) r.chunks.push(ev.data); };
+        r.recorder.onstop = function () {
+          try {
+            const blob = new Blob(r.chunks, { type: r.mimeType || "video/webm" });
+            const url = URL.createObjectURL(blob);
+            cleanupRecordingUrl(); r.downloadUrl = url;
+            els.downloadVideoBtn.href = url; els.downloadVideoBtn.hidden = false;
+            els.fsDownloadVideoBtn.href = url; els.fsDownloadVideoBtn.hidden = false;
+            showToast("Clip listo (" + (blob.size / (1024*1024)).toFixed(2) + " MB).", 3000);
+          } catch (e) { console.error(e); showToast("No se pudo generar el clip.", 3000); }
+          if (r.stream) { r.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (_) {} }); r.stream = null; }
+          if (r.timerId) { clearInterval(r.timerId); r.timerId = null; }
+          r.active = false; r.recorder = null; updateRecordingUi();
+        };
+        r.recorder.start(250); r.active = true; r.startedAt = performance.now();
+        r.timerId = setInterval(function () { updateRecordingUi(); if (performance.now() - r.startedAt >= r.maxDurationMs) stopRecording(); }, 250);
+        updateRecordingUi();
+        showToast("Grabando clip del canvas (max. 15 s).", 2200);
+      } catch (e) {
+        console.error(e); showToast("Grabacion no disponible en este navegador.", 3200);
+        r.active = false; r.recorder = null;
+        if (r.stream) { r.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (_) {} }); r.stream = null; }
+        updateRecordingUi();
+      }
+    }
+    function stopRecording() {
+      const r = state.recording;
+      if (!r.active || !r.recorder) return;
+      try { if (r.recorder.state !== "inactive") r.recorder.stop(); } catch (e) { console.error(e); }
+    }
+
+    /* ===== Share / Save ===== */
+    function countDone() { let d = 0; for (let i = 0; i < PHASES_ORDER.length; i++) { const s = state.phases[PHASES_ORDER[i]].status; if (s === "revisado" || s === "listo") d++; } return d; }
+    function nextRecommended() { for (let i = 0; i < PHASES_ORDER.length; i++) { const id = PHASES_ORDER[i]; if (state.phases[id].status === "pendiente") return PHASE_DEFS[id].label; } return null; }
+    function buildWhatsApp() {
+      const z = state.phases[state.activePhase];
+      const def = PHASE_DEFS[state.activePhase];
+      const done = countDone();
+      const total = PHASES_ORDER.length;
+      const point = safeText(z.point) || "buena base";
+      const benefit = safeText(z.benefit) || "ajustar el siguiente movimiento";
+      return "Hola, te envio una guia visual de practica de golf. Fase actual: " + def.label + ". Punto fuerte: " + point + ". Ajuste recomendado: " + benefit + ". Progreso: " + done + "/" + total + " fases revisadas. Demo: " + window.location.href;
+    }
+    function buildEmailBody() {
+      const s = state.session, z = state.phases[state.activePhase], def = PHASE_DEFS[state.activePhase];
+      const lvl = LEVELS[state.level] || LEVELS.inicial;
+      const done = countDone(), total = PHASES_ORDER.length;
+      const lines = [];
+      lines.push("Guia visual de practica - Golf Experience / Home Practice");
+      lines.push("");
+      lines.push("Jugador: " + (s.player || "-"));
+      lines.push("Coach / academia: " + (s.coach || "-"));
+      lines.push("Tipo de practica: " + (s.type || "-"));
+      lines.push("Palo usado: " + (s.club || "-"));
+      lines.push("Objetivo de la sesion: " + (s.goal || "-"));
+      lines.push("Nivel: " + lvl.label);
+      lines.push("");
+      lines.push("Fase activa: " + def.label);
+      lines.push("Punto fuerte: " + (safeText(z.point) || "-"));
+      lines.push("Ajuste recomendado: " + (safeText(z.benefit) || "-"));
+      lines.push("Estado: " + STATUS_LABELS[z.status]);
+      lines.push("Progreso: " + done + "/" + total + " fases revisadas");
+      const next = nextRecommended();
+      if (next) lines.push("Siguiente paso recomendado: revisar " + next + ".");
+      lines.push("");
+      lines.push("Demo: " + window.location.href);
+      return lines.join("\n");
+    }
+    function shareWhatsApp() { const text = encodeURIComponent(buildWhatsApp()); window.open("https://wa.me/?text=" + text, "_blank", "noopener"); }
+    function shareEmail() {
+      const subject = encodeURIComponent("Guia visual de practica - Golf Experience / Home Practice");
+      const body = encodeURIComponent(buildEmailBody());
+      window.location.href = "mailto:?subject=" + subject + "&body=" + body;
+    }
+    async function copyLink() {
+      const text = window.location.href;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(text); showToast("Enlace copiado al portapapeles.", 2200); }
+        else {
+          const ta = document.createElement("textarea"); ta.value = text;
+          document.body.appendChild(ta); ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          showToast("Enlace copiado (modo compatibilidad).", 2200);
+        }
+      } catch (e) { console.error(e); showToast("No se pudo copiar el enlace.", 2400); }
+    }
+    function saveSnapshot() {
+      try {
+        const phasesLight = {};
+        for (let i = 0; i < PHASES_ORDER.length; i++) {
+          const id = PHASES_ORDER[i]; const z = state.phases[id];
+          phasesLight[id] = { status: z.status, point: safeText(z.point), benefit: safeText(z.benefit), checklist: Object.assign({}, z.checklist) };
+        }
+        const data = {
+          version: "v2.5",
+          activePhase: state.activePhase,
+          step: state.step,
+          mode: state.mode,
+          reveal: state.targetReveal,
+          level: state.level,
+          guides: { show: state.guides.show, opacity: state.guides.opacity },
+          session: {
+            player: safeText(els.sPlayer.value),
+            coach: safeText(els.sCoach.value),
+            type: els.sType.value,
+            club: els.sClub.value,
+            goal: safeText(els.sGoal.value),
+            notes: safeText(els.sNotes.value)
+          },
+          phases: phasesLight,
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        showToast("Datos guardados localmente.", 2200);
+      } catch (e) { console.error(e); showToast("No se pudieron guardar los datos.", 2400); }
+    }
+    function loadSnapshot() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (!data) return;
+        if (data.session) {
+          state.session = Object.assign(state.session, data.session);
+          els.sPlayer.value = state.session.player || "";
+          els.sCoach.value = state.session.coach || "";
+          if (state.session.type) els.sType.value = state.session.type;
+          if (state.session.club) els.sClub.value = state.session.club;
+          els.sGoal.value = state.session.goal || "";
+          els.sNotes.value = state.session.notes || "";
+        }
+        if (data.level && LEVELS[data.level]) setLevel(data.level);
+        if (data.phases) {
+          for (let i = 0; i < PHASES_ORDER.length; i++) {
+            const id = PHASES_ORDER[i]; const zd = data.phases[id];
+            if (!zd) continue; const z = state.phases[id];
+            if (zd.status) z.status = zd.status;
+            if (typeof zd.point === "string") z.point = zd.point;
+            if (typeof zd.benefit === "string") z.benefit = zd.benefit;
+            if (zd.checklist) for (let j = 0; j < CHECKLIST_KEYS.length; j++) { const k = CHECKLIST_KEYS[j]; if (typeof zd.checklist[k] === "boolean") z.checklist[k] = zd.checklist[k]; }
+          }
+        }
+        if (data.guides) {
+          state.guides.show = !!data.guides.show;
+          state.guides.opacity = typeof data.guides.opacity === "number" ? clamp(data.guides.opacity, 0, 1) : 0.7;
+          els.guidesToggle.checked = state.guides.show;
+          els.guidesToggleItem.classList.toggle("is-checked", state.guides.show);
+          els.guidesOpacity.value = String(Math.round(state.guides.opacity * 100));
+        }
+        if (data.mode) setMode(data.mode);
+        if (typeof data.reveal === "number") setReveal(data.reveal * 100, true);
+        if (data.step) setStep(data.step);
+        const ap = (data.activePhase && PHASE_DEFS[data.activePhase]) ? data.activePhase : "setup";
+        setActivePhase(ap);
+      } catch (e) { console.error(e); }
+    }
+
+    /* ===== Pointer drag ===== */
+    function setupPointerControls() {
+      els.canvas.addEventListener("pointerdown", function (event) {
+        if (state.mode === "split") return;
+        state.drag.active = true; state.drag.pointerId = event.pointerId;
+        try { els.canvas.setPointerCapture(event.pointerId); } catch (_) {}
+        applyPointer(event); event.preventDefault();
+      });
+      els.canvas.addEventListener("pointermove", function (event) { if (!state.drag.active) return; applyPointer(event); });
+      const end = function (event) { if (!state.drag.active) return; state.drag.active = false; try { els.canvas.releasePointerCapture(event.pointerId); } catch (_) {} };
+      els.canvas.addEventListener("pointerup", end);
+      els.canvas.addEventListener("pointercancel", end);
+    }
+    function applyPointer(event) {
+      const rect = els.canvas.getBoundingClientRect();
+      const x = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+      setReveal(x * 100);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      state.currentReveal = lerp(state.currentReveal, state.targetReveal, 0.18);
+      renderStage();
+    }
+
+    function setupEvents() {
+      els.beforeInput.addEventListener("change", function (e) { const f = e.target.files && e.target.files[0]; if (f) handleUpload("before", f, "gallery"); e.target.value = ""; });
+      els.afterInput.addEventListener("change", function (e) { const f = e.target.files && e.target.files[0]; if (f) handleUpload("after", f, "gallery"); e.target.value = ""; });
+      els.beforeFallbackInput.addEventListener("change", function (e) { const f = e.target.files && e.target.files[0]; if (f) handleUpload("before", f, "capture"); e.target.value = ""; });
+      els.afterFallbackInput.addEventListener("change", function (e) { const f = e.target.files && e.target.files[0]; if (f) handleUpload("after", f, "capture"); e.target.value = ""; });
+      els.beforeCaptureBtn.addEventListener("click", function () { openCaptureModal("before"); });
+      els.afterCaptureBtn.addEventListener("click", function () { openCaptureModal("after"); });
+      els.beforeClearBtn.addEventListener("click", function () { clearImage("before"); });
+      els.afterClearBtn.addEventListener("click", function () { clearImage("after"); });
+      els.openCameraBtn.addEventListener("click", function () { openCaptureModal("before"); });
+
+      els.captureShotBtn.addEventListener("click", captureStillFrame);
+      els.captureCancelBtn.addEventListener("click", closeCaptureModal);
+      els.captureFallbackInput.addEventListener("change", function (e) {
+        const f = e.target.files && e.target.files[0]; const slot = state.capture.slot;
+        if (f && slot) { handleUpload(slot, f, "gallery"); closeCaptureModal(); }
+        e.target.value = "";
+      });
+
+      els.stepChips.addEventListener("click", function (e) { const b = e.target.closest(".step-chip"); if (b && b.dataset.step) setStep(Number(b.dataset.step)); });
+      els.phaseChips.addEventListener("click", function (e) { const b = e.target.closest(".chip"); if (b && b.dataset.phase) setActivePhase(b.dataset.phase); });
+      els.statusChips.addEventListener("click", function (e) { const b = e.target.closest(".chip"); if (b && b.dataset.status) setStatus(b.dataset.status); });
+
+      els.zPoint.addEventListener("input", function () { state.phases[state.activePhase].point = els.zPoint.value; });
+      els.zBenefit.addEventListener("input", function () { state.phases[state.activePhase].benefit = els.zBenefit.value; });
+
+      els.sPlayer.addEventListener("input", function () { state.session.player = els.sPlayer.value; });
+      els.sCoach.addEventListener("input", function () { state.session.coach = els.sCoach.value; });
+      els.sType.addEventListener("change", function () { state.session.type = els.sType.value; });
+      els.sClub.addEventListener("change", function () { state.session.club = els.sClub.value; });
+      els.sGoal.addEventListener("input", function () { state.session.goal = els.sGoal.value; });
+      els.sLevel.addEventListener("change", function () { setLevel(els.sLevel.value); });
+      els.sNotes.addEventListener("input", function () { state.session.notes = els.sNotes.value; });
+
+      els.guidesToggle.addEventListener("change", function () {
+        state.guides.show = els.guidesToggle.checked;
+        els.guidesToggleItem.classList.toggle("is-checked", state.guides.show);
+      });
+      els.guidesOpacity.addEventListener("input", function () { state.guides.opacity = clamp(Number(els.guidesOpacity.value) / 100, 0, 1); });
+
+      els.revealRange.addEventListener("input", function (e) { setReveal(e.target.value); });
+      els.beforeBtn.addEventListener("click", function () { setReveal(0); });
+      els.afterBtn.addEventListener("click", function () { setReveal(100); });
+      els.midBtn.addEventListener("click", function () { setReveal(50); });
+      els.resetBtn.addEventListener("click", function () { setReveal(0, true); setMode("curtain"); showToast("Reset aplicado.", 1600); });
+
+      els.modeCurtainBtn.addEventListener("click", function () { setMode("curtain"); });
+      els.modeBlendBtn.addEventListener("click", function () { setMode("blend"); });
+      els.modeSplitBtn.addEventListener("click", function () { setMode("split"); });
+
+      els.downloadPngBtn.addEventListener("click", downloadPng);
+      els.fsDownloadPngBtn.addEventListener("click", downloadPng);
+      els.recordBtn.addEventListener("click", startRecording);
+      els.stopRecordBtn.addEventListener("click", stopRecording);
+      els.fsRecordBtn.addEventListener("click", startRecording);
+      els.fsStopRecordBtn.addEventListener("click", stopRecording);
+      els.shareWhatsAppBtn.addEventListener("click", shareWhatsApp);
+      els.shareEmailBtn.addEventListener("click", shareEmail);
+      els.copyLinkBtn.addEventListener("click", copyLink);
+      els.saveBtn.addEventListener("click", saveSnapshot);
+
+      els.fullscreenBtn.addEventListener("click", toggleImmersive);
+      els.fullscreenCloseBtn.addEventListener("click", exitImmersive);
+      els.fullscreenHomeBtn.addEventListener("click", goHome);
+      els.fsBeforeBtn.addEventListener("click", function () { setReveal(0); });
+      els.fsAfterBtn.addEventListener("click", function () { setReveal(100); });
+      els.fsMidBtn.addEventListener("click", function () { setReveal(50); });
+
+      document.addEventListener("fullscreenchange", onFullscreenChange);
+      document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+
+      window.addEventListener("resize", resizeCanvas);
+      const ro = new ResizeObserver(resizeCanvas); ro.observe(els.stagePanel);
+
+      setupPointerControls();
+      bindChecklist();
+    }
+
+    function boot() {
+      for (let i = 0; i < PHASES_ORDER.length; i++) ensurePhaseDefaults(PHASES_ORDER[i]);
+      resizeCanvas();
+      setupEvents();
+      setStep(1);
+      setLevel("inicial");
+      setActivePhase("setup");
+      setMode("curtain");
+      setReveal(0, true);
+      els.guidesToggle.checked = state.guides.show;
+      els.guidesToggleItem.classList.toggle("is-checked", state.guides.show);
+      els.guidesOpacity.value = String(Math.round(state.guides.opacity * 100));
+      renderSummary();
+      updateRecordingUi();
+      loadSnapshot();
+      animate();
+      showToast("Golf Experience / Home Practice v2.5 listo. Captura postura, selecciona fase y exporta feedback.", 3400);
+    }
+
+    boot();
+  </script>
+</body>
+</html>
