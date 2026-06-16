@@ -353,17 +353,19 @@
         <summary>Motor de gestos</summary>
         <div class="gesture-router-grid">
           <div class="readout-item"><strong>Estado motor</strong><span id="gestureEngineState">activo</span></div>
-          <div class="readout-item"><strong>Ultimo gesto</strong><span id="gestureDebugLastGesture">-</span></div>
-          <div class="readout-item"><strong>Ultima accion</strong><span id="gestureDebugLastAction">-</span></div>
+          <div class="readout-item"><strong>Gesto bruto</strong><span id="gestureDebugRawGesture">-</span></div>
+          <div class="readout-item"><strong>Gesto normalizado</strong><span id="gestureDebugLastGesture">-</span></div>
+          <div class="readout-item"><strong>Accion</strong><span id="gestureDebugLastAction">-</span></div>
           <div class="readout-item"><strong>Origen</strong><span id="gestureDebugSource">-</span></div>
           <div class="readout-item"><strong>Confianza</strong><span id="gestureDebugConfidence">0</span></div>
           <div class="readout-item"><strong>Labs</strong><span id="gestureDebugLabs">inactivo</span></div>
         </div>
         <div class="gesture-feedback" id="gestureFeedback">Router listo.</div>
         <p class="gesture-router-note">QA simula el cableado de acciones. No verifica deteccion real de mano fisica.</p>
+        <p class="gesture-router-note">Los nombres mostrados corresponden al gesto fisico que debe hacer el usuario. Los aliases tecnicos se normalizan internamente.</p>
         <div class="gesture-router-grid" aria-label="Guia de gestos">
-          <div class="readout-item"><strong>Produccion</strong><span>Palma = activar; Swipe = navegar; Pinza = seleccionar; Puno = carrito/interes; Pulgar arriba = favorito/interes; Mano arriba = codigo/QR; Stop = pausar/cancelar</span></div>
-          <div class="readout-item"><strong>Labs</strong><span>Indice = senalar; Pulgar abajo = descartar; V = comparar; OK = confirmar; Saludo = reiniciar; Giro = cambiar vista</span></div>
+          <div class="readout-item"><strong>Gestos principales verificados en prueba real</strong><span>Mano abierta; Pinza; Pulgar arriba; Dos dedos / V; Swipe izquierda/derecha</span></div>
+          <div class="readout-item"><strong>Gestos Labs / experimentales</strong><span>Puno; Mano hacia arriba; Stop; Pulgar abajo; Indice; OK; Saludo; Giro</span></div>
         </div>
         <ul class="gesture-event-list" id="gestureEventList" aria-label="Ultimos eventos de gestos"></ul>
       </details>
@@ -371,23 +373,23 @@
         <summary>QA gestos</summary>
         <p class="gesture-router-note">Prueba el cableado de gestos sin camara. Esto NO verifica deteccion real de mano.</p>
         <div class="qa-gesture-grid" aria-label="QA gestos produccion">
-          <button class="btn btn-gesture" id="qaOpenPalmBtn" type="button">Palma</button>
-          <button class="btn btn-gesture" id="qaSwipeLeftBtn" type="button">Swipe izq</button>
-          <button class="btn btn-gesture" id="qaSwipeRightBtn" type="button">Swipe der</button>
-          <button class="btn btn-gesture" id="qaPinchBtn" type="button">Pinza</button>
-          <button class="btn btn-gesture" id="qaFistBtn" type="button">Puno</button>
-          <button class="btn btn-gesture" id="qaThumbsUpBtn" type="button">Pulgar arriba</button>
-          <button class="btn btn-gesture" id="qaHandUpBtn" type="button">Mano arriba</button>
-          <button class="btn btn-gesture" id="qaStopPalmBtn" type="button">Stop</button>
+          <button class="btn btn-gesture" id="qaOpenPalmBtn" type="button">Simular mano abierta</button>
+          <button class="btn btn-gesture" id="qaPinchBtn" type="button">Simular pinza</button>
+          <button class="btn btn-gesture" id="qaThumbsUpBtn" type="button">Simular pulgar arriba</button>
+          <button class="btn btn-gesture" id="qaVictoryBtn" type="button">Simular dos dedos / V</button>
+          <button class="btn btn-gesture" id="qaSwipeLeftBtn" type="button">Simular swipe izquierda</button>
+          <button class="btn btn-gesture" id="qaSwipeRightBtn" type="button">Simular swipe derecha</button>
         </div>
         <div class="qa-gesture-grid" aria-label="QA gestos Labs">
           <button class="btn" id="qaLabsToggleBtn" type="button">Labs OFF</button>
-          <button class="btn" id="qaIndexPointBtn" type="button">Indice</button>
-          <button class="btn" id="qaThumbsDownBtn" type="button">Pulgar abajo</button>
-          <button class="btn" id="qaVictoryBtn" type="button">V</button>
-          <button class="btn" id="qaOkSignBtn" type="button">OK</button>
-          <button class="btn" id="qaWaveBtn" type="button">Saludo</button>
-          <button class="btn" id="qaHandRotateBtn" type="button">Giro</button>
+          <button class="btn" id="qaFistBtn" type="button">Simular puno</button>
+          <button class="btn" id="qaHandUpBtn" type="button">Simular mano hacia arriba</button>
+          <button class="btn" id="qaStopPalmBtn" type="button">Simular stop</button>
+          <button class="btn" id="qaThumbsDownBtn" type="button">Simular pulgar abajo</button>
+          <button class="btn" id="qaIndexPointBtn" type="button">Simular indice</button>
+          <button class="btn" id="qaOkSignBtn" type="button">Simular OK</button>
+          <button class="btn" id="qaWaveBtn" type="button">Simular saludo</button>
+          <button class="btn" id="qaHandRotateBtn" type="button">Simular giro</button>
         </div>
       </details>
     </section>
@@ -633,6 +635,7 @@
       cooldownSelect: document.getElementById("cooldownSelect"),
       landmarksToggle: document.getElementById("landmarksToggle"),
       gestureEngineState: document.getElementById("gestureEngineState"),
+      gestureDebugRawGesture: document.getElementById("gestureDebugRawGesture"),
       gestureDebugLastGesture: document.getElementById("gestureDebugLastGesture"),
       gestureDebugLastAction: document.getElementById("gestureDebugLastAction"),
       gestureDebugSource: document.getElementById("gestureDebugSource"),
@@ -658,29 +661,32 @@
     };
 
     const GESTURE_CATALOG = [
-      { id: "open_palm", label: "Palma abierta", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "modo producto", description: "Activa modo exploracion sin abrir modal.", actionLabel: "Modo exploracion activo" },
-      { id: "swipe_left", label: "Swipe izquierda", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "nextBtn", description: "Navega al producto siguiente.", actionLabel: "Siguiente producto" },
-      { id: "swipe_right", label: "Swipe derecha", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "prevBtn", description: "Navega al producto anterior.", actionLabel: "Producto anterior" },
-      { id: "pinch", label: "Pinza", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "modeDetailBtn", description: "Abre ficha del producto actual.", actionLabel: "Ficha de producto" },
-      { id: "fist", label: "Puno", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "addCartBtn", description: "Anade el producto actual al carrito local.", actionLabel: "Producto anadido al carrito" },
-      { id: "thumbs_up", label: "Pulgar arriba", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "favBtn", description: "Marca favorito usando la logica tactil existente.", actionLabel: "Favorito actualizado" },
-      { id: "hand_up", label: "Mano arriba", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "viewQrBtn", description: "Abre codigo de continuacion.", actionLabel: "Codigo de continuacion" },
-      { id: "stop_palm", label: "Stop", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "modeProductBtn", description: "Cierra ficha/codigo o vuelve al catalogo.", actionLabel: "Cancelado / catalogo" },
+      { id: "open_palm", label: "Mano abierta", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "modo producto", description: "Activa modo exploracion sin abrir modal.", actionLabel: "Mano abierta: modo exploracion activo" },
+      { id: "pinch", label: "Pinza", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "modeDetailBtn", description: "Abre ficha del producto actual.", actionLabel: "Pinza: ficha abierta" },
+      { id: "thumbs_up", label: "Pulgar arriba", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "favBtn", description: "Marca favorito o confirma interes.", actionLabel: "Pulgar arriba: producto guardado como favorito" },
+      { id: "victory", label: "Dos dedos / V", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "modeDetailBtn", description: "Prepara comparacion demo.", actionLabel: "Dos dedos: comparacion preparada" },
+      { id: "swipe_left", label: "Swipe izquierda", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "nextBtn", description: "Navega al producto siguiente.", actionLabel: "Swipe izquierda: siguiente producto" },
+      { id: "swipe_right", label: "Swipe derecha", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "prevBtn", description: "Navega al producto anterior.", actionLabel: "Swipe derecha: producto anterior" },
+      { id: "fist", label: "Puno", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "addCartBtn", description: "Anade el producto actual al carrito local si Labs esta activo.", actionLabel: "Puno experimental: producto anadido al carrito" },
+      { id: "hand_up", label: "Mano hacia arriba", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "viewQrBtn", description: "Abre codigo de continuacion si no se confunde con pulgar arriba.", actionLabel: "Mano hacia arriba: codigo de continuacion" },
+      { id: "stop_palm", label: "Stop", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "modeProductBtn", description: "Cancela o vuelve al catalogo.", actionLabel: "Stop experimental: catalogo" },
       { id: "index_point", label: "Indice", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "productList", description: "Resalta producto actual como cursor demo.", actionLabel: "Cursor demo" },
       { id: "thumbs_down", label: "Pulgar abajo", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "favBtn", description: "Descarta visualmente o quita favorito si existia.", actionLabel: "Descartar visual" },
-      { id: "victory", label: "V", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "modeDetailBtn", description: "Feedback de comparacion demo.", actionLabel: "Comparacion demo" },
       { id: "ok_sign", label: "OK", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "saveBtn", description: "Guarda seleccion local actual.", actionLabel: "Seleccion guardada" },
       { id: "wave", label: "Saludo", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "modeProductBtn", description: "Vuelve al producto destacado.", actionLabel: "Vista reiniciada" },
       { id: "hand_rotate", label: "Giro", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "modeDetailBtn", description: "Alterna vista visual segura.", actionLabel: "Vista alternada" }
     ];
 
     const GESTURE_ALIASES = {
-      open: "open_palm", openPalm: "open_palm", palm: "open_palm", "Mano abierta": "open_palm",
-      swipeLeft: "swipe_left", "swipe-left": "swipe_left", "Swipe izquierda": "swipe_left", left: "swipe_left",
-      swipeRight: "swipe_right", "swipe-right": "swipe_right", "Swipe derecha": "swipe_right", right: "swipe_right",
-      pinch: "pinch", "Pinza": "pinch", fist: "fist", "Puno": "fist",
-      thumbsUp: "thumbs_up", thumb_up: "thumbs_up", handUp: "hand_up", up: "hand_up", "Mano arriba": "hand_up",
-      stop: "stop_palm", stopPalm: "stop_palm"
+      open: "open_palm", openPalm: "open_palm", palm: "open_palm", open_palm: "open_palm", "Mano abierta": "open_palm",
+      pinch: "pinch", pinza: "pinch", "Pinza": "pinch",
+      thumbsUp: "thumbs_up", thumb_up: "thumbs_up", thumbup: "thumbs_up", thumbs_up: "thumbs_up",
+      victory: "victory", v_sign: "victory", two_fingers: "victory", twoFingers: "victory",
+      swipeLeft: "swipe_left", swipe_left: "swipe_left", "swipe-left": "swipe_left", "Swipe izquierda": "swipe_left", left: "swipe_left",
+      swipeRight: "swipe_right", swipe_right: "swipe_right", "swipe-right": "swipe_right", "Swipe derecha": "swipe_right", right: "swipe_right",
+      fist: "fist", "Puno": "fist",
+      handUp: "hand_up", hand_up: "hand_up", up: "hand_up", "Mano arriba": "hand_up",
+      stop: "stop_palm", stopPalm: "stop_palm", stop_palm: "stop_palm"
     };
 
     const GESTURE_COOLDOWNS = { open_palm: 500, swipe_left: 900, swipe_right: 900, pinch: 700, fist: 1000, thumbs_up: 1200, hand_up: 900, stop_palm: 1200 };
@@ -689,6 +695,7 @@
       engineEnabled: localStorage.getItem("gestureEngineEnabled") !== "false",
       labsEnabled: localStorage.getItem("gestureLabsEnabled") === "true",
       qaMode: localStorage.getItem("gestureQaMode") === "true",
+      lastRawGesture: localStorage.getItem("lastGestureRaw") || null,
       lastGesture: localStorage.getItem("lastGesture") || null,
       lastAction: localStorage.getItem("lastGestureAction") || null,
       lastSource: localStorage.getItem("lastGestureSource") || null,
@@ -1057,14 +1064,15 @@
     }
 
     const GESTURE_ACTION_MAP = {
-      open_palm: function () { setViewMode("product"); return "Modo exploracion activo"; },
-      swipe_left: function () { nextProduct(); return "Siguiente producto"; },
-      swipe_right: function () { prevProduct(); return "Producto anterior"; },
-      pinch: function () { setViewMode("detail"); return "Ficha de producto"; },
-      fist: function () { addToCart(); return "Producto anadido al carrito"; },
-      thumbs_up: function () { toggleFavorite(); return "Favorito actualizado"; },
-      hand_up: function () { setViewMode("qr"); return "Codigo de continuacion"; },
-      stop_palm: function () { setViewMode("product"); return "Cancelado / catalogo"; },
+      open_palm: function () { setViewMode("product"); return "Mano abierta: modo exploracion activo"; },
+      pinch: function () { setViewMode("detail"); return "Pinza: ficha abierta"; },
+      thumbs_up: function () { toggleFavorite(); return "Pulgar arriba: producto guardado como favorito"; },
+      victory: function () { setViewMode("detail"); return "Dos dedos: comparacion preparada"; },
+      swipe_left: function () { nextProduct(); return "Swipe izquierda: siguiente producto"; },
+      swipe_right: function () { prevProduct(); return "Swipe derecha: producto anterior"; },
+      fist: function () { addToCart(); return "Puno experimental: producto anadido al carrito"; },
+      hand_up: function () { setViewMode("qr"); return "Mano hacia arriba: codigo de continuacion"; },
+      stop_palm: function () { setViewMode("product"); return "Stop experimental: catalogo"; },
       index_point: function () { renderProductList(); return "Cursor demo sobre producto actual"; },
       thumbs_down: function () {
         const p = getCurrentProduct();
@@ -1073,7 +1081,6 @@
         updateUi();
         return idx >= 0 ? "Favorito retirado sin tocar carrito" : "Producto descartado visualmente";
       },
-      victory: function () { setViewMode("detail"); return "Comparacion demo preparada"; },
       ok_sign: function () { saveSnapshot(); return "Seleccion guardada localmente"; },
       wave: function () { state.category = "destacados"; state.productIndex = 0; setViewMode("product"); return "Vista reiniciada al destacado"; },
       hand_rotate: function () { setViewMode(state.viewMode === "detail" ? "product" : "detail"); return "Vista alternada"; }
@@ -1106,7 +1113,8 @@
       source = source || "unknown";
       confidence = typeof confidence === "number" ? confidence : 1;
       options = options || {};
-      const normalized = normalizeGestureName(gestureName);
+      const rawGesture = String(gestureName || "").trim() || "-";
+      const normalized = normalizeGestureName(rawGesture);
       const entry = getGestureCatalogEntry(normalized);
       const allowed = canRunGesture(normalized, source, confidence, options);
       let action = entry ? entry.actionLabel : "Sin accion";
@@ -1119,14 +1127,16 @@
         gestureRouterState.cooldownUntil[normalized] = performance.now() + delay;
         gestureRouterState.lastRunAt = performance.now();
       }
-      gestureRouterState.lastGesture = normalized || gestureName || "-";
+      gestureRouterState.lastRawGesture = rawGesture;
+      gestureRouterState.lastGesture = normalized || rawGesture || "-";
       gestureRouterState.lastAction = action;
       gestureRouterState.lastSource = source;
       gestureRouterState.lastConfidence = confidence;
-      logGestureEvent({ gesture: gestureRouterState.lastGesture, source: source, confidence: confidence, action: action, blocked: blocked });
+      logGestureEvent({ rawGesture: rawGesture, gesture: gestureRouterState.lastGesture, source: source, confidence: confidence, action: action, blocked: blocked });
       localStorage.setItem("gestureEngineEnabled", String(gestureRouterState.engineEnabled));
       localStorage.setItem("gestureLabsEnabled", String(gestureRouterState.labsEnabled));
       localStorage.setItem("gestureQaMode", String(gestureRouterState.qaMode));
+      localStorage.setItem("lastGestureRaw", rawGesture);
       localStorage.setItem("lastGesture", gestureRouterState.lastGesture);
       localStorage.setItem("lastGestureAction", action);
       localStorage.setItem("lastGestureSource", source);
@@ -1147,6 +1157,7 @@
     function updateGestureDebugUI() {
       if (!els.gestureEngineState) return;
       els.gestureEngineState.textContent = gestureRouterState.engineEnabled ? "activo" : "inactivo";
+      els.gestureDebugRawGesture.textContent = gestureRouterState.lastRawGesture || "-";
       els.gestureDebugLastGesture.textContent = gestureRouterState.lastGesture || "-";
       els.gestureDebugLastAction.textContent = gestureRouterState.lastAction || "-";
       els.gestureDebugSource.textContent = gestureRouterState.lastSource || "-";
@@ -1156,14 +1167,14 @@
       els.gestureEventList.innerHTML = "";
       gestureRouterState.history.slice(0, 5).forEach(function (ev) {
         const item = document.createElement("li");
-        item.textContent = ev.time + " - " + ev.gesture + " / " + ev.source + " / " + ev.action + (ev.blocked ? " / bloqueado" : "");
+        item.textContent = ev.time + " - " + (ev.rawGesture || ev.gesture) + " -> " + ev.gesture + " / " + ev.source + " / " + ev.action + (ev.blocked ? " / bloqueado" : "");
         els.gestureEventList.appendChild(item);
       });
     }
 
     function logGestureEvent(ev) {
       const stamp = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-      gestureRouterState.history.unshift({ time: stamp, gesture: ev.gesture, source: ev.source, confidence: ev.confidence, action: ev.action, blocked: ev.blocked });
+      gestureRouterState.history.unshift({ time: stamp, rawGesture: ev.rawGesture, gesture: ev.gesture, source: ev.source, confidence: ev.confidence, action: ev.action, blocked: ev.blocked });
       if (gestureRouterState.history.length > 20) gestureRouterState.history.length = 20;
     }
 

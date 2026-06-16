@@ -345,7 +345,7 @@
           <span class="gesture-status">Gesto detectado: <strong id="gestureStatus">-</strong></span>
         </div>
       </div>
-      <p style="color: var(--muted); font-size: 0.78rem;">Mano abierta = despierta escaparate &middot; Swipe = cambia escena &middot; Pinza = abre ficha &middot; Mano arriba = codigo movil. Fallback tactil siempre activo.</p>
+      <p style="color: var(--muted); font-size: 0.78rem;">Mano abierta = despierta escaparate &middot; Swipe = cambia escena &middot; Pinza = abre CTA &middot; Pulgar arriba = interes. Fallback tactil siempre activo.</p>
       <div class="presence-row">
         <button class="btn" id="gestureStopBtn" type="button">Detener gestos</button>
       </div>
@@ -356,17 +356,19 @@
         <summary>Motor de gestos</summary>
         <div class="gesture-router-grid">
           <div class="gesture-debug-card"><strong>Estado motor</strong><span id="gestureEngineState">activo</span></div>
-          <div class="gesture-debug-card"><strong>Ultimo gesto</strong><span id="gestureDebugLastGesture">-</span></div>
-          <div class="gesture-debug-card"><strong>Ultima accion</strong><span id="gestureDebugLastAction">-</span></div>
+          <div class="gesture-debug-card"><strong>Gesto bruto</strong><span id="gestureDebugRawGesture">-</span></div>
+          <div class="gesture-debug-card"><strong>Gesto normalizado</strong><span id="gestureDebugLastGesture">-</span></div>
+          <div class="gesture-debug-card"><strong>Accion</strong><span id="gestureDebugLastAction">-</span></div>
           <div class="gesture-debug-card"><strong>Origen</strong><span id="gestureDebugSource">-</span></div>
           <div class="gesture-debug-card"><strong>Confianza</strong><span id="gestureDebugConfidence">0</span></div>
           <div class="gesture-debug-card"><strong>Labs</strong><span id="gestureDebugLabs">inactivo</span></div>
         </div>
         <div class="gesture-feedback" id="gestureFeedback">Router listo.</div>
         <p class="gesture-router-note">QA simula el cableado de acciones. No verifica deteccion real de mano fisica.</p>
+        <p class="gesture-router-note">Los nombres mostrados corresponden al gesto fisico que debe hacer el usuario. Los aliases tecnicos se normalizan internamente.</p>
         <div class="gesture-router-grid" aria-label="Guia de gestos">
-          <div class="gesture-debug-card"><strong>Produccion</strong><span>Palma = activar; Swipe = navegar; Pinza = seleccionar; Puno = carrito/interes; Pulgar arriba = favorito/interes; Mano arriba = codigo/QR; Stop = pausar/cancelar</span></div>
-          <div class="gesture-debug-card"><strong>Labs</strong><span>Indice = senalar; Pulgar abajo = descartar; V = comparar; OK = confirmar; Saludo = reiniciar; Giro = cambiar vista</span></div>
+          <div class="gesture-debug-card"><strong>Gestos principales verificados en prueba real</strong><span>Mano abierta; Pinza; Pulgar arriba; Dos dedos / V; Swipe izquierda/derecha</span></div>
+          <div class="gesture-debug-card"><strong>Gestos Labs / experimentales</strong><span>Puno; Mano hacia arriba; Stop; Pulgar abajo; Indice; OK; Saludo; Giro</span></div>
         </div>
         <ul class="gesture-event-list" id="gestureEventList" aria-label="Ultimos eventos de gestos"></ul>
       </details>
@@ -374,23 +376,23 @@
         <summary>QA gestos</summary>
         <p class="gesture-router-note">Prueba el cableado de gestos sin camara. Esto NO verifica deteccion real de mano.</p>
         <div class="qa-gesture-grid" aria-label="QA gestos produccion">
-          <button class="btn btn-accent" id="qaOpenPalmBtn" type="button">Palma</button>
-          <button class="btn btn-accent" id="qaSwipeLeftBtn" type="button">Swipe izq</button>
-          <button class="btn btn-accent" id="qaSwipeRightBtn" type="button">Swipe der</button>
-          <button class="btn btn-accent" id="qaPinchBtn" type="button">Pinza</button>
-          <button class="btn btn-accent" id="qaFistBtn" type="button">Puno</button>
-          <button class="btn btn-accent" id="qaThumbsUpBtn" type="button">Pulgar arriba</button>
-          <button class="btn btn-accent" id="qaHandUpBtn" type="button">Mano arriba</button>
-          <button class="btn btn-accent" id="qaStopPalmBtn" type="button">Stop</button>
+          <button class="btn btn-accent" id="qaOpenPalmBtn" type="button">Simular mano abierta</button>
+          <button class="btn btn-accent" id="qaPinchBtn" type="button">Simular pinza</button>
+          <button class="btn btn-accent" id="qaThumbsUpBtn" type="button">Simular pulgar arriba</button>
+          <button class="btn btn-accent" id="qaVictoryBtn" type="button">Simular dos dedos / V</button>
+          <button class="btn btn-accent" id="qaSwipeLeftBtn" type="button">Simular swipe izquierda</button>
+          <button class="btn btn-accent" id="qaSwipeRightBtn" type="button">Simular swipe derecha</button>
         </div>
         <div class="qa-gesture-grid" aria-label="QA gestos Labs">
           <button class="btn" id="qaLabsToggleBtn" type="button">Labs OFF</button>
-          <button class="btn" id="qaIndexPointBtn" type="button">Indice</button>
-          <button class="btn" id="qaThumbsDownBtn" type="button">Pulgar abajo</button>
-          <button class="btn" id="qaVictoryBtn" type="button">V</button>
-          <button class="btn" id="qaOkSignBtn" type="button">OK</button>
-          <button class="btn" id="qaWaveBtn" type="button">Saludo</button>
-          <button class="btn" id="qaHandRotateBtn" type="button">Giro</button>
+          <button class="btn" id="qaFistBtn" type="button">Simular puno</button>
+          <button class="btn" id="qaHandUpBtn" type="button">Simular mano hacia arriba</button>
+          <button class="btn" id="qaStopPalmBtn" type="button">Simular stop</button>
+          <button class="btn" id="qaThumbsDownBtn" type="button">Simular pulgar abajo</button>
+          <button class="btn" id="qaIndexPointBtn" type="button">Simular indice</button>
+          <button class="btn" id="qaOkSignBtn" type="button">Simular OK</button>
+          <button class="btn" id="qaWaveBtn" type="button">Simular saludo</button>
+          <button class="btn" id="qaHandRotateBtn" type="button">Simular giro</button>
         </div>
       </details>
     </section>
@@ -600,6 +602,7 @@
       codeCopy: document.getElementById("codeCopy"),
       codeCloseBtn: document.getElementById("codeCloseBtn"),
       gestureEngineState: document.getElementById("gestureEngineState"),
+      gestureDebugRawGesture: document.getElementById("gestureDebugRawGesture"),
       gestureDebugLastGesture: document.getElementById("gestureDebugLastGesture"),
       gestureDebugLastAction: document.getElementById("gestureDebugLastAction"),
       gestureDebugSource: document.getElementById("gestureDebugSource"),
@@ -625,28 +628,32 @@
     };
 
     const GESTURE_CATALOG = [
-      { id: "open_palm", label: "Palma abierta", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "presence close", description: "Pasa a transeunte cerca.", actionLabel: "Transeunte cerca" },
-      { id: "swipe_left", label: "Swipe izquierda", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "nextSceneBtn", description: "Avanza a la escena siguiente.", actionLabel: "Siguiente escena" },
-      { id: "swipe_right", label: "Swipe derecha", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "prevSceneBtn", description: "Vuelve a la escena anterior.", actionLabel: "Escena anterior" },
-      { id: "pinch", label: "Pinza", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "codeBtn", description: "Activa interaccion y abre codigo movil.", actionLabel: "CTA movil abierto" },
-      { id: "fist", label: "Puno", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "saveBtn", description: "Guarda interes local.", actionLabel: "Interes guardado" },
-      { id: "thumbs_up", label: "Pulgar arriba", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "saveBtn", description: "Marca promo como interesante.", actionLabel: "Promo marcada como interesante" },
-      { id: "hand_up", label: "Mano arriba", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "codeBtn", description: "Muestra codigo movil.", actionLabel: "Codigo movil abierto" },
-      { id: "stop_palm", label: "Stop", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "loopToggleBtn", description: "Pausa attract loop.", actionLabel: "Attract loop pausado" },
+      { id: "open_palm", label: "Mano abierta", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "presence close", description: "Pasa a transeunte cerca y despierta escaparate.", actionLabel: "Mano abierta: escaparate activado" },
+      { id: "pinch", label: "Pinza", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "codeBtn", description: "Activa interaccion y abre CTA/codigo movil.", actionLabel: "Pinza: CTA abierto" },
+      { id: "thumbs_up", label: "Pulgar arriba", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "saveBtn", description: "Guarda promocion/interes.", actionLabel: "Pulgar arriba: promocion guardada" },
+      { id: "victory", label: "Dos dedos / V", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "productGrid", description: "Prepara comparativa demo o alterna producto destacado.", actionLabel: "Dos dedos: comparativa preparada" },
+      { id: "swipe_left", label: "Swipe izquierda", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "nextSceneBtn", description: "Avanza a la escena siguiente.", actionLabel: "Swipe izquierda: siguiente escena" },
+      { id: "swipe_right", label: "Swipe derecha", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "prevSceneBtn", description: "Vuelve a la escena anterior.", actionLabel: "Swipe derecha: escena anterior" },
+      { id: "fist", label: "Puno", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "saveBtn", description: "Guarda interes solo si Labs esta activo.", actionLabel: "Puno experimental: interes guardado" },
+      { id: "hand_up", label: "Mano hacia arriba", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "codeBtn", description: "Abre codigo si no se confunde con pulgar arriba.", actionLabel: "Mano hacia arriba: codigo movil" },
+      { id: "stop_palm", label: "Stop", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "loopToggleBtn", description: "Pausa attract loop.", actionLabel: "Stop experimental: attract loop pausado" },
       { id: "index_point", label: "Indice", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "productGrid", description: "Resalta CTA/producto actual.", actionLabel: "Producto resaltado" },
       { id: "thumbs_down", label: "Pulgar abajo", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "nextSceneBtn", description: "Salta promocion actual.", actionLabel: "Promocion saltada" },
-      { id: "victory", label: "V", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "productGrid", description: "Alterna producto para comparativa demo.", actionLabel: "Comparativa demo" },
       { id: "ok_sign", label: "OK", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "codeBtn", description: "Confirma promo y abre codigo.", actionLabel: "Promo confirmada" },
       { id: "wave", label: "Saludo", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "reset visual", description: "Vuelve a bienvenida y activa loop.", actionLabel: "Bienvenida activa" },
       { id: "hand_rotate", label: "Giro", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "next product", description: "Alterna producto/promo/vista.", actionLabel: "Vista alternada" }
     ];
 
     const GESTURE_ALIASES = {
-      open: "open_palm", openPalm: "open_palm", palm: "open_palm",
-      swipeLeft: "swipe_left", "swipe-left": "swipe_left", left: "swipe_left",
-      swipeRight: "swipe_right", "swipe-right": "swipe_right", right: "swipe_right",
-      pinch: "pinch", fist: "fist", thumbsUp: "thumbs_up", thumb_up: "thumbs_up",
-      handUp: "hand_up", up: "hand_up", stop: "stop_palm", stopPalm: "stop_palm"
+      open: "open_palm", openPalm: "open_palm", palm: "open_palm", open_palm: "open_palm",
+      pinch: "pinch", pinza: "pinch",
+      thumbsUp: "thumbs_up", thumb_up: "thumbs_up", thumbup: "thumbs_up", thumbs_up: "thumbs_up",
+      victory: "victory", v_sign: "victory", two_fingers: "victory", twoFingers: "victory",
+      swipeLeft: "swipe_left", swipe_left: "swipe_left", "swipe-left": "swipe_left", left: "swipe_left",
+      swipeRight: "swipe_right", swipe_right: "swipe_right", "swipe-right": "swipe_right", right: "swipe_right",
+      fist: "fist",
+      handUp: "hand_up", hand_up: "hand_up", up: "hand_up",
+      stop: "stop_palm", stopPalm: "stop_palm", stop_palm: "stop_palm"
     };
 
     const GESTURE_COOLDOWNS = { open_palm: 500, swipe_left: 900, swipe_right: 900, pinch: 700, fist: 1000, thumbs_up: 1200, hand_up: 900, stop_palm: 1200 };
@@ -655,6 +662,7 @@
       engineEnabled: localStorage.getItem("gestureEngineEnabled") !== "false",
       labsEnabled: localStorage.getItem("gestureLabsEnabled") === "true",
       qaMode: localStorage.getItem("gestureQaMode") === "true",
+      lastRawGesture: localStorage.getItem("lastGestureRaw") || null,
       lastGesture: localStorage.getItem("lastGesture") || null,
       lastAction: localStorage.getItem("lastGestureAction") || null,
       lastSource: localStorage.getItem("lastGestureSource") || null,
@@ -953,17 +961,17 @@
     }
 
     const GESTURE_ACTION_MAP = {
-      open_palm: () => { setPresence("close"); return "Transeunte cerca"; },
-      swipe_left: () => { nextScene(); return "Siguiente escena"; },
-      swipe_right: () => { prevScene(); return "Escena anterior"; },
-      pinch: () => { setPresence("active"); openCodeModal(); return "CTA movil abierto"; },
-      fist: () => { saveGestureInterest("fist"); return "Interes guardado localmente"; },
-      thumbs_up: () => { saveGestureInterest("thumbs_up"); return "Promo marcada como interesante"; },
-      hand_up: () => { openCodeModal(); return "Codigo movil abierto"; },
-      stop_palm: () => { if (state.loopActive) toggleLoop(); else updateHud(); return "Attract loop pausado"; },
+      open_palm: () => { setPresence("close"); return "Mano abierta: escaparate activado"; },
+      pinch: () => { setPresence("active"); openCodeModal(); return "Pinza: CTA abierto"; },
+      thumbs_up: () => { saveGestureInterest("thumbs_up"); return "Pulgar arriba: promocion guardada"; },
+      victory: () => { setProduct((state.productIndex + 1) % FEATURED_PRODUCTS.length); return "Dos dedos: comparativa preparada"; },
+      swipe_left: () => { nextScene(); return "Swipe izquierda: siguiente escena"; },
+      swipe_right: () => { prevScene(); return "Swipe derecha: escena anterior"; },
+      fist: () => { saveGestureInterest("fist"); return "Puno experimental: interes guardado"; },
+      hand_up: () => { openCodeModal(); return "Mano hacia arriba: codigo movil"; },
+      stop_palm: () => { if (state.loopActive) toggleLoop(); else updateHud(); return "Stop experimental: attract loop pausado"; },
       index_point: () => { setProduct(state.productIndex); return "CTA/producto resaltado"; },
       thumbs_down: () => { nextScene(); return "Promocion saltada"; },
-      victory: () => { setProduct((state.productIndex + 1) % FEATURED_PRODUCTS.length); return "Comparativa demo"; },
       ok_sign: () => { setPresence("active"); openCodeModal(); return "Promo confirmada"; },
       wave: () => { state.loopActive = true; setPresence("idle"); setScene(0); updateHud(); return "Bienvenida y loop activos"; },
       hand_rotate: () => { setProduct((state.productIndex + 1) % FEATURED_PRODUCTS.length); nextScene(); return "Vista alternada"; }
@@ -1001,7 +1009,8 @@
     }
 
     function applyGestureAction(gestureName, source = "unknown", confidence = 1, options = {}) {
-      const normalized = normalizeGestureName(gestureName);
+      const rawGesture = String(gestureName || "").trim() || "-";
+      const normalized = normalizeGestureName(rawGesture);
       const entry = getGestureCatalogEntry(normalized);
       const allowed = canRunGesture(normalized, source, confidence, options);
       let action = entry ? entry.actionLabel : "Sin accion";
@@ -1014,14 +1023,16 @@
         gestureRouterState.cooldownUntil[normalized] = performance.now() + delay;
         gestureRouterState.lastRunAt = performance.now();
       }
-      gestureRouterState.lastGesture = normalized || gestureName || "-";
+      gestureRouterState.lastRawGesture = rawGesture;
+      gestureRouterState.lastGesture = normalized || rawGesture || "-";
       gestureRouterState.lastAction = action;
       gestureRouterState.lastSource = source;
       gestureRouterState.lastConfidence = confidence;
-      logGestureEvent({ gesture: gestureRouterState.lastGesture, source, confidence, action, blocked });
+      logGestureEvent({ rawGesture, gesture: gestureRouterState.lastGesture, source, confidence, action, blocked });
       localStorage.setItem("gestureEngineEnabled", String(gestureRouterState.engineEnabled));
       localStorage.setItem("gestureLabsEnabled", String(gestureRouterState.labsEnabled));
       localStorage.setItem("gestureQaMode", String(gestureRouterState.qaMode));
+      localStorage.setItem("lastGestureRaw", rawGesture);
       localStorage.setItem("lastGesture", gestureRouterState.lastGesture);
       localStorage.setItem("lastGestureAction", action);
       localStorage.setItem("lastGestureSource", source);
@@ -1041,6 +1052,7 @@
     function updateGestureDebugUI() {
       if (!els.gestureEngineState) return;
       els.gestureEngineState.textContent = gestureRouterState.engineEnabled ? "activo" : "inactivo";
+      els.gestureDebugRawGesture.textContent = gestureRouterState.lastRawGesture || "-";
       els.gestureDebugLastGesture.textContent = gestureRouterState.lastGesture || "-";
       els.gestureDebugLastAction.textContent = gestureRouterState.lastAction || "-";
       els.gestureDebugSource.textContent = gestureRouterState.lastSource || "-";
@@ -1050,14 +1062,14 @@
       els.gestureEventList.innerHTML = "";
       gestureRouterState.history.slice(0, 5).forEach((ev) => {
         const item = document.createElement("li");
-        item.textContent = ev.time + " - " + ev.gesture + " / " + ev.source + " / " + ev.action + (ev.blocked ? " / bloqueado" : "");
+        item.textContent = ev.time + " - " + (ev.rawGesture || ev.gesture) + " -> " + ev.gesture + " / " + ev.source + " / " + ev.action + (ev.blocked ? " / bloqueado" : "");
         els.gestureEventList.appendChild(item);
       });
     }
 
     function logGestureEvent(ev) {
       const stamp = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-      gestureRouterState.history.unshift({ time: stamp, gesture: ev.gesture, source: ev.source, confidence: ev.confidence, action: ev.action, blocked: ev.blocked });
+      gestureRouterState.history.unshift({ time: stamp, rawGesture: ev.rawGesture, gesture: ev.gesture, source: ev.source, confidence: ev.confidence, action: ev.action, blocked: ev.blocked });
       if (gestureRouterState.history.length > 20) gestureRouterState.history.length = 20;
     }
 
