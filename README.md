@@ -33,6 +33,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 06 - Golf Experience / Home Practice - Disponible - v2.5
 - 07 - Retail Catalog - Disponible - v2.6
 - 08 - Interactive Gesture Catalog / Retail Catalog - Disponible - v2.7
+- 09 - Interactive Retail Window - Disponible - v2.8
 
 **Versiones estables actuales:**
 
@@ -44,6 +45,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - Golf Experience / Home Practice v2.5
 - Retail Catalog v2.6
 - Interactive Gesture Catalog / Retail Catalog v2.7
+- Interactive Retail Window v2.8
 
 **Archivos:**
 
@@ -55,6 +57,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - `gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html`
 - `gesture-lab/retail-catalog/rubik-sota-retail-catalog-v2-6.html`
 - `gesture-lab/interactive-gesture-catalog/rubik-sota-interactive-gesture-catalog-v2-7.html`
+- `gesture-lab/interactive-retail-window/rubik-sota-interactive-retail-window-v2-8.html`
 
 **Funciones actuales:**
 
@@ -91,10 +94,11 @@ El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicac
 - `gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html`
 - `gesture-lab/retail-catalog/rubik-sota-retail-catalog-v2-6.html`
 - `gesture-lab/interactive-gesture-catalog/rubik-sota-interactive-gesture-catalog-v2-7.html`
+- `gesture-lab/interactive-retail-window/rubik-sota-interactive-retail-window-v2-8.html`
 
 **Meta:**
 
-- `v2.0.1 - 8 modulos activos - 25 en planificacion`
+- `v2.0.1 - 9 modulos activos - 24 en planificacion`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -221,6 +225,27 @@ Interactive Gesture Catalog / Retail Catalog v2.7 incorpora control gestual real
 - WhatsApp, email, copiar enlace y guardado local;
 - localStorage key: rubik-sota-interactive-gesture-catalog-v2-7-snapshot.
 
+### Nota Interactive Retail Window v2.8
+
+Interactive Retail Window v2.8 incorpora experiencia de escaparate digital:
+
+- modo escaparate / kiosk;
+- attract loop automatico;
+- escenas de storytelling de marca;
+- producto destacado en pantalla grande;
+- promociones automaticas;
+- simulacion de transeunte / acercamiento;
+- estados: sin transeunte, transeunte cerca e interaccion activa;
+- ficha rapida de producto;
+- CTA hacia movil;
+- codigo de continuacion / QR demo sin API externa;
+- interaccion tactil siempre activa;
+- gestos opcionales si la camara/modelo estan disponibles;
+- descarga PNG;
+- grabacion WebM si el navegador lo permite;
+- WhatsApp, email, copiar enlace y guardado local;
+- localStorage key: rubik-sota-interactive-retail-window-v2-8-snapshot.
+
 ---
 
 ## Capture Input System
@@ -243,7 +268,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 06 | Golf Experience / Home Practice | Disponible - v2.5 |
 | 07 | Retail Catalog | Disponible - v2.6 |
 | 08 | Interactive Gesture Catalog / Retail Catalog | Disponible - v2.7 |
-| 09 | Interactive Retail Window | Próximamente - v2.8 |
+| 09 | Interactive Retail Window | Disponible - v2.8 |
 | 10 | Fashion Lookbook | Próximamente - v2.9 |
 | 11 | Selfie Style / Outfit Visualizer | Próximamente - v2.10 |
 | 12 | Dental Kids | Próximamente - v2.11 |
@@ -288,23 +313,23 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 El siguiente módulo recomendado es:
 
-**v2.8 - Interactive Retail Window**
+**v2.9 - Fashion Lookbook**
 
 **Motivo:**
 
-Tras validar Retail Catalog v2.6 y su capa gestual v2.7, el siguiente paso es transformar el sistema en un escaparate digital: modo attract, pantalla grande, producto destacado, promociones, storytelling de marca y acciones de continuacion hacia movil. Esto permite pasar de catalogo interactivo a experiencia comercial visible en tienda, feria o mupi.
+Tras validar catalogo, gestos y escaparate retail, el siguiente paso es llevar el sistema a moda: looks, colores, accesorios, modo editorial y contenido social. Esto permite convertir Gesture Lab en una herramienta de presentacion de colecciones y campanas visuales.
 
 **Flujo previsto:**
 
-1. Activar modo escaparate / kiosk.
-2. Mostrar producto o promocion destacada en bucle.
-3. Permitir interaccion tactil o gestual.
-4. Abrir ficha, carrito o codigo de continuacion.
-5. Exportar y compartir seleccion o promocion.
+1. Seleccionar coleccion o look.
+2. Cambiar color o variante.
+3. Activar accesorios.
+4. Entrar en modo editorial.
+5. Exportar PNG, clip o pieza social.
 
 **Frase clave:**
 
-> Del catalogo gestual al escaparate vivo con la misma arquitectura.
+> Del escaparate retail al lookbook editorial con la misma arquitectura.
 
 ---
 
@@ -388,9 +413,9 @@ Cada módulo debe incluir, cuando aplique:
 - v2.4 - Real Estate Capture Tour - estable
 - v2.5 - Golf Experience / Home Practice - estable
 - v2.6 - Retail Catalog - estable
-- v2.7 - Interactive Gesture Catalog / Retail Catalog - estable actual
-- v2.8 - Interactive Retail Window - siguiente
-- v2.9 - Fashion Lookbook
+- v2.7 - Interactive Gesture Catalog / Retail Catalog - estable
+- v2.8 - Interactive Retail Window - estable actual
+- v2.9 - Fashion Lookbook - siguiente
 - v2.10 - Selfie Style / Outfit Visualizer
 - v2.11 - Dental Kids
 - v2.12 - Retail Window Pro
@@ -441,4 +466,5 @@ Cada módulo debe incluir, cuando aplique:
 - Golf Experience / Home Practice v2.5 publicada y funcional.
 - Retail Catalog v2.6 publicada y funcional.
 - Interactive Gesture Catalog / Retail Catalog v2.7 publicada y funcional.
-- Siguiente fase: v2.8 - Interactive Retail Window.
+- Interactive Retail Window v2.8 publicada y funcional.
+- Siguiente fase: v2.9 - Fashion Lookbook.
