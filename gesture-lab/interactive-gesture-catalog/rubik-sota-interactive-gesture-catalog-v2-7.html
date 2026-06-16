@@ -124,6 +124,11 @@
     .gesture-landmarks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
     .gesture-landmarks.is-active { display: block; }
     .gesture-placeholder { color: var(--muted); font-size: 0.9rem; padding: 1.5rem; text-align: center; }
+    .gesture-state-grid { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+    .gesture-state-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.7rem; border: 1px solid var(--line); border-radius: var(--radius-pill); background: rgba(0,0,0,0.32); font-size: 0.74rem; color: var(--muted); font-weight: 700; letter-spacing: 0.02em; }
+    .gesture-state-pill strong { color: var(--fg); font-weight: 900; }
+    .gesture-state-grid .btn { margin-left: auto; }
+    .gesture-help { font-size: 0.74rem; color: var(--muted); line-height: 1.5; border-left: 2px solid var(--gold); padding: 0.2rem 0 0.2rem 0.7rem; margin: 0.4rem 0 0; }
     .gesture-readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; }
     .readout-item { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.6rem 0.8rem; background: rgba(0,0,0,0.35); }
     .readout-item strong { display: block; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.2rem; }
@@ -249,7 +254,7 @@
       </div>
       <div class="top-actions">
         <a class="btn" id="homeBtn" href="../index.html">Volver al Hub</a>
-        <button class="btn btn-gesture" id="toggleGestureBtn" type="button">Activar gestos</button>
+        <button class="btn btn-gesture" id="toggleGestureBtn" type="button">Activar camara / gestos</button>
         <button class="btn" id="fullscreenBtn" type="button">Vista completa</button>
       </div>
     </header>
@@ -306,6 +311,13 @@
         </div>
         <div class="gesture-status" id="gestureStatus"><span class="gesture-status-dot" id="gestureStatusDot"></span><span id="gestureStatusText">Camara apagada</span></div>
       </div>
+      <div class="gesture-state-grid" role="group" aria-label="Estado de camara, modelo y mano">
+        <span class="gesture-state-pill">Camara: <strong id="gestureCameraStatus">apagada</strong></span>
+        <span class="gesture-state-pill">Modelo: <strong id="gestureModelStatus">no cargado</strong></span>
+        <span class="gesture-state-pill">Mano: <strong id="gestureHandStatus">sin mano</strong></span>
+        <button class="btn btn-gesture" id="gestureCameraToggleBtn" type="button">Activar camara / gestos</button>
+      </div>
+      <p class="gesture-help" id="gestureCameraHelp">En movil, la camara requiere HTTPS. Si usas http://IP-local puede bloquearse. Usa GitHub Pages HTTPS para prueba real de camara. Los botones tactiles y el QA siguen funcionando sin camara.</p>
       <div class="gesture-video-wrap">
         <video id="gestureVideo" class="gesture-video" playsinline muted autoplay></video>
         <canvas id="gestureLandmarks" class="gesture-landmarks"></canvas>
@@ -354,7 +366,8 @@
         <div class="gesture-router-grid">
           <div class="readout-item"><strong>Estado motor</strong><span id="gestureEngineState">activo</span></div>
           <div class="readout-item"><strong>Gesto bruto</strong><span id="gestureDebugRawGesture">-</span></div>
-          <div class="readout-item"><strong>Gesto normalizado</strong><span id="gestureDebugLastGesture">-</span></div>
+          <div class="readout-item"><strong>Candidatos</strong><span id="gestureDebugCandidates">-</span></div>
+          <div class="readout-item"><strong>Gesto ganador</strong><span id="gestureDebugLastGesture">-</span></div>
           <div class="readout-item"><strong>Accion</strong><span id="gestureDebugLastAction">-</span></div>
           <div class="readout-item"><strong>Origen</strong><span id="gestureDebugSource">-</span></div>
           <div class="readout-item"><strong>Confianza</strong><span id="gestureDebugConfidence">0</span></div>
@@ -471,7 +484,7 @@
             <button class="btn btn-accent" id="addCartBtn" type="button">+ Carrito</button>
             <button class="btn" id="viewCartBtn" type="button">Ver carrito</button>
             <button class="btn" id="viewQrBtn" type="button">Codigo continuar</button>
-            <button class="btn btn-gesture" id="manualGestureBtn" type="button">Activar gestos</button>
+            <button class="btn btn-gesture" id="manualGestureBtn" type="button">Activar camara / gestos</button>
             <button class="btn btn-danger" id="resetBtn" type="button">Reset</button>
             <div class="mode-toggle" role="tablist" aria-label="Modo de visualizacion">
               <button id="modeProductBtn" class="is-active" type="button" aria-pressed="true">Producto</button>
@@ -567,6 +580,11 @@
       canvas: document.getElementById("stageCanvas"),
       homeBtn: document.getElementById("homeBtn"),
       toggleGestureBtn: document.getElementById("toggleGestureBtn"),
+      gestureCameraToggleBtn: document.getElementById("gestureCameraToggleBtn"),
+      gestureCameraStatus: document.getElementById("gestureCameraStatus"),
+      gestureModelStatus: document.getElementById("gestureModelStatus"),
+      gestureHandStatus: document.getElementById("gestureHandStatus"),
+      gestureCameraHelp: document.getElementById("gestureCameraHelp"),
       fullscreenBtn: document.getElementById("fullscreenBtn"),
       categoryChips: document.getElementById("categoryChips"),
       productList: document.getElementById("productList"),
@@ -636,6 +654,7 @@
       landmarksToggle: document.getElementById("landmarksToggle"),
       gestureEngineState: document.getElementById("gestureEngineState"),
       gestureDebugRawGesture: document.getElementById("gestureDebugRawGesture"),
+      gestureDebugCandidates: document.getElementById("gestureDebugCandidates"),
       gestureDebugLastGesture: document.getElementById("gestureDebugLastGesture"),
       gestureDebugLastAction: document.getElementById("gestureDebugLastAction"),
       gestureDebugSource: document.getElementById("gestureDebugSource"),
@@ -689,7 +708,11 @@
       stop: "stop_palm", stopPalm: "stop_palm", stop_palm: "stop_palm"
     };
 
-    const GESTURE_COOLDOWNS = { open_palm: 500, swipe_left: 900, swipe_right: 900, pinch: 700, fist: 1000, thumbs_up: 1200, hand_up: 900, stop_palm: 1200 };
+    const GESTURE_COOLDOWNS = { open_palm: 700, swipe_left: 1000, swipe_right: 1000, pinch: 900, fist: 1000, thumbs_up: 1300, hand_up: 900, stop_palm: 1200, victory: 1300 };
+    const GESTURE_PRIORITY = { pinch: 1, swipe_left: 2, swipe_right: 2, thumbs_up: 3, victory: 4, open_palm: 5 };
+    const GESTURE_THRESHOLDS = { pinch: 0.70, swipe_left: 0.75, swipe_right: 0.75, thumbs_up: 0.78, victory: 0.78, open_palm: 0.65 };
+    const GESTURE_STABLE_FRAMES = { open_palm: 4, pinch: 3, thumbs_up: 5, victory: 5, swipe_left: 1, swipe_right: 1 };
+    const GESTURE_AMBIGUOUS_GROUPS = [["open_palm", "hand_up", "thumbs_up"], ["open_palm", "victory"], ["thumbs_up", "hand_up"], ["swipe_left", "swipe_right"], ["pinch", "ok_sign"]];
 
     const gestureRouterState = {
       engineEnabled: localStorage.getItem("gestureEngineEnabled") !== "false",
@@ -702,6 +725,9 @@
       lastConfidence: Number(localStorage.getItem("lastGestureConfidence")) || 0,
       lastRunAt: 0,
       cooldownUntil: {},
+      lastCandidates: [],
+      stableWinner: "",
+      stableCount: 0,
       history: []
     };
 
@@ -1109,12 +1135,137 @@
       return { ok: true, reason: "ok" };
     }
 
+    function getGestureThreshold(gestureName, source, entry) {
+      if (source === "qa") return 1;
+      if (entry && entry.category === "labs") return 0.90;
+      return GESTURE_THRESHOLDS[gestureName] || 0.75;
+    }
+
+    function formatGestureCandidates(candidates) {
+      return (candidates || []).map(function (c) {
+        const name = c.normalizedName || normalizeGestureName(c.rawName);
+        const confidence = typeof c.confidence === "number" ? c.confidence : 0;
+        return name + " " + confidence.toFixed(2);
+      }).join(", ");
+    }
+
+    function hasAmbiguousGestureGroup(names) {
+      return GESTURE_AMBIGUOUS_GROUPS.some(function (group) {
+        let count = 0;
+        group.forEach(function (name) { if (names.indexOf(name) >= 0) count++; });
+        return count > 1;
+      });
+    }
+
+    function resolveGestureWinner(candidates, context) {
+      context = context || {};
+      const source = context.source || "camera";
+      const now = performance.now();
+      const normalizedCandidates = (candidates || []).map(function (candidate) {
+        const rawName = String(candidate.rawName || candidate.normalizedName || "").trim();
+        const normalizedName = normalizeGestureName(candidate.normalizedName || rawName);
+        const entry = getGestureCatalogEntry(normalizedName);
+        return {
+          rawName: rawName,
+          normalizedName: normalizedName,
+          confidence: typeof candidate.confidence === "number" ? candidate.confidence : 0,
+          category: candidate.category || (entry ? entry.category : "unknown"),
+          source: candidate.source || source,
+          reason: candidate.reason || ""
+        };
+      }).filter(function (candidate) { return candidate.normalizedName; });
+
+      gestureRouterState.lastCandidates = normalizedCandidates;
+      if (!normalizedCandidates.length) return { winner: null, reason: "none", candidates: normalizedCandidates };
+
+      const candidateNames = normalizedCandidates.map(function (candidate) { return candidate.normalizedName; });
+      if (source === "camera" && hasAmbiguousGestureGroup(candidateNames)) {
+        gestureRouterState.stableWinner = "";
+        gestureRouterState.stableCount = 0;
+        return { winner: null, reason: "ambiguous", candidates: normalizedCandidates };
+      }
+
+      const eligible = normalizedCandidates.filter(function (candidate) {
+        const entry = getGestureCatalogEntry(candidate.normalizedName);
+        if (!entry) return false;
+        if (source === "camera" && entry.category === "labs") return false;
+        if (entry.category === "labs" && !gestureRouterState.labsEnabled) return false;
+        return candidate.confidence >= getGestureThreshold(candidate.normalizedName, source, entry);
+      });
+      if (!eligible.length) {
+        gestureRouterState.stableWinner = "";
+        gestureRouterState.stableCount = 0;
+        return { winner: null, reason: "filtered", candidates: normalizedCandidates };
+      }
+
+      eligible.sort(function (a, b) {
+        const priorityA = GESTURE_PRIORITY[a.normalizedName] || 50;
+        const priorityB = GESTURE_PRIORITY[b.normalizedName] || 50;
+        if (priorityA !== priorityB) return priorityA - priorityB;
+        return b.confidence - a.confidence;
+      });
+      const top = eligible[0];
+      const second = eligible[1];
+      if (source === "camera" && second && Math.abs(top.confidence - second.confidence) < 0.08) {
+        gestureRouterState.stableWinner = "";
+        gestureRouterState.stableCount = 0;
+        return { winner: null, reason: "ambiguous", candidates: normalizedCandidates };
+      }
+
+      if (source === "camera") {
+        if (gestureRouterState.stableWinner === top.normalizedName) gestureRouterState.stableCount += 1;
+        else { gestureRouterState.stableWinner = top.normalizedName; gestureRouterState.stableCount = 1; }
+        const requiredFrames = GESTURE_STABLE_FRAMES[top.normalizedName] || 1;
+        if (gestureRouterState.stableCount < requiredFrames) {
+          return { winner: null, reason: "stabilizing", candidates: normalizedCandidates };
+        }
+        if (now < (gestureRouterState.cooldownUntil[top.normalizedName] || 0)) {
+          return { winner: null, reason: "cooldown", candidates: normalizedCandidates };
+        }
+      }
+
+      return {
+        winner: {
+          rawName: top.rawName,
+          normalizedName: top.normalizedName,
+          confidence: top.confidence,
+          reason: top.reason || "winner"
+        },
+        reason: "winner",
+        candidates: normalizedCandidates
+      };
+    }
+
+    function setNoGestureWinner(candidates, source, confidence, reason) {
+      gestureRouterState.lastCandidates = candidates || [];
+      gestureRouterState.lastRawGesture = candidates && candidates.length ? candidates.map(function (c) { return c.rawName || c.normalizedName; }).join(", ") : "-";
+      gestureRouterState.lastGesture = "ambiguo / ninguno";
+      gestureRouterState.lastAction = "no ejecutada";
+      gestureRouterState.lastSource = source || "camera";
+      gestureRouterState.lastConfidence = confidence || 0;
+      state.gesture.currentGesture = reason === "stabilizing" ? "estabilizando" : "ambiguo / ninguno";
+      els.lastActionReadout.textContent = "no ejecutada";
+      updateGestureDebugUI();
+      updateUi();
+    }
+
     function applyGestureAction(gestureName, source, confidence, options) {
       source = source || "unknown";
       confidence = typeof confidence === "number" ? confidence : 1;
       options = options || {};
-      const rawGesture = String(gestureName || "").trim() || "-";
-      const normalized = normalizeGestureName(rawGesture);
+      let rawGesture = String(gestureName || "").trim() || "-";
+      let normalized = normalizeGestureName(rawGesture);
+      if (!options.resolvedWinner) {
+        const resolved = resolveGestureWinner(options.candidates || [{ rawName: rawGesture, normalizedName: normalized, confidence: confidence, source: source }], { source: source });
+        if (!resolved.winner) {
+          setNoGestureWinner(resolved.candidates, source, confidence, resolved.reason);
+          return false;
+        }
+        options.resolvedWinner = resolved.winner;
+      }
+      rawGesture = options.resolvedWinner.rawName || rawGesture;
+      normalized = options.resolvedWinner.normalizedName || normalized;
+      confidence = typeof options.resolvedWinner.confidence === "number" ? options.resolvedWinner.confidence : confidence;
       const entry = getGestureCatalogEntry(normalized);
       const allowed = canRunGesture(normalized, source, confidence, options);
       let action = entry ? entry.actionLabel : "Sin accion";
@@ -1158,6 +1309,7 @@
       if (!els.gestureEngineState) return;
       els.gestureEngineState.textContent = gestureRouterState.engineEnabled ? "activo" : "inactivo";
       els.gestureDebugRawGesture.textContent = gestureRouterState.lastRawGesture || "-";
+      els.gestureDebugCandidates.textContent = formatGestureCandidates(gestureRouterState.lastCandidates) || "-";
       els.gestureDebugLastGesture.textContent = gestureRouterState.lastGesture || "-";
       els.gestureDebugLastAction.textContent = gestureRouterState.lastAction || "-";
       els.gestureDebugSource.textContent = gestureRouterState.lastSource || "-";
@@ -1204,34 +1356,71 @@
       if (status === "active") els.gestureStatusDot.classList.add("is-active");
     }
 
+    function setSplitGestureStatus(part, text) {
+      if (part === "camera" && els.gestureCameraStatus) els.gestureCameraStatus.textContent = text;
+      else if (part === "model" && els.gestureModelStatus) els.gestureModelStatus.textContent = text;
+      else if (part === "hand" && els.gestureHandStatus) els.gestureHandStatus.textContent = text;
+    }
+
     async function toggleGestureMode() {
       if (state.gesture.enabled) { stopGestureMode(); return; }
       await startGestureMode();
     }
 
+    function describeCameraError(e) {
+      const name = (e && (e.name || "")).toString();
+      const msg = (e && (e.message || "")).toString();
+      if (/NotAllowedError|Permission/i.test(name + " " + msg)) return "bloqueada o permiso denegado";
+      if (/SecurityError/i.test(name)) return "HTTPS requerido";
+      if (/NotFoundError|DevicesNotFoundError/i.test(name)) return "no se encontro camara";
+      if (/NotReadableError|TrackStartError/i.test(name)) return "camara ocupada por otra app";
+      if (/AbortError/i.test(name)) return "camara interrumpida";
+      if (/TypeError/i.test(name) || /getUserMedia no disponible/i.test(msg)) return "navegador no compatible o HTTPS requerido";
+      return "error de camara";
+    }
+
     async function startGestureMode() {
-      state.gesture.enabled = true; state.gesture.loading = true;
+      if (state.gesture.enabled || state.gesture.loading) return;
+      state.gesture.loading = true;
       setGestureStatus("on", "Iniciando camara...");
+      setSplitGestureStatus("camera", "solicitando permiso");
+      setSplitGestureStatus("model", state.gesture.handLandmarker ? "listo" : "no cargado");
+      setSplitGestureStatus("hand", "sin mano");
       els.gesturePlaceholder.style.display = "none";
       els.gestureVideo.classList.add("is-active");
       updateGestureButtons();
 
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error("getUserMedia no disponible. La camara requiere HTTPS o localhost.");
+        }
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "user" }, width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
         state.gesture.stream = stream;
         els.gestureVideo.srcObject = stream;
-        await els.gestureVideo.play();
+        setSplitGestureStatus("camera", "activa");
+        try { await els.gestureVideo.play(); } catch (_) {}
         state.gesture.videoReady = true;
         setGestureStatus("on", "Cargando MediaPipe...");
+        if (!state.gesture.handLandmarker) setSplitGestureStatus("model", "cargando");
         await loadMediaPipe();
         if (!state.gesture.handLandmarker) throw new Error("MediaPipe no disponible");
+        state.gesture.enabled = true;
+        state.gesture.loading = false;
         setGestureStatus("ready", "Mano no detectada");
+        setSplitGestureStatus("model", "listo");
+        setSplitGestureStatus("hand", "sin mano");
         els.handStateReadout.textContent = "Buscando mano";
+        updateGestureButtons();
         runGestureLoop();
       } catch (e) {
         console.error(e);
-        state.gesture.enabled = false; state.gesture.loading = false;
+        if (state.gesture.stream) { try { state.gesture.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {} state.gesture.stream = null; }
+        els.gestureVideo.srcObject = null;
+        state.gesture.enabled = false; state.gesture.loading = false; state.gesture.videoReady = false;
         setGestureStatus("off", "Camara no disponible");
+        setSplitGestureStatus("camera", describeCameraError(e));
+        setSplitGestureStatus("model", state.gesture.handLandmarker ? "listo" : "no cargado");
+        setSplitGestureStatus("hand", "sin mano");
         els.gesturePlaceholder.style.display = "block";
         els.gestureVideo.classList.remove("is-active");
         els.handStateReadout.textContent = "Error";
@@ -1247,19 +1436,27 @@
       els.gestureLandmarks.classList.remove("is-active");
       els.gesturePlaceholder.style.display = "block";
       setGestureStatus("off", "Camara apagada");
+      setSplitGestureStatus("camera", "apagada");
+      setSplitGestureStatus("model", state.gesture.handLandmarker ? "listo" : "no cargado");
+      setSplitGestureStatus("hand", "sin mano");
       els.handStateReadout.textContent = "-"; els.gestureReadout.textContent = "-";
       updateGestureButtons();
     }
 
     function updateGestureButtons() {
       const active = state.gesture.enabled;
-      els.toggleGestureBtn.textContent = active ? "Desactivar gestos" : "Activar gestos";
-      els.manualGestureBtn.textContent = active ? "Desactivar gestos" : "Activar gestos";
+      const onLabel = "Desactivar camara";
+      const offLabel = "Activar camara / gestos";
+      els.toggleGestureBtn.textContent = active ? onLabel : offLabel;
+      els.manualGestureBtn.textContent = active ? onLabel : offLabel;
+      if (els.gestureCameraToggleBtn) els.gestureCameraToggleBtn.textContent = active ? onLabel : offLabel;
       els.toggleGestureBtn.classList.toggle("is-active", active);
       els.manualGestureBtn.classList.toggle("is-active", active);
+      if (els.gestureCameraToggleBtn) els.gestureCameraToggleBtn.classList.toggle("is-active", active);
     }
 
     async function loadMediaPipe() {
+      if (state.gesture.handLandmarker) return state.gesture.handLandmarker;
       try {
         const mod = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/+esm");
         state.gesture.module = mod;
@@ -1301,11 +1498,19 @@
         state.gesture.handDetected = true;
         const lm = results.landmarks[0];
         if (state.gesture.showLandmarks) drawLandmarks(lctx, lm, landmarksCanvas.width, landmarksCanvas.height);
-        const gesture = classifyGesture(lm);
-        state.gesture.currentGesture = gesture || "Mano abierta";
+        const candidates = classifyGestureCandidates(lm);
+        const resolved = resolveGestureWinner(candidates, { source: "camera" });
+        const gesture = resolved.winner;
+        state.gesture.currentGesture = gesture ? gesture.normalizedName : (resolved.reason === "stabilizing" ? "estabilizando" : "ambiguo / ninguno");
         els.handStateReadout.textContent = "Detectada";
         els.gestureReadout.textContent = state.gesture.currentGesture;
-        if (gesture) executeGestureAction(gesture);
+        if (gesture) {
+          executeGestureAction(gesture, candidates);
+          setSplitGestureStatus("hand", "gesto ganador: " + gesture.normalizedName);
+        } else {
+          setNoGestureWinner(resolved.candidates, "camera", candidates[0] ? candidates[0].confidence : 0, resolved.reason);
+          setSplitGestureStatus("hand", resolved.reason === "stabilizing" ? "mano detectada (estabilizando)" : "mano detectada (gesto ambiguo)");
+        }
         setGestureStatus("active", "Mano detectada");
       } else {
         state.gesture.handDetected = false;
@@ -1313,6 +1518,7 @@
         els.handStateReadout.textContent = "No detectada";
         els.gestureReadout.textContent = "-";
         setGestureStatus("ready", "Mano no detectada");
+        setSplitGestureStatus("hand", "sin mano");
       }
       updateUi();
     }
@@ -1329,39 +1535,44 @@
       ctx.restore();
     }
 
-    function classifyGesture(lm) {
+    function classifyGestureCandidates(lm) {
       const sen = getSensitivity();
       const now = performance.now();
       const palm = { x: (lm[0].x + lm[9].x) / 2, y: (lm[0].y + lm[9].y) / 2 };
       state.gesture.history.push({ t: now, x: palm.x, y: palm.y });
       if (state.gesture.history.length > 12) state.gesture.history.shift();
 
-      if (now - state.gesture.lastActionTime < getCooldown()) return "";
-
+      const candidates = [];
       const extended = countExtendedFingers(lm);
       const pinchDist = dist(lm[4], lm[8]);
+      const addCandidate = function (rawName, confidence, reason) {
+        const normalizedName = normalizeGestureName(rawName);
+        const entry = getGestureCatalogEntry(normalizedName);
+        candidates.push({ rawName: rawName, normalizedName: normalizedName, confidence: clamp(confidence, 0, 1), category: entry ? entry.category : "unknown", source: "camera", reason: reason });
+      };
 
-      // Pinch
-      if (pinchDist < sen.pinch) return "Pinza";
+      if (pinchDist < sen.pinch) addCandidate("Pinza", 0.70 + ((sen.pinch - pinchDist) / sen.pinch) * 0.30, "pinch distance");
+      if (extended <= 1) addCandidate("Puno", 0.72, "closed hand");
 
-      // Fist
-      if (extended <= 1) return "Puno";
-
-      // Swipes (open hand)
       if (extended >= 4 && state.gesture.history.length >= 8) {
         const first = state.gesture.history[0];
         const last = state.gesture.history[state.gesture.history.length - 1];
         const dx = last.x - first.x;
         const dy = last.y - first.y;
         const dt = last.t - first.t;
-        if (dt > 0 && Math.abs(dx) > sen.swipe) {
-          if (dx > 0) return "Swipe derecha";
-          return "Swipe izquierda";
+        if (dt > 0 && Math.abs(dx) > sen.swipe && Math.abs(dx) > Math.abs(dy) * 1.35) {
+          addCandidate(dx > 0 ? "Swipe derecha" : "Swipe izquierda", 0.75 + Math.min(Math.abs(dx) - sen.swipe, 0.20), "clear horizontal motion");
         }
-        if (dy < -sen.up && Math.abs(dy) > Math.abs(dx)) return "Mano arriba";
+        if (dy < -sen.up && Math.abs(dy) > Math.abs(dx) * 1.25) addCandidate("Mano arriba", 0.72, "upward palm motion");
       }
 
-      return "";
+      if (extended >= 4 && pinchDist >= sen.pinch * 1.4) addCandidate("Mano abierta", 0.66, "open palm");
+      return candidates;
+    }
+
+    function classifyGesture(lm) {
+      const resolved = resolveGestureWinner(classifyGestureCandidates(lm), { source: "camera" });
+      return resolved.winner ? resolved.winner.rawName : "";
     }
 
     function countExtendedFingers(lm) {
@@ -1377,10 +1588,11 @@
       return count;
     }
 
-    function executeGestureAction(gesture) {
-      state.gesture.lastGesture = gesture;
-      state.gesture.lastActionTime = performance.now();
-      applyGestureAction(gesture, "camera", 0.8);
+    function executeGestureAction(gesture, candidates) {
+      state.gesture.lastGesture = gesture.rawName || gesture.normalizedName;
+      if (applyGestureAction(gesture.rawName, "camera", gesture.confidence, { resolvedWinner: gesture, candidates: candidates })) {
+        state.gesture.lastActionTime = performance.now();
+      }
     }
 
     /* ===== Immersive ===== */
@@ -1575,6 +1787,7 @@
 
       els.toggleGestureBtn.addEventListener("click", toggleGestureMode);
       els.manualGestureBtn.addEventListener("click", toggleGestureMode);
+      if (els.gestureCameraToggleBtn) els.gestureCameraToggleBtn.addEventListener("click", toggleGestureMode);
       els.qaOpenPalmBtn.addEventListener("click", function () { simulateGestureForQA("open_palm"); });
       els.qaSwipeLeftBtn.addEventListener("click", function () { simulateGestureForQA("swipe_left"); });
       els.qaSwipeRightBtn.addEventListener("click", function () { simulateGestureForQA("swipe_right"); });
