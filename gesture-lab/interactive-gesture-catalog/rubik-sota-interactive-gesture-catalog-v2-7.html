@@ -354,7 +354,8 @@
         <div class="gesture-router-grid">
           <div class="readout-item"><strong>Estado motor</strong><span id="gestureEngineState">activo</span></div>
           <div class="readout-item"><strong>Gesto bruto</strong><span id="gestureDebugRawGesture">-</span></div>
-          <div class="readout-item"><strong>Gesto normalizado</strong><span id="gestureDebugLastGesture">-</span></div>
+          <div class="readout-item"><strong>Candidatos</strong><span id="gestureDebugCandidates">-</span></div>
+          <div class="readout-item"><strong>Gesto ganador</strong><span id="gestureDebugLastGesture">-</span></div>
           <div class="readout-item"><strong>Accion</strong><span id="gestureDebugLastAction">-</span></div>
           <div class="readout-item"><strong>Origen</strong><span id="gestureDebugSource">-</span></div>
           <div class="readout-item"><strong>Confianza</strong><span id="gestureDebugConfidence">0</span></div>
@@ -636,6 +637,7 @@
       landmarksToggle: document.getElementById("landmarksToggle"),
       gestureEngineState: document.getElementById("gestureEngineState"),
       gestureDebugRawGesture: document.getElementById("gestureDebugRawGesture"),
+      gestureDebugCandidates: document.getElementById("gestureDebugCandidates"),
       gestureDebugLastGesture: document.getElementById("gestureDebugLastGesture"),
       gestureDebugLastAction: document.getElementById("gestureDebugLastAction"),
       gestureDebugSource: document.getElementById("gestureDebugSource"),
@@ -689,7 +691,11 @@
       stop: "stop_palm", stopPalm: "stop_palm", stop_palm: "stop_palm"
     };
 
-    const GESTURE_COOLDOWNS = { open_palm: 500, swipe_left: 900, swipe_right: 900, pinch: 700, fist: 1000, thumbs_up: 1200, hand_up: 900, stop_palm: 1200 };
+    const GESTURE_COOLDOWNS = { open_palm: 700, swipe_left: 1000, swipe_right: 1000, pinch: 900, fist: 1000, thumbs_up: 1300, hand_up: 900, stop_palm: 1200, victory: 1300 };
+    const GESTURE_PRIORITY = { pinch: 1, swipe_left: 2, swipe_right: 2, thumbs_up: 3, victory: 4, open_palm: 5 };
+    const GESTURE_THRESHOLDS = { pinch: 0.70, swipe_left: 0.75, swipe_right: 0.75, thumbs_up: 0.78, victory: 0.78, open_palm: 0.65 };
+    const GESTURE_STABLE_FRAMES = { open_palm: 4, pinch: 3, thumbs_up: 5, victory: 5, swipe_left: 1, swipe_right: 1 };
+    const GESTURE_AMBIGUOUS_GROUPS = [["open_palm", "hand_up", "thumbs_up"], ["open_palm", "victory"], ["thumbs_up", "hand_up"], ["swipe_left", "swipe_right"], ["pinch", "ok_sign"]];
 
     const gestureRouterState = {
       engineEnabled: localStorage.getItem("gestureEngineEnabled") !== "false",
@@ -702,6 +708,9 @@
       lastConfidence: Number(localStorage.getItem("lastGestureConfidence")) || 0,
       lastRunAt: 0,
       cooldownUntil: {},
+      lastCandidates: [],
+      stableWinner: "",
+      stableCount: 0,
       history: []
     };
 
@@ -1109,12 +1118,137 @@
       return { ok: true, reason: "ok" };
     }
 
+    function getGestureThreshold(gestureName, source, entry) {
+      if (source === "qa") return 1;
+      if (entry && entry.category === "labs") return 0.90;
+      return GESTURE_THRESHOLDS[gestureName] || 0.75;
+    }
+
+    function formatGestureCandidates(candidates) {
+      return (candidates || []).map(function (c) {
+        const name = c.normalizedName || normalizeGestureName(c.rawName);
+        const confidence = typeof c.confidence === "number" ? c.confidence : 0;
+        return name + " " + confidence.toFixed(2);
+      }).join(", ");
+    }
+
+    function hasAmbiguousGestureGroup(names) {
+      return GESTURE_AMBIGUOUS_GROUPS.some(function (group) {
+        let count = 0;
+        group.forEach(function (name) { if (names.indexOf(name) >= 0) count++; });
+        return count > 1;
+      });
+    }
+
+    function resolveGestureWinner(candidates, context) {
+      context = context || {};
+      const source = context.source || "camera";
+      const now = performance.now();
+      const normalizedCandidates = (candidates || []).map(function (candidate) {
+        const rawName = String(candidate.rawName || candidate.normalizedName || "").trim();
+        const normalizedName = normalizeGestureName(candidate.normalizedName || rawName);
+        const entry = getGestureCatalogEntry(normalizedName);
+        return {
+          rawName: rawName,
+          normalizedName: normalizedName,
+          confidence: typeof candidate.confidence === "number" ? candidate.confidence : 0,
+          category: candidate.category || (entry ? entry.category : "unknown"),
+          source: candidate.source || source,
+          reason: candidate.reason || ""
+        };
+      }).filter(function (candidate) { return candidate.normalizedName; });
+
+      gestureRouterState.lastCandidates = normalizedCandidates;
+      if (!normalizedCandidates.length) return { winner: null, reason: "none", candidates: normalizedCandidates };
+
+      const candidateNames = normalizedCandidates.map(function (candidate) { return candidate.normalizedName; });
+      if (source === "camera" && hasAmbiguousGestureGroup(candidateNames)) {
+        gestureRouterState.stableWinner = "";
+        gestureRouterState.stableCount = 0;
+        return { winner: null, reason: "ambiguous", candidates: normalizedCandidates };
+      }
+
+      const eligible = normalizedCandidates.filter(function (candidate) {
+        const entry = getGestureCatalogEntry(candidate.normalizedName);
+        if (!entry) return false;
+        if (source === "camera" && entry.category === "labs") return false;
+        if (entry.category === "labs" && !gestureRouterState.labsEnabled) return false;
+        return candidate.confidence >= getGestureThreshold(candidate.normalizedName, source, entry);
+      });
+      if (!eligible.length) {
+        gestureRouterState.stableWinner = "";
+        gestureRouterState.stableCount = 0;
+        return { winner: null, reason: "filtered", candidates: normalizedCandidates };
+      }
+
+      eligible.sort(function (a, b) {
+        const priorityA = GESTURE_PRIORITY[a.normalizedName] || 50;
+        const priorityB = GESTURE_PRIORITY[b.normalizedName] || 50;
+        if (priorityA !== priorityB) return priorityA - priorityB;
+        return b.confidence - a.confidence;
+      });
+      const top = eligible[0];
+      const second = eligible[1];
+      if (source === "camera" && second && Math.abs(top.confidence - second.confidence) < 0.08) {
+        gestureRouterState.stableWinner = "";
+        gestureRouterState.stableCount = 0;
+        return { winner: null, reason: "ambiguous", candidates: normalizedCandidates };
+      }
+
+      if (source === "camera") {
+        if (gestureRouterState.stableWinner === top.normalizedName) gestureRouterState.stableCount += 1;
+        else { gestureRouterState.stableWinner = top.normalizedName; gestureRouterState.stableCount = 1; }
+        const requiredFrames = GESTURE_STABLE_FRAMES[top.normalizedName] || 1;
+        if (gestureRouterState.stableCount < requiredFrames) {
+          return { winner: null, reason: "stabilizing", candidates: normalizedCandidates };
+        }
+        if (now < (gestureRouterState.cooldownUntil[top.normalizedName] || 0)) {
+          return { winner: null, reason: "cooldown", candidates: normalizedCandidates };
+        }
+      }
+
+      return {
+        winner: {
+          rawName: top.rawName,
+          normalizedName: top.normalizedName,
+          confidence: top.confidence,
+          reason: top.reason || "winner"
+        },
+        reason: "winner",
+        candidates: normalizedCandidates
+      };
+    }
+
+    function setNoGestureWinner(candidates, source, confidence, reason) {
+      gestureRouterState.lastCandidates = candidates || [];
+      gestureRouterState.lastRawGesture = candidates && candidates.length ? candidates.map(function (c) { return c.rawName || c.normalizedName; }).join(", ") : "-";
+      gestureRouterState.lastGesture = "ambiguo / ninguno";
+      gestureRouterState.lastAction = "no ejecutada";
+      gestureRouterState.lastSource = source || "camera";
+      gestureRouterState.lastConfidence = confidence || 0;
+      state.gesture.currentGesture = reason === "stabilizing" ? "estabilizando" : "ambiguo / ninguno";
+      els.lastActionReadout.textContent = "no ejecutada";
+      updateGestureDebugUI();
+      updateUi();
+    }
+
     function applyGestureAction(gestureName, source, confidence, options) {
       source = source || "unknown";
       confidence = typeof confidence === "number" ? confidence : 1;
       options = options || {};
-      const rawGesture = String(gestureName || "").trim() || "-";
-      const normalized = normalizeGestureName(rawGesture);
+      let rawGesture = String(gestureName || "").trim() || "-";
+      let normalized = normalizeGestureName(rawGesture);
+      if (!options.resolvedWinner) {
+        const resolved = resolveGestureWinner(options.candidates || [{ rawName: rawGesture, normalizedName: normalized, confidence: confidence, source: source }], { source: source });
+        if (!resolved.winner) {
+          setNoGestureWinner(resolved.candidates, source, confidence, resolved.reason);
+          return false;
+        }
+        options.resolvedWinner = resolved.winner;
+      }
+      rawGesture = options.resolvedWinner.rawName || rawGesture;
+      normalized = options.resolvedWinner.normalizedName || normalized;
+      confidence = typeof options.resolvedWinner.confidence === "number" ? options.resolvedWinner.confidence : confidence;
       const entry = getGestureCatalogEntry(normalized);
       const allowed = canRunGesture(normalized, source, confidence, options);
       let action = entry ? entry.actionLabel : "Sin accion";
@@ -1158,6 +1292,7 @@
       if (!els.gestureEngineState) return;
       els.gestureEngineState.textContent = gestureRouterState.engineEnabled ? "activo" : "inactivo";
       els.gestureDebugRawGesture.textContent = gestureRouterState.lastRawGesture || "-";
+      els.gestureDebugCandidates.textContent = formatGestureCandidates(gestureRouterState.lastCandidates) || "-";
       els.gestureDebugLastGesture.textContent = gestureRouterState.lastGesture || "-";
       els.gestureDebugLastAction.textContent = gestureRouterState.lastAction || "-";
       els.gestureDebugSource.textContent = gestureRouterState.lastSource || "-";
@@ -1301,11 +1436,14 @@
         state.gesture.handDetected = true;
         const lm = results.landmarks[0];
         if (state.gesture.showLandmarks) drawLandmarks(lctx, lm, landmarksCanvas.width, landmarksCanvas.height);
-        const gesture = classifyGesture(lm);
-        state.gesture.currentGesture = gesture || "Mano abierta";
+        const candidates = classifyGestureCandidates(lm);
+        const resolved = resolveGestureWinner(candidates, { source: "camera" });
+        const gesture = resolved.winner;
+        state.gesture.currentGesture = gesture ? gesture.normalizedName : (resolved.reason === "stabilizing" ? "estabilizando" : "ambiguo / ninguno");
         els.handStateReadout.textContent = "Detectada";
         els.gestureReadout.textContent = state.gesture.currentGesture;
-        if (gesture) executeGestureAction(gesture);
+        if (gesture) executeGestureAction(gesture, candidates);
+        else setNoGestureWinner(resolved.candidates, "camera", candidates[0] ? candidates[0].confidence : 0, resolved.reason);
         setGestureStatus("active", "Mano detectada");
       } else {
         state.gesture.handDetected = false;
@@ -1329,39 +1467,44 @@
       ctx.restore();
     }
 
-    function classifyGesture(lm) {
+    function classifyGestureCandidates(lm) {
       const sen = getSensitivity();
       const now = performance.now();
       const palm = { x: (lm[0].x + lm[9].x) / 2, y: (lm[0].y + lm[9].y) / 2 };
       state.gesture.history.push({ t: now, x: palm.x, y: palm.y });
       if (state.gesture.history.length > 12) state.gesture.history.shift();
 
-      if (now - state.gesture.lastActionTime < getCooldown()) return "";
-
+      const candidates = [];
       const extended = countExtendedFingers(lm);
       const pinchDist = dist(lm[4], lm[8]);
+      const addCandidate = function (rawName, confidence, reason) {
+        const normalizedName = normalizeGestureName(rawName);
+        const entry = getGestureCatalogEntry(normalizedName);
+        candidates.push({ rawName: rawName, normalizedName: normalizedName, confidence: clamp(confidence, 0, 1), category: entry ? entry.category : "unknown", source: "camera", reason: reason });
+      };
 
-      // Pinch
-      if (pinchDist < sen.pinch) return "Pinza";
+      if (pinchDist < sen.pinch) addCandidate("Pinza", 0.70 + ((sen.pinch - pinchDist) / sen.pinch) * 0.30, "pinch distance");
+      if (extended <= 1) addCandidate("Puno", 0.72, "closed hand");
 
-      // Fist
-      if (extended <= 1) return "Puno";
-
-      // Swipes (open hand)
       if (extended >= 4 && state.gesture.history.length >= 8) {
         const first = state.gesture.history[0];
         const last = state.gesture.history[state.gesture.history.length - 1];
         const dx = last.x - first.x;
         const dy = last.y - first.y;
         const dt = last.t - first.t;
-        if (dt > 0 && Math.abs(dx) > sen.swipe) {
-          if (dx > 0) return "Swipe derecha";
-          return "Swipe izquierda";
+        if (dt > 0 && Math.abs(dx) > sen.swipe && Math.abs(dx) > Math.abs(dy) * 1.35) {
+          addCandidate(dx > 0 ? "Swipe derecha" : "Swipe izquierda", 0.75 + Math.min(Math.abs(dx) - sen.swipe, 0.20), "clear horizontal motion");
         }
-        if (dy < -sen.up && Math.abs(dy) > Math.abs(dx)) return "Mano arriba";
+        if (dy < -sen.up && Math.abs(dy) > Math.abs(dx) * 1.25) addCandidate("Mano arriba", 0.72, "upward palm motion");
       }
 
-      return "";
+      if (extended >= 4 && pinchDist >= sen.pinch * 1.4) addCandidate("Mano abierta", 0.66, "open palm");
+      return candidates;
+    }
+
+    function classifyGesture(lm) {
+      const resolved = resolveGestureWinner(classifyGestureCandidates(lm), { source: "camera" });
+      return resolved.winner ? resolved.winner.rawName : "";
     }
 
     function countExtendedFingers(lm) {
@@ -1377,10 +1520,11 @@
       return count;
     }
 
-    function executeGestureAction(gesture) {
-      state.gesture.lastGesture = gesture;
-      state.gesture.lastActionTime = performance.now();
-      applyGestureAction(gesture, "camera", 0.8);
+    function executeGestureAction(gesture, candidates) {
+      state.gesture.lastGesture = gesture.rawName || gesture.normalizedName;
+      if (applyGestureAction(gesture.rawName, "camera", gesture.confidence, { resolvedWinner: gesture, candidates: candidates })) {
+        state.gesture.lastActionTime = performance.now();
+      }
     }
 
     /* ===== Immersive ===== */
