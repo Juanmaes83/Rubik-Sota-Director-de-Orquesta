@@ -32,6 +32,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 05 - Real Estate Capture Tour - Disponible - v2.4
 - 06 - Golf Experience / Home Practice - Disponible - v2.5
 - 07 - Retail Catalog - Disponible - v2.6
+- 08 - Interactive Gesture Catalog / Retail Catalog - Disponible - v2.7
 
 **Versiones estables actuales:**
 
@@ -42,6 +43,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - Real Estate Capture Tour v2.4
 - Golf Experience / Home Practice v2.5
 - Retail Catalog v2.6
+- Interactive Gesture Catalog / Retail Catalog v2.7
 
 **Archivos:**
 
@@ -52,6 +54,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - `gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html`
 - `gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html`
 - `gesture-lab/retail-catalog/rubik-sota-retail-catalog-v2-6.html`
+- `gesture-lab/interactive-gesture-catalog/rubik-sota-interactive-gesture-catalog-v2-7.html`
 
 **Funciones actuales:**
 
@@ -87,10 +90,11 @@ El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicac
 - `gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html`
 - `gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html`
 - `gesture-lab/retail-catalog/rubik-sota-retail-catalog-v2-6.html`
+- `gesture-lab/interactive-gesture-catalog/rubik-sota-interactive-gesture-catalog-v2-7.html`
 
 **Meta:**
 
-- `v2.0.1 - 7 modulos activos - 26 en planificacion`
+- `v2.0.1 - 8 modulos activos - 25 en planificacion`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -196,6 +200,27 @@ Retail Catalog v2.6 incorpora catálogo comercial interactivo:
 - WhatsApp, email, copiar enlace y guardado local;
 - localStorage key: rubik-sota-retail-catalog-v2-6-snapshot.
 
+### Nota Interactive Gesture Catalog / Retail Catalog v2.7
+
+Interactive Gesture Catalog / Retail Catalog v2.7 incorpora control gestual real sobre catalogo retail:
+
+- motor local de productos heredado de Retail Catalog;
+- categorias, ficha de producto, favoritos y carrito local;
+- reconocimiento de mano con MediaPipe Tasks Vision / Hand Landmarker;
+- camara con getUserMedia y fallback manual;
+- gestos: mano abierta, swipe izquierda/derecha, pinza, puno y gesto hacia arriba;
+- swipe de mano para cambiar producto;
+- pinza para seleccionar o abrir ficha;
+- puno para anadir al carrito;
+- mano abierta hacia arriba para mostrar codigo de continuacion;
+- botones tactiles siempre activos como fallback;
+- panel de calibracion: sensibilidad, cooldown, estado de mano y gesto detectado;
+- codigo de continuacion / QR demo sin API externa;
+- descarga PNG;
+- grabacion WebM si el navegador lo permite;
+- WhatsApp, email, copiar enlace y guardado local;
+- localStorage key: rubik-sota-interactive-gesture-catalog-v2-7-snapshot.
+
 ---
 
 ## Capture Input System
@@ -217,7 +242,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 05 | Real Estate Capture Tour | Disponible - v2.4 |
 | 06 | Golf Experience / Home Practice | Disponible - v2.5 |
 | 07 | Retail Catalog | Disponible - v2.6 |
-| 08 | Interactive Gesture Catalog / Retail Catalog | Próximamente - v2.7 |
+| 08 | Interactive Gesture Catalog / Retail Catalog | Disponible - v2.7 |
 | 09 | Interactive Retail Window | Próximamente - v2.8 |
 | 10 | Fashion Lookbook | Próximamente - v2.9 |
 | 11 | Selfie Style / Outfit Visualizer | Próximamente - v2.10 |
@@ -263,23 +288,23 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 El siguiente módulo recomendado es:
 
-**v2.7 - Interactive Gesture Catalog / Retail Catalog**
+**v2.8 - Interactive Retail Window**
 
 **Motivo:**
 
-Tras validar Retail Catalog v2.6 como motor comercial de productos, el siguiente paso es añadir interacción gestual progresiva. El objetivo no es meter tecnología por decoración, sino comprobar si los gestos aumentan la interacción en catálogos, escaparates, ferias y mupis sin romper la experiencia táctil.
+Tras validar Retail Catalog v2.6 y su capa gestual v2.7, el siguiente paso es transformar el sistema en un escaparate digital: modo attract, pantalla grande, producto destacado, promociones, storytelling de marca y acciones de continuacion hacia movil. Esto permite pasar de catalogo interactivo a experiencia comercial visible en tienda, feria o mupi.
 
 **Flujo previsto:**
 
-1. Navegar productos con botones/táctil y preparar fallback.
-2. Activar gestos de swipe para pasar producto.
-3. Usar gesto de selección para destacar producto.
-4. Añadir producto al carrito con gesto o botón.
-5. Mostrar código de continuación y compartir selección.
+1. Activar modo escaparate / kiosk.
+2. Mostrar producto o promocion destacada en bucle.
+3. Permitir interaccion tactil o gestual.
+4. Abrir ficha, carrito o codigo de continuacion.
+5. Exportar y compartir seleccion o promocion.
 
 **Frase clave:**
 
-> Del catálogo táctil al escaparate gestual con la misma arquitectura.
+> Del catalogo gestual al escaparate vivo con la misma arquitectura.
 
 ---
 
@@ -362,9 +387,9 @@ Cada módulo debe incluir, cuando aplique:
 - v2.3 - Real Estate Immersive Viewer - estable
 - v2.4 - Real Estate Capture Tour - estable
 - v2.5 - Golf Experience / Home Practice - estable
-- v2.6 - Retail Catalog - estable actual
-- v2.7 - Interactive Gesture Catalog / Retail Catalog - siguiente
-- v2.8 - Interactive Retail Window
+- v2.6 - Retail Catalog - estable
+- v2.7 - Interactive Gesture Catalog / Retail Catalog - estable actual
+- v2.8 - Interactive Retail Window - siguiente
 - v2.9 - Fashion Lookbook
 - v2.10 - Selfie Style / Outfit Visualizer
 - v2.11 - Dental Kids
@@ -415,4 +440,5 @@ Cada módulo debe incluir, cuando aplique:
 - Real Estate Capture Tour v2.4 publicada y funcional.
 - Golf Experience / Home Practice v2.5 publicada y funcional.
 - Retail Catalog v2.6 publicada y funcional.
-- Siguiente fase: v2.7 - Interactive Gesture Catalog / Retail Catalog.
+- Interactive Gesture Catalog / Retail Catalog v2.7 publicada y funcional.
+- Siguiente fase: v2.8 - Interactive Retail Window.
