@@ -1,0 +1,931 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Rubik Sota Gesture Detection Lab v0.2 - Victory / Thumbs Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap">
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --panel: #14181d;
+      --panel-2: #1a1f25;
+      --line: rgba(255,255,255,0.08);
+      --line-2: rgba(255,255,255,0.16);
+      --fg: #f6f7f9;
+      --muted: rgba(246,247,249,0.62);
+      --muted-2: rgba(246,247,249,0.4);
+      --accent: #45e6a4;
+      --accent-2: #d8ff3e;
+      --warn: #ffb648;
+      --danger: #ff5b5b;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-pill: 999px;
+    }
+    * { box-sizing: border-box; }
+    html, body { background: var(--bg); color: var(--fg); margin: 0; padding: 0; font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); }
+    .shell { max-width: 1280px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+    .topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; gap: 0.7rem; align-items: center; }
+    .brand-mark { width: 38px; height: 38px; border-radius: 10px; background: var(--accent); color: #061a12; display: grid; place-items: center; font-weight: 900; }
+    .brand-name { font-weight: 900; letter-spacing: 0.02em; }
+    .brand-sub { display: block; font-size: 0.74rem; color: var(--muted); font-weight: 600; }
+    .top-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .btn { background: var(--panel-2); color: var(--fg); border: 1px solid var(--line-2); border-radius: var(--radius-sm); padding: 0.55rem 0.9rem; font-family: inherit; font-weight: 700; font-size: 0.84rem; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+    .btn:hover { background: #232a32; }
+    .btn.is-primary { background: var(--accent); color: #061a12; border-color: transparent; }
+    .btn.is-primary:hover { background: #61f0b6; }
+    .btn.is-warn { background: transparent; border-color: var(--warn); color: var(--warn); }
+    .btn.is-active { background: var(--accent-2); color: #1a1f00; border-color: transparent; }
+    .btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+    .lab-warning { margin: 1rem 0; padding: 0.7rem 0.9rem; border: 1px solid var(--warn); border-left-width: 4px; border-radius: var(--radius-sm); color: var(--warn); font-size: 0.82rem; line-height: 1.5; background: rgba(255,182,72,0.06); }
+    .grid { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); margin-top: 1rem; }
+    @media (min-width: 920px) { .grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); align-items: start; } }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; display: grid; gap: 0.8rem; }
+    .panel h2 { margin: 0; font-size: 1rem; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+    .stage { position: relative; aspect-ratio: 4 / 3; background: #050708; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--line); }
+    .stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .stage .placeholder { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); padding: 1rem; text-align: center; font-size: 0.86rem; line-height: 1.5; }
+    .stage .hint { position: absolute; left: 0.7rem; top: 0.7rem; background: rgba(0,0,0,0.6); border: 1px solid var(--line-2); padding: 0.35rem 0.6rem; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 700; }
+    .stage .hint.is-warn { color: var(--warn); border-color: var(--warn); }
+    .stage .hint.is-ok { color: var(--accent); border-color: var(--accent); }
+    .status-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.65rem; border: 1px solid var(--line-2); border-radius: var(--radius-pill); background: var(--panel-2); font-size: 0.72rem; color: var(--muted); font-weight: 700; }
+    .pill strong { color: var(--fg); font-weight: 900; }
+    .pill.is-ok strong { color: var(--accent); }
+    .pill.is-warn strong { color: var(--warn); }
+    .pill.is-danger strong { color: var(--danger); }
+    .controls-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .controls-row label { font-size: 0.78rem; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
+    .controls-row select { background: var(--panel-2); color: var(--fg); border: 1px solid var(--line-2); border-radius: var(--radius-sm); padding: 0.35rem 0.5rem; font-family: inherit; font-size: 0.78rem; }
+    .debug-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.4rem; }
+    .debug-cell { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.55rem 0.7rem; }
+    .debug-cell .k { display: block; font-size: 0.64rem; color: var(--muted-2); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 800; margin-bottom: 0.2rem; }
+    .debug-cell .v { font-size: 0.92rem; font-weight: 800; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all; }
+    .debug-cell.is-good .v { color: var(--accent); }
+    .debug-cell.is-warn .v { color: var(--warn); }
+    .candidate-list { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.74rem; color: var(--muted); display: grid; gap: 0.2rem; max-height: 130px; overflow: auto; }
+    .candidate-list li { list-style: none; display: flex; gap: 0.6rem; }
+    .candidate-list .winner { color: var(--accent); font-weight: 900; }
+    .candidate-list .filtered { color: var(--muted-2); }
+    .gesture-groups { display: grid; gap: 0.6rem; }
+    .gesture-group h3 { margin: 0; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-2); font-weight: 800; }
+    .qa-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .qa-row .btn { font-size: 0.74rem; padding: 0.42rem 0.7rem; }
+    .qa-row.qa-labs .btn { background: transparent; border-color: var(--line-2); color: var(--muted); }
+    .feedback { font-size: 0.82rem; color: var(--muted); min-height: 1.4em; padding: 0.4rem 0.6rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel-2); }
+    .feedback.is-ok { color: var(--accent); border-color: rgba(69,230,164,0.4); }
+    .feedback.is-warn { color: var(--warn); border-color: rgba(255,182,72,0.4); }
+    .feedback.is-danger { color: var(--danger); border-color: rgba(255,91,91,0.4); }
+    .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted-2); font-size: 0.72rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--accent-2); }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">RS</div>
+        <div>
+          <span class="brand-name">Gesture Detection Lab</span>
+          <span class="brand-sub">v0.2 - Victory / Thumbs Test - lab interno - no produccion</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn is-primary" id="cameraToggleBtn" type="button">Activar camara / gestos</button>
+        <button class="btn" id="cameraStopBtn" type="button" disabled>Detener</button>
+        <button class="btn" id="resetDebugBtn" type="button">Reset debug</button>
+      </div>
+    </header>
+
+    <p class="lab-warning">Laboratorio interno de prueba de reconocimiento gestual. v0.2 anade detectores experimentales para <code>victory</code>, <code>thumbs_up</code> y <code>thumbs_down</code> con landmarks 2D normalizados por palmScale. <strong>No es modulo de produccion</strong>. Las acciones que ejecutan son simuladas y solo se confirman tras validacion fisica.</p>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Captura</h2>
+        <div class="stage" id="stage">
+          <video id="video" playsinline muted autoplay></video>
+          <canvas id="overlay"></canvas>
+          <div class="placeholder" id="placeholder">Camara apagada. Pulsa "Activar camara / gestos" para iniciar getUserMedia + cargar MediaPipe Hand Landmarker. Necesita HTTPS o localhost.</div>
+          <div class="hint" id="zoneHint" hidden>Coloca la mano dentro de la zona</div>
+        </div>
+        <div class="status-row">
+          <span class="pill">Camara: <strong id="cameraStatus">apagada</strong></span>
+          <span class="pill">Modelo: <strong id="modelStatus">no cargado</strong></span>
+          <span class="pill">Mano: <strong id="handStatus">sin mano</strong></span>
+          <span class="pill">Resolucion: <strong id="resolutionStatus">-</strong></span>
+          <span class="pill">FPS detector: <strong id="fpsStatus">-</strong></span>
+        </div>
+        <div class="controls-row">
+          <label>Sensibilidad
+            <select id="sensitivitySelect">
+              <option value="low">Baja</option>
+              <option value="medium" selected>Media</option>
+              <option value="high">Alta</option>
+            </select>
+          </label>
+          <label>Zona activa
+            <select id="zoneModeSelect">
+              <option value="off">Apagada</option>
+              <option value="soft" selected>Aviso suave</option>
+              <option value="block">Bloquear fuera de zona</option>
+            </select>
+          </label>
+          <label><input type="checkbox" id="drawLandmarksToggle" checked> Dibujar landmarks</label>
+          <label><input type="checkbox" id="mirrorToggle" checked> Espejar video</label>
+        </div>
+        <p class="feedback" id="feedback">Listo. Activa la camara para empezar.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Debug</h2>
+        <div class="debug-grid">
+          <div class="debug-cell"><span class="k">Gesto bruto</span><span class="v" id="dbgRaw">-</span></div>
+          <div class="debug-cell"><span class="k">Ganador</span><span class="v" id="dbgWinner">-</span></div>
+          <div class="debug-cell"><span class="k">Confianza</span><span class="v" id="dbgConfidence">-</span></div>
+          <div class="debug-cell"><span class="k">Accion</span><span class="v" id="dbgAction">-</span></div>
+          <div class="debug-cell"><span class="k">Origen</span><span class="v" id="dbgSource">-</span></div>
+          <div class="debug-cell"><span class="k">palmScale</span><span class="v" id="dbgPalmScale">-</span></div>
+          <div class="debug-cell"><span class="k">Dedos ext.</span><span class="v" id="dbgExtended">-</span></div>
+          <div class="debug-cell"><span class="k">Pinch ratio</span><span class="v" id="dbgPinchRatio">-</span></div>
+          <div class="debug-cell"><span class="k">Swipe dx</span><span class="v" id="dbgSwipeDx">-</span></div>
+          <div class="debug-cell"><span class="k">Frames estables</span><span class="v" id="dbgStable">0</span></div>
+          <div class="debug-cell"><span class="k">Cooldown</span><span class="v" id="dbgCooldown">-</span></div>
+          <div class="debug-cell"><span class="k">Zona</span><span class="v" id="dbgZone">-</span></div>
+          <div class="debug-cell"><span class="k">Dedos</span><span class="v" id="dbgFingers">-</span></div>
+          <div class="debug-cell"><span class="k">Pulgar dir</span><span class="v" id="dbgThumbDir">-</span></div>
+          <div class="debug-cell"><span class="k">Score victory</span><span class="v" id="dbgVictoryScore">-</span></div>
+          <div class="debug-cell"><span class="k">Score thumbs up</span><span class="v" id="dbgThumbsUpScore">-</span></div>
+          <div class="debug-cell"><span class="k">Score thumbs down</span><span class="v" id="dbgThumbsDownScore">-</span></div>
+        </div>
+        <div>
+          <h3 style="margin: 0 0 0.3rem; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-2); font-weight: 800;">Candidatos</h3>
+          <ul class="candidate-list" id="candidateList"><li class="filtered">Sin candidatos</li></ul>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>QA Harness</h2>
+        <p style="margin: 0; color: var(--muted); font-size: 0.78rem;">Prueba el cableado de accion sin camara. Esto NO verifica deteccion real con mano fisica.</p>
+        <div class="gesture-groups">
+          <div class="gesture-group">
+            <h3>Estables en el lab</h3>
+            <div class="qa-row">
+              <button class="btn" id="qaOpenPalmBtn" type="button">open_palm</button>
+              <button class="btn" id="qaSwipeLeftBtn" type="button">swipe_left</button>
+              <button class="btn" id="qaSwipeRightBtn" type="button">swipe_right</button>
+              <button class="btn" id="qaPinchBtn" type="button">pinch</button>
+            </div>
+          </div>
+          <div class="gesture-group">
+            <h3>Experimentales activos (detector real, validacion pendiente)</h3>
+            <div class="qa-row">
+              <button class="btn" id="qaVictoryBtn" type="button">victory</button>
+              <button class="btn" id="qaThumbsUpBtn" type="button">thumbs_up</button>
+              <button class="btn" id="qaThumbsDownBtn" type="button">thumbs_down</button>
+            </div>
+          </div>
+          <div class="gesture-group">
+            <h3>En estudio (sin detector cam)</h3>
+            <div class="qa-row qa-labs">
+              <button class="btn" id="qaOkSignBtn" type="button">ok_sign</button>
+              <button class="btn" id="qaStopPalmBtn" type="button">stop_palm</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Catalogo</h2>
+        <p style="margin: 0; color: var(--muted); font-size: 0.78rem;">Estado declarado de cada gesto en este lab. No promete que un gesto en estudio funcione por camara.</p>
+        <ul style="margin: 0; padding: 0; list-style: none; display: grid; gap: 0.3rem; font-size: 0.78rem;">
+          <li><strong>open_palm</strong> <span style="color: var(--accent);">estable</span> - mano abierta, ≥4 dedos extendidos, pinch ratio &gt; umbral</li>
+          <li><strong>pinch</strong> <span style="color: var(--accent);">estable</span> - pulgar+indice juntos, normalizado por palmScale</li>
+          <li><strong>swipe_left</strong> <span style="color: var(--accent);">estable</span> - palma con desplazamiento horizontal &gt; umbral relativo</li>
+          <li><strong>swipe_right</strong> <span style="color: var(--accent);">estable</span> - idem en sentido contrario</li>
+          <li><strong>victory</strong> <span style="color: var(--warn);">experimental</span> - indice + corazon extendidos, anular/menique plegados, separacion index/middle &gt; 0.35 palmScale</li>
+          <li><strong>thumbs_up</strong> <span style="color: var(--warn);">experimental</span> - pulgar extendido y por encima del MCP &gt; 0.25 palmScale, resto plegados</li>
+          <li><strong>thumbs_down</strong> <span style="color: var(--warn);">experimental</span> - pulgar extendido y por debajo del MCP &gt; 0.25 palmScale, resto plegados</li>
+          <li><strong>ok_sign</strong> <span style="color: var(--muted);">en estudio</span> - sin detector real por camara todavia</li>
+          <li><strong>stop_palm</strong> <span style="color: var(--muted);">en estudio</span> - sin detector real por camara todavia</li>
+        </ul>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <strong>Rubik Sota Gesture Detection Lab v0.1</strong> - rama feature/gesture-detection-lab - solo HTTPS o localhost - MediaPipe Tasks Vision via CDN
+    </footer>
+  </div>
+
+  <script>
+    "use strict";
+
+    const GESTURE_COOLDOWNS = { open_palm: 900, swipe_left: 1000, swipe_right: 1000, pinch: 900, thumbs_up: 1300, thumbs_down: 1300, victory: 1200 };
+    const GESTURE_PRIORITY = { pinch: 1, swipe_left: 2, swipe_right: 2, thumbs_up: 3, thumbs_down: 3, victory: 4, open_palm: 5 };
+    const GESTURE_THRESHOLDS = { pinch: 0.70, swipe_left: 0.75, swipe_right: 0.75, open_palm: 0.65, thumbs_up: 0.72, thumbs_down: 0.72, victory: 0.72 };
+    const GESTURE_STABLE_FRAMES = { open_palm: 4, pinch: 3, swipe_left: 1, swipe_right: 1, thumbs_up: 5, thumbs_down: 5, victory: 5 };
+    const GESTURE_AMBIGUOUS_GROUPS = [
+      ["swipe_left", "swipe_right"],
+      ["open_palm", "victory"],
+      ["open_palm", "thumbs_up"],
+      ["thumbs_up", "thumbs_down"],
+      ["pinch", "victory"]
+    ];
+
+    const ACTIVE_GESTURES = ["open_palm", "pinch", "swipe_left", "swipe_right", "victory", "thumbs_up", "thumbs_down"];
+    const EXPERIMENTAL_GESTURES = ["victory", "thumbs_up", "thumbs_down"];
+    const STUDY_GESTURES = ["ok_sign", "stop_palm"];
+
+    const GESTURE_ALIASES = {
+      "open": "open_palm", "openPalm": "open_palm", "palm": "open_palm", "Mano abierta": "open_palm",
+      "swipeLeft": "swipe_left", "swipe-left": "swipe_left", "Swipe izquierda": "swipe_left",
+      "swipeRight": "swipe_right", "swipe-right": "swipe_right", "Swipe derecha": "swipe_right",
+      "Pinza": "pinch",
+      "V": "victory", "victoria": "victory",
+      "thumbUp": "thumbs_up", "thumb_up": "thumbs_up", "pulgar_arriba": "thumbs_up",
+      "thumbDown": "thumbs_down", "thumb_down": "thumbs_down", "pulgar_abajo": "thumbs_down"
+    };
+
+    const SENSITIVITY = {
+      low:    { pinchRatio: 0.55, swipeRatio: 2.4, upRatio: 2.4 },
+      medium: { pinchRatio: 0.45, swipeRatio: 1.8, upRatio: 1.8 },
+      high:   { pinchRatio: 0.38, swipeRatio: 1.4, upRatio: 1.4 }
+    };
+
+    const state = {
+      camera: { enabled: false, loading: false, stream: null, landmarker: null, videoTrack: null, resolutionLabel: "-" },
+      gesture: { sensitivity: "medium", showLandmarks: true, history: [], lastTickAt: 0, frames: 0, fps: 0, lastFpsAt: 0 },
+      zone: { mode: "soft", rect: { x: 0.18, y: 0.12, w: 0.64, h: 0.76 }, lastIn: null, lastDistanceState: "ok" },
+      mirror: true,
+      router: { lastWinner: "", stableCount: 0, cooldownUntil: {}, lastConfidence: 0, lastAction: "", lastSource: "-" }
+    };
+
+    const els = {};
+    function $(id) { return document.getElementById(id); }
+    function bindEls() {
+      ["video","overlay","stage","placeholder","zoneHint","cameraToggleBtn","cameraStopBtn","resetDebugBtn",
+       "cameraStatus","modelStatus","handStatus","resolutionStatus","fpsStatus","feedback",
+       "sensitivitySelect","zoneModeSelect","drawLandmarksToggle","mirrorToggle",
+       "dbgRaw","dbgWinner","dbgConfidence","dbgAction","dbgSource","dbgPalmScale","dbgExtended","dbgPinchRatio","dbgSwipeDx","dbgStable","dbgCooldown","dbgZone","dbgFingers","dbgThumbDir","dbgVictoryScore","dbgThumbsUpScore","dbgThumbsDownScore",
+       "candidateList",
+       "qaOpenPalmBtn","qaSwipeLeftBtn","qaSwipeRightBtn","qaPinchBtn",
+       "qaThumbsUpBtn","qaThumbsDownBtn","qaVictoryBtn","qaOkSignBtn","qaStopPalmBtn"
+      ].forEach(function (id) { els[id] = $(id); });
+    }
+
+    function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+    function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+    function normalizeGestureName(name) {
+      if (!name) return null;
+      const known = ACTIVE_GESTURES.concat(STUDY_GESTURES);
+      if (known.indexOf(name) >= 0) return name;
+      return GESTURE_ALIASES[name] || null;
+    }
+    function isActiveGesture(id) { return ACTIVE_GESTURES.indexOf(id) >= 0; }
+    function getSensitivity() { return SENSITIVITY[state.gesture.sensitivity] || SENSITIVITY.medium; }
+
+    function setFeedback(msg, tone) {
+      els.feedback.textContent = msg || "";
+      els.feedback.className = "feedback" + (tone ? " is-" + tone : "");
+    }
+
+    function setCameraStatus(text, tone) {
+      els.cameraStatus.textContent = text;
+      els.cameraStatus.parentElement.className = "pill" + (tone ? " is-" + tone : "");
+    }
+    function setModelStatus(text, tone) {
+      els.modelStatus.textContent = text;
+      els.modelStatus.parentElement.className = "pill" + (tone ? " is-" + tone : "");
+    }
+    function setHandStatus(text, tone) {
+      els.handStatus.textContent = text;
+      els.handStatus.parentElement.className = "pill" + (tone ? " is-" + tone : "");
+    }
+
+    function describeCameraError(e) {
+      const n = (e && (e.name || "")).toString();
+      const m = (e && (e.message || "")).toString();
+      if (/NotAllowedError|Permission/i.test(n + " " + m)) return "permiso denegado";
+      if (/SecurityError/i.test(n)) return "HTTPS requerido";
+      if (/NotFoundError|DevicesNotFoundError/i.test(n)) return "no se encontro camara";
+      if (/NotReadableError|TrackStartError/i.test(n)) return "camara ocupada";
+      if (/OverconstrainedError|ConstraintNotSatisfiedError/i.test(n)) return "resolucion no soportada";
+      if (/AbortError/i.test(n)) return "camara interrumpida";
+      if (/TypeError/i.test(n) || /getUserMedia no disponible/i.test(m)) return "navegador no compatible o contexto inseguro";
+      return "error de camara";
+    }
+
+    async function negotiateStream() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("getUserMedia no disponible. La camara requiere HTTPS o localhost.");
+      }
+      const high = { video: { facingMode: { ideal: "user" }, width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30, min: 15 } }, audio: false };
+      const low  = { video: { facingMode: { ideal: "user" }, width: { ideal: 640 },  height: { ideal: 480 }, frameRate: { ideal: 30 } }, audio: false };
+      try {
+        const s = await navigator.mediaDevices.getUserMedia(high);
+        return { stream: s, tier: "high" };
+      } catch (e) {
+        const name = (e && (e.name || "")).toString();
+        if (/OverconstrainedError|ConstraintNotSatisfied|NotReadableError/i.test(name)) {
+          const s = await navigator.mediaDevices.getUserMedia(low);
+          return { stream: s, tier: "low" };
+        }
+        throw e;
+      }
+    }
+
+    async function loadMediaPipe() {
+      if (state.camera.landmarker) return state.camera.landmarker;
+      setModelStatus("cargando", "warn");
+      try {
+        const mod = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/+esm");
+        const fileset = await mod.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm");
+        const landmarker = await mod.HandLandmarker.createFromOptions(fileset, {
+          baseOptions: {
+            modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+            delegate: "GPU"
+          },
+          runningMode: "VIDEO",
+          numHands: 1
+        });
+        state.camera.landmarker = landmarker;
+        setModelStatus("listo", "ok");
+        return landmarker;
+      } catch (e) {
+        console.error("[lab] MediaPipe load error", e);
+        setModelStatus("error", "danger");
+        return null;
+      }
+    }
+
+    async function startCamera() {
+      if (state.camera.enabled || state.camera.loading) return;
+      state.camera.loading = true;
+      setCameraStatus("solicitando permiso", "warn");
+      setHandStatus("sin mano");
+      els.placeholder.hidden = true;
+      els.cameraToggleBtn.disabled = true;
+      els.cameraStopBtn.disabled = false;
+      setFeedback("Pidiendo permiso de camara...", "warn");
+
+      try {
+        const { stream, tier } = await negotiateStream();
+        state.camera.stream = stream;
+        state.camera.videoTrack = stream.getVideoTracks()[0] || null;
+        const settings = state.camera.videoTrack ? state.camera.videoTrack.getSettings() : {};
+        const w = settings.width || (tier === "high" ? 1280 : 640);
+        const h = settings.height || (tier === "high" ? 720 : 480);
+        state.camera.resolutionLabel = w + "x" + h + " (" + tier + ")";
+        els.resolutionStatus.textContent = state.camera.resolutionLabel;
+
+        els.video.srcObject = stream;
+        setCameraStatus("activa", "ok");
+        try { await els.video.play(); } catch (_) {}
+
+        await loadMediaPipe();
+        if (!state.camera.landmarker) throw new Error("MediaPipe no disponible");
+
+        state.camera.enabled = true;
+        state.camera.loading = false;
+        els.cameraToggleBtn.disabled = false;
+        els.cameraToggleBtn.textContent = "Desactivar";
+        els.cameraToggleBtn.classList.add("is-active");
+        setHandStatus("sin mano");
+        setFeedback("Camara activa y modelo listo. Muestra la mano dentro de la zona.", "ok");
+        state.gesture.lastTickAt = performance.now();
+        state.gesture.frames = 0;
+        state.gesture.lastFpsAt = performance.now();
+        requestAnimationFrame(detectLoop);
+      } catch (e) {
+        console.error("[lab] start error", e);
+        if (state.camera.stream) { try { state.camera.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {} }
+        state.camera.stream = null;
+        state.camera.videoTrack = null;
+        state.camera.enabled = false;
+        state.camera.loading = false;
+        els.video.srcObject = null;
+        els.placeholder.hidden = false;
+        setCameraStatus(describeCameraError(e), "danger");
+        if (!state.camera.landmarker) setModelStatus("no cargado");
+        els.cameraToggleBtn.disabled = false;
+        els.cameraToggleBtn.textContent = "Activar camara / gestos";
+        els.cameraToggleBtn.classList.remove("is-active");
+        els.cameraStopBtn.disabled = true;
+        setFeedback("No se pudo activar la camara. QA Harness sigue funcionando.", "danger");
+      }
+    }
+
+    function stopCamera() {
+      if (!state.camera.enabled && !state.camera.stream) return;
+      state.camera.enabled = false;
+      state.camera.loading = false;
+      if (state.camera.stream) { try { state.camera.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {} }
+      state.camera.stream = null;
+      state.camera.videoTrack = null;
+      els.video.pause();
+      els.video.srcObject = null;
+      els.placeholder.hidden = false;
+      setCameraStatus("apagada");
+      setHandStatus("sin mano");
+      els.fpsStatus.textContent = "-";
+      els.resolutionStatus.textContent = "-";
+      els.cameraToggleBtn.textContent = "Activar camara / gestos";
+      els.cameraToggleBtn.classList.remove("is-active");
+      els.cameraStopBtn.disabled = true;
+      els.cameraToggleBtn.disabled = false;
+      clearOverlay();
+      els.zoneHint.hidden = true;
+      setFeedback("Camara apagada.");
+    }
+
+    function clearOverlay() {
+      const cv = els.overlay;
+      if (!cv) return;
+      const ctx = cv.getContext("2d");
+      cv.width = cv.clientWidth || 320;
+      cv.height = cv.clientHeight || 240;
+      ctx.clearRect(0, 0, cv.width, cv.height);
+    }
+
+    function drawOverlay(lm) {
+      const cv = els.overlay;
+      const ctx = cv.getContext("2d");
+      cv.width = cv.clientWidth;
+      cv.height = cv.clientHeight;
+      ctx.clearRect(0, 0, cv.width, cv.height);
+
+      // active zone
+      if (state.zone.mode !== "off") {
+        const z = state.zone.rect;
+        ctx.strokeStyle = state.zone.lastIn === false ? "rgba(255,182,72,0.9)" : "rgba(69,230,164,0.65)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 6]);
+        ctx.strokeRect(z.x * cv.width, z.y * cv.height, z.w * cv.width, z.h * cv.height);
+        ctx.setLineDash([]);
+      }
+
+      if (!lm || !els.drawLandmarksToggle.checked) return;
+      const m = state.mirror ? function (x) { return 1 - x; } : function (x) { return x; };
+      const edges = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+      ctx.strokeStyle = "rgba(216,255,62,0.9)";
+      ctx.lineWidth = 2;
+      for (let i = 0; i < edges.length; i++) {
+        const a = lm[edges[i][0]], b = lm[edges[i][1]];
+        ctx.beginPath();
+        ctx.moveTo(m(a.x) * cv.width, a.y * cv.height);
+        ctx.lineTo(m(b.x) * cv.width, b.y * cv.height);
+        ctx.stroke();
+      }
+      ctx.fillStyle = "rgba(69,230,164,0.95)";
+      for (let i = 0; i < lm.length; i++) {
+        ctx.beginPath();
+        ctx.arc(m(lm[i].x) * cv.width, lm[i].y * cv.height, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function measurePalmScale(lm) {
+      return dist(lm[0], lm[9]) || 0.001;
+    }
+
+    function isFingerExtended(lm, finger) {
+      const wrist = lm[0];
+      if (finger === "thumb") {
+        return dist(lm[4], lm[2]) > dist(lm[3], lm[2]) * 1.3 || dist(lm[4], lm[17]) > dist(lm[3], lm[17]) * 1.1;
+      }
+      const map = { index: [8, 5], middle: [12, 9], ring: [16, 13], pinky: [20, 17] };
+      const m = map[finger];
+      if (!m) return false;
+      return dist(lm[m[0]], wrist) > dist(lm[m[1]], wrist) * 1.15;
+    }
+
+    function fingerStates(lm) {
+      return {
+        thumb: isFingerExtended(lm, "thumb"),
+        index: isFingerExtended(lm, "index"),
+        middle: isFingerExtended(lm, "middle"),
+        ring: isFingerExtended(lm, "ring"),
+        pinky: isFingerExtended(lm, "pinky")
+      };
+    }
+
+    function countExtendedFingers(lm) {
+      const f = fingerStates(lm);
+      return (f.thumb ? 1 : 0) + (f.index ? 1 : 0) + (f.middle ? 1 : 0) + (f.ring ? 1 : 0) + (f.pinky ? 1 : 0);
+    }
+
+    function scoreVictory(lm, palmScale, f) {
+      if (!(f.index && f.middle)) return 0;
+      if (f.ring || f.pinky) return 0;
+      const sep = dist(lm[8], lm[12]) / palmScale;
+      if (sep < 0.35) return 0;
+      let score = 0.55;
+      if (sep > 0.50) score += 0.15;
+      if (sep > 0.70) score += 0.10;
+      if (!f.thumb) score += 0.10;
+      return clamp(score, 0, 1);
+    }
+
+    function scoreThumbsUp(lm, palmScale, f) {
+      if (!f.thumb) return 0;
+      const otherExtended = (f.index ? 1 : 0) + (f.middle ? 1 : 0) + (f.ring ? 1 : 0) + (f.pinky ? 1 : 0);
+      if (otherExtended > 1) return 0;
+      const thumbTip = lm[4], thumbMcp = lm[2];
+      const verticalUp = thumbMcp.y - thumbTip.y;
+      if (verticalUp < palmScale * 0.25) return 0;
+      const palmCenter = { x: (lm[0].x + lm[9].x) / 2, y: (lm[0].y + lm[9].y) / 2 };
+      const separation = Math.abs(thumbTip.x - palmCenter.x) / palmScale;
+      let score = 0.55;
+      score += clamp((verticalUp / palmScale - 0.25) / 0.5, 0, 0.25);
+      if (separation > 0.3) score += 0.10;
+      if (otherExtended === 0) score += 0.10;
+      return clamp(score, 0, 1);
+    }
+
+    function scoreThumbsDown(lm, palmScale, f) {
+      if (!f.thumb) return 0;
+      const otherExtended = (f.index ? 1 : 0) + (f.middle ? 1 : 0) + (f.ring ? 1 : 0) + (f.pinky ? 1 : 0);
+      if (otherExtended > 1) return 0;
+      const thumbTip = lm[4], thumbMcp = lm[2];
+      const verticalDown = thumbTip.y - thumbMcp.y;
+      if (verticalDown < palmScale * 0.25) return 0;
+      const palmCenter = { x: (lm[0].x + lm[9].x) / 2, y: (lm[0].y + lm[9].y) / 2 };
+      const separation = Math.abs(thumbTip.x - palmCenter.x) / palmScale;
+      let score = 0.55;
+      score += clamp((verticalDown / palmScale - 0.25) / 0.5, 0, 0.25);
+      if (separation > 0.3) score += 0.10;
+      if (otherExtended === 0) score += 0.10;
+      return clamp(score, 0, 1);
+    }
+
+    function thumbDirection(lm, palmScale) {
+      const dy = (lm[2].y - lm[4].y) / palmScale;
+      if (dy > 0.25) return "up";
+      if (dy < -0.25) return "down";
+      return "neutral";
+    }
+
+    function evaluateActiveZone(lm) {
+      if (!lm) return { inside: null, distance: "unknown" };
+      const palm = { x: (lm[0].x + lm[9].x) / 2, y: (lm[0].y + lm[9].y) / 2 };
+      const px = state.mirror ? 1 - palm.x : palm.x;
+      const z = state.zone.rect;
+      const inside = px >= z.x && px <= z.x + z.w && palm.y >= z.y && palm.y <= z.y + z.h;
+      const palmScale = measurePalmScale(lm);
+      let distanceState = "ok";
+      if (palmScale < 0.06) distanceState = "far";
+      else if (palmScale > 0.22) distanceState = "near";
+      // hand fully inside frame check
+      let incomplete = false;
+      for (let i = 0; i < lm.length; i++) {
+        if (lm[i].x < 0.02 || lm[i].x > 0.98 || lm[i].y < 0.02 || lm[i].y > 0.98) { incomplete = true; break; }
+      }
+      if (incomplete) distanceState = "incomplete";
+      return { inside: inside, distance: distanceState, palmScale: palmScale };
+    }
+
+    function updateZoneHint(zoneInfo) {
+      if (!zoneInfo || zoneInfo.inside === null) { els.zoneHint.hidden = true; return; }
+      let text = "Mano dentro de zona";
+      let tone = "is-ok";
+      if (zoneInfo.distance === "incomplete") { text = "Mano incompleta en cuadro"; tone = "is-warn"; }
+      else if (zoneInfo.distance === "far") { text = "Acerca la mano"; tone = "is-warn"; }
+      else if (zoneInfo.distance === "near") { text = "Aleja la mano"; tone = "is-warn"; }
+      else if (zoneInfo.inside === false) { text = "Mano fuera de zona"; tone = state.zone.mode === "block" ? "is-warn" : "is-warn"; }
+      els.zoneHint.hidden = false;
+      els.zoneHint.textContent = text;
+      els.zoneHint.className = "hint " + tone;
+      els.dbgZone.textContent = (zoneInfo.inside ? "in" : "out") + " / " + zoneInfo.distance;
+    }
+
+    function classifyGestureCandidatesScaled(lm) {
+      const sen = getSensitivity();
+      const now = performance.now();
+      const palm = { x: (lm[0].x + lm[9].x) / 2, y: (lm[0].y + lm[9].y) / 2 };
+      const palmScale = measurePalmScale(lm);
+      state.gesture.history.push({ t: now, x: palm.x, y: palm.y });
+      if (state.gesture.history.length > 12) state.gesture.history.shift();
+
+      const f = fingerStates(lm);
+      const extended = (f.thumb ? 1 : 0) + (f.index ? 1 : 0) + (f.middle ? 1 : 0) + (f.ring ? 1 : 0) + (f.pinky ? 1 : 0);
+      const pinchAbs = dist(lm[4], lm[8]);
+      const pinchRatio = pinchAbs / palmScale;
+      const candidates = [];
+      let swipeDxRatio = 0;
+
+      function addCandidate(name, confidence, reason) {
+        const normalized = normalizeGestureName(name);
+        if (!normalized) return;
+        candidates.push({ rawName: name, normalizedName: normalized, confidence: clamp(confidence, 0, 1), category: isActiveGesture(normalized) ? "production" : "study", source: "camera", reason: reason });
+      }
+
+      if (pinchRatio < sen.pinchRatio) {
+        addCandidate("pinch", 0.70 + clamp((sen.pinchRatio - pinchRatio) / sen.pinchRatio, 0, 1) * 0.30, "pinchRatio " + pinchRatio.toFixed(2));
+      }
+
+      if (extended >= 4 && state.gesture.history.length >= 8) {
+        const first = state.gesture.history[0];
+        const last = state.gesture.history[state.gesture.history.length - 1];
+        const dx = last.x - first.x;
+        const dy = last.y - first.y;
+        const dxRatio = Math.abs(dx) / palmScale;
+        const dyRatio = Math.abs(dy) / palmScale;
+        swipeDxRatio = dx / palmScale;
+        if (dxRatio > sen.swipeRatio && dxRatio > dyRatio * 1.35) {
+          const dir = (state.mirror ? -dx : dx) > 0 ? "swipe_right" : "swipe_left";
+          addCandidate(dir, 0.75 + clamp(dxRatio - sen.swipeRatio, 0, 0.6) * 0.25, "dxRatio " + dxRatio.toFixed(2));
+        }
+      }
+
+      if (extended >= 4 && pinchRatio >= sen.pinchRatio * 1.4) {
+        addCandidate("open_palm", 0.66 + clamp((pinchRatio - sen.pinchRatio * 1.4) / 2, 0, 0.25), "open palm + pinchRatio " + pinchRatio.toFixed(2));
+      }
+
+      // experimental gestures - only emit when finger pattern is clearly NOT open_palm
+      const victoryScore = (extended <= 3) ? scoreVictory(lm, palmScale, f) : 0;
+      if (victoryScore >= 0.55) {
+        addCandidate("victory", victoryScore, "V index+middle sep " + (dist(lm[8], lm[12]) / palmScale).toFixed(2));
+      }
+
+      const thumbsUpScore = (extended <= 2 && f.thumb && !f.index && !f.middle && !f.ring && !f.pinky) ? scoreThumbsUp(lm, palmScale, f) : 0;
+      if (thumbsUpScore >= 0.55) {
+        addCandidate("thumbs_up", thumbsUpScore, "thumb up dy " + ((lm[2].y - lm[4].y) / palmScale).toFixed(2));
+      }
+
+      const thumbsDownScore = (extended <= 2 && f.thumb && !f.index && !f.middle && !f.ring && !f.pinky) ? scoreThumbsDown(lm, palmScale, f) : 0;
+      if (thumbsDownScore >= 0.55) {
+        addCandidate("thumbs_down", thumbsDownScore, "thumb down dy " + ((lm[4].y - lm[2].y) / palmScale).toFixed(2));
+      }
+
+      return {
+        candidates: candidates,
+        extended: extended,
+        palmScale: palmScale,
+        pinchRatio: pinchRatio,
+        swipeDxRatio: swipeDxRatio,
+        fingers: f,
+        thumbDir: thumbDirection(lm, palmScale),
+        victoryScore: victoryScore,
+        thumbsUpScore: thumbsUpScore,
+        thumbsDownScore: thumbsDownScore
+      };
+    }
+
+    function hasAmbiguousGroup(names) {
+      for (let i = 0; i < GESTURE_AMBIGUOUS_GROUPS.length; i++) {
+        const g = GESTURE_AMBIGUOUS_GROUPS[i];
+        let hits = 0;
+        for (let j = 0; j < g.length; j++) if (names.indexOf(g[j]) >= 0) hits++;
+        if (hits >= 2) return true;
+      }
+      return false;
+    }
+
+    function getGestureThreshold(name, source) {
+      if (source === "qa") return 0;
+      return GESTURE_THRESHOLDS[name] || 0.6;
+    }
+
+    function resolveGestureWinner(candidates, context) {
+      context = context || {};
+      const source = context.source || "camera";
+      const now = performance.now();
+      const list = (candidates || []).filter(function (c) { return !!c && c.normalizedName; });
+      if (!list.length) { state.router.lastWinner = ""; state.router.stableCount = 0; return { winner: null, reason: "none", candidates: list }; }
+
+      const names = list.map(function (c) { return c.normalizedName; });
+      if (source === "camera" && hasAmbiguousGroup(names)) { state.router.lastWinner = ""; state.router.stableCount = 0; return { winner: null, reason: "ambiguous", candidates: list }; }
+
+      const eligible = list.filter(function (c) { return c.confidence >= getGestureThreshold(c.normalizedName, source) && isActiveGesture(c.normalizedName); });
+      if (!eligible.length) { state.router.lastWinner = ""; state.router.stableCount = 0; return { winner: null, reason: "filtered", candidates: list }; }
+
+      eligible.sort(function (a, b) {
+        const pa = GESTURE_PRIORITY[a.normalizedName] || 50;
+        const pb = GESTURE_PRIORITY[b.normalizedName] || 50;
+        if (pa !== pb) return pa - pb;
+        return b.confidence - a.confidence;
+      });
+      const top = eligible[0];
+      const second = eligible[1];
+      if (source === "camera" && second && Math.abs(top.confidence - second.confidence) < 0.08) { state.router.lastWinner = ""; state.router.stableCount = 0; return { winner: null, reason: "ambiguous", candidates: list }; }
+
+      if (source === "camera") {
+        if (state.router.lastWinner === top.normalizedName) state.router.stableCount += 1;
+        else { state.router.lastWinner = top.normalizedName; state.router.stableCount = 1; }
+        const need = GESTURE_STABLE_FRAMES[top.normalizedName] || 1;
+        if (state.router.stableCount < need) return { winner: null, reason: "stabilizing", candidates: list, stableCount: state.router.stableCount, need: need };
+        if (now < (state.router.cooldownUntil[top.normalizedName] || 0)) return { winner: null, reason: "cooldown", candidates: list };
+      }
+
+      return { winner: top, reason: "winner", candidates: list, stableCount: state.router.stableCount };
+    }
+
+    function applyGestureAction(name, source, confidence, options) {
+      options = options || {};
+      const normalized = normalizeGestureName(name);
+      if (!normalized) return false;
+      const isActive = isActiveGesture(normalized);
+      if (!isActive) {
+        // Study gesture from QA harness: announce but don't pretend it's detected
+        state.router.lastAction = "[en estudio] " + normalized;
+        state.router.lastSource = source;
+        state.router.lastConfidence = confidence;
+        setFeedback("Gesto en estudio: " + normalized + ". Sin detector real por camara en este lab.", "warn");
+        updateDebugUI({ winnerName: normalized, action: state.router.lastAction });
+        return true;
+      }
+      const now = performance.now();
+      if (source !== "qa" && now < (state.router.cooldownUntil[normalized] || 0)) return false;
+      state.router.cooldownUntil[normalized] = now + (GESTURE_COOLDOWNS[normalized] || 800);
+      const action = labelForAction(normalized);
+      const experimental = isExperimentalGesture(normalized);
+      const banner = experimental ? "Gesto experimental detectado: " + normalized + " -> accion simulada: " + action + " (" + source + ", conf " + (confidence || 0).toFixed(2) + ")" : normalized + " => " + action + " (" + source + ", conf " + (confidence || 0).toFixed(2) + ")";
+      state.router.lastAction = (experimental ? "[experimental] " : "") + action;
+      state.router.lastSource = source;
+      state.router.lastConfidence = confidence;
+      setFeedback(banner, experimental ? "warn" : "ok");
+      updateDebugUI({ winnerName: normalized, action: state.router.lastAction });
+      return true;
+    }
+
+    function labelForAction(id) {
+      switch (id) {
+        case "open_palm": return "modo exploracion";
+        case "swipe_left": return "siguiente";
+        case "swipe_right": return "anterior";
+        case "pinch": return "seleccionar";
+        case "victory": return "comparar";
+        case "thumbs_up": return "me interesa";
+        case "thumbs_down": return "descartar";
+        default: return id;
+      }
+    }
+    function isExperimentalGesture(id) { return EXPERIMENTAL_GESTURES.indexOf(id) >= 0; }
+
+    function simulateGestureForQA(name) {
+      return applyGestureAction(name, "qa", 1, { bypassCooldown: true });
+    }
+
+    function updateCandidateList(candidates, winnerName) {
+      const list = els.candidateList;
+      if (!candidates || !candidates.length) { list.innerHTML = '<li class="filtered">Sin candidatos</li>'; return; }
+      const html = candidates.map(function (c) {
+        const cls = winnerName && c.normalizedName === winnerName ? "winner" : "";
+        return '<li class="' + cls + '">' + c.normalizedName + ' (' + c.confidence.toFixed(2) + ') - ' + (c.reason || "") + '</li>';
+      }).join("");
+      list.innerHTML = html;
+    }
+
+    function updateDebugUI(extra) {
+      extra = extra || {};
+      if (extra.winnerName !== undefined) els.dbgWinner.textContent = extra.winnerName || "-";
+      if (extra.action !== undefined) els.dbgAction.textContent = extra.action || "-";
+      els.dbgConfidence.textContent = state.router.lastConfidence ? state.router.lastConfidence.toFixed(2) : "-";
+      els.dbgSource.textContent = state.router.lastSource || "-";
+      els.dbgStable.textContent = String(state.router.stableCount);
+      const now = performance.now();
+      const winner = state.router.lastWinner || "";
+      const cd = winner && state.router.cooldownUntil[winner] ? Math.max(0, state.router.cooldownUntil[winner] - now) : 0;
+      els.dbgCooldown.textContent = cd ? Math.round(cd) + "ms" : "-";
+    }
+
+    function detectLoop() {
+      if (!state.camera.enabled) return;
+      const lm = state.camera.landmarker;
+      if (!lm || els.video.readyState < 2) { requestAnimationFrame(detectLoop); return; }
+      let result = null;
+      try { result = lm.detectForVideo(els.video, performance.now()); }
+      catch (e) { console.error("[lab] detect error", e); requestAnimationFrame(detectLoop); return; }
+
+      const hand = result && result.landmarks && result.landmarks.length > 0 ? result.landmarks[0] : null;
+
+      state.gesture.frames += 1;
+      const now = performance.now();
+      if (now - state.gesture.lastFpsAt >= 1000) {
+        state.gesture.fps = Math.round(state.gesture.frames * 1000 / (now - state.gesture.lastFpsAt));
+        state.gesture.frames = 0;
+        state.gesture.lastFpsAt = now;
+        els.fpsStatus.textContent = String(state.gesture.fps);
+      }
+
+      drawOverlay(hand);
+
+      if (hand) {
+        const zoneInfo = evaluateActiveZone(hand);
+        state.zone.lastIn = zoneInfo.inside;
+        state.zone.lastDistanceState = zoneInfo.distance;
+        updateZoneHint(zoneInfo);
+        setHandStatus(zoneInfo.inside === false && state.zone.mode === "block" ? "mano fuera de zona" : "detectada", zoneInfo.inside === false ? "warn" : "ok");
+
+        const cls = classifyGestureCandidatesScaled(hand);
+        els.dbgPalmScale.textContent = cls.palmScale.toFixed(3);
+        els.dbgExtended.textContent = String(cls.extended);
+        els.dbgPinchRatio.textContent = cls.pinchRatio.toFixed(2);
+        els.dbgSwipeDx.textContent = cls.swipeDxRatio.toFixed(2);
+        els.dbgRaw.textContent = cls.candidates.length ? cls.candidates.map(function (c) { return c.normalizedName; }).join(", ") : "-";
+        const f = cls.fingers;
+        els.dbgFingers.textContent = "T:" + (f.thumb?"1":"0") + " I:" + (f.index?"1":"0") + " M:" + (f.middle?"1":"0") + " R:" + (f.ring?"1":"0") + " P:" + (f.pinky?"1":"0");
+        els.dbgThumbDir.textContent = cls.thumbDir;
+        els.dbgVictoryScore.textContent = cls.victoryScore ? cls.victoryScore.toFixed(2) : "-";
+        els.dbgThumbsUpScore.textContent = cls.thumbsUpScore ? cls.thumbsUpScore.toFixed(2) : "-";
+        els.dbgThumbsDownScore.textContent = cls.thumbsDownScore ? cls.thumbsDownScore.toFixed(2) : "-";
+
+        const gateBlocked = state.zone.mode === "block" && zoneInfo.inside === false;
+        if (gateBlocked) {
+          updateCandidateList(cls.candidates, "");
+          state.router.lastWinner = "";
+          state.router.stableCount = 0;
+          updateDebugUI({});
+        } else {
+          const resolved = resolveGestureWinner(cls.candidates, { source: "camera" });
+          const winnerName = resolved.winner ? resolved.winner.normalizedName : "";
+          updateCandidateList(cls.candidates, winnerName);
+          if (resolved.winner) {
+            applyGestureAction(resolved.winner.normalizedName, "camera", resolved.winner.confidence, { resolvedWinner: resolved.winner });
+          } else {
+            updateDebugUI({ winnerName: resolved.reason });
+          }
+        }
+      } else {
+        setHandStatus("sin mano");
+        els.zoneHint.hidden = state.zone.mode === "off";
+        if (!els.zoneHint.hidden) { els.zoneHint.textContent = "Coloca la mano dentro de la zona"; els.zoneHint.className = "hint"; }
+        els.dbgPalmScale.textContent = "-";
+        els.dbgExtended.textContent = "-";
+        els.dbgPinchRatio.textContent = "-";
+        els.dbgSwipeDx.textContent = "-";
+        els.dbgRaw.textContent = "-";
+        els.dbgZone.textContent = "-";
+        els.dbgFingers.textContent = "-";
+        els.dbgThumbDir.textContent = "-";
+        els.dbgVictoryScore.textContent = "-";
+        els.dbgThumbsUpScore.textContent = "-";
+        els.dbgThumbsDownScore.textContent = "-";
+        updateCandidateList([], "");
+        state.router.lastWinner = "";
+        state.router.stableCount = 0;
+      }
+
+      requestAnimationFrame(detectLoop);
+    }
+
+    function resetDebug() {
+      state.router.lastWinner = "";
+      state.router.stableCount = 0;
+      state.router.cooldownUntil = {};
+      state.router.lastAction = "";
+      state.router.lastSource = "-";
+      state.router.lastConfidence = 0;
+      state.gesture.history.length = 0;
+      ["dbgRaw","dbgWinner","dbgConfidence","dbgAction","dbgSource","dbgPalmScale","dbgExtended","dbgPinchRatio","dbgSwipeDx","dbgCooldown","dbgZone","dbgFingers","dbgThumbDir","dbgVictoryScore","dbgThumbsUpScore","dbgThumbsDownScore"].forEach(function (id) { els[id].textContent = "-"; });
+      els.dbgStable.textContent = "0";
+      updateCandidateList([], "");
+      setFeedback("Debug reseteado.");
+    }
+
+    function bindEvents() {
+      els.cameraToggleBtn.addEventListener("click", function () {
+        if (state.camera.enabled) stopCamera();
+        else startCamera();
+      });
+      els.cameraStopBtn.addEventListener("click", stopCamera);
+      els.resetDebugBtn.addEventListener("click", resetDebug);
+      els.sensitivitySelect.addEventListener("change", function (e) { state.gesture.sensitivity = e.target.value; setFeedback("Sensibilidad: " + e.target.value); });
+      els.zoneModeSelect.addEventListener("change", function (e) { state.zone.mode = e.target.value; setFeedback("Zona activa: " + e.target.value); });
+      els.mirrorToggle.addEventListener("change", function (e) {
+        state.mirror = !!e.target.checked;
+        els.video.style.transform = state.mirror ? "scaleX(-1)" : "none";
+      });
+
+      const qaMap = {
+        qaOpenPalmBtn: "open_palm", qaSwipeLeftBtn: "swipe_left", qaSwipeRightBtn: "swipe_right", qaPinchBtn: "pinch",
+        qaThumbsUpBtn: "thumbs_up", qaThumbsDownBtn: "thumbs_down", qaVictoryBtn: "victory",
+        qaOkSignBtn: "ok_sign", qaStopPalmBtn: "stop_palm"
+      };
+      Object.keys(qaMap).forEach(function (id) {
+        const btn = els[id];
+        if (btn) btn.addEventListener("click", function () { simulateGestureForQA(qaMap[id]); });
+      });
+    }
+
+    function init() {
+      bindEls();
+      bindEvents();
+      state.gesture.sensitivity = els.sensitivitySelect.value || "medium";
+      state.zone.mode = els.zoneModeSelect.value || "soft";
+      state.mirror = !!els.mirrorToggle.checked;
+      clearOverlay();
+      setFeedback("Listo. Activa la camara para empezar.");
+    }
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+    else init();
+  </script>
+</body>
+</html>
