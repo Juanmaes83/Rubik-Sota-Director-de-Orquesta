@@ -29,6 +29,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 02 - Before / After Reforma - Disponible - v2.1.2
 - 03 - Community Improvement / Vecinia - Disponible - v2.2.1
 - 04 - Real Estate Immersive Viewer - Disponible - v2.3
+- 05 - Real Estate Capture Tour - Disponible - v2.4
 
 **Versiones estables actuales:**
 
@@ -36,6 +37,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - Before / After Reforma v2.1.2
 - Community Improvement / Vecinia v2.2.1
 - Real Estate Immersive Viewer v2.3
+- Real Estate Capture Tour v2.4
 
 **Archivos:**
 
@@ -43,6 +45,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - `gesture-lab/before-after-reforma/rubik-sota-before-after-reforma-v2-1-2.html`
 - `gesture-lab/community-improvement-vecinia/rubik-sota-community-improvement-vecinia-v2-2-1.html`
 - `gesture-lab/real-estate-immersive-viewer/rubik-sota-real-estate-immersive-viewer-v2-3.html`
+- `gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html`
 
 **Funciones actuales:**
 
@@ -75,10 +78,11 @@ El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicac
 - `gesture-lab/before-after-reforma/rubik-sota-before-after-reforma-v2-1-2.html`
 - `gesture-lab/community-improvement-vecinia/rubik-sota-community-improvement-vecinia-v2-2-1.html`
 - `gesture-lab/real-estate-immersive-viewer/rubik-sota-real-estate-immersive-viewer-v2-3.html`
+- `gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html`
 
 **Meta:**
 
-- `v2.0.1 - 4 modulos activos - 29 en planificacion`
+- `v2.0.1 - 5 modulos activos - 28 en planificacion`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -127,6 +131,25 @@ Real Estate Immersive Viewer v2.3 lleva el patron Gesture Lab al eje inmobiliari
 - WhatsApp, email y copiar enlace con texto inmobiliario;
 - guardado local de configuracion (zona, modo, nivel, slider, textos) con key rubik-sota-real-estate-viewer-v2-3-snapshot.
 
+### Nota Real Estate Capture Tour v2.4
+
+Real Estate Capture Tour v2.4 incorpora captura guiada de vivienda por estancias:
+
+- datos de vivienda: referencia, ubicacion, precio orientativo, operacion y notas internas;
+- flujo guiado de 4 pasos: portada, estancias, argumento y exportacion;
+- seis estancias: Portada, Salon, Cocina, Dormitorio, Bano y Terraza;
+- captura in-app con getUserMedia y fallback a input nativo;
+- subida de imagen desde galeria;
+- imagen actual y mejora/propuesta por estancia;
+- checklist comercial por estancia (luz natural, orden, amplitud, acabados, potencial, necesita mejora);
+- estado de captura por estancia: Pendiente, Capturada, Lista para presentar;
+- canvas comparativo con Cortina, Fundido y Split 50/50;
+- resumen de progreso del tour con porcentaje y siguiente estancia recomendada;
+- descarga PNG por estancia;
+- grabacion WebM si el navegador lo permite;
+- WhatsApp, email, copiar enlace y guardado local;
+- localStorage key: rubik-sota-real-estate-capture-tour-v2-4-snapshot.
+
 ---
 
 ## Capture Input System
@@ -145,7 +168,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 02 | Before / After Reforma | Disponible · v2.1.2 |
 | 03 | Community Improvement / Vecinia | Disponible - v2.2.1 |
 | 04 | Real Estate Immersive Viewer | Disponible - v2.3 |
-| 05 | Real Estate Capture Tour | Próximamente · v2.4 |
+| 05 | Real Estate Capture Tour | Disponible - v2.4 |
 | 06 | Golf Experience / Home Practice | Próximamente · v2.5 |
 | 07 | Golf Course Visualizer | Próximamente · v2.6 |
 | 08 | Pádel Tactical Lab | Próximamente · v2.14 |
@@ -194,23 +217,23 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 El siguiente m-dulo recomendado es:
 
-**v2.4 - Real Estate Capture Tour**
+**v2.5 - Golf Experience / Home Practice**
 
 **Motivo:**
 
-Despu-s de validar Real Estate Immersive Viewer v2.3, el siguiente paso natural es Real Estate Capture Tour: convertir la captura r-pida desde m-vil de un agente o propietario en una mini-presentaci-n comercial inmobiliaria lista para enviar.
+Tras validar el bloque inmobiliario con v2.3 y v2.4, el siguiente paso es probar Gesture Lab en un vertical deportivo: practica visual, posicion, gesto, campo y feedback interactivo. Esto demuestra que la arquitectura no sirve solo para inmuebles, sino tambien para entrenamiento, deporte, educacion visual y experiencias de producto.
 
 **Flujo previsto:**
 
-1. Capturar in-app las zonas clave de la vivienda desde m-vil.
-2. Encadenar las capturas en un tour comercial corto y ordenado.
-3. A-adir argumentos comerciales por zona.
-4. Exportar PNG, enlace o clip por zona o por tour completo.
-5. Compartir el tour con comprador, propietario o agencia desde WhatsApp, email o enlace.
+1. Seleccionar modo de practica (campo, hoyo, golpe o postura).
+2. Subir o capturar imagen del jugador, campo o golpe.
+3. Mostrar referencia visual.
+4. Comparar posicion, trayectoria o escenario.
+5. Exportar una pieza visual para feedback o contenido.
 
 **Frase clave:**
 
-> De ense-ar una vivienda a captar una vivienda en minutos.
+> De vender una vivienda a entrenar un golpe con la misma arquitectura.
 
 ---
 
@@ -290,9 +313,9 @@ Cada módulo debe incluir, cuando aplique:
 - v2.2 - Community Improvement / Vecinia - validado
 - v2.2.1 - Export & Share Layer - estable
 - v2.2.2 - Promote Vecinia - documentacion/Hub
-- v2.3 - Real Estate Immersive Viewer - estable actual
-- v2.4 - Real Estate Capture Tour - siguiente
-- v2.5 — Golf Experience / Home Practice
+- v2.3 - Real Estate Immersive Viewer - estable
+- v2.4 - Real Estate Capture Tour - estable actual
+- v2.5 - Golf Experience / Home Practice - siguiente
 - v2.6 — Golf Course Visualizer
 - v2.7 — Food Assembly: Sushi + Burger + Pizza
 - v2.8 — Lookbook Gestual / Moda
@@ -340,4 +363,5 @@ Cada módulo debe incluir, cuando aplique:
 - Before / After Reforma v2.1.2 publicada y funcional.
 - Community Improvement / Vecinia v2.2.1 publicada y funcional.
 - Real Estate Immersive Viewer v2.3 publicada y funcional.
-- Siguiente fase: v2.4 - Real Estate Capture Tour.
+- Real Estate Capture Tour v2.4 publicada y funcional.
+- Siguiente fase: v2.5 - Golf Experience / Home Practice.
