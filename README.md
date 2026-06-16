@@ -31,6 +31,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 04 - Real Estate Immersive Viewer - Disponible - v2.3
 - 05 - Real Estate Capture Tour - Disponible - v2.4
 - 06 - Golf Experience / Home Practice - Disponible - v2.5
+- 07 - Retail Catalog - Disponible - v2.6
 
 **Versiones estables actuales:**
 
@@ -40,6 +41,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - Real Estate Immersive Viewer v2.3
 - Real Estate Capture Tour v2.4
 - Golf Experience / Home Practice v2.5
+- Retail Catalog v2.6
 
 **Archivos:**
 
@@ -49,6 +51,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - `gesture-lab/real-estate-immersive-viewer/rubik-sota-real-estate-immersive-viewer-v2-3.html`
 - `gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html`
 - `gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html`
+- `gesture-lab/retail-catalog/rubik-sota-retail-catalog-v2-6.html`
 
 **Funciones actuales:**
 
@@ -83,10 +86,11 @@ El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicac
 - `gesture-lab/real-estate-immersive-viewer/rubik-sota-real-estate-immersive-viewer-v2-3.html`
 - `gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html`
 - `gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html`
+- `gesture-lab/retail-catalog/rubik-sota-retail-catalog-v2-6.html`
 
 **Meta:**
 
-- `v2.0.1 - 6 modulos activos - 27 en planificacion`
+- `v2.0.1 - 7 modulos activos - 26 en planificacion`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -174,6 +178,24 @@ Golf Experience / Home Practice v2.5 incorpora practica visual guiada:
 - WhatsApp, email, copiar enlace y guardado local;
 - localStorage key: rubik-sota-golf-experience-home-practice-v2-5-snapshot.
 
+### Nota Retail Catalog v2.6
+
+Retail Catalog v2.6 incorpora catálogo comercial interactivo:
+
+- motor local de productos;
+- categorías: Destacados, Moda, Calzado, Accesorios, Hogar y Promociones;
+- producto destacado con ficha, precio, beneficio, stock demo y promoción;
+- favoritos;
+- carrito local;
+- total estimado;
+- resumen de selección;
+- código de continuación / QR demo sin API externa;
+- modo producto, ficha, carrito y código;
+- descarga PNG;
+- grabación WebM si el navegador lo permite;
+- WhatsApp, email, copiar enlace y guardado local;
+- localStorage key: rubik-sota-retail-catalog-v2-6-snapshot.
+
 ---
 
 ## Capture Input System
@@ -194,39 +216,39 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 04 | Real Estate Immersive Viewer | Disponible - v2.3 |
 | 05 | Real Estate Capture Tour | Disponible - v2.4 |
 | 06 | Golf Experience / Home Practice | Disponible - v2.5 |
-| 07 | Golf Course Visualizer | Próximamente · v2.6 |
-| 08 | Pádel Tactical Lab | Próximamente · v2.14 |
-| 09 | Tennis Gesture Court | Próximamente · v2.15 |
-| 10 | Nautical Visualizer | Próximamente · v2.13 |
-| 11 | Tourism / Resort Tour | Próximamente · v2.12 |
-| 12 | Product 360 | Próximamente · v2.10 |
-| 13 | Lookbook Gestual / Moda | Próximamente · v2.8 |
-| 14 | Selfie Style / Outfit Visualizer | Próximamente · v2.9 |
-| 15 | Food Assembly General | Próximamente · v2.7 |
-| 16 | Sushi Roll Interactive | Próximamente · v2.7 |
-| 17 | Burger Layers Interactive | Próximamente · v2.7 |
-| 18 | Pizza / Cheese Pull Visualizer | Próximamente · v2.7 |
-| 19 | Museo / Patrimonio | Próximamente · v2.16 |
-| 20 | Educación Visual | Próximamente · v2.17 |
-| 21 | Dental Kids / Cepillado Interactivo | Próximamente · v2.18 |
-| 22 | Higiene de Manos | Próximamente · v2.19 |
-| 23 | Fisioterapia Guiada | Próximamente · v2.20 |
-| 24 | Salud / Clínicas | Próximamente · v2.21 |
-| 25 | Automoción | Próximamente · v2.22 |
-| 26 | Industria / Cocinas / B2B | Próximamente · v2.23 |
-| 27 | Instituciones / Urbanismo | Próximamente · v2.24 |
-| 28 | Eventos / Activaciones | Próximamente · v2.25 |
-| 29 | Nutrición Infantil | Próximamente · v2.26 |
-| 30 | Seguridad Laboral | Próximamente · v2.27 |
-| 31 | Educación Ambiental | Próximamente · v2.28 |
-| 32 | Interactive Retail Window | Próximamente · v2.11 |
-| 33 | Personal Avatar / Selfie Campaign | Próximamente · v2.29 |
+| 07 | Retail Catalog | Disponible - v2.6 |
+| 08 | Interactive Gesture Catalog / Retail Catalog | Próximamente - v2.7 |
+| 09 | Interactive Retail Window | Próximamente - v2.8 |
+| 10 | Fashion Lookbook | Próximamente - v2.9 |
+| 11 | Selfie Style / Outfit Visualizer | Próximamente - v2.10 |
+| 12 | Dental Kids | Próximamente - v2.11 |
+| 13 | Retail Window Pro | Próximamente - v2.12 |
+| 14 | Food Assembly General | Próximamente - v2.13 |
+| 15 | Sushi Roll Interactive | Próximamente - v2.14 |
+| 16 | Burger Layers Interactive | Próximamente - v2.15 |
+| 17 | Pizza / Cheese Pull Visualizer | Próximamente - v2.16 |
+| 18 | Museo / Patrimonio | Próximamente - v2.17 |
+| 19 | Educación Visual | Próximamente - v2.18 |
+| 20 | Higiene de Manos | Próximamente - v2.19 |
+| 21 | Fisioterapia Guiada | Próximamente - v2.20 |
+| 22 | Salud / Clínicas | Próximamente - v2.21 |
+| 23 | Automoción | Próximamente - v2.22 |
+| 24 | Industria / Cocinas / B2B | Próximamente - v2.23 |
+| 25 | Instituciones / Urbanismo | Próximamente - v2.24 |
+| 26 | Eventos / Activaciones | Próximamente - v2.25 |
+| 27 | Nutrición Infantil | Próximamente - v2.26 |
+| 28 | Seguridad Laboral | Próximamente - v2.27 |
+| 29 | Educación Ambiental | Próximamente - v2.28 |
+| 30 | Pádel Tactical Lab | Próximamente - v2.29 |
+| 31 | Tennis Gesture Court | Próximamente - v2.30 |
+| 32 | Nautical Visualizer | Próximamente - v2.31 |
+| 33 | Golf Course Visualizer | Próximamente - v2.32 |
 
 ### Notas de módulos nuevos (v2.0.1)
 
 - **05 — Real Estate Capture Tour**: el agente hace fotos del salón, cocina, baño, terraza o fachada desde la plataforma y genera una experiencia visual rápida. Acelera captaciones inmobiliarias y crea material comercial en minutos.
 - **06 — Golf Experience / Home Practice**: combina imagen del jugador y campo de golf. El usuario se hace una foto o graba postura de swing, elige hoyo/campo y ve trayectoria, dirección, zona de impacto y objetivo. Practicar en casa, clases, academias, membresías y resorts.
-- **07 — Golf Course Visualizer**: campo, hoyo, green, bunker, viento y trayectoria por capas. Revela estrategia, zonas de riesgo y golpe recomendado.
+- **07 — Retail Catalog**: catálogo comercial interactivo con categorías, favoritos, carrito local, código de continuación y share layer. Sirve para tiendas, marcas, showrooms, franquicias y ferias.
 - **14 — Selfie Style / Outfit Visualizer**: selfie convertida en base para estilos, outfits, accesorios o comparación outfit base vs completo. Personaliza moda, belleza, retail, peluquería, eventos y campañas.
 - **15 — Food Assembly General**: platos, menús o productos montados por capas. Vende producto gastronómico de forma visual y apetecible.
 - **16 — Sushi Roll Interactive**: sushi que se enrolla, se corta o revela ingredientes (alga, arroz, pescado, toppings y salsa). Restaurantes japoneses, delivery y campañas virales.
@@ -241,23 +263,23 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 El siguiente módulo recomendado es:
 
-**v2.6 - Golf Course Visualizer**
+**v2.7 - Interactive Gesture Catalog / Retail Catalog**
 
 **Motivo:**
 
-Tras validar la practica personal con v2.5, el siguiente paso es ampliar la vertical golf hacia campo, hoyo, green, bunker, viento, trayectoria y estrategia visual. Esto demuestra una segunda capa del sistema: no solo practicar el gesto, sino explicar el entorno de juego.
+Tras validar Retail Catalog v2.6 como motor comercial de productos, el siguiente paso es añadir interacción gestual progresiva. El objetivo no es meter tecnología por decoración, sino comprobar si los gestos aumentan la interacción en catálogos, escaparates, ferias y mupis sin romper la experiencia táctil.
 
 **Flujo previsto:**
 
-1. Seleccionar hoyo, zona o escenario.
-2. Subir o capturar imagen de campo, green o referencia visual.
-3. Mostrar capas de trayectoria, viento, riesgo y objetivo.
-4. Comparar estrategia recomendada vs alternativa.
-5. Exportar una pieza visual para clase, club, academia o contenido.
+1. Navegar productos con botones/táctil y preparar fallback.
+2. Activar gestos de swipe para pasar producto.
+3. Usar gesto de selección para destacar producto.
+4. Añadir producto al carrito con gesto o botón.
+5. Mostrar código de continuación y compartir selección.
 
 **Frase clave:**
 
-> De entrenar el golpe a leer el campo con la misma arquitectura.
+> Del catálogo táctil al escaparate gestual con la misma arquitectura.
 
 ---
 
@@ -339,31 +361,34 @@ Cada módulo debe incluir, cuando aplique:
 - v2.2.2 - Promote Vecinia - documentacion/Hub
 - v2.3 - Real Estate Immersive Viewer - estable
 - v2.4 - Real Estate Capture Tour - estable
-- v2.5 - Golf Experience / Home Practice - estable actual
-- v2.6 — Golf Course Visualizer
-- v2.7 — Food Assembly: Sushi + Burger + Pizza
-- v2.8 — Lookbook Gestual / Moda
-- v2.9 — Selfie Style / Outfit Visualizer
-- v2.10 — Product 360
-- v2.11 — Interactive Retail Window
-- v2.12 — Tourism / Resort Tour
-- v2.13 — Nautical Visualizer
-- v2.14 — Pádel Tactical Lab
-- v2.15 — Tennis Gesture Court
-- v2.16 — Museo / Patrimonio
-- v2.17 — Educación Visual
-- v2.18 — Dental Kids
-- v2.19 — Higiene de Manos
-- v2.20 — Fisioterapia Guiada
-- v2.21 — Salud / Clínicas
-- v2.22 — Automoción
-- v2.23 — Industria / Cocinas / B2B
-- v2.24 — Instituciones / Urbanismo
-- v2.25 — Eventos / Activaciones
-- v2.26 — Nutrición Infantil
-- v2.27 — Seguridad Laboral
-- v2.28 — Educación Ambiental
-- v2.29 — Personal Avatar / Selfie Campaign
+- v2.5 - Golf Experience / Home Practice - estable
+- v2.6 - Retail Catalog - estable actual
+- v2.7 - Interactive Gesture Catalog / Retail Catalog - siguiente
+- v2.8 - Interactive Retail Window
+- v2.9 - Fashion Lookbook
+- v2.10 - Selfie Style / Outfit Visualizer
+- v2.11 - Dental Kids
+- v2.12 - Retail Window Pro
+- v2.13 - Food Assembly: Sushi + Burger + Pizza
+- v2.14 - Museo / Patrimonio
+- v2.15 - Educación Visual
+- v2.16 - Higiene de Manos
+- v2.17 - Fisioterapia Guiada
+- v2.18 - Salud / Clínicas
+- v2.19 - Automoción
+- v2.20 - Industria / Cocinas / B2B
+- v2.21 - Instituciones / Urbanismo
+- v2.22 - Eventos / Activaciones
+- v2.23 - Nutrición Infantil
+- v2.24 - Seguridad Laboral
+- v2.25 - Educación Ambiental
+- v2.26 - Pádel Tactical Lab
+- v2.27 - Tennis Gesture Court
+- v2.28 - Nautical Visualizer
+- v2.29 - Tourism / Resort Tour
+- v2.30 - Product 360
+- v2.31 - Golf Course Visualizer
+- v2.32 - Personal Avatar / Selfie Campaign
 
 ---
 
@@ -389,4 +414,5 @@ Cada módulo debe incluir, cuando aplique:
 - Real Estate Immersive Viewer v2.3 publicada y funcional.
 - Real Estate Capture Tour v2.4 publicada y funcional.
 - Golf Experience / Home Practice v2.5 publicada y funcional.
-- Siguiente fase: v2.6 - Golf Course Visualizer.
+- Retail Catalog v2.6 publicada y funcional.
+- Siguiente fase: v2.7 - Interactive Gesture Catalog / Retail Catalog.

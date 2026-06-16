@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota Gesture Lab - 07 - Retail Catalog - v2.6. Catalogo comercial interactivo con categorias, favoritos, carrito local, codigo de continuacion y share layer." />
+  <title>Rubik Sota Gesture Lab - 07 - Retail Catalog - v2.6</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030303;
+      --fg: #ffffff;
+      --muted: rgba(255,255,255,0.66);
+      --muted-2: rgba(255,255,255,0.42);
+      --line: rgba(255,255,255,0.14);
+      --line-strong: rgba(255,255,255,0.32);
+      --glass: rgba(255,255,255,0.06);
+      --accent: #00ffcc;
+      --accent-2: #d8ff3e;
+      --danger: #ff3366;
+      --gold: #e8d8a8;
+      --retail: #a855f7;
+      --retail-glow: rgba(168,85,247,0.28);
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+      --shadow: 0 30px 90px rgba(0,0,0,0.62);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      min-height: 100vh; color: var(--fg);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(168,85,247,0.16), transparent 34%),
+        radial-gradient(circle at 86% 8%, rgba(0,255,204,0.10), transparent 28%),
+        radial-gradient(circle at 78% 86%, rgba(216,255,62,0.08), transparent 30%),
+        var(--bg);
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 70px 70px; mask-image: radial-gradient(circle at 50% 36%, black, transparent 78%); opacity: 0.42;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, label, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    input, textarea, select { color: inherit; }
+    .shell { position: relative; z-index: 1; max-width: 1320px; margin: 0 auto; padding: clamp(1rem, 3vw, 2.4rem); display: grid; gap: clamp(1.4rem, 3vw, 2.4rem); }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.3rem 0.2rem; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 0.78rem; min-width: 0; }
+    .brand-mark { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; border: 1px solid var(--line-strong); background: linear-gradient(135deg, rgba(168,85,247,0.28), rgba(255,255,255,0.05)); box-shadow: inset 0 0 28px rgba(168,85,247,0.14), 0 0 28px rgba(168,85,247,0.08); font-weight: 900; letter-spacing: -0.08em; font-size: 0.92rem; }
+    .brand-name { display: block; font-weight: 900; letter-spacing: -0.05em; line-height: 1; font-size: 1.04rem; }
+    .brand-sub { display: block; margin-top: 0.22rem; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; }
+    .top-actions { display: flex; gap: 0.46rem; flex-wrap: wrap; }
+
+    .btn { border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--glass); color: var(--fg); padding: 0.6rem 0.9rem; font-weight: 800; font-size: 0.8rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease; white-space: nowrap; }
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255,255,255,0.11); }
+    .btn:disabled { opacity: 0.48; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .btn-primary:hover { background: rgba(255,255,255,0.88); color: #000; }
+    .btn-accent { border-color: rgba(0,255,204,0.46); background: rgba(0,255,204,0.10); color: var(--accent); }
+    .btn-accent:hover { background: rgba(0,255,204,0.18); }
+    .btn-retail { border-color: rgba(168,85,247,0.5); background: rgba(168,85,247,0.12); color: #e9d5ff; }
+    .btn-retail:hover { background: rgba(168,85,247,0.22); }
+    .btn-warn { border-color: rgba(216,255,62,0.42); background: rgba(216,255,62,0.10); color: var(--accent-2); }
+    .btn-warn:hover { background: rgba(216,255,62,0.18); }
+    .btn-danger { border-color: rgba(255,51,102,0.5); color: #ff9db5; }
+    .btn-ghost { background: transparent; }
+    .btn-icon { width: 2.6rem; height: 2.6rem; padding: 0; border-radius: 50%; }
+    .btn.is-active { background: var(--accent); color: #001f1a; border-color: var(--accent); }
+
+    .hero { border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.022)); box-shadow: var(--shadow); backdrop-filter: blur(18px); padding: clamp(1.4rem, 3vw, 2.6rem); position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; right: -20%; bottom: -28%; width: 60%; height: 60%; background: radial-gradient(circle, rgba(168,85,247,0.18), transparent 65%); pointer-events: none; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--muted); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 800; margin-bottom: 1rem; }
+    .eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--retail); box-shadow: 0 0 18px var(--retail); }
+    h1 { font-size: clamp(2rem, 4.6vw, 4.4rem); line-height: 0.96; letter-spacing: -0.065em; font-weight: 800; max-width: 24ch; }
+    h1 .serif { font-family: "Playfair Display", serif; font-style: italic; font-weight: 400; letter-spacing: -0.045em; }
+    .hero-sub { margin-top: 1.05rem; color: var(--fg); font-weight: 600; font-size: clamp(1.02rem, 1.5vw, 1.25rem); max-width: 60ch; }
+    .hero-lead { margin-top: 0.8rem; color: var(--muted); line-height: 1.6; font-size: clamp(0.96rem, 1.3vw, 1.06rem); max-width: 72ch; }
+    .hero-grid { margin-top: 1.2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.6rem; }
+    .hero-field { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.7rem 0.85rem; background: rgba(255,255,255,0.03); display: grid; gap: 0.2rem; }
+    .hero-field strong { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+    .hero-field span { font-size: 0.92rem; font-weight: 700; color: var(--fg); }
+    .badges { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .badge { border: 1px solid var(--line); background: var(--glass); color: var(--fg); padding: 0.4rem 0.7rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.74rem; letter-spacing: 0.04em; }
+    .badge-accent { border-color: rgba(0,255,204,0.42); color: var(--accent); background: rgba(0,255,204,0.08); }
+    .badge-retail { border-color: rgba(168,85,247,0.42); color: #e9d5ff; background: rgba(168,85,247,0.10); }
+
+    .panel { border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); padding: 1.1rem 1.1rem 1.2rem 1.1rem; display: grid; gap: 0.7rem; }
+    .panel .label { font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.7rem; }
+    .step { border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1rem; background: rgba(255,255,255,0.025); display: grid; gap: 0.4rem; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--retail); color: #fff; font-weight: 900; font-size: 0.8rem; }
+    .step h3 { font-size: 0.95rem; letter-spacing: -0.02em; }
+    .step p { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+
+    .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.7rem; }
+    .meta-field { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.7rem 0.85rem; background: rgba(255,255,255,0.03); display: grid; gap: 0.25rem; }
+    .meta-field label { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+    .meta-field input, .meta-field textarea { background: transparent; border: none; outline: none; font-size: 0.92rem; font-weight: 700; color: var(--fg); width: 100%; resize: vertical; }
+    .meta-field textarea { min-height: 3.2rem; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .chip { border: 1px solid var(--line); background: var(--glass); color: var(--fg); padding: 0.5rem 0.9rem; border-radius: var(--radius-pill); font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+    .chip:hover { background: rgba(255,255,255,0.1); border-color: var(--line-strong); }
+    .chip.is-active { background: var(--retail); color: #fff; border-color: var(--retail); }
+
+    .catalog-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; }
+    @media (max-width: 980px) { .catalog-layout { grid-template-columns: 1fr; } }
+
+    .product-list { display: grid; gap: 0.55rem; max-height: 560px; overflow-y: auto; padding-right: 0.3rem; }
+    .product-list::-webkit-scrollbar { width: 6px; }
+    .product-list::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 6px; }
+    .product-thumb { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.7rem; background: rgba(255,255,255,0.03); cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease; display: grid; gap: 0.25rem; }
+    .product-thumb:hover { background: rgba(255,255,255,0.07); border-color: var(--line-strong); }
+    .product-thumb.is-active { border-color: var(--retail); background: rgba(168,85,247,0.10); }
+    .product-thumb .pt-name { font-weight: 800; font-size: 0.86rem; letter-spacing: -0.01em; }
+    .product-thumb .pt-meta { font-size: 0.72rem; color: var(--muted); }
+    .product-thumb .pt-price { font-weight: 900; color: var(--accent); font-size: 0.82rem; }
+
+    .lab-wrap { display: grid; gap: 0.9rem; }
+    .lab-panel { position: relative; border: 1px solid var(--line); border-radius: var(--radius-xl); background: #050505; overflow: hidden; min-height: 520px; isolation: isolate; }
+    .lab-panel::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(circle at 50% 36%, transparent 0, transparent 42%, rgba(0,0,0,0.32) 78%), linear-gradient(0deg, rgba(0,0,0,0.55), transparent 38%); }
+    #stageCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+    .lab-overlay { position: absolute; z-index: 4; inset: auto 1rem 1rem 1rem; pointer-events: none; display: flex; justify-content: space-between; align-items: end; gap: 1rem; }
+    .scene-caption { max-width: 62%; }
+    .scene-kicker { color: var(--retail); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 900; font-size: 0.72rem; }
+    .scene-title { margin-top: 0.36rem; font-size: clamp(1.35rem, 2.2vw, 2.1rem); line-height: 1; font-weight: 900; letter-spacing: -0.05em; }
+    .scene-desc { margin-top: 0.36rem; color: rgba(255,255,255,0.70); line-height: 1.45; font-size: 0.86rem; }
+    .hud-stack { display: grid; justify-items: end; gap: 0.5rem; }
+    .hud-pill { display: inline-flex; align-items: center; gap: 0.46rem; border: 1px solid rgba(255,255,255,0.20); background: rgba(0,0,0,0.54); backdrop-filter: blur(16px); border-radius: var(--radius-pill); padding: 0.42rem 0.6rem; color: rgba(255,255,255,0.84); font-size: 0.7rem; white-space: nowrap; }
+
+    .control-panel { border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)); padding: 1rem; display: grid; gap: 0.9rem; }
+    .control-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+    .mode-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-pill); overflow: hidden; }
+    .mode-toggle button { background: transparent; color: var(--muted); border: none; padding: 0.55rem 0.85rem; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.04em; }
+    .mode-toggle button.is-active { background: var(--fg); color: var(--bg); }
+    .share-row { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+
+    .cart-summary { border: 1px solid var(--line); border-radius: var(--radius-xl); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); padding: 1.1rem; display: grid; gap: 0.8rem; }
+    .cart-items { display: grid; gap: 0.5rem; }
+    .cart-item { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.7rem 0.85rem; background: rgba(255,255,255,0.03); }
+    .cart-item-info { min-width: 0; }
+    .cart-item-name { font-weight: 800; font-size: 0.9rem; }
+    .cart-item-meta { font-size: 0.74rem; color: var(--muted); }
+    .cart-empty { color: var(--muted); font-size: 0.9rem; padding: 0.6rem 0; }
+    .cart-total { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 900; border-top: 1px solid var(--line); padding-top: 0.8rem; }
+    .cart-total span { color: var(--accent); }
+
+    .toast-layer { position: fixed; z-index: 100; right: 1rem; top: 5.2rem; display: grid; gap: 0.6rem; pointer-events: none; }
+    .toast { width: min(340px, calc(100vw - 2rem)); border: 1px solid var(--line); border-radius: 18px; background: rgba(0,0,0,0.78); color: #fff; backdrop-filter: blur(18px); padding: 0.78rem 0.95rem; box-shadow: 0 18px 42px rgba(0,0,0,0.38); font-size: 0.84rem; line-height: 1.35; animation: toastIn 0.22s ease-out; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .lab-panel.is-immersive { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; border-radius: 0; border: none; z-index: 9999; background: #050505; }
+    .lab-panel.is-kiosk { background: #000; }
+    .lab-panel.is-kiosk .lab-overlay { opacity: 0.7; }
+    .fs-close-btn, .fs-home-btn { position: absolute; z-index: 30; padding: 0.78rem 1.1rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.86rem; backdrop-filter: blur(14px); cursor: pointer; box-shadow: 0 12px 28px rgba(0,0,0,0.38); color: #fff; }
+    .fs-close-btn { top: 1rem; left: 1rem; border: 1px solid rgba(255,255,255,0.32); background: rgba(0,0,0,0.72); }
+    .fs-home-btn { top: 1rem; left: 50%; transform: translateX(-50%); border: 1px solid rgba(0,255,204,0.42); background: rgba(0,255,204,0.12); }
+    .fs-close-btn.is-hidden, .fs-home-btn.is-hidden { display: none; }
+    .lab-panel.is-immersive .fs-close-btn, .lab-panel.is-immersive .fs-home-btn { display: inline-flex; }
+    .fs-controls { position: absolute; z-index: 28; top: 1rem; right: 1rem; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.5rem 0.6rem; border: 1px solid rgba(255,255,255,0.22); border-radius: var(--radius-pill); background: rgba(0,0,0,0.72); backdrop-filter: blur(14px); box-shadow: 0 12px 28px rgba(0,0,0,0.38); }
+    .fs-controls.is-hidden { display: none; }
+    .fs-controls .btn { padding: 0.55rem 0.78rem; font-size: 0.78rem; }
+    .lab-panel.is-immersive .fs-controls { display: inline-flex; }
+
+    .rec-indicator { position: absolute; z-index: 8; top: 1rem; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.72rem; border: 1px solid rgba(255,51,102,0.5); border-radius: var(--radius-pill); background: rgba(0,0,0,0.62); color: #fff; font-weight: 800; font-size: 0.74rem; letter-spacing: 0.06em; backdrop-filter: blur(14px); }
+    .rec-indicator.is-hidden { display: none; }
+    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 14px var(--danger); animation: recPulse 1s ease-in-out infinite; }
+    @keyframes recPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    .capture-modal { position: fixed; inset: 0; z-index: 10000; display: none; align-items: stretch; justify-content: stretch; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); }
+    .capture-modal.is-open { display: flex; }
+    .capture-modal .capture-shell { position: relative; flex: 1; display: grid; grid-template-rows: auto 1fr auto; max-width: 100%; }
+    .capture-modal .capture-head { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; padding: 0.9rem 1rem; border-bottom: 1px solid var(--line); background: rgba(0,0,0,0.55); }
+    .capture-modal .capture-title { font-weight: 900; letter-spacing: -0.02em; font-size: 1rem; }
+    .capture-modal .capture-status { color: var(--muted); font-size: 0.78rem; }
+    .capture-modal .capture-body { position: relative; background: #000; overflow: hidden; display: grid; place-items: center; }
+    .capture-modal video { width: 100%; height: 100%; max-height: 100%; object-fit: contain; background: #000; }
+    .capture-modal .capture-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.9rem 1rem; flex-wrap: wrap; background: rgba(0,0,0,0.55); border-top: 1px solid var(--line); }
+    .capture-modal .capture-foot .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .capture-modal .btn-capture-main { background: var(--accent); color: #001f1a; border-color: var(--accent); padding: 0.86rem 1.2rem; font-weight: 900; font-size: 0.92rem; }
+    .capture-modal .btn-capture-main:disabled { opacity: 0.55; }
+
+    .footer { border-top: 1px solid var(--line); padding-top: 1.2rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: 0.86rem; }
+    .footer strong { color: var(--fg); }
+
+    @media (max-width: 880px) {
+      .scene-caption { max-width: 100%; }
+      .lab-overlay { flex-direction: column; align-items: flex-start; }
+      .hud-stack { justify-items: start; }
+    }
+    @media (max-width: 520px) {
+      .lab-panel { min-height: 460px; }
+      .lab-panel.is-immersive .fs-controls { top: auto; bottom: 1rem; right: auto; left: 50%; transform: translateX(-50%); flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 1.4rem); }
+      .lab-panel.is-immersive .fs-home-btn { font-size: 0.78rem; padding: 0.55rem 0.85rem; }
+      .lab-panel.is-immersive .fs-close-btn { top: 0.75rem; left: 0.75rem; padding: 0.7rem 0.95rem; }
+      .control-actions .btn, .share-row .btn { flex: 1 1 auto; justify-content: center; }
+      .product-list { max-height: none; grid-template-columns: repeat(2, 1fr); }
+      .catalog-layout { gap: 0.8rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">RS</div>
+        <div>
+          <span class="brand-name">Rubik Sota Gesture Lab</span>
+          <span class="brand-sub">07 - Retail Catalog - v2.6</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="btn" id="homeBtn" href="../index.html">Volver al Hub</a>
+        <button class="btn btn-accent" id="openCameraBtn" type="button">Activar camara</button>
+        <button class="btn" id="fullscreenBtn" type="button">Vista completa</button>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> Modulo 07 - Retail Catalog - v2.6</div>
+      <h1 id="heroTitle">Retail <span class="serif">Catalog.</span></h1>
+      <p class="hero-sub">Explora productos, guarda favoritos y crea una seleccion comercial lista para compartir.</p>
+      <p class="hero-lead">Herramienta visual para tiendas, marcas y showrooms que convierte un catalogo de productos en una experiencia interactiva: categorias, ficha de producto, favoritos, carrito local, codigo de continuacion, exportacion y share.</p>
+      <div class="hero-grid">
+        <div class="hero-field"><strong>Para quien</strong><span>Tiendas, marcas, showrooms, franquicias, ferias y equipos comerciales.</span></div>
+        <div class="hero-field"><strong>Que resuelve</strong><span>Convierte productos dispersos en un catalogo visual navegable, seleccionable y compartible.</span></div>
+        <div class="hero-field"><strong>Salida comercial</strong><span>Ficha producto, seleccion local, total estimado, PNG, clip, WhatsApp, email, enlace y codigo de continuacion.</span></div>
+        <div class="hero-field"><strong>Estado MVP</strong><span>Catalogo local, favoritos, carrito, filtros, ficha de producto, exportacion y share layer.</span></div>
+      </div>
+      <div class="badges">
+        <span class="badge badge-retail">v2.6</span>
+        <span class="badge">Retail</span>
+        <span class="badge">Catalogo</span>
+        <span class="badge">Carrito local</span>
+        <span class="badge">Sin backend</span>
+      </div>
+    </section>
+
+    <section class="steps" aria-label="Flujo guiado de 4 pasos">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Explora catalogo</h3>
+        <p>Navega por categorias y descubre productos con ficha visual, precio y beneficio.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Selecciona producto</h3>
+        <p>Abre la ficha, marca favoritos y visualiza el producto destacado.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Anade a carrito</h3>
+        <p>Construye una seleccion local con contador y total estimado.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Comparte o continua en movil</h3>
+        <p>Comparte por WhatsApp, email o copia el enlace con codigo de continuacion.</p>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Datos editables de la campana">
+      <span class="label">Datos de la tienda / campana</span>
+      <div class="meta-grid">
+        <div class="meta-field"><label for="storeInput">Nombre tienda / marca</label><input id="storeInput" type="text" placeholder="Ej. Rubik Store" maxlength="40" /></div>
+        <div class="meta-field"><label for="campaignInput">Campana / coleccion</label><input id="campaignInput" type="text" placeholder="Ej. Primavera 2026" maxlength="40" /></div>
+        <div class="meta-field"><label for="clientInput">Cliente / visitante</label><input id="clientInput" type="text" placeholder="Ej. Ana Lopez" maxlength="40" /></div>
+        <div class="meta-field"><label for="promoInput">Promocion activa</label><input id="promoInput" type="text" placeholder="Ej. 2x1 en accesorios" maxlength="50" /></div>
+        <div class="meta-field"><label for="ctaInput">CTA comercial</label><input id="ctaInput" type="text" placeholder="Ej. Pide presupuesto sin compromiso" maxlength="60" /></div>
+        <div class="meta-field"><label for="notesInput">Notas internas</label><textarea id="notesInput" placeholder="Notas del vendedor..."></textarea></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Selector de categoria">
+      <span class="label">Categorias</span>
+      <div class="chips" id="categoryChips" role="tablist">
+        <button class="chip is-active" data-category="destacados" type="button">Destacados</button>
+        <button class="chip" data-category="moda" type="button">Moda</button>
+        <button class="chip" data-category="calzado" type="button">Calzado</button>
+        <button class="chip" data-category="accesorios" type="button">Accesorios</button>
+        <button class="chip" data-category="hogar" type="button">Hogar</button>
+        <button class="chip" data-category="promociones" type="button">Promociones</button>
+      </div>
+    </section>
+
+    <section class="catalog-layout" aria-label="Catalogo y visor comercial">
+      <div class="panel" style="gap: 0.7rem;">
+        <span class="label">Productos</span>
+        <div class="product-list" id="productList" role="list"></div>
+      </div>
+      <div class="lab-wrap">
+        <div class="lab-panel" id="stagePanel">
+          <canvas id="stageCanvas" aria-label="Visor comercial del producto"></canvas>
+
+          <button class="fs-close-btn is-hidden" id="fullscreenCloseBtn" type="button">Cerrar</button>
+          <button class="fs-home-btn is-hidden" id="fullscreenHomeBtn" type="button">Home</button>
+
+          <div class="rec-indicator is-hidden" id="recIndicator" aria-live="polite">
+            <span class="rec-dot"></span><span>REC</span>
+            <span id="recTimer">00:00 / 00:15</span>
+          </div>
+
+          <div class="fs-controls is-hidden" id="fsControls">
+            <button class="btn" id="fsPrevBtn" type="button">&larr; Ant.</button>
+            <button class="btn" id="fsNextBtn" type="button">Sig. &rarr;</button>
+            <button class="btn btn-retail" id="fsFavBtn" type="button">Favorito</button>
+            <button class="btn btn-accent" id="fsCartBtn" type="button">Carrito</button>
+            <button class="btn" id="fsQrBtn" type="button">Codigo</button>
+            <button class="btn btn-accent" id="fsDownloadPngBtn" type="button">PNG</button>
+            <button class="btn btn-warn" id="fsRecordBtn" type="button">Grabar</button>
+            <button class="btn" id="fsStopRecordBtn" type="button" disabled>Detener</button>
+            <a class="btn" id="fsDownloadVideoBtn" href="#" download="rubik-sota-retail-catalog-v2-6-clip.webm" hidden>Video</a>
+          </div>
+
+          <div class="lab-overlay">
+            <div class="scene-caption">
+              <div class="scene-kicker" id="categoryKicker">Retail Catalog - Destacados</div>
+              <div class="scene-title" id="sceneTitle">Producto destacado</div>
+              <div class="scene-desc" id="sceneDesc">Navega con los controles, anade al carrito y comparte la seleccion.</div>
+            </div>
+            <div class="hud-stack">
+              <div class="hud-pill"><span id="cartHud">Carrito: 0</span></div>
+              <div class="hud-pill"><span id="favHud">Favoritos: 0</span></div>
+              <div class="hud-pill"><span id="modeHud">Modo: Producto</span></div>
+              <div class="hud-pill"><span id="versionHud">v2.6</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-panel">
+          <div class="control-actions">
+            <button class="btn" id="prevBtn" type="button">&larr; Anterior</button>
+            <button class="btn" id="nextBtn" type="button">Siguiente &rarr;</button>
+            <button class="btn btn-retail" id="favBtn" type="button">&#9825; Favorito</button>
+            <button class="btn btn-accent" id="addCartBtn" type="button">+ Carrito</button>
+            <button class="btn" id="viewCartBtn" type="button">Ver carrito</button>
+            <button class="btn" id="viewQrBtn" type="button">Codigo continuar</button>
+            <button class="btn btn-danger" id="resetBtn" type="button">Reset</button>
+            <div class="mode-toggle" role="tablist" aria-label="Modo de visualizacion">
+              <button id="modeProductBtn" class="is-active" type="button" aria-pressed="true">Producto</button>
+              <button id="modeDetailBtn" type="button" aria-pressed="false">Ficha</button>
+              <button id="modeCartBtn" type="button" aria-pressed="false">Carrito</button>
+              <button id="modeQrBtn" type="button" aria-pressed="false">Codigo</button>
+            </div>
+          </div>
+          <div class="share-row" aria-label="Exportar y compartir">
+            <button class="btn btn-accent" id="downloadPngBtn" type="button">Descargar PNG</button>
+            <button class="btn btn-warn" id="recordBtn" type="button">Grabar video</button>
+            <button class="btn" id="stopRecordBtn" type="button" disabled>Detener</button>
+            <a class="btn" id="downloadVideoBtn" href="#" download="rubik-sota-retail-catalog-v2-6-clip.webm" hidden>Descargar video</a>
+            <button class="btn btn-warn" id="shareWhatsAppBtn" type="button">WhatsApp</button>
+            <button class="btn" id="shareEmailBtn" type="button">Email</button>
+            <button class="btn" id="copyLinkBtn" type="button">Copiar enlace</button>
+            <button class="btn" id="saveBtn" type="button">Guardar datos</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cart-summary" id="cartSummarySection" aria-label="Resumen de carrito local">
+      <div class="label">Resumen de seleccion local</div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-total"><span>Total estimado</span><span id="cartTotal">EUR 0</span></div>
+      <p style="color: var(--muted); font-size: 0.82rem; line-height: 1.45;">Esta seleccion se guarda en el navegador. No es un checkout real: el vendedor recibe el resumen por WhatsApp, email o copia el codigo de continuacion.</p>
+    </section>
+
+    <footer class="footer">
+      <div><strong>Rubik Sota</strong> - Gesture Lab - 07 - Retail Catalog - v2.6</div>
+      <div>Hub: <a href="../index.html" style="color: var(--accent);">Gesture Lab</a> - Carrito local demo - Sin backend</div>
+    </footer>
+  </div>
+
+  <div class="toast-layer" id="toastLayer" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="capture-modal" id="captureModal" role="dialog" aria-modal="true" aria-labelledby="captureTitle" aria-hidden="true">
+    <div class="capture-shell">
+      <div class="capture-head">
+        <span class="capture-title" id="captureTitle">Capturar imagen de producto</span>
+        <span class="capture-status" id="captureStatus">Activando camara...</span>
+      </div>
+      <div class="capture-body">
+        <video id="captureVideo" playsinline muted autoplay></video>
+      </div>
+      <div class="capture-foot">
+        <div class="actions">
+          <button class="btn btn-capture-main" id="captureShotBtn" type="button" disabled>Capturar</button>
+          <label class="btn" for="captureFallbackInput">Usar galeria</label>
+          <input class="file-input" id="captureFallbackInput" type="file" accept="image/*" />
+        </div>
+        <button class="btn btn-ghost" id="captureCancelBtn" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MODULE_CONFIG = {
+      moduleNumber: "07",
+      moduleName: "Retail Catalog",
+      moduleVersion: "v2.6",
+      moduleSlug: "retail-catalog",
+      exportSlug: "rubik-sota-retail-catalog-v2-6",
+      localStorageKey: "rubik-sota-retail-catalog-v2-6-snapshot",
+      features: {
+        camera: true,
+        upload: true,
+        fullscreen: true,
+        pngExport: true,
+        videoRecording: true,
+        whatsappShare: true,
+        emailShare: true,
+        copyLink: true,
+        localStorage: true,
+        handTracking: false,
+        selfieMode: false,
+        catalogueMode: true,
+        cartMode: true,
+        qrMode: false,
+        threeDMode: false
+      },
+      share: {
+        whatsappIntro: "Hola, te envio una seleccion del catalogo.",
+        emailSubject: "Seleccion de catalogo - Retail Catalog"
+      }
+    };
+
+    const CATEGORIES = [
+      { id: "destacados", label: "Destacados" },
+      { id: "moda", label: "Moda" },
+      { id: "calzado", label: "Calzado" },
+      { id: "accesorios", label: "Accesorios" },
+      { id: "hogar", label: "Hogar" },
+      { id: "promociones", label: "Promociones" }
+    ];
+
+    const PRODUCTS = [
+      { id: "p01", name: "Reloj Minimalista", category: "destacados", price: 135, promo: "Envio gratis", desc: "Reloj de acero inoxidable con esfera limpia y correa intercambiable.", benefit: "Elegancia diaria sin complicaciones.", color: "#c0a062", stock: "Disponible", sku: "RML-001" },
+      { id: "p02", name: "Botines de Piel", category: "destacados", price: 160, promo: "Edicion limitada", desc: "Botines negros de piel con suela antideslizante y acabado premium.", benefit: "Confort y estilo en cualquier ocasion.", color: "#2a2a2a", stock: "Ultimas unidades", sku: "BTP-002" },
+      { id: "p03", name: "Chaqueta Oversize", category: "moda", price: 120, promo: "Nueva coleccion", desc: "Chaqueta de corte relajado con bolsillos laterales y tejido resistente.", benefit: "Capa versatil para looks urbanos.", color: "#5b6b7a", stock: "Disponible", sku: "CHO-003" },
+      { id: "p04", name: "Sudadera Premium", category: "moda", price: 95, promo: "Pack 2x85", desc: "Sudadera de algodon organico con interior cepillado y logo discreto.", benefit: "Calidez y suavidad durante todo el dia.", color: "#8fa3b5", stock: "Disponible", sku: "SDP-004" },
+      { id: "p05", name: "Zapatilla Urbana", category: "calzado", price: 89, promo: "-20% segunda unidad", desc: "Zapatilla ligera con amortiguacion y upper transpirable.", benefit: "Comodidad para caminar toda la jornada.", color: "#e8e4dc", stock: "Disponible", sku: "ZUR-005" },
+      { id: "p06", name: "Bolso Tote", category: "accesorios", price: 65, promo: "Regalo incluido", desc: "Tote mediano con compartimento interior y asas reforzadas.", benefit: "Capacidad y estilo para el dia a dia.", color: "#a08060", stock: "Disponible", sku: "BTT-006" },
+      { id: "p07", name: "Gafas de Sol", category: "accesorios", price: 75, promo: "Funda premium", desc: "Gafas con montura ligera y lentes de categoria 3.", benefit: "Proteccion UV con diseno atemporal.", color: "#1f1f1f", stock: "Bajo pedido", sku: "GFS-007" },
+      { id: "p08", name: "Auriculares Inalambricos", category: "hogar", price: 149, promo: "Garantia 2 anos", desc: "Auriculares con cancelacion pasiva y 24h de bateria.", benefit: "Sonido limpio para trabajo y ocio.", color: "#4a5568", stock: "Disponible", sku: "AUR-008" },
+      { id: "p09", name: "Lampara de Mesa", category: "hogar", price: 110, promo: "Set de 2 -10%", desc: "Lampara de diseno con luz regulable y base de metal.", benefit: "Ambiente calido para cualquier espacio.", color: "#d4af7a", stock: "Bajo pedido", sku: "LMP-009" },
+      { id: "p10", name: "Pack Regalo", category: "promociones", price: 45, promo: "Precio especial", desc: "Seleccion de mini productos en estuche listo para regalar.", benefit: "Regalo completo sin pensar en el envoltorio.", color: "#7c3aed", stock: "Ultimas unidades", sku: "PRG-010" }
+    ];
+
+    const els = {
+      stagePanel: document.getElementById("stagePanel"),
+      canvas: document.getElementById("stageCanvas"),
+      homeBtn: document.getElementById("homeBtn"),
+      openCameraBtn: document.getElementById("openCameraBtn"),
+      fullscreenBtn: document.getElementById("fullscreenBtn"),
+      categoryChips: document.getElementById("categoryChips"),
+      productList: document.getElementById("productList"),
+      categoryKicker: document.getElementById("categoryKicker"),
+      sceneTitle: document.getElementById("sceneTitle"),
+      sceneDesc: document.getElementById("sceneDesc"),
+      cartHud: document.getElementById("cartHud"),
+      favHud: document.getElementById("favHud"),
+      modeHud: document.getElementById("modeHud"),
+      versionHud: document.getElementById("versionHud"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      favBtn: document.getElementById("favBtn"),
+      addCartBtn: document.getElementById("addCartBtn"),
+      viewCartBtn: document.getElementById("viewCartBtn"),
+      viewQrBtn: document.getElementById("viewQrBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      modeProductBtn: document.getElementById("modeProductBtn"),
+      modeDetailBtn: document.getElementById("modeDetailBtn"),
+      modeCartBtn: document.getElementById("modeCartBtn"),
+      modeQrBtn: document.getElementById("modeQrBtn"),
+      downloadPngBtn: document.getElementById("downloadPngBtn"),
+      recordBtn: document.getElementById("recordBtn"),
+      stopRecordBtn: document.getElementById("stopRecordBtn"),
+      downloadVideoBtn: document.getElementById("downloadVideoBtn"),
+      shareWhatsAppBtn: document.getElementById("shareWhatsAppBtn"),
+      shareEmailBtn: document.getElementById("shareEmailBtn"),
+      copyLinkBtn: document.getElementById("copyLinkBtn"),
+      saveBtn: document.getElementById("saveBtn"),
+      fullscreenCloseBtn: document.getElementById("fullscreenCloseBtn"),
+      fullscreenHomeBtn: document.getElementById("fullscreenHomeBtn"),
+      fsControls: document.getElementById("fsControls"),
+      fsPrevBtn: document.getElementById("fsPrevBtn"),
+      fsNextBtn: document.getElementById("fsNextBtn"),
+      fsFavBtn: document.getElementById("fsFavBtn"),
+      fsCartBtn: document.getElementById("fsCartBtn"),
+      fsQrBtn: document.getElementById("fsQrBtn"),
+      fsDownloadPngBtn: document.getElementById("fsDownloadPngBtn"),
+      fsRecordBtn: document.getElementById("fsRecordBtn"),
+      fsStopRecordBtn: document.getElementById("fsStopRecordBtn"),
+      fsDownloadVideoBtn: document.getElementById("fsDownloadVideoBtn"),
+      recIndicator: document.getElementById("recIndicator"),
+      recTimer: document.getElementById("recTimer"),
+      toastLayer: document.getElementById("toastLayer"),
+      captureModal: document.getElementById("captureModal"),
+      captureTitle: document.getElementById("captureTitle"),
+      captureStatus: document.getElementById("captureStatus"),
+      captureVideo: document.getElementById("captureVideo"),
+      captureShotBtn: document.getElementById("captureShotBtn"),
+      captureCancelBtn: document.getElementById("captureCancelBtn"),
+      captureFallbackInput: document.getElementById("captureFallbackInput"),
+      storeInput: document.getElementById("storeInput"),
+      campaignInput: document.getElementById("campaignInput"),
+      clientInput: document.getElementById("clientInput"),
+      promoInput: document.getElementById("promoInput"),
+      ctaInput: document.getElementById("ctaInput"),
+      notesInput: document.getElementById("notesInput"),
+      cartItems: document.getElementById("cartItems"),
+      cartTotal: document.getElementById("cartTotal")
+    };
+
+    const state = {
+      ctx: null,
+      category: "destacados",
+      productIndex: 0,
+      viewMode: "product",
+      cart: [],
+      favorites: [],
+      meta: { store: "", campaign: "", client: "", promo: "", cta: "Pide presupuesto sin compromiso", notes: "" },
+      pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      width: 0,
+      height: 0,
+      viewModeFullscreen: false,
+      capture: { active: false, stream: null },
+      recording: { active: false, recorder: null, chunks: [], stream: null, startedAt: 0, timerId: null, maxDurationMs: 15000, downloadUrl: null, mimeType: "" },
+      productImage: null
+    };
+
+    function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function safeText(s) { return (s || "").replace(/\s+/g, " ").trim(); }
+    function formatCurrency(n) { return "EUR " + Math.round(n).toLocaleString("es-ES"); }
+
+    function showToast(msg, duration) {
+      if (typeof duration !== "number") duration = 2400;
+      const el = document.createElement("div");
+      el.className = "toast"; el.textContent = msg;
+      els.toastLayer.appendChild(el);
+      setTimeout(function () { el.style.opacity = "0"; el.style.transform = "translateY(-8px)"; setTimeout(function () { el.remove(); }, 220); }, duration);
+    }
+
+    function getFilteredProducts() {
+      if (state.category === "destacados") return PRODUCTS.filter(function (p) { return p.category === "destacados" || p.promo.toLowerCase().indexOf("edicion") >= 0 || p.promo.toLowerCase().indexOf("limitada") >= 0; });
+      return PRODUCTS.filter(function (p) { return p.category === state.category; });
+    }
+    function getCurrentProduct() {
+      const list = getFilteredProducts();
+      return list[clamp(state.productIndex, 0, list.length - 1)] || PRODUCTS[0];
+    }
+
+    function generateQrCode() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "RC-";
+      for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+      return code;
+    }
+
+    function drawProductPlaceholder(ctx, p, x, y, w, h, opts) {
+      opts = opts || {};
+      const r = 18;
+      ctx.save();
+      ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.clip();
+      const g = ctx.createLinearGradient(x, y, x + w, y + h);
+      g.addColorStop(0, p.color); g.addColorStop(1, "#0a0a0a");
+      ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+      ctx.globalAlpha = 0.15; ctx.fillStyle = "#fff";
+      for (let i = 0; i < 10; i++) ctx.fillRect(x + (i * 73) % w, y + (i * 41) % h, w * 0.35, 4);
+      ctx.globalAlpha = 0.25;
+      ctx.beginPath(); ctx.arc(x + w * 0.74, y + h * 0.26, h * 0.18, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+      if (opts.small) {
+        ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.font = "800 " + Math.floor(h * 0.16) + "px Inter, Arial, sans-serif";
+        ctx.fillText(p.name.split(" ").slice(0, 2).join(" "), x + 14, y + h * 0.74);
+        ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.font = "900 " + Math.floor(h * 0.12) + "px Inter, Arial, sans-serif";
+        ctx.fillText(formatCurrency(p.price), x + 14, y + h * 0.88);
+      } else {
+        ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.font = "900 " + Math.floor(h * 0.36) + "px Inter, Arial, sans-serif";
+        ctx.fillText(p.sku, x + 26, y + h * 0.46);
+        ctx.fillStyle = "rgba(0,0,0,0.75)"; ctx.font = "900 " + Math.floor(h * 0.09) + "px Inter, Arial, sans-serif";
+        ctx.fillText(p.name, x + 26, y + h * 0.72);
+        ctx.fillStyle = "rgba(255,255,255,0.92)"; ctx.font = "900 " + Math.floor(h * 0.08) + "px Inter, Arial, sans-serif";
+        ctx.fillText(formatCurrency(p.price), x + 26, y + h * 0.84);
+      }
+      ctx.restore();
+    }
+
+    function renderCanvas() {
+      const ctx = state.ctx; if (!ctx) return;
+      const w = state.width, h = state.height;
+      ctx.save();
+      ctx.fillStyle = "#050505"; ctx.fillRect(0, 0, w, h);
+      const p = getCurrentProduct();
+      const meta = state.meta;
+
+      if (state.viewMode === "cart") {
+        renderCartMode(ctx, w, h);
+      } else if (state.viewMode === "qr") {
+        renderQrMode(ctx, w, h);
+      } else if (state.viewMode === "detail") {
+        renderDetailMode(ctx, w, h, p, meta);
+      } else {
+        renderProductMode(ctx, w, h, p, meta);
+      }
+      ctx.restore();
+    }
+
+    function renderProductMode(ctx, w, h, p, meta) {
+      const pad = Math.min(w, h) * 0.07;
+      drawProductPlaceholder(ctx, p, pad, pad * 0.8, w - pad * 2, h * 0.64);
+      ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.font = "800 " + Math.floor(h * 0.042) + "px Inter, Arial, sans-serif";
+      ctx.fillText(safeText(meta.store) || "Retail Catalog", pad, h * 0.82);
+      ctx.fillStyle = "var(--retail)"; ctx.font = "900 " + Math.floor(h * 0.07) + "px Inter, Arial, sans-serif";
+      ctx.fillText(p.name, pad, h * 0.89);
+      ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.font = "600 " + Math.floor(h * 0.032) + "px Inter, Arial, sans-serif";
+      ctx.fillText(p.benefit, pad, h * 0.94);
+      ctx.fillStyle = "var(--accent)"; ctx.font = "900 " + Math.floor(h * 0.05) + "px Inter, Arial, sans-serif";
+      ctx.textAlign = "right"; ctx.fillText(formatCurrency(p.price), w - pad, h * 0.89); ctx.textAlign = "left";
+      ctx.fillStyle = "rgba(0,0,0,0.65)"; ctx.font = "800 " + Math.floor(h * 0.024) + "px Inter, Arial, sans-serif";
+      ctx.fillText(p.promo + " - Stock: " + p.stock, pad, h * 0.97);
+    }
+
+    function renderDetailMode(ctx, w, h, p, meta) {
+      const pad = Math.min(w, h) * 0.07;
+      const imgW = w * 0.42, imgH = h * 0.68;
+      drawProductPlaceholder(ctx, p, pad, pad * 0.8, imgW, imgH, { small: true });
+      const tx = pad + imgW + pad;
+      ctx.fillStyle = "var(--retail)"; ctx.font = "800 " + Math.floor(h * 0.03) + "px Inter, Arial, sans-serif";
+      ctx.fillText(p.category.toUpperCase(), tx, h * 0.22);
+      ctx.fillStyle = "#fff"; ctx.font = "900 " + Math.floor(h * 0.06) + "px Inter, Arial, sans-serif";
+      ctx.fillText(p.name, tx, h * 0.31);
+      ctx.fillStyle = "rgba(255,255,255,0.75)"; ctx.font = "600 " + Math.floor(h * 0.028) + "px Inter, Arial, sans-serif";
+      wrapText(ctx, p.desc, tx, h * 0.4, w - tx - pad, h * 0.042);
+      ctx.fillStyle = "var(--accent)"; ctx.font = "900 " + Math.floor(h * 0.07) + "px Inter, Arial, sans-serif";
+      ctx.fillText(formatCurrency(p.price), tx, h * 0.62);
+      ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.font = "600 " + Math.floor(h * 0.025) + "px Inter, Arial, sans-serif";
+      ctx.fillText("SKU: " + p.sku + " - Stock: " + p.stock, tx, h * 0.68);
+      ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.font = "800 " + Math.floor(h * 0.024) + "px Inter, Arial, sans-serif";
+      ctx.fillText(safeText(meta.cta) || "Pide presupuesto sin compromiso", tx, h * 0.78);
+    }
+
+    function renderCartMode(ctx, w, h) {
+      const pad = Math.min(w, h) * 0.06;
+      ctx.fillStyle = "#fff"; ctx.font = "900 " + Math.floor(h * 0.055) + "px Inter, Arial, sans-serif";
+      ctx.fillText("Tu seleccion local", pad, h * 0.12);
+      ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.font = "600 " + Math.floor(h * 0.028) + "px Inter, Arial, sans-serif";
+      ctx.fillText("Carrito local demo - no es checkout real", pad, h * 0.18);
+      if (!state.cart.length) {
+        ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.font = "600 " + Math.floor(h * 0.04) + "px Inter, Arial, sans-serif";
+        ctx.fillText("Anade productos desde el catalogo.", pad, h * 0.42);
+        return;
+      }
+      let y = h * 0.24;
+      const lineH = h * 0.10;
+      let total = 0;
+      state.cart.forEach(function (item) {
+        const prod = PRODUCTS.find(function (x) { return x.id === item.id; }) || PRODUCTS[0];
+        total += prod.price * item.qty;
+        ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.font = "800 " + Math.floor(h * 0.032) + "px Inter, Arial, sans-serif";
+        ctx.fillText((item.qty > 1 ? item.qty + "x " : "") + prod.name, pad, y);
+        ctx.fillStyle = "var(--accent)"; ctx.font = "900 " + Math.floor(h * 0.028) + "px Inter, Arial, sans-serif";
+        ctx.textAlign = "right"; ctx.fillText(formatCurrency(prod.price * item.qty), w - pad, y); ctx.textAlign = "left";
+        y += lineH;
+      });
+      ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
+      ctx.fillStyle = "#fff"; ctx.font = "900 " + Math.floor(h * 0.04) + "px Inter, Arial, sans-serif";
+      ctx.fillText("Total estimado", pad, y + h * 0.06);
+      ctx.fillStyle = "var(--accent)"; ctx.font = "900 " + Math.floor(h * 0.05) + "px Inter, Arial, sans-serif";
+      ctx.textAlign = "right"; ctx.fillText(formatCurrency(total), w - pad, y + h * 0.06); ctx.textAlign = "left";
+    }
+
+    function renderQrMode(ctx, w, h) {
+      const pad = Math.min(w, h) * 0.07;
+      ctx.fillStyle = "#fff"; ctx.font = "900 " + Math.floor(h * 0.05) + "px Inter, Arial, sans-serif";
+      ctx.fillText("Codigo de continuacion", pad, h * 0.14);
+      ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.font = "600 " + Math.floor(h * 0.028) + "px Inter, Arial, sans-serif";
+      ctx.fillText("Muestra este codigo en tienda o copia el enlace", pad, h * 0.20);
+      const size = Math.min(w, h) * 0.38;
+      const x = (w - size) / 2, y = h * 0.28;
+      ctx.save();
+      ctx.fillStyle = "#fff"; ctx.fillRect(x, y, size, size);
+      const cells = 21, cell = size / cells;
+      ctx.fillStyle = "#050505";
+      for (let r = 0; r < cells; r++) {
+        for (let c = 0; c < cells; c++) {
+          if (Math.random() > 0.5 && !isFinder(r, c, cells)) ctx.fillRect(x + c * cell, y + r * cell, cell, cell);
+        }
+      }
+      drawFinder(ctx, x, y, cell, 0, 0); drawFinder(ctx, x, y, cell, cells - 7, 0); drawFinder(ctx, x, y, cell, 0, cells - 7);
+      ctx.restore();
+      const code = generateQrCode();
+      ctx.fillStyle = "var(--accent)"; ctx.font = "900 " + Math.floor(h * 0.06) + "px Inter, Arial, sans-serif";
+      ctx.textAlign = "center"; ctx.fillText(code, w / 2, y + size + h * 0.1); ctx.textAlign = "left";
+      ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.font = "600 " + Math.floor(h * 0.024) + "px Inter, Arial, sans-serif";
+      ctx.textAlign = "center"; ctx.fillText("QR demo / codigo de continuacion", w / 2, y + size + h * 0.15); ctx.textAlign = "left";
+    }
+
+    function isFinder(r, c, n) {
+      return (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
+    }
+    function drawFinder(ctx, ox, oy, cell, r0, c0) {
+      ctx.fillStyle = "#050505"; ctx.fillRect(ox + c0 * cell, oy + r0 * cell, 7 * cell, 7 * cell);
+      ctx.fillStyle = "#fff"; ctx.fillRect(ox + (c0 + 1) * cell, oy + (r0 + 1) * cell, 5 * cell, 5 * cell);
+      ctx.fillStyle = "#050505"; ctx.fillRect(ox + (c0 + 2) * cell, oy + (r0 + 2) * cell, 3 * cell, 3 * cell);
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(" ");
+      let line = "";
+      for (let n = 0; n < words.length; n++) {
+        const test = line + words[n] + " ";
+        if (ctx.measureText(test).width > maxWidth && n > 0) { ctx.fillText(line, x, y); line = words[n] + " "; y += lineHeight; }
+        else line = test;
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    function resizeCanvas() {
+      const rect = els.stagePanel.getBoundingClientRect();
+      const dpr = state.pixelRatio;
+      const cssW = Math.max(320, Math.floor(rect.width));
+      const cssH = Math.max(300, Math.floor(rect.height));
+      els.canvas.width = cssW * dpr; els.canvas.height = cssH * dpr;
+      els.canvas.style.width = cssW + "px"; els.canvas.style.height = cssH + "px";
+      state.width = cssW * dpr; state.height = cssH * dpr;
+      const ctx = els.canvas.getContext("2d");
+      ctx.setTransform(1, 0, 0, 1, 0, 0); state.ctx = ctx;
+      if (ctx.roundRect) {} else ctx.roundRect = function (x, y, w, h, r) { this.moveTo(x + r, y); this.arcTo(x + w, y, x + w, y + h, r); this.arcTo(x + w, y + h, x, y + h, r); this.arcTo(x, y + h, x, y, r); this.arcTo(x, y, x + w, y, r); };
+      renderCanvas();
+    }
+
+    function updateUi() {
+      const p = getCurrentProduct();
+      const cat = CATEGORIES.find(function (c) { return c.id === state.category; }) || CATEGORIES[0];
+      els.categoryKicker.textContent = "Retail Catalog - " + cat.label;
+      els.sceneTitle.textContent = p.name;
+      if (state.viewMode === "cart") { els.sceneDesc.textContent = "Resumen de tu seleccion local."; els.modeHud.textContent = "Modo: Carrito"; }
+      else if (state.viewMode === "qr") { els.sceneDesc.textContent = "Codigo de continuacion para continuar en movil."; els.modeHud.textContent = "Modo: Codigo"; }
+      else if (state.viewMode === "detail") { els.sceneDesc.textContent = p.desc; els.modeHud.textContent = "Modo: Ficha"; }
+      else { els.sceneDesc.textContent = p.benefit; els.modeHud.textContent = "Modo: Producto"; }
+      els.versionHud.textContent = MODULE_CONFIG.moduleVersion;
+      els.cartHud.textContent = "Carrito: " + getCartCount();
+      els.favHud.textContent = "Favoritos: " + state.favorites.length;
+      els.favBtn.classList.toggle("is-active", state.favorites.indexOf(p.id) >= 0);
+      els.favBtn.innerHTML = (state.favorites.indexOf(p.id) >= 0 ? "&#10084; Favorito" : "&#9825; Favorito");
+      updateCartSummary();
+      renderProductList();
+      updateModeToggles();
+    }
+
+    function updateModeToggles() {
+      els.modeProductBtn.classList.toggle("is-active", state.viewMode === "product");
+      els.modeDetailBtn.classList.toggle("is-active", state.viewMode === "detail");
+      els.modeCartBtn.classList.toggle("is-active", state.viewMode === "cart");
+      els.modeQrBtn.classList.toggle("is-active", state.viewMode === "qr");
+      [els.modeProductBtn, els.modeDetailBtn, els.modeCartBtn, els.modeQrBtn].forEach(function (b) { b.setAttribute("aria-pressed", String(b.classList.contains("is-active"))); });
+    }
+
+    function setCategory(id) {
+      state.category = id;
+      state.productIndex = 0;
+      els.categoryChips.querySelectorAll(".chip").forEach(function (b) { b.classList.toggle("is-active", b.dataset.category === id); });
+      state.viewMode = "product";
+      updateUi();
+    }
+
+    function renderProductList() {
+      const list = getFilteredProducts();
+      els.productList.innerHTML = "";
+      list.forEach(function (p, idx) {
+        const el = document.createElement("div");
+        el.className = "product-thumb" + (idx === state.productIndex ? " is-active" : "");
+        el.setAttribute("role", "listitem");
+        el.innerHTML = '<div class="pt-name">' + p.name + '</div><div class="pt-meta">' + p.promo + ' - Stock: ' + p.stock + '</div><div class="pt-price">' + formatCurrency(p.price) + '</div>';
+        el.addEventListener("click", function () { state.productIndex = idx; state.viewMode = "product"; updateUi(); });
+        els.productList.appendChild(el);
+      });
+    }
+
+    function prevProduct() { state.productIndex = Math.max(0, state.productIndex - 1); state.viewMode = "product"; updateUi(); }
+    function nextProduct() { const list = getFilteredProducts(); state.productIndex = Math.min(list.length - 1, state.productIndex + 1); state.viewMode = "product"; updateUi(); }
+
+    function toggleFavorite() {
+      const p = getCurrentProduct();
+      const idx = state.favorites.indexOf(p.id);
+      if (idx >= 0) { state.favorites.splice(idx, 1); showToast("Eliminado de favoritos.", 1600); }
+      else { state.favorites.push(p.id); showToast("Anadido a favoritos.", 1600); }
+      updateUi();
+    }
+
+    function addToCart() {
+      const p = getCurrentProduct();
+      const existing = state.cart.find(function (x) { return x.id === p.id; });
+      if (existing) existing.qty += 1;
+      else state.cart.push({ id: p.id, qty: 1 });
+      showToast(p.name + " anadido al carrito.", 2000);
+      updateUi();
+    }
+
+    function removeFromCart(id) {
+      state.cart = state.cart.filter(function (x) { return x.id !== id; });
+      updateUi();
+    }
+
+    function emptyCart() {
+      state.cart = [];
+      updateUi();
+      showToast("Carrito vaciado.", 1600);
+    }
+
+    function getCartCount() { return state.cart.reduce(function (sum, x) { return sum + x.qty; }, 0); }
+    function getCartTotal() { return state.cart.reduce(function (sum, x) { const p = PRODUCTS.find(function (prod) { return prod.id === x.id; }); return sum + (p ? p.price * x.qty : 0); }, 0); }
+
+    function updateCartSummary() {
+      els.cartItems.innerHTML = "";
+      if (!state.cart.length) { els.cartItems.innerHTML = '<div class="cart-empty">El carrito esta vacio. Anade productos desde el catalogo.</div>'; }
+      else {
+        state.cart.forEach(function (item) {
+          const p = PRODUCTS.find(function (x) { return x.id === item.id; }) || PRODUCTS[0];
+          const row = document.createElement("div");
+          row.className = "cart-item";
+          row.innerHTML = '<div class="cart-item-info"><div class="cart-item-name">' + (item.qty > 1 ? item.qty + "x " : "") + p.name + '</div><div class="cart-item-meta">' + p.sku + " - " + formatCurrency(p.price) + ' c/u</div></div><button class="btn btn-danger" type="button" data-remove="' + p.id + '">Quitar</button>';
+          row.querySelector("[data-remove]").addEventListener("click", function () { removeFromCart(p.id); });
+          els.cartItems.appendChild(row);
+        });
+      }
+      els.cartTotal.textContent = formatCurrency(getCartTotal());
+    }
+
+    function setViewMode(mode) {
+      if (["product", "detail", "cart", "qr"].indexOf(mode) < 0) mode = "product";
+      state.viewMode = mode;
+      updateUi();
+    }
+
+    function resetAll() {
+      state.category = "destacados"; state.productIndex = 0; state.viewMode = "product"; state.cart = []; state.favorites = [];
+      state.meta = { store: "", campaign: "", client: "", promo: "", cta: "Pide presupuesto sin compromiso", notes: "" };
+      [els.storeInput, els.campaignInput, els.clientInput, els.promoInput, els.ctaInput, els.notesInput].forEach(function (inp) { inp.value = ""; });
+      els.ctaInput.value = state.meta.cta;
+      updateUi();
+      showToast("Catalogo reiniciado.", 1600);
+    }
+
+    function readMetaInputs() {
+      state.meta.store = els.storeInput.value;
+      state.meta.campaign = els.campaignInput.value;
+      state.meta.client = els.clientInput.value;
+      state.meta.promo = els.promoInput.value;
+      state.meta.cta = els.ctaInput.value;
+      state.meta.notes = els.notesInput.value;
+    }
+
+    /* ===== Capture ===== */
+    function setCaptureStatus(t) { els.captureStatus.textContent = t; }
+    function stopCaptureStream() {
+      if (state.capture.stream) { try { state.capture.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {} state.capture.stream = null; }
+      try { els.captureVideo.pause(); } catch (_) {} els.captureVideo.srcObject = null;
+    }
+    function closeCaptureModal() { stopCaptureStream(); state.capture.active = false; els.captureModal.classList.remove("is-open"); els.captureModal.setAttribute("aria-hidden", "true"); els.captureShotBtn.disabled = true; setCaptureStatus(""); }
+    function isSecureContextOk() { return location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1"; }
+    function isGetUserMediaAvailable() { return Boolean(navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === "function" && isSecureContextOk()); }
+    async function startCaptureCamera() {
+      els.captureShotBtn.disabled = true; setCaptureStatus("Activando camara...");
+      let stream = null;
+      try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
+      catch (_) {
+        try { stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); }
+        catch (e2) { console.error(e2); setCaptureStatus("No se pudo acceder a la camara"); showToast("No se pudo acceder a la camara. Usa Usar galeria.", 3600); return; }
+      }
+      if (!state.capture.active) { try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {} return; }
+      state.capture.stream = stream; els.captureVideo.srcObject = stream;
+      try { await els.captureVideo.play(); } catch (_) {}
+      setCaptureStatus("Camara lista. Encuadra y pulsa Capturar."); els.captureShotBtn.disabled = false;
+    }
+    function openCaptureModal() {
+      if (!MODULE_CONFIG.features.camera) return;
+      if (!isGetUserMediaAvailable()) { showToast("Camara no disponible aqui. Abriendo selector de imagen.", 3000); els.captureFallbackInput.click(); return; }
+      if (state.capture.active) return;
+      state.capture.active = true; els.captureTitle.textContent = "Capturar imagen de producto"; els.captureShotBtn.disabled = true;
+      els.captureModal.classList.add("is-open"); els.captureModal.setAttribute("aria-hidden", "false");
+      try { startCaptureCamera(); } catch (e) { console.error(e); showToast("No se pudo abrir la camara. Usa Usar galeria.", 3200); }
+    }
+    function captureStillFrame() {
+      const v = els.captureVideo;
+      if (!state.capture.active || !state.capture.stream || v.readyState < 2) return;
+      const w = v.videoWidth || 1280, h = v.videoHeight || 720;
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      c.getContext("2d", { alpha: false }).drawImage(v, 0, 0, w, h);
+      showToast("Imagen capturada. Se usa como demo visual del producto.", 2400);
+      closeCaptureModal();
+    }
+
+    /* ===== Immersive ===== */
+    function fullscreenSupported() { return Boolean(els.stagePanel.requestFullscreen || els.stagePanel.webkitRequestFullscreen); }
+    function isFullscreen() { return Boolean(document.fullscreenElement || document.webkitFullscreenElement); }
+    function updateImmersiveUi() {
+      const v = state.viewModeFullscreen;
+      els.stagePanel.classList.toggle("is-immersive", v);
+      els.fullscreenBtn.textContent = v ? "Salir vista completa" : "Vista completa";
+      els.fullscreenCloseBtn.classList.toggle("is-hidden", !v);
+      els.fullscreenHomeBtn.classList.toggle("is-hidden", !v);
+      els.fsControls.classList.toggle("is-hidden", !v);
+    }
+    function enterImmersive() { state.viewModeFullscreen = true; updateImmersiveUi(); resizeCanvas(); if (fullscreenSupported() && !isFullscreen()) { try { const req = els.stagePanel.requestFullscreen || els.stagePanel.webkitRequestFullscreen; if (req) { const r = req.call(els.stagePanel); if (r && typeof r.catch === "function") r.catch(function () {}); } } catch (_) {} } }
+    function exitImmersive() { state.viewModeFullscreen = false; updateImmersiveUi(); if (isFullscreen()) { try { const ex = document.exitFullscreen || document.webkitExitFullscreen; if (ex) { const r = ex.call(document); if (r && typeof r.catch === "function") r.catch(function () {}); } } catch (_) {} } resizeCanvas(); }
+    function toggleImmersive() { if (!MODULE_CONFIG.features.fullscreen) return; if (state.viewModeFullscreen) exitImmersive(); else enterImmersive(); }
+    function onFullscreenChange() { if (!isFullscreen() && state.viewModeFullscreen) { state.viewModeFullscreen = false; updateImmersiveUi(); } else if (isFullscreen() && !state.viewModeFullscreen) { state.viewModeFullscreen = true; updateImmersiveUi(); } resizeCanvas(); }
+    function goHome() { try { if (state.capture.active) closeCaptureModal(); } catch (_) {} try { if (state.recording.active) stopRecording(); } catch (_) {} try { if (state.viewModeFullscreen) exitImmersive(); } catch (_) {} window.location.href = "../index.html"; }
+
+    /* ===== PNG export ===== */
+    function downloadPng() {
+      if (!MODULE_CONFIG.features.pngExport) return;
+      try { const url = els.canvas.toDataURL("image/png"); const a = document.createElement("a"); a.href = url; a.download = MODULE_CONFIG.exportSlug + "-snapshot.png"; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast("PNG descargado.", 2400); }
+      catch (e) { console.error(e); showToast("No se pudo generar el PNG.", 2800); }
+    }
+
+    /* ===== Video recording ===== */
+    function getSupportedMimeType() {
+      if (typeof MediaRecorder === "undefined") return "";
+      const cands = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+      for (let i = 0; i < cands.length; i++) { const t = cands[i]; try { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) return t; } catch (_) {} }
+      return "";
+    }
+    function formatTime(ms) { const total = Math.max(0, Math.floor(ms / 1000)); const m = Math.floor(total / 60).toString().padStart(2,"0"); const s = (total % 60).toString().padStart(2,"0"); return m + ":" + s; }
+    function cleanupRecordingUrl() { if (state.recording.downloadUrl) { URL.revokeObjectURL(state.recording.downloadUrl); state.recording.downloadUrl = null; } }
+    function updateRecordingUi() {
+      const r = state.recording;
+      els.recIndicator.classList.toggle("is-hidden", !r.active);
+      els.recordBtn.disabled = r.active; els.recordBtn.textContent = r.active ? "Grabando..." : "Grabar video";
+      els.stopRecordBtn.disabled = !r.active;
+      els.fsRecordBtn.disabled = r.active; els.fsRecordBtn.textContent = r.active ? "Grabando..." : "Grabar";
+      els.fsStopRecordBtn.disabled = !r.active;
+      let timer = "00:00 / " + formatTime(r.maxDurationMs);
+      if (r.active) { const e = performance.now() - r.startedAt; timer = formatTime(e) + " / " + formatTime(r.maxDurationMs); }
+      els.recTimer.textContent = timer;
+    }
+    function startRecording() {
+      if (!MODULE_CONFIG.features.videoRecording) return;
+      const r = state.recording; if (r.active) return;
+      if (typeof els.canvas.captureStream !== "function" || typeof MediaRecorder === "undefined") { showToast("Grabacion no disponible en este navegador.", 3200); return; }
+      const mime = getSupportedMimeType(); if (!mime) { showToast("Grabacion no disponible en este navegador.", 3200); return; }
+      try {
+        cleanupRecordingUrl();
+        els.downloadVideoBtn.hidden = true; els.downloadVideoBtn.removeAttribute("href");
+        els.fsDownloadVideoBtn.hidden = true; els.fsDownloadVideoBtn.removeAttribute("href");
+        r.chunks = []; r.stream = els.canvas.captureStream(30);
+        r.recorder = new MediaRecorder(r.stream, { mimeType: mime }); r.mimeType = mime;
+        r.recorder.ondataavailable = function (ev) { if (ev.data && ev.data.size > 0) r.chunks.push(ev.data); };
+        r.recorder.onstop = function () {
+          try { const blob = new Blob(r.chunks, { type: r.mimeType || "video/webm" }); const url = URL.createObjectURL(blob); cleanupRecordingUrl(); r.downloadUrl = url; els.downloadVideoBtn.href = url; els.downloadVideoBtn.hidden = false; els.fsDownloadVideoBtn.href = url; els.fsDownloadVideoBtn.hidden = false; showToast("Clip listo (" + (blob.size / (1024*1024)).toFixed(2) + " MB).", 3000); }
+          catch (e) { console.error(e); showToast("No se pudo generar el clip.", 3000); }
+          if (r.stream) { r.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (_) {} }); r.stream = null; }
+          if (r.timerId) { clearInterval(r.timerId); r.timerId = null; }
+          r.active = false; r.recorder = null; updateRecordingUi();
+        };
+        r.recorder.start(250); r.active = true; r.startedAt = performance.now();
+        r.timerId = setInterval(function () { updateRecordingUi(); if (performance.now() - r.startedAt >= r.maxDurationMs) stopRecording(); }, 250);
+        updateRecordingUi(); showToast("Grabando clip del catalogo (max. 15 s).", 2200);
+      } catch (e) {
+        console.error(e); showToast("Grabacion no disponible en este navegador.", 3200); r.active = false; r.recorder = null;
+        if (r.stream) { r.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (_) {} }); r.stream = null; }
+        updateRecordingUi();
+      }
+    }
+    function stopRecording() { const r = state.recording; if (!r.active || !r.recorder) return; try { if (r.recorder.state !== "inactive") r.recorder.stop(); } catch (e) { console.error(e); } }
+
+    /* ===== Share / Save ===== */
+    function buildCartText() {
+      let lines = [];
+      if (state.meta.store) lines.push("Tienda: " + state.meta.store);
+      if (state.meta.campaign) lines.push("Campana: " + state.meta.campaign);
+      if (state.meta.client) lines.push("Cliente: " + state.meta.client);
+      if (state.meta.promo) lines.push("Promocion: " + state.meta.promo);
+      if (!state.cart.length) { lines.push("Sin productos seleccionados."); return lines.join("\n"); }
+      lines.push("Productos seleccionados:");
+      state.cart.forEach(function (item) { const p = PRODUCTS.find(function (x) { return x.id === item.id; }); if (p) lines.push("- " + (item.qty > 1 ? item.qty + "x " : "") + p.name + " (" + formatCurrency(p.price) + ")"); });
+      lines.push("Total estimado: " + formatCurrency(getCartTotal()));
+      const featured = getCurrentProduct(); lines.push("Producto destacado: " + featured.name);
+      lines.push("Codigo de continuacion: " + generateQrCode());
+      lines.push("Ver catalogo: " + window.location.href);
+      return lines.join("\n");
+    }
+    function shareWhatsApp() {
+      if (!MODULE_CONFIG.features.whatsappShare) return;
+      const intro = MODULE_CONFIG.share.whatsappIntro + (state.meta.store ? " de " + state.meta.store : "") + ".";
+      const body = intro + "\n\n" + buildCartText();
+      window.open("https://wa.me/?text=" + encodeURIComponent(body), "_blank", "noopener");
+    }
+    function shareEmail() {
+      if (!MODULE_CONFIG.features.emailShare) return;
+      const subject = encodeURIComponent(MODULE_CONFIG.share.emailSubject + (state.meta.store ? " - " + state.meta.store : ""));
+      const body = encodeURIComponent(buildCartText() + "\n\nNotas internas:\n" + (state.meta.notes || "Sin notas"));
+      window.location.href = "mailto:?subject=" + subject + "&body=" + body;
+    }
+    async function copyLink() {
+      if (!MODULE_CONFIG.features.copyLink) return;
+      const text = window.location.href + "\n\n" + buildCartText();
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(text); showToast("Resumen copiado al portapapeles.", 2200); }
+        else { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); showToast("Resumen copiado (modo compatibilidad).", 2200); }
+      } catch (e) { console.error(e); showToast("No se pudo copiar el resumen.", 2400); }
+    }
+    function saveSnapshot() {
+      if (!MODULE_CONFIG.features.localStorage) return;
+      readMetaInputs();
+      try {
+        const data = {
+          version: MODULE_CONFIG.moduleVersion,
+          category: state.category,
+          productIndex: state.productIndex,
+          viewMode: state.viewMode,
+          cart: state.cart,
+          favorites: state.favorites,
+          meta: state.meta,
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem(MODULE_CONFIG.localStorageKey, JSON.stringify(data));
+        showToast("Datos guardados localmente.", 2200);
+      } catch (e) { console.error(e); showToast("No se pudieron guardar los datos.", 2400); }
+    }
+    function loadSnapshot() {
+      if (!MODULE_CONFIG.features.localStorage) return;
+      try {
+        const raw = localStorage.getItem(MODULE_CONFIG.localStorageKey);
+        if (!raw) return;
+        const data = JSON.parse(raw); if (!data) return;
+        if (data.category) state.category = data.category;
+        if (typeof data.productIndex === "number") state.productIndex = data.productIndex;
+        if (["product", "detail", "cart", "qr"].indexOf(data.viewMode) >= 0) state.viewMode = data.viewMode;
+        if (Array.isArray(data.cart)) state.cart = data.cart;
+        if (Array.isArray(data.favorites)) state.favorites = data.favorites;
+        if (data.meta) state.meta = Object.assign({ store: "", campaign: "", client: "", promo: "", cta: "Pide presupuesto sin compromiso", notes: "" }, data.meta);
+        els.storeInput.value = state.meta.store || ""; els.campaignInput.value = state.meta.campaign || "";
+        els.clientInput.value = state.meta.client || ""; els.promoInput.value = state.meta.promo || "";
+        els.ctaInput.value = state.meta.cta || ""; els.notesInput.value = state.meta.notes || "";
+      } catch (e) { console.error(e); }
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderCanvas();
+    }
+
+    function setupEvents() {
+      els.categoryChips.addEventListener("click", function (e) { const b = e.target.closest(".chip"); if (b && b.dataset.category) setCategory(b.dataset.category); });
+      els.prevBtn.addEventListener("click", prevProduct); els.nextBtn.addEventListener("click", nextProduct);
+      els.fsPrevBtn.addEventListener("click", prevProduct); els.fsNextBtn.addEventListener("click", nextProduct);
+      els.favBtn.addEventListener("click", toggleFavorite); els.fsFavBtn.addEventListener("click", toggleFavorite);
+      els.addCartBtn.addEventListener("click", addToCart); els.fsCartBtn.addEventListener("click", addToCart);
+      els.viewCartBtn.addEventListener("click", function () { setViewMode("cart"); });
+      els.viewQrBtn.addEventListener("click", function () { setViewMode("qr"); }); els.fsQrBtn.addEventListener("click", function () { setViewMode("qr"); });
+      els.resetBtn.addEventListener("click", resetAll);
+      els.modeProductBtn.addEventListener("click", function () { setViewMode("product"); });
+      els.modeDetailBtn.addEventListener("click", function () { setViewMode("detail"); });
+      els.modeCartBtn.addEventListener("click", function () { setViewMode("cart"); });
+      els.modeQrBtn.addEventListener("click", function () { setViewMode("qr"); });
+
+      els.downloadPngBtn.addEventListener("click", downloadPng); els.fsDownloadPngBtn.addEventListener("click", downloadPng);
+      els.recordBtn.addEventListener("click", startRecording); els.fsRecordBtn.addEventListener("click", startRecording);
+      els.stopRecordBtn.addEventListener("click", stopRecording); els.fsStopRecordBtn.addEventListener("click", stopRecording);
+      els.shareWhatsAppBtn.addEventListener("click", shareWhatsApp);
+      els.shareEmailBtn.addEventListener("click", shareEmail);
+      els.copyLinkBtn.addEventListener("click", copyLink);
+      els.saveBtn.addEventListener("click", saveSnapshot);
+
+      els.openCameraBtn.addEventListener("click", openCaptureModal);
+      els.captureShotBtn.addEventListener("click", captureStillFrame);
+      els.captureCancelBtn.addEventListener("click", closeCaptureModal);
+      els.captureFallbackInput.addEventListener("change", function (e) { if (e.target.files && e.target.files[0]) { showToast("Imagen cargada como referencia visual.", 2200); closeCaptureModal(); } e.target.value = ""; });
+
+      [els.storeInput, els.campaignInput, els.clientInput, els.promoInput, els.ctaInput, els.notesInput].forEach(function (inp) { inp.addEventListener("input", readMetaInputs); });
+
+      els.fullscreenBtn.addEventListener("click", toggleImmersive);
+      els.fullscreenCloseBtn.addEventListener("click", exitImmersive);
+      els.fullscreenHomeBtn.addEventListener("click", goHome);
+      document.addEventListener("fullscreenchange", onFullscreenChange);
+      document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+      window.addEventListener("resize", resizeCanvas);
+    }
+
+    function init() {
+      loadSnapshot();
+      setCategory(state.category);
+      setupEvents();
+      resizeCanvas();
+      updateUi();
+      animate();
+    }
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+    else init();
+  </script>
+</body>
+</html>
