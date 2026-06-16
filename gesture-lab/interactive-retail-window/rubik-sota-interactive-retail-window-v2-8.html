@@ -199,6 +199,20 @@
     .gesture-status { font-size: 0.74rem; color: var(--muted); letter-spacing: 0.04em; }
     .gesture-status strong { color: var(--accent); }
     .gesture-video { width: 200px; max-width: 100%; border-radius: 14px; border: 1px solid var(--line); background: #000; }
+    .gesture-router-panel { border: 1px solid rgba(0,255,204,0.24); border-radius: var(--radius-lg); background: rgba(0,0,0,0.34); padding: 0.85rem; display: grid; gap: 0.75rem; }
+    .gesture-router-panel summary { cursor: pointer; font-weight: 900; color: var(--fg); }
+    .gesture-router-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.5rem; margin-top: 0.75rem; }
+    .gesture-router-note { color: var(--muted); font-size: 0.78rem; line-height: 1.45; }
+    .gesture-feedback { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.04); color: var(--fg); font-weight: 800; font-size: 0.84rem; min-height: 2.4rem; display: flex; align-items: center; }
+    .gesture-feedback.is-warn { border-color: rgba(255,179,71,0.45); color: #ffd89a; }
+    .gesture-feedback.is-ok { border-color: rgba(0,255,204,0.38); color: #b9fff3; }
+    .gesture-debug-card { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.03); }
+    .gesture-debug-card strong { display: block; color: var(--muted); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.2rem; }
+    .gesture-debug-card span { color: var(--fg); font-size: 0.84rem; font-weight: 800; }
+    .gesture-event-list { display: grid; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
+    .gesture-event-list li { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.45rem 0.55rem; color: var(--muted); font-size: 0.76rem; background: rgba(255,255,255,0.025); }
+    .qa-gesture-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.45rem; }
+    .qa-gesture-grid .btn { justify-content: center; }
 
     .footer { border-top: 1px solid var(--line); padding-top: 1.2rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: 0.86rem; }
     .footer strong { color: var(--fg); }
@@ -335,6 +349,50 @@
       <div class="presence-row">
         <button class="btn" id="gestureStopBtn" type="button">Detener gestos</button>
       </div>
+    </section>
+
+    <section class="gesture-router-panel" aria-label="Motor de gestos y QA">
+      <details>
+        <summary>Motor de gestos</summary>
+        <div class="gesture-router-grid">
+          <div class="gesture-debug-card"><strong>Estado motor</strong><span id="gestureEngineState">activo</span></div>
+          <div class="gesture-debug-card"><strong>Ultimo gesto</strong><span id="gestureDebugLastGesture">-</span></div>
+          <div class="gesture-debug-card"><strong>Ultima accion</strong><span id="gestureDebugLastAction">-</span></div>
+          <div class="gesture-debug-card"><strong>Origen</strong><span id="gestureDebugSource">-</span></div>
+          <div class="gesture-debug-card"><strong>Confianza</strong><span id="gestureDebugConfidence">0</span></div>
+          <div class="gesture-debug-card"><strong>Labs</strong><span id="gestureDebugLabs">inactivo</span></div>
+        </div>
+        <div class="gesture-feedback" id="gestureFeedback">Router listo.</div>
+        <p class="gesture-router-note">QA simula el cableado de acciones. No verifica deteccion real de mano fisica.</p>
+        <div class="gesture-router-grid" aria-label="Guia de gestos">
+          <div class="gesture-debug-card"><strong>Produccion</strong><span>Palma = activar; Swipe = navegar; Pinza = seleccionar; Puno = carrito/interes; Pulgar arriba = favorito/interes; Mano arriba = codigo/QR; Stop = pausar/cancelar</span></div>
+          <div class="gesture-debug-card"><strong>Labs</strong><span>Indice = senalar; Pulgar abajo = descartar; V = comparar; OK = confirmar; Saludo = reiniciar; Giro = cambiar vista</span></div>
+        </div>
+        <ul class="gesture-event-list" id="gestureEventList" aria-label="Ultimos eventos de gestos"></ul>
+      </details>
+      <details>
+        <summary>QA gestos</summary>
+        <p class="gesture-router-note">Prueba el cableado de gestos sin camara. Esto NO verifica deteccion real de mano.</p>
+        <div class="qa-gesture-grid" aria-label="QA gestos produccion">
+          <button class="btn btn-accent" id="qaOpenPalmBtn" type="button">Palma</button>
+          <button class="btn btn-accent" id="qaSwipeLeftBtn" type="button">Swipe izq</button>
+          <button class="btn btn-accent" id="qaSwipeRightBtn" type="button">Swipe der</button>
+          <button class="btn btn-accent" id="qaPinchBtn" type="button">Pinza</button>
+          <button class="btn btn-accent" id="qaFistBtn" type="button">Puno</button>
+          <button class="btn btn-accent" id="qaThumbsUpBtn" type="button">Pulgar arriba</button>
+          <button class="btn btn-accent" id="qaHandUpBtn" type="button">Mano arriba</button>
+          <button class="btn btn-accent" id="qaStopPalmBtn" type="button">Stop</button>
+        </div>
+        <div class="qa-gesture-grid" aria-label="QA gestos Labs">
+          <button class="btn" id="qaLabsToggleBtn" type="button">Labs OFF</button>
+          <button class="btn" id="qaIndexPointBtn" type="button">Indice</button>
+          <button class="btn" id="qaThumbsDownBtn" type="button">Pulgar abajo</button>
+          <button class="btn" id="qaVictoryBtn" type="button">V</button>
+          <button class="btn" id="qaOkSignBtn" type="button">OK</button>
+          <button class="btn" id="qaWaveBtn" type="button">Saludo</button>
+          <button class="btn" id="qaHandRotateBtn" type="button">Giro</button>
+        </div>
+      </details>
     </section>
 
     <section class="lab-wrap" aria-label="Pantalla del escaparate">
@@ -540,7 +598,70 @@
       codeShareWhatsApp: document.getElementById("codeShareWhatsApp"),
       codeShareEmail: document.getElementById("codeShareEmail"),
       codeCopy: document.getElementById("codeCopy"),
-      codeCloseBtn: document.getElementById("codeCloseBtn")
+      codeCloseBtn: document.getElementById("codeCloseBtn"),
+      gestureEngineState: document.getElementById("gestureEngineState"),
+      gestureDebugLastGesture: document.getElementById("gestureDebugLastGesture"),
+      gestureDebugLastAction: document.getElementById("gestureDebugLastAction"),
+      gestureDebugSource: document.getElementById("gestureDebugSource"),
+      gestureDebugConfidence: document.getElementById("gestureDebugConfidence"),
+      gestureDebugLabs: document.getElementById("gestureDebugLabs"),
+      gestureFeedback: document.getElementById("gestureFeedback"),
+      gestureEventList: document.getElementById("gestureEventList"),
+      qaOpenPalmBtn: document.getElementById("qaOpenPalmBtn"),
+      qaSwipeLeftBtn: document.getElementById("qaSwipeLeftBtn"),
+      qaSwipeRightBtn: document.getElementById("qaSwipeRightBtn"),
+      qaPinchBtn: document.getElementById("qaPinchBtn"),
+      qaFistBtn: document.getElementById("qaFistBtn"),
+      qaThumbsUpBtn: document.getElementById("qaThumbsUpBtn"),
+      qaHandUpBtn: document.getElementById("qaHandUpBtn"),
+      qaStopPalmBtn: document.getElementById("qaStopPalmBtn"),
+      qaIndexPointBtn: document.getElementById("qaIndexPointBtn"),
+      qaThumbsDownBtn: document.getElementById("qaThumbsDownBtn"),
+      qaVictoryBtn: document.getElementById("qaVictoryBtn"),
+      qaOkSignBtn: document.getElementById("qaOkSignBtn"),
+      qaWaveBtn: document.getElementById("qaWaveBtn"),
+      qaHandRotateBtn: document.getElementById("qaHandRotateBtn"),
+      qaLabsToggleBtn: document.getElementById("qaLabsToggleBtn")
+    };
+
+    const GESTURE_CATALOG = [
+      { id: "open_palm", label: "Palma abierta", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "presence close", description: "Pasa a transeunte cerca.", actionLabel: "Transeunte cerca" },
+      { id: "swipe_left", label: "Swipe izquierda", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "nextSceneBtn", description: "Avanza a la escena siguiente.", actionLabel: "Siguiente escena" },
+      { id: "swipe_right", label: "Swipe derecha", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "prevSceneBtn", description: "Vuelve a la escena anterior.", actionLabel: "Escena anterior" },
+      { id: "pinch", label: "Pinza", category: "production", reliability: "high", defaultEnabled: true, touchEquivalent: "codeBtn", description: "Activa interaccion y abre codigo movil.", actionLabel: "CTA movil abierto" },
+      { id: "fist", label: "Puno", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "saveBtn", description: "Guarda interes local.", actionLabel: "Interes guardado" },
+      { id: "thumbs_up", label: "Pulgar arriba", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "saveBtn", description: "Marca promo como interesante.", actionLabel: "Promo marcada como interesante" },
+      { id: "hand_up", label: "Mano arriba", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "codeBtn", description: "Muestra codigo movil.", actionLabel: "Codigo movil abierto" },
+      { id: "stop_palm", label: "Stop", category: "production", reliability: "medium", defaultEnabled: true, touchEquivalent: "loopToggleBtn", description: "Pausa attract loop.", actionLabel: "Attract loop pausado" },
+      { id: "index_point", label: "Indice", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "productGrid", description: "Resalta CTA/producto actual.", actionLabel: "Producto resaltado" },
+      { id: "thumbs_down", label: "Pulgar abajo", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "nextSceneBtn", description: "Salta promocion actual.", actionLabel: "Promocion saltada" },
+      { id: "victory", label: "V", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "productGrid", description: "Alterna producto para comparativa demo.", actionLabel: "Comparativa demo" },
+      { id: "ok_sign", label: "OK", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "codeBtn", description: "Confirma promo y abre codigo.", actionLabel: "Promo confirmada" },
+      { id: "wave", label: "Saludo", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "reset visual", description: "Vuelve a bienvenida y activa loop.", actionLabel: "Bienvenida activa" },
+      { id: "hand_rotate", label: "Giro", category: "labs", reliability: "experimental", defaultEnabled: false, touchEquivalent: "next product", description: "Alterna producto/promo/vista.", actionLabel: "Vista alternada" }
+    ];
+
+    const GESTURE_ALIASES = {
+      open: "open_palm", openPalm: "open_palm", palm: "open_palm",
+      swipeLeft: "swipe_left", "swipe-left": "swipe_left", left: "swipe_left",
+      swipeRight: "swipe_right", "swipe-right": "swipe_right", right: "swipe_right",
+      pinch: "pinch", fist: "fist", thumbsUp: "thumbs_up", thumb_up: "thumbs_up",
+      handUp: "hand_up", up: "hand_up", stop: "stop_palm", stopPalm: "stop_palm"
+    };
+
+    const GESTURE_COOLDOWNS = { open_palm: 500, swipe_left: 900, swipe_right: 900, pinch: 700, fist: 1000, thumbs_up: 1200, hand_up: 900, stop_palm: 1200 };
+
+    const gestureRouterState = {
+      engineEnabled: localStorage.getItem("gestureEngineEnabled") !== "false",
+      labsEnabled: localStorage.getItem("gestureLabsEnabled") === "true",
+      qaMode: localStorage.getItem("gestureQaMode") === "true",
+      lastGesture: localStorage.getItem("lastGesture") || null,
+      lastAction: localStorage.getItem("lastGestureAction") || null,
+      lastSource: localStorage.getItem("lastGestureSource") || null,
+      lastConfidence: Number(localStorage.getItem("lastGestureConfidence")) || 0,
+      lastRunAt: 0,
+      cooldownUntil: {},
+      history: []
     };
 
     const state = {
@@ -829,6 +950,129 @@
       els.kioskBtn.textContent = state.kiosk ? "Salir kiosk" : "Modo kiosk";
       if (state.kiosk && !state.viewMode.fullscreen) enterImmersive();
       updateHud();
+    }
+
+    const GESTURE_ACTION_MAP = {
+      open_palm: () => { setPresence("close"); return "Transeunte cerca"; },
+      swipe_left: () => { nextScene(); return "Siguiente escena"; },
+      swipe_right: () => { prevScene(); return "Escena anterior"; },
+      pinch: () => { setPresence("active"); openCodeModal(); return "CTA movil abierto"; },
+      fist: () => { saveGestureInterest("fist"); return "Interes guardado localmente"; },
+      thumbs_up: () => { saveGestureInterest("thumbs_up"); return "Promo marcada como interesante"; },
+      hand_up: () => { openCodeModal(); return "Codigo movil abierto"; },
+      stop_palm: () => { if (state.loopActive) toggleLoop(); else updateHud(); return "Attract loop pausado"; },
+      index_point: () => { setProduct(state.productIndex); return "CTA/producto resaltado"; },
+      thumbs_down: () => { nextScene(); return "Promocion saltada"; },
+      victory: () => { setProduct((state.productIndex + 1) % FEATURED_PRODUCTS.length); return "Comparativa demo"; },
+      ok_sign: () => { setPresence("active"); openCodeModal(); return "Promo confirmada"; },
+      wave: () => { state.loopActive = true; setPresence("idle"); setScene(0); updateHud(); return "Bienvenida y loop activos"; },
+      hand_rotate: () => { setProduct((state.productIndex + 1) % FEATURED_PRODUCTS.length); nextScene(); return "Vista alternada"; }
+    };
+
+    function saveGestureInterest(kind) {
+      const product = FEATURED_PRODUCTS[state.productIndex] || FEATURED_PRODUCTS[0];
+      const payload = { kind, productId: product.id, sceneId: (SCENES[state.sceneIndex] || SCENES[0]).id, savedAt: new Date().toISOString() };
+      localStorage.setItem("gestureRetailInterest", JSON.stringify(payload));
+      state.lastInteractionAt = performance.now();
+      updateHud();
+    }
+
+    function getGestureCatalogEntry(gestureName) {
+      return GESTURE_CATALOG.find((g) => g.id === gestureName);
+    }
+
+    function normalizeGestureName(gestureName) {
+      const raw = String(gestureName || "").trim();
+      if (!raw) return "";
+      return GESTURE_ALIASES[raw] || GESTURE_ALIASES[raw.replace(/\s+/g, "")] || raw.replace(/-/g, "_");
+    }
+
+    function canRunGesture(gestureName, source, confidence, options) {
+      options = options || {};
+      const entry = getGestureCatalogEntry(gestureName);
+      const now = performance.now();
+      if (!entry) return { ok: false, reason: "Gesto no mapeado" };
+      if (!gestureRouterState.engineEnabled) return { ok: false, reason: "Motor desactivado" };
+      if (entry.category === "labs" && !gestureRouterState.labsEnabled) return { ok: false, reason: "Gesto Labs preparado, no activo" };
+      const threshold = source === "qa" ? 1 : entry.category === "labs" ? 0.75 : 0.55;
+      if (confidence < threshold) return { ok: false, reason: "Confianza insuficiente" };
+      if (!options.bypassCooldown && now < (gestureRouterState.cooldownUntil[gestureName] || 0)) return { ok: false, reason: "Cooldown activo" };
+      return { ok: true, reason: "ok" };
+    }
+
+    function applyGestureAction(gestureName, source = "unknown", confidence = 1, options = {}) {
+      const normalized = normalizeGestureName(gestureName);
+      const entry = getGestureCatalogEntry(normalized);
+      const allowed = canRunGesture(normalized, source, confidence, options);
+      let action = entry ? entry.actionLabel : "Sin accion";
+      const blocked = !allowed.ok;
+      if (!entry) action = "Gesto no mapeado";
+      else if (!allowed.ok) action = allowed.reason;
+      else if (GESTURE_ACTION_MAP[normalized]) {
+        action = GESTURE_ACTION_MAP[normalized](options) || entry.actionLabel;
+        const delay = GESTURE_COOLDOWNS[normalized] || 1200;
+        gestureRouterState.cooldownUntil[normalized] = performance.now() + delay;
+        gestureRouterState.lastRunAt = performance.now();
+      }
+      gestureRouterState.lastGesture = normalized || gestureName || "-";
+      gestureRouterState.lastAction = action;
+      gestureRouterState.lastSource = source;
+      gestureRouterState.lastConfidence = confidence;
+      logGestureEvent({ gesture: gestureRouterState.lastGesture, source, confidence, action, blocked });
+      localStorage.setItem("gestureEngineEnabled", String(gestureRouterState.engineEnabled));
+      localStorage.setItem("gestureLabsEnabled", String(gestureRouterState.labsEnabled));
+      localStorage.setItem("gestureQaMode", String(gestureRouterState.qaMode));
+      localStorage.setItem("lastGesture", gestureRouterState.lastGesture);
+      localStorage.setItem("lastGestureAction", action);
+      localStorage.setItem("lastGestureSource", source);
+      localStorage.setItem("lastGestureConfidence", String(confidence));
+      state.gesture.currentGesture = entry ? entry.label : gestureRouterState.lastGesture;
+      setGestureFeedback(action, blocked ? "warn" : "ok");
+      updateGestureDebugUI();
+      updateHud();
+      return !blocked;
+    }
+
+    function simulateGestureForQA(gestureName) {
+      gestureRouterState.qaMode = true;
+      return applyGestureAction(gestureName, "qa", 1, { bypassCooldown: true });
+    }
+
+    function updateGestureDebugUI() {
+      if (!els.gestureEngineState) return;
+      els.gestureEngineState.textContent = gestureRouterState.engineEnabled ? "activo" : "inactivo";
+      els.gestureDebugLastGesture.textContent = gestureRouterState.lastGesture || "-";
+      els.gestureDebugLastAction.textContent = gestureRouterState.lastAction || "-";
+      els.gestureDebugSource.textContent = gestureRouterState.lastSource || "-";
+      els.gestureDebugConfidence.textContent = Number(gestureRouterState.lastConfidence || 0).toFixed(2);
+      els.gestureDebugLabs.textContent = gestureRouterState.labsEnabled ? "activo" : "inactivo";
+      els.qaLabsToggleBtn.textContent = gestureRouterState.labsEnabled ? "Labs ON" : "Labs OFF";
+      els.gestureEventList.innerHTML = "";
+      gestureRouterState.history.slice(0, 5).forEach((ev) => {
+        const item = document.createElement("li");
+        item.textContent = ev.time + " - " + ev.gesture + " / " + ev.source + " / " + ev.action + (ev.blocked ? " / bloqueado" : "");
+        els.gestureEventList.appendChild(item);
+      });
+    }
+
+    function logGestureEvent(ev) {
+      const stamp = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      gestureRouterState.history.unshift({ time: stamp, gesture: ev.gesture, source: ev.source, confidence: ev.confidence, action: ev.action, blocked: ev.blocked });
+      if (gestureRouterState.history.length > 20) gestureRouterState.history.length = 20;
+    }
+
+    function setGestureFeedback(message, tone) {
+      if (!els.gestureFeedback) return;
+      els.gestureFeedback.textContent = message;
+      els.gestureFeedback.classList.toggle("is-warn", tone === "warn");
+      els.gestureFeedback.classList.toggle("is-ok", tone === "ok");
+      showToast(message, 1600);
+    }
+
+    function resetGestureFeedback() {
+      if (!els.gestureFeedback) return;
+      els.gestureFeedback.textContent = "Router listo.";
+      els.gestureFeedback.classList.remove("is-warn", "is-ok");
     }
 
     /* ===== Code modal / QR demo ===== */
@@ -1188,12 +1432,7 @@
       if (now - state.gesture.lastGestureAt < 400) return;
       state.gesture.lastGestureAt = now;
       state.lastInteractionAt = now;
-      if (g === "open") { if (state.presence === "idle") setPresence("close"); }
-      else if (g === "swipe-left") { nextScene(); }
-      else if (g === "swipe-right") { prevScene(); }
-      else if (g === "pinch") { setPresence("active"); openCodeModal(); }
-      else if (g === "fist") { setPresence("close"); }
-      else if (g === "up") { setPresence("active"); openCodeModal(); }
+      applyGestureAction(g, "camera", 0.8);
     }
 
     /* ===== Pointer ===== */
@@ -1250,6 +1489,26 @@
 
       els.gestureToggleBtn.addEventListener("click", () => { if (state.gesture.enabled) stopGestures(); else startGestures(); });
       els.gestureStopBtn.addEventListener("click", stopGestures);
+      els.qaOpenPalmBtn.addEventListener("click", () => simulateGestureForQA("open_palm"));
+      els.qaSwipeLeftBtn.addEventListener("click", () => simulateGestureForQA("swipe_left"));
+      els.qaSwipeRightBtn.addEventListener("click", () => simulateGestureForQA("swipe_right"));
+      els.qaPinchBtn.addEventListener("click", () => simulateGestureForQA("pinch"));
+      els.qaFistBtn.addEventListener("click", () => simulateGestureForQA("fist"));
+      els.qaThumbsUpBtn.addEventListener("click", () => simulateGestureForQA("thumbs_up"));
+      els.qaHandUpBtn.addEventListener("click", () => simulateGestureForQA("hand_up"));
+      els.qaStopPalmBtn.addEventListener("click", () => simulateGestureForQA("stop_palm"));
+      els.qaIndexPointBtn.addEventListener("click", () => simulateGestureForQA("index_point"));
+      els.qaThumbsDownBtn.addEventListener("click", () => simulateGestureForQA("thumbs_down"));
+      els.qaVictoryBtn.addEventListener("click", () => simulateGestureForQA("victory"));
+      els.qaOkSignBtn.addEventListener("click", () => simulateGestureForQA("ok_sign"));
+      els.qaWaveBtn.addEventListener("click", () => simulateGestureForQA("wave"));
+      els.qaHandRotateBtn.addEventListener("click", () => simulateGestureForQA("hand_rotate"));
+      els.qaLabsToggleBtn.addEventListener("click", () => {
+        gestureRouterState.labsEnabled = !gestureRouterState.labsEnabled;
+        localStorage.setItem("gestureLabsEnabled", String(gestureRouterState.labsEnabled));
+        setGestureFeedback(gestureRouterState.labsEnabled ? "Labs activo" : "Labs inactivo", "ok");
+        updateGestureDebugUI();
+      });
 
       document.addEventListener("fullscreenchange", onFullscreenChange);
       document.addEventListener("webkitfullscreenchange", onFullscreenChange);
@@ -1257,6 +1516,8 @@
       const ro = new ResizeObserver(resizeCanvas); ro.observe(els.stagePanel);
 
       setupPointerControls();
+      updateGestureDebugUI();
+      resetGestureFeedback();
     }
 
     function boot() {
