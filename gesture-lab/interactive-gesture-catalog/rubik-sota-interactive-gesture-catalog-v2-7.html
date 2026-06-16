@@ -124,6 +124,11 @@
     .gesture-landmarks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
     .gesture-landmarks.is-active { display: block; }
     .gesture-placeholder { color: var(--muted); font-size: 0.9rem; padding: 1.5rem; text-align: center; }
+    .gesture-state-grid { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+    .gesture-state-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.7rem; border: 1px solid var(--line); border-radius: var(--radius-pill); background: rgba(0,0,0,0.32); font-size: 0.74rem; color: var(--muted); font-weight: 700; letter-spacing: 0.02em; }
+    .gesture-state-pill strong { color: var(--fg); font-weight: 900; }
+    .gesture-state-grid .btn { margin-left: auto; }
+    .gesture-help { font-size: 0.74rem; color: var(--muted); line-height: 1.5; border-left: 2px solid var(--gold); padding: 0.2rem 0 0.2rem 0.7rem; margin: 0.4rem 0 0; }
     .gesture-readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; }
     .readout-item { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.6rem 0.8rem; background: rgba(0,0,0,0.35); }
     .readout-item strong { display: block; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.2rem; }
@@ -249,7 +254,7 @@
       </div>
       <div class="top-actions">
         <a class="btn" id="homeBtn" href="../index.html">Volver al Hub</a>
-        <button class="btn btn-gesture" id="toggleGestureBtn" type="button">Activar gestos</button>
+        <button class="btn btn-gesture" id="toggleGestureBtn" type="button">Activar camara / gestos</button>
         <button class="btn" id="fullscreenBtn" type="button">Vista completa</button>
       </div>
     </header>
@@ -306,6 +311,13 @@
         </div>
         <div class="gesture-status" id="gestureStatus"><span class="gesture-status-dot" id="gestureStatusDot"></span><span id="gestureStatusText">Camara apagada</span></div>
       </div>
+      <div class="gesture-state-grid" role="group" aria-label="Estado de camara, modelo y mano">
+        <span class="gesture-state-pill">Camara: <strong id="gestureCameraStatus">apagada</strong></span>
+        <span class="gesture-state-pill">Modelo: <strong id="gestureModelStatus">no cargado</strong></span>
+        <span class="gesture-state-pill">Mano: <strong id="gestureHandStatus">sin mano</strong></span>
+        <button class="btn btn-gesture" id="gestureCameraToggleBtn" type="button">Activar camara / gestos</button>
+      </div>
+      <p class="gesture-help" id="gestureCameraHelp">La camara requiere HTTPS o localhost. Si abres la pagina desde http://IP-local en movil, el navegador puede bloquear el permiso. Los botones tactiles y QA siguen funcionando.</p>
       <div class="gesture-video-wrap">
         <video id="gestureVideo" class="gesture-video" playsinline muted autoplay></video>
         <canvas id="gestureLandmarks" class="gesture-landmarks"></canvas>
@@ -472,7 +484,7 @@
             <button class="btn btn-accent" id="addCartBtn" type="button">+ Carrito</button>
             <button class="btn" id="viewCartBtn" type="button">Ver carrito</button>
             <button class="btn" id="viewQrBtn" type="button">Codigo continuar</button>
-            <button class="btn btn-gesture" id="manualGestureBtn" type="button">Activar gestos</button>
+            <button class="btn btn-gesture" id="manualGestureBtn" type="button">Activar camara / gestos</button>
             <button class="btn btn-danger" id="resetBtn" type="button">Reset</button>
             <div class="mode-toggle" role="tablist" aria-label="Modo de visualizacion">
               <button id="modeProductBtn" class="is-active" type="button" aria-pressed="true">Producto</button>
@@ -568,6 +580,11 @@
       canvas: document.getElementById("stageCanvas"),
       homeBtn: document.getElementById("homeBtn"),
       toggleGestureBtn: document.getElementById("toggleGestureBtn"),
+      gestureCameraToggleBtn: document.getElementById("gestureCameraToggleBtn"),
+      gestureCameraStatus: document.getElementById("gestureCameraStatus"),
+      gestureModelStatus: document.getElementById("gestureModelStatus"),
+      gestureHandStatus: document.getElementById("gestureHandStatus"),
+      gestureCameraHelp: document.getElementById("gestureCameraHelp"),
       fullscreenBtn: document.getElementById("fullscreenBtn"),
       categoryChips: document.getElementById("categoryChips"),
       productList: document.getElementById("productList"),
@@ -1339,6 +1356,12 @@
       if (status === "active") els.gestureStatusDot.classList.add("is-active");
     }
 
+    function setSplitGestureStatus(part, text) {
+      if (part === "camera" && els.gestureCameraStatus) els.gestureCameraStatus.textContent = text;
+      else if (part === "model" && els.gestureModelStatus) els.gestureModelStatus.textContent = text;
+      else if (part === "hand" && els.gestureHandStatus) els.gestureHandStatus.textContent = text;
+    }
+
     async function toggleGestureMode() {
       if (state.gesture.enabled) { stopGestureMode(); return; }
       await startGestureMode();
@@ -1347,26 +1370,40 @@
     async function startGestureMode() {
       state.gesture.enabled = true; state.gesture.loading = true;
       setGestureStatus("on", "Iniciando camara...");
+      setSplitGestureStatus("camera", "solicitando permiso");
+      setSplitGestureStatus("model", "no cargado");
+      setSplitGestureStatus("hand", "sin mano");
       els.gesturePlaceholder.style.display = "none";
       els.gestureVideo.classList.add("is-active");
       updateGestureButtons();
 
       try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error("getUserMedia no disponible. La camara requiere HTTPS o localhost.");
+        }
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
         state.gesture.stream = stream;
         els.gestureVideo.srcObject = stream;
         await els.gestureVideo.play();
         state.gesture.videoReady = true;
         setGestureStatus("on", "Cargando MediaPipe...");
+        setSplitGestureStatus("camera", "activa");
+        setSplitGestureStatus("model", "cargando");
         await loadMediaPipe();
         if (!state.gesture.handLandmarker) throw new Error("MediaPipe no disponible");
         setGestureStatus("ready", "Mano no detectada");
+        setSplitGestureStatus("model", "listo");
+        setSplitGestureStatus("hand", "sin mano");
         els.handStateReadout.textContent = "Buscando mano";
         runGestureLoop();
       } catch (e) {
         console.error(e);
         state.gesture.enabled = false; state.gesture.loading = false;
+        const blocked = /getUserMedia|Permission|NotAllowed|SecurityError/i.test(String(e && (e.message || e.name)));
         setGestureStatus("off", "Camara no disponible");
+        setSplitGestureStatus("camera", blocked ? "bloqueada o HTTPS requerido" : "error");
+        setSplitGestureStatus("model", "no cargado");
+        setSplitGestureStatus("hand", "sin mano");
         els.gesturePlaceholder.style.display = "block";
         els.gestureVideo.classList.remove("is-active");
         els.handStateReadout.textContent = "Error";
@@ -1382,16 +1419,23 @@
       els.gestureLandmarks.classList.remove("is-active");
       els.gesturePlaceholder.style.display = "block";
       setGestureStatus("off", "Camara apagada");
+      setSplitGestureStatus("camera", "apagada");
+      setSplitGestureStatus("model", state.gesture.handLandmarker ? "listo" : "no cargado");
+      setSplitGestureStatus("hand", "sin mano");
       els.handStateReadout.textContent = "-"; els.gestureReadout.textContent = "-";
       updateGestureButtons();
     }
 
     function updateGestureButtons() {
       const active = state.gesture.enabled;
-      els.toggleGestureBtn.textContent = active ? "Desactivar gestos" : "Activar gestos";
-      els.manualGestureBtn.textContent = active ? "Desactivar gestos" : "Activar gestos";
+      const onLabel = "Desactivar camara";
+      const offLabel = "Activar camara / gestos";
+      els.toggleGestureBtn.textContent = active ? onLabel : offLabel;
+      els.manualGestureBtn.textContent = active ? onLabel : offLabel;
+      if (els.gestureCameraToggleBtn) els.gestureCameraToggleBtn.textContent = active ? onLabel : offLabel;
       els.toggleGestureBtn.classList.toggle("is-active", active);
       els.manualGestureBtn.classList.toggle("is-active", active);
+      if (els.gestureCameraToggleBtn) els.gestureCameraToggleBtn.classList.toggle("is-active", active);
     }
 
     async function loadMediaPipe() {
@@ -1442,8 +1486,13 @@
         state.gesture.currentGesture = gesture ? gesture.normalizedName : (resolved.reason === "stabilizing" ? "estabilizando" : "ambiguo / ninguno");
         els.handStateReadout.textContent = "Detectada";
         els.gestureReadout.textContent = state.gesture.currentGesture;
-        if (gesture) executeGestureAction(gesture, candidates);
-        else setNoGestureWinner(resolved.candidates, "camera", candidates[0] ? candidates[0].confidence : 0, resolved.reason);
+        if (gesture) {
+          executeGestureAction(gesture, candidates);
+          setSplitGestureStatus("hand", "gesto ganador: " + gesture.normalizedName);
+        } else {
+          setNoGestureWinner(resolved.candidates, "camera", candidates[0] ? candidates[0].confidence : 0, resolved.reason);
+          setSplitGestureStatus("hand", resolved.reason === "stabilizing" ? "mano detectada (estabilizando)" : "mano detectada (gesto ambiguo)");
+        }
         setGestureStatus("active", "Mano detectada");
       } else {
         state.gesture.handDetected = false;
@@ -1451,6 +1500,7 @@
         els.handStateReadout.textContent = "No detectada";
         els.gestureReadout.textContent = "-";
         setGestureStatus("ready", "Mano no detectada");
+        setSplitGestureStatus("hand", "sin mano");
       }
       updateUi();
     }
@@ -1719,6 +1769,7 @@
 
       els.toggleGestureBtn.addEventListener("click", toggleGestureMode);
       els.manualGestureBtn.addEventListener("click", toggleGestureMode);
+      if (els.gestureCameraToggleBtn) els.gestureCameraToggleBtn.addEventListener("click", toggleGestureMode);
       els.qaOpenPalmBtn.addEventListener("click", function () { simulateGestureForQA("open_palm"); });
       els.qaSwipeLeftBtn.addEventListener("click", function () { simulateGestureForQA("swipe_left"); });
       els.qaSwipeRightBtn.addEventListener("click", function () { simulateGestureForQA("swipe_right"); });
