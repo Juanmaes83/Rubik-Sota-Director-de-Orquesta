@@ -317,7 +317,7 @@
         <span class="gesture-state-pill">Mano: <strong id="gestureHandStatus">sin mano</strong></span>
         <button class="btn btn-gesture" id="gestureCameraToggleBtn" type="button">Activar camara / gestos</button>
       </div>
-      <p class="gesture-help" id="gestureCameraHelp">La camara requiere HTTPS o localhost. Si abres la pagina desde http://IP-local en movil, el navegador puede bloquear el permiso. Los botones tactiles y QA siguen funcionando.</p>
+      <p class="gesture-help" id="gestureCameraHelp">En movil, la camara requiere HTTPS. Si usas http://IP-local puede bloquearse. Usa GitHub Pages HTTPS para prueba real de camara. Los botones tactiles y el QA siguen funcionando sin camara.</p>
       <div class="gesture-video-wrap">
         <video id="gestureVideo" class="gesture-video" playsinline muted autoplay></video>
         <canvas id="gestureLandmarks" class="gesture-landmarks"></canvas>
@@ -1367,11 +1367,24 @@
       await startGestureMode();
     }
 
+    function describeCameraError(e) {
+      const name = (e && (e.name || "")).toString();
+      const msg = (e && (e.message || "")).toString();
+      if (/NotAllowedError|Permission/i.test(name + " " + msg)) return "bloqueada o permiso denegado";
+      if (/SecurityError/i.test(name)) return "HTTPS requerido";
+      if (/NotFoundError|DevicesNotFoundError/i.test(name)) return "no se encontro camara";
+      if (/NotReadableError|TrackStartError/i.test(name)) return "camara ocupada por otra app";
+      if (/AbortError/i.test(name)) return "camara interrumpida";
+      if (/TypeError/i.test(name) || /getUserMedia no disponible/i.test(msg)) return "navegador no compatible o HTTPS requerido";
+      return "error de camara";
+    }
+
     async function startGestureMode() {
-      state.gesture.enabled = true; state.gesture.loading = true;
+      if (state.gesture.enabled || state.gesture.loading) return;
+      state.gesture.loading = true;
       setGestureStatus("on", "Iniciando camara...");
       setSplitGestureStatus("camera", "solicitando permiso");
-      setSplitGestureStatus("model", "no cargado");
+      setSplitGestureStatus("model", state.gesture.handLandmarker ? "listo" : "no cargado");
       setSplitGestureStatus("hand", "sin mano");
       els.gesturePlaceholder.style.display = "none";
       els.gestureVideo.classList.add("is-active");
@@ -1381,28 +1394,32 @@
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           throw new Error("getUserMedia no disponible. La camara requiere HTTPS o localhost.");
         }
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "user" }, width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
         state.gesture.stream = stream;
         els.gestureVideo.srcObject = stream;
-        await els.gestureVideo.play();
+        setSplitGestureStatus("camera", "activa");
+        try { await els.gestureVideo.play(); } catch (_) {}
         state.gesture.videoReady = true;
         setGestureStatus("on", "Cargando MediaPipe...");
-        setSplitGestureStatus("camera", "activa");
-        setSplitGestureStatus("model", "cargando");
+        if (!state.gesture.handLandmarker) setSplitGestureStatus("model", "cargando");
         await loadMediaPipe();
         if (!state.gesture.handLandmarker) throw new Error("MediaPipe no disponible");
+        state.gesture.enabled = true;
+        state.gesture.loading = false;
         setGestureStatus("ready", "Mano no detectada");
         setSplitGestureStatus("model", "listo");
         setSplitGestureStatus("hand", "sin mano");
         els.handStateReadout.textContent = "Buscando mano";
+        updateGestureButtons();
         runGestureLoop();
       } catch (e) {
         console.error(e);
-        state.gesture.enabled = false; state.gesture.loading = false;
-        const blocked = /getUserMedia|Permission|NotAllowed|SecurityError/i.test(String(e && (e.message || e.name)));
+        if (state.gesture.stream) { try { state.gesture.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {} state.gesture.stream = null; }
+        els.gestureVideo.srcObject = null;
+        state.gesture.enabled = false; state.gesture.loading = false; state.gesture.videoReady = false;
         setGestureStatus("off", "Camara no disponible");
-        setSplitGestureStatus("camera", blocked ? "bloqueada o HTTPS requerido" : "error");
-        setSplitGestureStatus("model", "no cargado");
+        setSplitGestureStatus("camera", describeCameraError(e));
+        setSplitGestureStatus("model", state.gesture.handLandmarker ? "listo" : "no cargado");
         setSplitGestureStatus("hand", "sin mano");
         els.gesturePlaceholder.style.display = "block";
         els.gestureVideo.classList.remove("is-active");
@@ -1439,6 +1456,7 @@
     }
 
     async function loadMediaPipe() {
+      if (state.gesture.handLandmarker) return state.gesture.handLandmarker;
       try {
         const mod = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/+esm");
         state.gesture.module = mod;
