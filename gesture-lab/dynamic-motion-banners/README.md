@@ -119,3 +119,21 @@ Same file as v0.3 (no version bump on disk). Editor visibility fix for the QR ac
 
 - QR scan validation remains pending until tested with a physical mobile reader.
 - WebM recording continues to capture the WebGL canvas only.
+
+## v0.3.3 - Gallery Layout & Export Ratio QA
+
+Same file as v0.3 (no route change). Production polish for export formats and gallery placement.
+
+### Added
+
+- `FORMATO / SALIDA` panel with presets for square preview, storefront, DOOH/MUPI, landing hero, panoramic banner, story/reel, vertical feed, square feed and custom dimensions.
+- `EXPORT QA` panel showing expected size, expected ratio, actual generated size, actual ratio and status for PNG, HTML, ZIP and WebM.
+- Dedicated export canvas for PNG, HTML, ZIP preview image and WebM recording so exports follow the selected preset dimensions.
+- ZIP manifest version `0.3.3` with `preset` and `actualExport` metadata.
+- Client README now reports selected format, output size, ratio, orientation and QR destination.
+- Gallery layout now uses a reserved editorial strip with overlap checks against text, CTA, QR, note and logo zones.
+
+### v0.3.3 known limitations
+
+- QR scan validation remains pending until tested with a physical mobile reader.
+- WebM metadata is reported from the dedicated recording canvas. External verification with ffprobe is still recommended before production delivery.

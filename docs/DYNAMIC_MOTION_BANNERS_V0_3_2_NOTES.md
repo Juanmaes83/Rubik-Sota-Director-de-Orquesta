@@ -38,3 +38,7 @@ Required local QA for this pass:
 
 - QR physical scan validation is still pending. This pass validates the editor state, generated QR payload and exported manifest, not real mobile scanning.
 - WebM recording remains visual-only.
+
+## Follow-up
+
+- v0.3.3 reserves a cleaner gallery strip and adds export format presets, dimension metadata and export QA for PNG, HTML, ZIP and WebM. See `docs/DYNAMIC_MOTION_BANNERS_V0_3_3_NOTES.md`.

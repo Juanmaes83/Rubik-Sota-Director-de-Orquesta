@@ -438,6 +438,37 @@
       background: rgba(255, 255, 255, 0.025);
     }
 
+    .output-grid,
+    .export-qa-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .output-metric,
+    .export-qa-item {
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.025);
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
+
+    .output-metric strong,
+    .export-qa-item strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--text);
+      font-size: 0.86rem;
+    }
+
+    .custom-output-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
     .gallery-slots {
       display: grid;
       gap: 12px;
@@ -771,11 +802,48 @@
             <div id="gallery-status" class="media-status">Galeria desactivada.</div>
           </section>
 
+          <section class="control-group priority-section" aria-label="FORMATO / SALIDA">
+            <h2>FORMATO / SALIDA</h2>
+            <p class="help-copy">Elige el formato antes de exportar. PNG, HTML, ZIP y WebM usan este tamaño de salida.</p>
+            <div class="field">
+              <label for="output-preset">Preset</label>
+              <select id="output-preset"></select>
+            </div>
+            <div id="custom-output-fields" class="custom-output-grid" hidden>
+              <div class="field">
+                <label for="custom-output-width">Ancho custom</label>
+                <input id="custom-output-width" type="number" min="320" max="4096" step="10" value="1920">
+              </div>
+              <div class="field">
+                <label for="custom-output-height">Alto custom</label>
+                <input id="custom-output-height" type="number" min="320" max="4096" step="10" value="1080">
+              </div>
+            </div>
+            <div class="output-grid">
+              <div class="output-metric">Preset activo<strong id="output-active-label">Cuadrado preview</strong></div>
+              <div class="output-metric">Salida<strong id="output-size-label">1024 x 1024 px</strong></div>
+              <div class="output-metric">Ratio<strong id="output-ratio-label">1:1</strong></div>
+              <div class="output-metric">Orientacion<strong id="output-orientation-label">cuadrado</strong></div>
+            </div>
+            <div id="output-warning" class="media-status">Formato listo para exportar.</div>
+          </section>
+
           <button id="btn-clear-media" class="control-button subtle" type="button">Limpiar media</button>
           <button id="btn-export" class="control-button primary" type="button">Exportar banner PNG</button>
           <button id="export-html-preview" class="control-button" type="button">Exportar HTML preview</button>
           <button id="export-zip-preview" class="control-button" type="button">Exportar ZIP preview</button>
           <div id="export-status" class="media-status">Exportaciones listas. WebM captura solo la pieza visual.</div>
+          <section class="control-group priority-section" aria-label="EXPORT QA">
+            <h2>EXPORT QA</h2>
+            <div id="export-qa-summary" class="export-qa-grid">
+              <div class="export-qa-item">Archivo<strong id="export-qa-file">Pendiente</strong></div>
+              <div class="export-qa-item">Tamano esperado<strong id="export-qa-expected">1024 x 1024</strong></div>
+              <div class="export-qa-item">Ratio esperado<strong id="export-qa-expected-ratio">1:1</strong></div>
+              <div class="export-qa-item">Tamano real<strong id="export-qa-actual">Pendiente</strong></div>
+              <div class="export-qa-item">Ratio real<strong id="export-qa-actual-ratio">Pendiente</strong></div>
+              <div class="export-qa-item">Estado<strong id="export-qa-state">Pendiente</strong></div>
+            </div>
+          </section>
 
           <section class="control-group" aria-label="Grabacion y presentacion">
             <h2>Grabacion y presentacion</h2>
@@ -899,6 +967,21 @@
       const exportHtmlPreview = document.getElementById("export-html-preview");
       const exportZipPreview = document.getElementById("export-zip-preview");
       const exportStatus = document.getElementById("export-status");
+      const outputPreset = document.getElementById("output-preset");
+      const customOutputFields = document.getElementById("custom-output-fields");
+      const customOutputWidth = document.getElementById("custom-output-width");
+      const customOutputHeight = document.getElementById("custom-output-height");
+      const outputActiveLabel = document.getElementById("output-active-label");
+      const outputSizeLabel = document.getElementById("output-size-label");
+      const outputRatioLabel = document.getElementById("output-ratio-label");
+      const outputOrientationLabel = document.getElementById("output-orientation-label");
+      const outputWarning = document.getElementById("output-warning");
+      const exportQaFile = document.getElementById("export-qa-file");
+      const exportQaExpected = document.getElementById("export-qa-expected");
+      const exportQaExpectedRatio = document.getElementById("export-qa-expected-ratio");
+      const exportQaActual = document.getElementById("export-qa-actual");
+      const exportQaActualRatio = document.getElementById("export-qa-actual-ratio");
+      const exportQaState = document.getElementById("export-qa-state");
 
       const controls = {
         brand: document.getElementById("input-brand"),
@@ -953,6 +1036,22 @@
         }
       };
 
+      const outputPresets = [
+        { id: "square-preview", label: "Cuadrado preview", width: 1024, height: 1024, note: "" },
+        { id: "storefront-horizontal", label: "Escaparate horizontal", width: 1920, height: 1080, note: "" },
+        { id: "storefront-horizontal-4k", label: "Escaparate horizontal 4K", width: 3840, height: 2160, note: "" },
+        { id: "storefront-vertical-dooh", label: "Escaparate vertical / DOOH", width: 1080, height: 1920, note: "" },
+        { id: "storefront-vertical-dooh-4k", label: "Escaparate vertical / DOOH 4K", width: 2160, height: 3840, note: "" },
+        { id: "mupi-digital-vertical", label: "MUPI digital vertical", width: 1080, height: 1920, note: "" },
+        { id: "mupi-print-preview", label: "MUPI print preview", width: 1200, height: 1760, note: "Preview. Confirmar arte final con proveedor." },
+        { id: "desktop-landing-hero", label: "Ordenador / landing hero", width: 1920, height: 1080, note: "" },
+        { id: "web-banner-panoramic", label: "Banner web panoramico", width: 1920, height: 640, note: "" },
+        { id: "mobile-story-reel", label: "Story / Reel movil", width: 1080, height: 1920, note: "" },
+        { id: "feed-vertical", label: "Feed vertical", width: 1080, height: 1350, note: "" },
+        { id: "feed-square", label: "Feed cuadrado", width: 1080, height: 1080, note: "" },
+        { id: "custom", label: "Custom", width: 1920, height: 1080, note: "Validar arte final con proveedor." }
+      ];
+
       const state = {
         preset: "fashion",
         mainImageElement: null,
@@ -990,6 +1089,20 @@
           urls: ["", "", ""],
           dataUrls: ["", "", ""],
           names: ["", "", ""]
+        },
+        output: {
+          presetId: "square-preview",
+          width: 1024,
+          height: 1024
+        },
+        lastExport: {
+          pngWidth: null,
+          pngHeight: null,
+          pngRatio: null,
+          webmWidth: null,
+          webmHeight: null,
+          webmRatio: null,
+          webmDuration: null
         },
         assetData: {
           mainImage: "",
@@ -1421,9 +1534,355 @@
         return out;
       }
 
-      function generateClientPreviewDataUrl() {
-        updateTexture();
-        return textureCanvas.toDataURL("image/png");
+      function gcd(a, b) {
+        a = Math.abs(Math.round(a));
+        b = Math.abs(Math.round(b));
+        while (b) {
+          const t = b;
+          b = a % b;
+          a = t;
+        }
+        return a || 1;
+      }
+
+      function getAspectRatioLabel(width, height) {
+        const w = Math.max(1, Math.round(Number(width) || 1));
+        const h = Math.max(1, Math.round(Number(height) || 1));
+        const simple = gcd(w, h);
+        const rw = w / simple;
+        const rh = h / simple;
+        if (rw === 1 && rh === 1) return "1:1";
+        if (rw === 16 && rh === 9) return "16:9";
+        if (rw === 9 && rh === 16) return "9:16";
+        if (rw === 4 && rh === 5) return "4:5";
+        if (rw === 3 && rh === 1) return "3:1";
+        return rw + ":" + rh;
+      }
+
+      function getOrientation(width, height) {
+        if (width === height) return "cuadrado";
+        return width > height ? "horizontal" : "vertical";
+      }
+
+      function validateExportDimensions(expectedWidth, expectedHeight, actualWidth, actualHeight) {
+        if (!actualWidth || !actualHeight) return { state: "ERROR", message: "Sin dimensiones reales." };
+        if (expectedWidth === actualWidth && expectedHeight === actualHeight) return { state: "OK", message: "Coincide exactamente." };
+        const expectedRatio = expectedWidth / expectedHeight;
+        const actualRatio = actualWidth / actualHeight;
+        if (Math.abs(expectedRatio - actualRatio) < 0.002) return { state: "WARNING", message: "Mismo ratio, resolucion diferente." };
+        return { state: "ERROR", message: "Ratio diferente." };
+      }
+
+      function getOutputPreset(id) {
+        return outputPresets.find((preset) => preset.id === id) || outputPresets[0];
+      }
+
+      function getActiveOutputPreset() {
+        const selected = getOutputPreset(state.output.presetId);
+        let width = selected.width;
+        let height = selected.height;
+        if (selected.id === "custom") {
+          width = Math.min(4096, Math.max(320, Math.round(Number(customOutputWidth.value) || selected.width)));
+          height = Math.min(4096, Math.max(320, Math.round(Number(customOutputHeight.value) || selected.height)));
+        }
+        const ratio = getAspectRatioLabel(width, height);
+        const orientation = getOrientation(width, height);
+        return { id: selected.id, label: selected.label, width, height, ratio, orientation, note: selected.note || "" };
+      }
+
+      function updateOutputPanel() {
+        const preset = getActiveOutputPreset();
+        state.output.width = preset.width;
+        state.output.height = preset.height;
+        outputActiveLabel.textContent = preset.label;
+        outputSizeLabel.textContent = preset.width + " x " + preset.height + " px";
+        outputRatioLabel.textContent = preset.ratio;
+        outputOrientationLabel.textContent = preset.orientation;
+        customOutputFields.hidden = preset.id !== "custom";
+        const ratioNumber = Math.max(preset.width, preset.height) / Math.max(1, Math.min(preset.width, preset.height));
+        if (ratioNumber > 3.05) {
+          outputWarning.textContent = "Warning: formato extremo. Revisa textos, QR y galeria antes de publicar.";
+        } else if (preset.note) {
+          outputWarning.textContent = preset.note;
+        } else {
+          outputWarning.textContent = "Formato listo para exportar.";
+        }
+        updateExportQaPanel("Pendiente", preset.width, preset.height, null, null, "Pendiente");
+      }
+
+      function updateExportQaPanel(fileLabel, expectedWidth, expectedHeight, actualWidth, actualHeight, stateLabel, extra) {
+        const expectedRatio = getAspectRatioLabel(expectedWidth, expectedHeight);
+        const actualRatio = actualWidth && actualHeight ? getAspectRatioLabel(actualWidth, actualHeight) : "Pendiente";
+        exportQaFile.textContent = fileLabel || "Pendiente";
+        exportQaExpected.textContent = expectedWidth + " x " + expectedHeight;
+        exportQaExpectedRatio.textContent = expectedRatio;
+        exportQaActual.textContent = actualWidth && actualHeight ? (actualWidth + " x " + actualHeight) : "Pendiente";
+        exportQaActualRatio.textContent = actualRatio;
+        exportQaState.textContent = stateLabel || "Pendiente";
+        if (extra) exportStatus.textContent = extra;
+      }
+
+      function computeBoxOverlap(a, b) {
+        return !(a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y);
+      }
+
+      function fitGalleryBox(box, blockers, canvasW, canvasH) {
+        const minGap = Math.round(Math.min(canvasW, canvasH) * 0.024);
+        let fitted = { x: box.x, y: box.y, w: box.w, h: box.h };
+        blockers.forEach((blocker) => {
+          if (computeBoxOverlap(fitted, {
+            x: blocker.x - minGap,
+            y: blocker.y - minGap,
+            w: blocker.w + minGap * 2,
+            h: blocker.h + minGap * 2
+          })) {
+            fitted.y = Math.max(0, blocker.y - fitted.h - minGap);
+          }
+        });
+        if (fitted.y + fitted.h > canvasH - minGap) fitted.y = canvasH - fitted.h - minGap;
+        if (fitted.y < minGap) {
+          fitted.h = Math.max(Math.round(canvasH * 0.07), fitted.h - (minGap - fitted.y));
+          fitted.y = minGap;
+        }
+        return fitted;
+      }
+
+      function drawRoundRect(ctx, x, y, w, h, r) {
+        const radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + w - radius, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+        ctx.lineTo(x + w, y + h - radius);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+        ctx.lineTo(x + radius, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+      }
+
+      function drawGalleryIntoBox(ctx, box, editorMode) {
+        if (!state.gallery.enabled || state.gallery.count <= 0) return;
+        const count = Math.min(3, state.gallery.count);
+        const realImages = state.gallery.elements.slice(0, count).filter((image) => image && image.naturalWidth).length;
+        if (!editorMode && realImages === 0) return;
+        const gap = Math.max(10, Math.round(box.w * 0.028));
+        const itemH = box.h;
+        let columns = count;
+        let rows = 1;
+        if (box.w / Math.max(1, box.h) < 2.2 && count === 3) {
+          columns = 2;
+          rows = 2;
+        }
+        const itemW = Math.floor((box.w - gap * (columns - 1)) / columns);
+        const rowH = Math.floor((box.h - gap * (rows - 1)) / rows);
+        ctx.save();
+        if (editorMode) {
+          ctx.strokeStyle = "rgba(21,18,14,0.22)";
+          ctx.setLineDash([8, 8]);
+          ctx.strokeRect(box.x - 8, box.y - 8, box.w + 16, box.h + 16);
+          ctx.setLineDash([]);
+          ctx.fillStyle = "rgba(21,18,14,0.58)";
+          ctx.font = "600 " + Math.max(12, Math.round(box.h * 0.12)) + "px Inter, Arial, sans-serif";
+          ctx.fillText("Galeria inferior", box.x, box.y - 16);
+        }
+        for (let i = 0; i < count; i += 1) {
+          const col = i % columns;
+          const row = Math.floor(i / columns);
+          const x = box.x + col * (itemW + gap);
+          const y = box.y + row * (rowH + gap);
+          const w = columns === 2 && count === 3 && i === 2 ? Math.min(itemW, Math.round(box.w * 0.48)) : itemW;
+          const h = rows > 1 ? rowH : itemH;
+          ctx.fillStyle = "rgba(248,240,227,0.78)";
+          drawRoundRect(ctx, x, y, w, h, 10);
+          ctx.fill();
+          const image = state.gallery.elements[i];
+          if (image && image.naturalWidth) {
+            drawMedia(ctx, image, "image", x, y, w, h, { fit: "cover", scale: 1, offsetX: 0, offsetY: 0, opacity: 1 });
+          } else if (editorMode) {
+            ctx.fillStyle = "rgba(21,18,14,0.48)";
+            ctx.fillRect(x, y, w, h);
+            ctx.fillStyle = "rgba(248,240,227,0.86)";
+            ctx.font = "700 " + Math.max(14, Math.round(h * 0.18)) + "px Inter, Arial, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("IMAGEN " + (i + 1), x + w / 2, y + h / 2);
+          }
+        }
+        ctx.restore();
+      }
+
+      function drawLogoIntoBox(ctx, box, s) {
+        if (!state.logo.visible) return;
+        const hasLogoImage = !!(state.logoElement && state.logoElement.naturalWidth);
+        const brand = getValue("brand") || "";
+        if (!hasLogoImage && !brand) return;
+        const cardMode = state.logo.card || "translucent";
+        let fill = "rgba(21,18,14,0.55)";
+        let stroke = "rgba(248,240,227,0.22)";
+        let textFill = "#f8f0e3";
+        if (cardMode === "light") { fill = "rgba(248,240,227,0.92)"; stroke = "rgba(21,18,14,0.15)"; textFill = "#1a1612"; }
+        else if (cardMode === "dark") { fill = "rgba(15,12,10,0.92)"; stroke = "rgba(248,240,227,0.18)"; textFill = "#f8f0e3"; }
+        ctx.save();
+        ctx.globalAlpha = state.logo.opacity;
+        if (cardMode !== "none") {
+          ctx.fillStyle = fill;
+          drawRoundRect(ctx, box.x, box.y, box.w, box.h, Math.max(10, 14 * s));
+          ctx.fill();
+          ctx.strokeStyle = stroke;
+          ctx.stroke();
+        }
+        const padX = 18 * s;
+        const padY = 14 * s;
+        const innerX = box.x + padX;
+        const innerY = box.y + padY;
+        const innerW = Math.max(1, (box.w - padX * 2) * state.logo.scale);
+        const innerH = Math.max(1, (box.h - padY * 2) * state.logo.scale);
+        if (hasLogoImage) {
+          const ratio = state.logoElement.naturalWidth / state.logoElement.naturalHeight;
+          let drawW = innerW;
+          let drawH = drawW / ratio;
+          if (state.logo.fit === "contain" && drawH > innerH) {
+            drawH = innerH;
+            drawW = drawH * ratio;
+          }
+          ctx.drawImage(state.logoElement, innerX + (innerW - drawW) / 2, innerY + (innerH - drawH) / 2, drawW, drawH);
+        } else {
+          ctx.fillStyle = cardMode === "none" ? "#1a1612" : textFill;
+          ctx.font = "700 " + Math.max(16, Math.round(innerH * 0.62)) + "px Inter, Arial, sans-serif";
+          ctx.textBaseline = "middle";
+          ctx.textAlign = "left";
+          ctx.fillText(brand, innerX, innerY + innerH / 2);
+        }
+        ctx.restore();
+      }
+
+      function drawCreative(ctx, width, height, options = {}) {
+        const palette = presets[state.preset].palette;
+        const qr = resolveQrDestination();
+        const sx = width / 1024;
+        const sy = height / 1024;
+        const s = Math.min(sx, sy);
+        const padX = Math.max(40 * sx, width * 0.065);
+        const topBandH = Math.max(92 * sy, height * 0.12);
+        const accentH = Math.max(6, height * 0.008);
+        const heroBox = {
+          x: padX,
+          y: topBandH + Math.max(42 * sy, height * 0.055),
+          w: width - padX * 2,
+          h: Math.max(height * 0.24, 230 * sy)
+        };
+        const textBox = {
+          x: padX,
+          y: heroBox.y + heroBox.h + Math.max(34 * sy, height * 0.04),
+          w: Math.min(width * 0.64, width - padX * 2),
+          h: Math.max(height * 0.17, 150 * sy)
+        };
+        const ctaBox = {
+          x: width - padX - Math.min(width * 0.25, 280 * sx),
+          y: Math.min(height - padX - Math.max(240 * sy, height * 0.22), textBox.y + Math.max(108 * sy, height * 0.11)),
+          w: Math.min(width * 0.25, 280 * sx),
+          h: Math.max(92 * sy, height * 0.1)
+        };
+        const qrSize = Math.min(Math.max(92 * s, Math.min(width, height) * 0.11), Math.min(width, height) * 0.17);
+        const qrBox = {
+          x: ctaBox.x + (ctaBox.w - qrSize) / 2,
+          y: Math.min(height - padX - qrSize - Math.max(34 * sy, height * 0.034), ctaBox.y + ctaBox.h + Math.max(24 * sy, height * 0.026)),
+          w: qrSize,
+          h: qrSize + Math.max(34 * sy, height * 0.035)
+        };
+        const logoBox = {
+          x: width - padX - Math.min(width * 0.18, 190 * sx) + Math.round(state.logo.offsetX * sx * 0.4),
+          y: topBandH + Math.max(38 * sy, height * 0.04) + Math.round(state.logo.offsetY * sy * 0.4),
+          w: Math.min(width * 0.18, 190 * sx),
+          h: Math.max(46 * sy, Math.min(70 * sy, height * 0.065))
+        };
+        const noteBox = {
+          x: padX,
+          y: height - padX - Math.max(58 * sy, height * 0.055),
+          w: Math.min(width * 0.55, Math.max(240, ctaBox.x - padX - 40 * sx)),
+          h: Math.max(44 * sy, height * 0.045)
+        };
+        let galleryBox = {
+          x: padX,
+          y: textBox.y + textBox.h + Math.max(28 * sy, height * 0.028),
+          w: Math.min(width * 0.56, Math.max(280, ctaBox.x - padX - 44 * sx)),
+          h: Math.max(84 * sy, Math.min(150 * sy, height * 0.12))
+        };
+        galleryBox = fitGalleryBox(galleryBox, [noteBox, ctaBox, qrBox], width, height);
+        state.layout = { heroBox, textBox, noteBox, galleryBox, ctaBox, qrBox, logoBox };
+
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, palette[0]);
+        gradient.addColorStop(0.58, "#f8f0e3");
+        gradient.addColorStop(1, "#d4c3aa");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = palette[2];
+        ctx.fillRect(0, 0, width, topBandH);
+        ctx.fillStyle = palette[1];
+        ctx.fillRect(0, topBandH, width, accentH);
+        ctx.fillStyle = "rgba(21,18,14,0.1)";
+        ctx.fillRect(padX * 0.7, heroBox.y - 20 * sy, width - padX * 1.4, Math.max(heroBox.h + textBox.h + 70 * sy, height * 0.48));
+
+        const canDrawImage = state.mainImageElement && state.mainImageElement.naturalWidth;
+        const canDrawVideo = state.videoElement && state.videoElement.readyState >= 2 && state.videoElement.videoWidth;
+        if (canDrawImage && (state.mediaMode === "image" || state.mediaMode === "both" || !canDrawVideo)) {
+          drawMedia(ctx, state.mainImageElement, "image", heroBox.x, heroBox.y, heroBox.w, heroBox.h, state.image);
+        } else if (canDrawVideo && state.mediaMode === "video") {
+          drawMedia(ctx, state.videoElement, "video", heroBox.x, heroBox.y, heroBox.w, heroBox.h, { fit: "cover", scale: 1, offsetX: 0, offsetY: 0, opacity: 1 });
+        } else {
+          const visual = ctx.createLinearGradient(heroBox.x, heroBox.y, heroBox.x + heroBox.w, heroBox.y + heroBox.h);
+          visual.addColorStop(0, palette[3]);
+          visual.addColorStop(0.48, palette[1]);
+          visual.addColorStop(1, palette[2]);
+          ctx.fillStyle = visual;
+          ctx.fillRect(heroBox.x, heroBox.y, heroBox.w, heroBox.h);
+        }
+        ctx.fillStyle = "rgba(0,0,0,0.24)";
+        ctx.fillRect(heroBox.x, heroBox.y, heroBox.w, heroBox.h);
+        drawLogoIntoBox(ctx, logoBox, s);
+
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
+        ctx.fillStyle = palette[2];
+        ctx.font = "700 " + Math.max(34, Math.round(66 * s)) + "px Georgia, Times New Roman, serif";
+        wrapText(ctx, getValue("headline") || "CAMPANA EN MOVIMIENTO", textBox.x, textBox.y, textBox.w, Math.max(44 * sy, 46), 3);
+        ctx.font = "400 " + Math.max(18, Math.round(30 * s)) + "px Inter, Arial, sans-serif";
+        ctx.fillStyle = "rgba(21,18,14,0.78)";
+        wrapText(ctx, getValue("subheadline"), textBox.x + 4 * sx, textBox.y + Math.max(142 * sy, textBox.h * 0.56), textBox.w, Math.max(30 * sy, 28), 2);
+
+        drawGalleryIntoBox(ctx, galleryBox, !!options.editorMode);
+
+        ctx.fillStyle = palette[2];
+        ctx.fillRect(ctaBox.x, ctaBox.y, ctaBox.w, ctaBox.h);
+        ctx.fillStyle = palette[1];
+        ctx.font = "800 " + Math.max(18, Math.round(25 * s)) + "px Inter, Arial, sans-serif";
+        wrapText(ctx, getValue("cta") || "ESCANEA", ctaBox.x + 24 * sx, ctaBox.y + 28 * sy, ctaBox.w - 48 * sx, Math.max(24 * sy, 24), 2);
+
+        drawQrPlaceholder(ctx, qrBox.x, qrBox.y, qrSize, qr.valid ? qr.resolved : "invalid");
+        ctx.fillStyle = "rgba(21,18,14,0.72)";
+        ctx.font = "500 " + Math.max(14, Math.round(20 * s)) + "px Inter, Arial, sans-serif";
+        wrapText(ctx, getValue("note"), noteBox.x, noteBox.y, noteBox.w, Math.max(22 * sy, 20), 2);
+        ctx.font = "500 " + Math.max(11, Math.round(15 * s)) + "px Inter, Arial, sans-serif";
+        ctx.fillStyle = "rgba(21,18,14,0.56)";
+        ctx.textAlign = "center";
+        wrapText(ctx, qr.valid ? qr.resolved : "QR pendiente", qrBox.x + qrSize / 2, qrBox.y + qrSize + 12 * sy, Math.max(qrSize * 1.9, 220 * sx), Math.max(18 * sy, 16), 1);
+      }
+
+      function generateClientPreviewDataUrl(width, height) {
+        const preset = getActiveOutputPreset();
+        const targetW = width || preset.width;
+        const targetH = height || preset.height;
+        const exportCanvas = document.createElement("canvas");
+        exportCanvas.width = targetW;
+        exportCanvas.height = targetH;
+        drawCreative(exportCanvas.getContext("2d"), targetW, targetH, { editorMode: false });
+        state.lastExport.pngWidth = targetW;
+        state.lastExport.pngHeight = targetH;
+        state.lastExport.pngRatio = getAspectRatioLabel(targetW, targetH);
+        return exportCanvas.toDataURL("image/png");
       }
 
       function generateClientPreviewBytes() {
@@ -1433,8 +1892,9 @@
       function clientManifest() {
         const qrState = state.qr || {};
         const gallery = state.gallery || { enabled: false, count: 0 };
+        const preset = getActiveOutputPreset();
         return {
-          version: "0.3.1",
+          version: "0.3.3",
           exportType: "client-preview-package",
           generatedAt: new Date().toISOString(),
           brand: getValue("brand"),
@@ -1452,6 +1912,22 @@
           gallery: {
             enabled: !!gallery.enabled,
             count: gallery.enabled ? Math.max(0, Math.min(3, Number(gallery.count) || 0)) : 0
+          },
+          preset: {
+            id: preset.id,
+            label: preset.label,
+            width: preset.width,
+            height: preset.height,
+            ratio: preset.ratio,
+            orientation: preset.orientation
+          },
+          actualExport: {
+            pngWidth: preset.width,
+            pngHeight: preset.height,
+            pngRatio: preset.ratio,
+            webmWidth: state.lastExport.webmWidth,
+            webmHeight: state.lastExport.webmHeight,
+            webmRatio: state.lastExport.webmRatio
           },
           assets: { bannerPreview: "assets/banner-preview.png" },
           notes: "Client preview package. Open index.html after extracting ZIP."
@@ -1633,93 +2109,8 @@
       }
 
       function updateTexture() {
-        const palette = presets[state.preset].palette;
-        const qr = resolveQrDestination();
         const ctx = textureContext;
-        const gradient = ctx.createLinearGradient(0, 0, textureSize, textureSize);
-        gradient.addColorStop(0, palette[0]);
-        gradient.addColorStop(0.58, "#f8f0e3");
-        gradient.addColorStop(1, "#d4c3aa");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, textureSize, textureSize);
-
-        ctx.globalAlpha = 0.38;
-        for (let i = 0; i < 4200; i += 1) {
-          const shade = Math.floor(190 + Math.random() * 52);
-          ctx.fillStyle = "rgb(" + shade + "," + (shade - 8) + "," + (shade - 24) + ")";
-          ctx.fillRect(Math.random() * textureSize, Math.random() * textureSize, 1, 1);
-        }
-        ctx.globalAlpha = 1;
-
-        ctx.fillStyle = palette[2];
-        ctx.fillRect(0, 0, textureSize, 138);
-        ctx.fillStyle = palette[1];
-        ctx.fillRect(0, 138, textureSize, 8);
-        ctx.fillStyle = "rgba(21,18,14,0.1)";
-        ctx.fillRect(64, 196, textureSize - 128, 590);
-
-        const canDrawImage = state.mainImageElement && state.mainImageElement.naturalWidth;
-        const canDrawVideo = state.videoElement && state.videoElement.readyState >= 2 && state.videoElement.videoWidth;
-        const drawImageHero = canDrawImage && (state.mediaMode === "image" || state.mediaMode === "both" || !canDrawVideo);
-        const drawVideoHero = canDrawVideo && state.mediaMode === "video";
-        const drawVideoSecondary = canDrawVideo && state.mediaMode === "both";
-
-        if (drawImageHero) {
-          drawMedia(ctx, state.mainImageElement, "image", 92, 206, 840, 328, state.image);
-        } else if (drawVideoHero) {
-          drawMedia(ctx, state.videoElement, "video", 92, 206, 840, 328, { fit: "cover", scale: 1, offsetX: 0, offsetY: 0, opacity: 1 });
-        } else {
-          const visual = ctx.createLinearGradient(92, 206, 932, 534);
-          visual.addColorStop(0, palette[3]);
-          visual.addColorStop(0.48, palette[1]);
-          visual.addColorStop(1, palette[2]);
-          ctx.fillStyle = visual;
-          ctx.fillRect(92, 206, 840, 328);
-          ctx.strokeStyle = "rgba(255,255,255,0.42)";
-          ctx.lineWidth = 2;
-          for (let i = 0; i < 12; i += 1) {
-            ctx.beginPath();
-            ctx.moveTo(92 + i * 78, 206);
-            ctx.lineTo(20 + i * 88, 534);
-            ctx.stroke();
-          }
-        }
-
-        if (drawVideoSecondary) {
-          ctx.fillStyle = "rgba(21,18,14,0.72)";
-          ctx.fillRect(638, 334, 260, 148);
-          drawMedia(ctx, state.videoElement, "video", 650, 346, 236, 124, { fit: "cover", scale: 1, offsetX: 0, offsetY: 0, opacity: 0.95 });
-        }
-
-        ctx.fillStyle = "rgba(0,0,0,0.24)";
-        ctx.fillRect(92, 206, 840, 328);
-
-        ctx.textBaseline = "top";
-        ctx.textAlign = "left";
-        drawLogoLayer(ctx, palette);
-
-        ctx.fillStyle = palette[2];
-        ctx.font = "700 66px Georgia, Times New Roman, serif";
-        wrapText(ctx, getValue("headline") || "CAMPANA EN MOVIMIENTO", 92, 580, 660, 72, 3);
-        ctx.font = "400 30px Inter, Arial, sans-serif";
-        ctx.fillStyle = "rgba(21,18,14,0.78)";
-        wrapText(ctx, getValue("subheadline"), 96, 780, 560, 40, 3);
-        drawGalleryLayer(ctx);
-
-        ctx.fillStyle = palette[2];
-        ctx.fillRect(690, 730, 250, 112);
-        ctx.fillStyle = palette[1];
-        ctx.font = "800 25px Inter, Arial, sans-serif";
-        wrapText(ctx, getValue("cta") || "ESCANEA", 714, 760, 198, 30, 2);
-
-        drawQrPlaceholder(ctx, 746, 862, 112, qr.valid ? qr.resolved : "invalid");
-        ctx.fillStyle = "rgba(21,18,14,0.72)";
-        ctx.font = "500 20px Inter, Arial, sans-serif";
-        wrapText(ctx, getValue("note"), 92, 910, 560, 28, 2);
-        ctx.font = "500 17px Inter, Arial, sans-serif";
-        ctx.fillStyle = "rgba(21,18,14,0.56)";
-        ctx.textAlign = "center";
-        wrapText(ctx, qr.valid ? qr.resolved : "QR pendiente", 802, 984, 250, 22, 1);
+        drawCreative(ctx, textureSize, textureSize, { editorMode: true });
 
         if (gl) {
           gl.bindTexture(gl.TEXTURE_2D, webgl.texture);
@@ -2172,12 +2563,15 @@
         }
 
         if (state.exportNextFrame) {
+          const preset = getActiveOutputPreset();
           const link = document.createElement("a");
           link.href = generateClientPreviewDataUrl();
           link.download = clientFileNameBase() + ".png";
           document.body.appendChild(link);
           link.click();
           link.remove();
+          const check = validateExportDimensions(preset.width, preset.height, state.lastExport.pngWidth, state.lastExport.pngHeight);
+          updateExportQaPanel("PNG", preset.width, preset.height, state.lastExport.pngWidth, state.lastExport.pngHeight, check.state, "PNG exportado: " + state.lastExport.pngWidth + " x " + state.lastExport.pngHeight + " px.");
           state.exportNextFrame = false;
         }
 
@@ -2230,6 +2624,7 @@
 
       function updateLayerControls() {
         state.mediaMode = mainMediaMode.value;
+        state.output.presetId = outputPreset.value || state.output.presetId;
         state.image.scale = Number(imageScale.value);
         state.image.offsetX = Number(imageOffsetX.value);
         state.image.offsetY = Number(imageOffsetY.value);
@@ -2249,6 +2644,7 @@
         state.audioElement.loop = audioLoop.checked;
         syncControlLabels();
         resolveQrDestination();
+        updateOutputPanel();
         state.textureDirty = true;
         updateGallerySlotUi();
         galleryStatus.textContent = state.gallery.enabled ? "Galeria activa con " + state.gallery.count + " imagenes." : "Activa la galeria para añadir imagenes inferiores.";
@@ -2383,19 +2779,50 @@
       }
 
       function startRecording() {
-        if (!canvas.captureStream || typeof MediaRecorder === "undefined") {
+        const preset = getActiveOutputPreset();
+        if (typeof MediaRecorder === "undefined") {
           recordStatus.textContent = "Grabacion no soportada en este navegador.";
           return;
         }
-        const stream = canvas.captureStream(30);
+        const recordCanvas = document.createElement("canvas");
+        recordCanvas.width = preset.width;
+        recordCanvas.height = preset.height;
+        const recordCtx = recordCanvas.getContext("2d");
+        drawCreative(recordCtx, preset.width, preset.height, { editorMode: false });
+        if (!recordCanvas.captureStream) {
+          recordStatus.textContent = "Grabacion no soportada en este navegador.";
+          return;
+        }
+        const stream = recordCanvas.captureStream(30);
         const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
         state.recordedChunks = [];
+        state.recording = {
+          canvas: recordCanvas,
+          ctx: recordCtx,
+          width: preset.width,
+          height: preset.height,
+          startedAt: performance.now(),
+          frameId: null
+        };
+        const drawRecordingFrame = () => {
+          if (!state.recording) return;
+          drawCreative(recordCtx, preset.width, preset.height, { editorMode: false });
+          state.recording.frameId = requestAnimationFrame(drawRecordingFrame);
+        };
+        drawRecordingFrame();
         state.recorder = new MediaRecorder(stream, { mimeType });
         state.recorder.ondataavailable = (event) => {
           if (event.data && event.data.size) state.recordedChunks.push(event.data);
         };
         state.recorder.onstop = () => {
+          const recording = state.recording;
+          if (recording && recording.frameId) cancelAnimationFrame(recording.frameId);
           const blob = new Blob(state.recordedChunks, { type: "video/webm" });
+          const duration = recording ? (performance.now() - recording.startedAt) / 1000 : null;
+          state.lastExport.webmWidth = preset.width;
+          state.lastExport.webmHeight = preset.height;
+          state.lastExport.webmRatio = preset.ratio;
+          state.lastExport.webmDuration = duration;
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
           link.download = clientFileNameBase() + ".webm";
@@ -2403,10 +2830,13 @@
           link.click();
           setTimeout(() => URL.revokeObjectURL(link.href), 500);
           link.remove();
-          recordStatus.textContent = blob.size ? "Grabacion lista." : "Grabacion no generada.";
+          state.recording = null;
+          const check = validateExportDimensions(preset.width, preset.height, preset.width, preset.height);
+          updateExportQaPanel("WEBM", preset.width, preset.height, preset.width, preset.height, check.state, blob.size ? "WebM grabado desde canvas dedicado: " + preset.width + " x " + preset.height + " px." : "WebM no generado.");
+          recordStatus.textContent = blob.size ? "WebM listo. " + preset.width + " x " + preset.height + " px, ratio " + preset.ratio + ", duracion " + (duration ? duration.toFixed(1) : "?") + "s." : "Grabacion no generada.";
         };
         state.recorder.start();
-        recordStatus.textContent = "Grabando...";
+        recordStatus.textContent = "Grabando pieza creativa " + preset.width + " x " + preset.height + " px. No captura panel ni editor.";
       }
 
       function stopRecording() {
@@ -2430,6 +2860,10 @@
         const campaign = escapeHtml(config.campaign || "");
         const qrDest = escapeHtml(config.qr.resolvedDestination || "");
         const generated = escapeHtml(config.generatedAt.replace("T", " ").slice(0, 16));
+        const presetLabel = escapeHtml(config.preset.label);
+        const outputSize = escapeHtml(config.preset.width + " x " + config.preset.height + " px");
+        const outputRatio = escapeHtml(config.preset.ratio);
+        const orientation = escapeHtml(config.preset.orientation);
         const title = brand && campaign ? brand + " — " + campaign : (brand || campaign || "Preview de campana");
         return ""
           + "<!DOCTYPE html>\n"
@@ -2449,6 +2883,10 @@
           + "<div class=\"meta\">"
           + (brand ? "<div><span class=\"k\">Marca</span><span class=\"v\">" + brand + "</span></div>" : "")
           + (campaign ? "<div><span class=\"k\">Campana</span><span class=\"v\">" + campaign + "</span></div>" : "")
+          + "<div><span class=\"k\">Formato</span><span class=\"v\">" + presetLabel + "</span></div>"
+          + "<div><span class=\"k\">Salida</span><span class=\"v\">" + outputSize + "</span></div>"
+          + "<div><span class=\"k\">Ratio</span><span class=\"v\">" + outputRatio + "</span></div>"
+          + "<div><span class=\"k\">Orientacion</span><span class=\"v\">" + orientation + "</span></div>"
           + (qrDest ? "<div><span class=\"k\">Destino QR</span><span class=\"v\">" + qrDest + "</span></div>" : "")
           + "<div><span class=\"k\">Generado</span><span class=\"v\">" + generated + "</span></div>"
           + "</div></body></html>";
@@ -2462,7 +2900,9 @@
         const html = clientPreviewHtmlTemplate({});
         const blob = new Blob([html], { type: "text/html;charset=utf-8" });
         downloadBlob(blob, clientFileNameBase() + ".html");
-        exportStatus.textContent = "HTML standalone exportado para revision cliente.";
+        const preset = getActiveOutputPreset();
+        const check = validateExportDimensions(preset.width, preset.height, preset.width, preset.height);
+        updateExportQaPanel("HTML", preset.width, preset.height, preset.width, preset.height, check.state, "HTML standalone exportado: " + preset.width + " x " + preset.height + " px.");
       }
 
       function crc32(bytes) {
@@ -2526,17 +2966,26 @@
         const generated = manifest.generatedAt.replace("T", " ").slice(0, 16);
         const qr = manifest.qr.resolvedDestination || "(sin destino QR)";
         const gallery = manifest.gallery.enabled ? (manifest.gallery.count + " imagen(es) integradas en la preview") : "no incluida";
+        const preset = manifest.preset || {};
         return ""
-          + "Dynamic Motion Banner — Preview de campana\n"
-          + "===========================================\n\n"
-          + "Cliente / marca : " + brand + "\n"
-          + "Campana         : " + campaign + "\n"
-          + "Generado        : " + generated + "\n\n"
+          + "Preview de campana\n"
+          + "===================\n\n"
+          + "Marca              : " + brand + "\n"
+          + "Campana            : " + campaign + "\n"
+          + "Formato seleccionado: " + (preset.label || "(sin formato)") + "\n"
+          + "Tamano de salida   : " + (preset.width || "?") + " x " + (preset.height || "?") + " px\n"
+          + "Ratio              : " + (preset.ratio || "?") + "\n"
+          + "Orientacion        : " + (preset.orientation || "?") + "\n"
+          + "Generado           : " + generated + "\n\n"
           + "Como abrir la preview\n"
           + "---------------------\n"
-          + "1. Extrae el ZIP en una carpeta.\n"
-          + "2. Abre index.html en Chrome, Edge o Safari moderno.\n"
-          + "3. No borres la carpeta assets. Index.html depende de assets/banner-preview.png.\n\n"
+          + "Abrir index.html en navegador.\n\n"
+          + "Contenido del paquete\n"
+          + "---------------------\n"
+          + "- index.html\n"
+          + "- README.txt\n"
+          + "- manifest/config.json\n"
+          + "- assets/banner-preview.png\n\n"
           + "Que revisar\n"
           + "-----------\n"
           + "- Logo y marca\n"
@@ -2549,7 +2998,7 @@
           + qr + "\n\n"
           + "Validacion QR\n"
           + "-------------\n"
-          + "Antes de aprobar, escanea el QR con un movil real para confirmar que abre el destino correcto.\n\n"
+          + "El QR debe validarse con escaneo fisico antes de publicacion.\n\n"
           + "Aprobacion\n"
           + "----------\n"
           + "- Si todo es correcto, responde aprobando esta preview.\n"
@@ -2560,6 +3009,7 @@
       }
 
       function exportZip() {
+        const preset = getActiveOutputPreset();
         const manifest = clientManifest();
         const config = JSON.stringify(manifest, null, 2);
         const readme = clientReadmeText(manifest);
@@ -2575,7 +3025,8 @@
         const base = clientFileNameBase();
         downloadBlob(zipBlob, base + ".zip");
         const kb = (zipBlob.size / 1024).toFixed(1);
-        exportStatus.textContent = "ZIP cliente exportado (" + kb + " KB). Estructura: index.html, README.txt, manifest/config.json, assets/banner-preview.png.";
+        const check = validateExportDimensions(preset.width, preset.height, state.lastExport.pngWidth, state.lastExport.pngHeight);
+        updateExportQaPanel("ZIP", preset.width, preset.height, state.lastExport.pngWidth, state.lastExport.pngHeight, check.state, "ZIP cliente exportado (" + kb + " KB): " + preset.width + " x " + preset.height + " px.");
       }
 
       function setAudioSource(url, label) {
@@ -2586,12 +3037,20 @@
         audioStatus.textContent = label;
       }
 
+      outputPresets.forEach((preset) => {
+        const option = document.createElement("option");
+        option.value = preset.id;
+        option.textContent = preset.label + " · " + preset.width + " x " + preset.height + " · " + getAspectRatioLabel(preset.width, preset.height);
+        outputPreset.appendChild(option);
+      });
+      outputPreset.value = state.output.presetId;
+
       Object.values(controls).forEach((control) => {
         control.addEventListener("input", () => {
           state.textureDirty = true;
         });
       });
-      [mainMediaMode, imageScale, imageOffsetX, imageOffsetY, imageOpacity, imageFit, logoScale, logoOffsetX, logoOffsetY, logoOpacity, logoFit, logoCard, logoVisible, galleryEnabled, galleryCount, qrType, controls.qr, audioVolume, audioMuted, audioLoop].forEach((control) => {
+      [mainMediaMode, imageScale, imageOffsetX, imageOffsetY, imageOpacity, imageFit, logoScale, logoOffsetX, logoOffsetY, logoOpacity, logoFit, logoCard, logoVisible, galleryEnabled, galleryCount, qrType, controls.qr, outputPreset, customOutputWidth, customOutputHeight, audioVolume, audioMuted, audioLoop].forEach((control) => {
         control.addEventListener("input", updateLayerControls);
         control.addEventListener("change", updateLayerControls);
       });
@@ -2618,12 +3077,15 @@
         if (gl) {
           state.exportNextFrame = true;
         } else {
+          const preset = getActiveOutputPreset();
           const link = document.createElement("a");
           link.href = generateClientPreviewDataUrl();
           link.download = clientFileNameBase() + ".png";
           document.body.appendChild(link);
           link.click();
           link.remove();
+          const check = validateExportDimensions(preset.width, preset.height, state.lastExport.pngWidth, state.lastExport.pngHeight);
+          updateExportQaPanel("PNG", preset.width, preset.height, state.lastExport.pngWidth, state.lastExport.pngHeight, check.state, "PNG exportado: " + state.lastExport.pngWidth + " x " + state.lastExport.pngHeight + " px.");
         }
       });
       exportHtmlPreview.addEventListener("click", exportHtml);
