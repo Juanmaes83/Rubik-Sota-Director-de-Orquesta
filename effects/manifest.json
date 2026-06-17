@@ -1,0 +1,60 @@
+{
+  "version": "0.1.0",
+  "project": "Rubik Sota Director de Orquesta",
+  "library": "Effects Library",
+  "description": "Reusable visual effects for future modules. Raw sources are not production-ready.",
+  "effects": [
+    {
+      "id": "dynamic-motion-banner-webgl",
+      "name": "Dynamic Motion Banner WebGL",
+      "sourceType": "github-repository",
+      "sourceRepository": "https://github.com/Juanmaes83/BANDEROLAS-DINAMICAS",
+      "sourceOwner": "Juanmaes83",
+      "permissionStatus": "owner-controlled-internal-source",
+      "rawSourcePath": "effects/raw-sources/github/dynamic-motion-banner-webgl/index.html",
+      "documentationPath": "effects/raw-sources/github/dynamic-motion-banner-webgl/README.md",
+      "status": "raw",
+      "productionReady": false,
+      "priority": "high",
+      "futureModule": "Dynamic Motion Banners v0.1",
+      "categories": [
+        "webgl",
+        "canvas",
+        "cloth-physics",
+        "interactive-banner",
+        "campaign",
+        "showroom",
+        "storefront",
+        "motion"
+      ],
+      "useCases": [
+        "fashion",
+        "retail",
+        "storefront",
+        "real-estate",
+        "events",
+        "promotions",
+        "outreach",
+        "digital-signage"
+      ],
+      "capabilities": [
+        "dynamic-texture",
+        "image-upload",
+        "video-upload",
+        "mouse-interaction",
+        "touch-interaction",
+        "png-export",
+        "verlet-physics",
+        "webgl-rendering"
+      ],
+      "risks": [
+        "requires-cleanup",
+        "strong-original-theme",
+        "mobile-performance-unknown",
+        "webgl-fallback-missing",
+        "accessibility-not-reviewed"
+      ],
+      "nextStep": "Clean and adapt into Dynamic Motion Banners v0.1"
+    }
+  ]
+}
