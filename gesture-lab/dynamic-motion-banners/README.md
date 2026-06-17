@@ -137,3 +137,20 @@ Same file as v0.3 (no route change). Production polish for export formats and ga
 
 - QR scan validation remains pending until tested with a physical mobile reader.
 - WebM metadata is reported from the dedicated recording canvas. External verification with ffprobe is still recommended before production delivery.
+
+## v0.3.4 - WebM Export Canvas Dimensions Fix
+
+Same file as v0.3 (no route change). Hardening pass for WebM export dimensions.
+
+### Added
+
+- `createExportCanvasForPreset()` creates an in-memory canvas with `width` and `height` set from the active preset only.
+- `validateWebmCanvasDimensions()` cancels recording if the recording canvas does not match the active preset exactly.
+- `WEBM QA` panel reports expected preset, expected size, expected ratio, actual recording canvas, actual ratio, duration and status.
+- WebM filenames include the preset dimensions, for example `1080x1920`.
+- Visible warning: WebM records from an export canvas, not from screen, viewport or scroll position.
+
+### v0.3.4 known limitations
+
+- Browser MediaRecorder metadata is still best verified externally with ffprobe before final production delivery.
+- QR scan validation remains pending until tested with a physical mobile reader.

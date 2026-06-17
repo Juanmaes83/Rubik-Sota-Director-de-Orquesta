@@ -847,9 +847,22 @@
 
           <section class="control-group" aria-label="Grabacion y presentacion">
             <h2>Grabacion y presentacion</h2>
+            <div class="media-status">WebM se graba desde canvas de exportacion, no desde pantalla ni viewport.</div>
             <button id="record-start" class="control-button" type="button">Iniciar grabacion</button>
             <button id="record-stop" class="control-button subtle" type="button">Detener y descargar WebM</button>
             <div id="record-status" class="media-status">Grabacion preparada.</div>
+            <section class="control-group" aria-label="WEBM QA">
+              <h2>WEBM QA</h2>
+              <div class="export-qa-grid">
+                <div class="export-qa-item">Preset esperado<strong id="webm-qa-preset">Pendiente</strong></div>
+                <div class="export-qa-item">Tamano esperado<strong id="webm-qa-expected">Pendiente</strong></div>
+                <div class="export-qa-item">Ratio esperado<strong id="webm-qa-expected-ratio">Pendiente</strong></div>
+                <div class="export-qa-item">Canvas usado<strong id="webm-qa-actual">Pendiente</strong></div>
+                <div class="export-qa-item">Ratio real<strong id="webm-qa-actual-ratio">Pendiente</strong></div>
+                <div class="export-qa-item">Duracion<strong id="webm-qa-duration">Pendiente</strong></div>
+                <div class="export-qa-item">Estado<strong id="webm-qa-state">Pendiente</strong></div>
+              </div>
+            </section>
             <button id="presentation-enter" class="control-button" type="button">Entrar modo presentacion</button>
             <button id="presentation-exit" class="control-button subtle" type="button">Salir modo presentacion</button>
           </section>
@@ -982,6 +995,13 @@
       const exportQaActual = document.getElementById("export-qa-actual");
       const exportQaActualRatio = document.getElementById("export-qa-actual-ratio");
       const exportQaState = document.getElementById("export-qa-state");
+      const webmQaPreset = document.getElementById("webm-qa-preset");
+      const webmQaExpected = document.getElementById("webm-qa-expected");
+      const webmQaExpectedRatio = document.getElementById("webm-qa-expected-ratio");
+      const webmQaActual = document.getElementById("webm-qa-actual");
+      const webmQaActualRatio = document.getElementById("webm-qa-actual-ratio");
+      const webmQaDuration = document.getElementById("webm-qa-duration");
+      const webmQaState = document.getElementById("webm-qa-state");
 
       const controls = {
         brand: document.getElementById("input-brand"),
@@ -1622,6 +1642,35 @@
         if (extra) exportStatus.textContent = extra;
       }
 
+      function updateWebmQaPanel(preset, actualWidth, actualHeight, duration, stateLabel) {
+        const expectedRatio = getAspectRatioLabel(preset.width, preset.height);
+        webmQaPreset.textContent = preset.label;
+        webmQaExpected.textContent = preset.width + " x " + preset.height;
+        webmQaExpectedRatio.textContent = expectedRatio;
+        webmQaActual.textContent = actualWidth && actualHeight ? actualWidth + " x " + actualHeight : "Pendiente";
+        webmQaActualRatio.textContent = actualWidth && actualHeight ? getAspectRatioLabel(actualWidth, actualHeight) : "Pendiente";
+        webmQaDuration.textContent = duration ? duration.toFixed(1) + "s" : "Pendiente";
+        webmQaState.textContent = stateLabel || "Pendiente";
+      }
+
+      function createExportCanvasForPreset(preset = getActiveOutputPreset()) {
+        const exportCanvas = document.createElement("canvas");
+        exportCanvas.width = preset.width;
+        exportCanvas.height = preset.height;
+        drawCreative(exportCanvas.getContext("2d"), preset.width, preset.height, { editorMode: false });
+        return exportCanvas;
+      }
+
+      function validateWebmCanvasDimensions(recordCanvas, activePreset) {
+        const ok = !!recordCanvas && recordCanvas.width === activePreset.width && recordCanvas.height === activePreset.height;
+        if (!ok) {
+          updateWebmQaPanel(activePreset, recordCanvas ? recordCanvas.width : null, recordCanvas ? recordCanvas.height : null, null, "ERROR");
+          updateExportQaPanel("WEBM", activePreset.width, activePreset.height, recordCanvas ? recordCanvas.width : null, recordCanvas ? recordCanvas.height : null, "ERROR", "ERROR: el canvas de video no coincide con el preset. Grabacion cancelada.");
+          recordStatus.textContent = "ERROR: el canvas de video no coincide con el preset. Grabacion cancelada.";
+        }
+        return ok;
+      }
+
       function computeBoxOverlap(a, b) {
         return !(a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y);
       }
@@ -1875,10 +1924,7 @@
         const preset = getActiveOutputPreset();
         const targetW = width || preset.width;
         const targetH = height || preset.height;
-        const exportCanvas = document.createElement("canvas");
-        exportCanvas.width = targetW;
-        exportCanvas.height = targetH;
-        drawCreative(exportCanvas.getContext("2d"), targetW, targetH, { editorMode: false });
+        const exportCanvas = createExportCanvasForPreset({ ...preset, width: targetW, height: targetH });
         state.lastExport.pngWidth = targetW;
         state.lastExport.pngHeight = targetH;
         state.lastExport.pngRatio = getAspectRatioLabel(targetW, targetH);
@@ -2784,11 +2830,9 @@
           recordStatus.textContent = "Grabacion no soportada en este navegador.";
           return;
         }
-        const recordCanvas = document.createElement("canvas");
-        recordCanvas.width = preset.width;
-        recordCanvas.height = preset.height;
+        const recordCanvas = createExportCanvasForPreset(preset);
+        if (!validateWebmCanvasDimensions(recordCanvas, preset)) return;
         const recordCtx = recordCanvas.getContext("2d");
-        drawCreative(recordCtx, preset.width, preset.height, { editorMode: false });
         if (!recordCanvas.captureStream) {
           recordStatus.textContent = "Grabacion no soportada en este navegador.";
           return;
@@ -2823,19 +2867,15 @@
           state.lastExport.webmHeight = preset.height;
           state.lastExport.webmRatio = preset.ratio;
           state.lastExport.webmDuration = duration;
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = clientFileNameBase() + ".webm";
-          document.body.appendChild(link);
-          link.click();
-          setTimeout(() => URL.revokeObjectURL(link.href), 500);
-          link.remove();
+          downloadBlob(blob, clientFileNameBase() + "-" + preset.width + "x" + preset.height + ".webm");
           state.recording = null;
           const check = validateExportDimensions(preset.width, preset.height, preset.width, preset.height);
+          updateWebmQaPanel(preset, preset.width, preset.height, duration, check.state);
           updateExportQaPanel("WEBM", preset.width, preset.height, preset.width, preset.height, check.state, blob.size ? "WebM grabado desde canvas dedicado: " + preset.width + " x " + preset.height + " px." : "WebM no generado.");
           recordStatus.textContent = blob.size ? "WebM listo. " + preset.width + " x " + preset.height + " px, ratio " + preset.ratio + ", duracion " + (duration ? duration.toFixed(1) : "?") + "s." : "Grabacion no generada.";
         };
         state.recorder.start();
+        updateWebmQaPanel(preset, preset.width, preset.height, null, "Grabando");
         recordStatus.textContent = "Grabando pieza creativa " + preset.width + " x " + preset.height + " px. No captura panel ni editor.";
       }
 
