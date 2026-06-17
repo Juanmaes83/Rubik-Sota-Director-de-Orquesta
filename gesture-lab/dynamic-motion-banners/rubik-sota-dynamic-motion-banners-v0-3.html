@@ -551,6 +551,10 @@
             <input id="input-brand" value="RUBIK SOTA" autocomplete="off">
           </div>
           <div class="field">
+            <label for="input-campaign">Campana</label>
+            <input id="input-campaign" value="Coleccion movimiento" autocomplete="off">
+          </div>
+          <div class="field">
             <label for="input-headline">Titular</label>
             <input id="input-headline" value="NUEVA COLECCION EN MOVIMIENTO" autocomplete="off">
           </div>
@@ -628,6 +632,15 @@
               <select id="logo-fit">
                 <option value="contain">Contain</option>
                 <option value="cover">Cover</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="logo-card">Soporte logo</label>
+              <select id="logo-card">
+                <option value="translucent" selected>Capsula translucida</option>
+                <option value="light">Capsula clara</option>
+                <option value="dark">Capsula oscura</option>
+                <option value="none">Sin capsula</option>
               </select>
             </div>
             <label class="control-row" for="logo-visible">Mostrar logo <input id="logo-visible" type="checkbox" checked></label>
@@ -749,6 +762,7 @@
       const qrPreview = document.getElementById("qr-preview");
       const qrWarning = document.getElementById("qr-warning");
       const logoFit = document.getElementById("logo-fit");
+      const logoCard = document.getElementById("logo-card");
       const galleryEnabled = document.getElementById("gallery-enabled");
       const galleryCount = document.getElementById("gallery-count");
       const galleryStatus = document.getElementById("gallery-status");
@@ -773,6 +787,7 @@
 
       const controls = {
         brand: document.getElementById("input-brand"),
+        campaign: document.getElementById("input-campaign"),
         headline: document.getElementById("input-headline"),
         subheadline: document.getElementById("input-subheadline"),
         cta: document.getElementById("input-cta"),
@@ -783,6 +798,7 @@
       const presets = {
         fashion: {
           brand: "RUBIK SOTA",
+          campaign: "Coleccion movimiento",
           headline: "NUEVA COLECCION EN MOVIMIENTO",
           subheadline: "Siluetas, color y presencia editorial para activar el escaparate de temporada.",
           cta: "ESCANEA Y DESCUBRE",
@@ -792,6 +808,7 @@
         },
         retail: {
           brand: "RUBIK SOTA RETAIL",
+          campaign: "Promocion escaparate",
           headline: "PROMOCION EN ESCAPARATE",
           subheadline: "Un formato dinamico para atraer, explicar y convertir desde la primera mirada.",
           cta: "VER OFERTA ACTIVA",
@@ -801,6 +818,7 @@
         },
         realestate: {
           brand: "RUBIK SOTA HOMES",
+          campaign: "Visita propiedad",
           headline: "VISITA LA PROPIEDAD",
           subheadline: "Banderolas digitales para presentar espacios, rutas de visita y contacto inmediato.",
           cta: "AGENDA TU VISITA",
@@ -810,6 +828,7 @@
         },
         event: {
           brand: "RUBIK SOTA LIVE",
+          campaign: "Lanzamiento evento",
           headline: "LANZAMIENTO ESPECIAL",
           subheadline: "Una pieza de alto impacto para convocatorias, fechas clave y experiencias de marca.",
           cta: "RESERVA TU ACCESO",
@@ -841,7 +860,8 @@
           offsetY: 0,
           opacity: 1,
           visible: true,
-          fit: "contain"
+          fit: "contain",
+          card: "translucent"
         },
         qr: {
           type: "url",
@@ -901,35 +921,314 @@
         if (line && lines < maxLines) ctx.fillText(line, x, y + lines * lineHeight);
       }
 
-      function drawQrPlaceholder(ctx, x, y, size, label) {
-        ctx.save();
-        ctx.fillStyle = "rgba(255,255,255,0.9)";
-        ctx.fillRect(x, y, size, size);
-        ctx.fillStyle = "#15120e";
-        const modules = 25;
-        const cell = size / modules;
-        const value = String(label || "");
-        const finder = (fx, fy) => {
-          ctx.fillRect(x + fx * cell, y + fy * cell, cell * 7, cell * 7);
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(x + (fx + 1) * cell, y + (fy + 1) * cell, cell * 5, cell * 5);
-          ctx.fillStyle = "#15120e";
-          ctx.fillRect(x + (fx + 2) * cell, y + (fy + 2) * cell, cell * 3, cell * 3);
+      /* ===========================================================
+         Real QR Code generator (ISO/IEC 18004, byte mode, EC level L,
+         versions 1..9). Built from algorithm description, no external
+         dependency. Physical scan validation pending until tested with
+         a real mobile reader.
+         =========================================================== */
+      const QrEncoder = (function () {
+        const EXP = new Array(512);
+        const LOG = new Array(256);
+        (function () {
+          let x = 1;
+          for (let i = 0; i < 255; i += 1) {
+            EXP[i] = x;
+            LOG[x] = i;
+            x = x << 1;
+            if (x & 0x100) x ^= 0x11D;
+          }
+          for (let i = 255; i < 512; i += 1) EXP[i] = EXP[i - 255];
+        })();
+        function gfMul(a, b) { return (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]]; }
+        function rsGen(degree) {
+          let g = [1];
+          for (let i = 0; i < degree; i += 1) {
+            const next = new Array(g.length + 1).fill(0);
+            for (let j = 0; j < g.length; j += 1) {
+              next[j] ^= gfMul(g[j], EXP[i]);
+              next[j + 1] ^= g[j];
+            }
+            g = next;
+          }
+          return g;
+        }
+        function rsEncode(data, ecLen) {
+          const gen = rsGen(ecLen);
+          const rem = new Array(ecLen).fill(0);
+          for (let i = 0; i < data.length; i += 1) {
+            const factor = (data[i] ^ rem[0]) & 0xFF;
+            rem.shift();
+            rem.push(0);
+            if (factor !== 0) {
+              for (let j = 0; j < ecLen; j += 1) rem[j] ^= gfMul(gen[j + 1], factor);
+            }
+          }
+          return rem;
+        }
+        const VER_L = {
+          1: { total: 19,  ec: 7,  blocks: 1 },
+          2: { total: 34,  ec: 10, blocks: 1 },
+          3: { total: 55,  ec: 15, blocks: 1 },
+          4: { total: 80,  ec: 20, blocks: 1 },
+          5: { total: 108, ec: 26, blocks: 1 },
+          6: { total: 136, ec: 18, blocks: 2 },
+          7: { total: 156, ec: 20, blocks: 2 },
+          8: { total: 194, ec: 24, blocks: 2 },
+          9: { total: 232, ec: 30, blocks: 2 }
         };
-        finder(1, 1);
-        finder(17, 1);
-        finder(1, 17);
-        let hash = 0;
-        for (let i = 0; i < value.length; i += 1) hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-        for (let row = 0; row < modules; row += 1) {
-          for (let col = 0; col < modules; col += 1) {
-            const inFinder = (col < 9 && row < 9) || (col > 15 && row < 9) || (col < 9 && row > 15);
-            if (inFinder) continue;
-            const bit = ((hash + row * 13 + col * 17 + row * col) % 7) < 3;
-            if (bit) ctx.fillRect(x + col * cell, y + row * cell, Math.max(1, cell * 0.78), Math.max(1, cell * 0.78));
+        const ALIGN = {
+          1: [], 2: [6, 18], 3: [6, 22], 4: [6, 26], 5: [6, 30], 6: [6, 34],
+          7: [6, 22, 38], 8: [6, 24, 42], 9: [6, 26, 46]
+        };
+        function utf8(text) { return Array.from(new TextEncoder().encode(text)); }
+        function chooseVersion(bytes) {
+          for (let v = 1; v <= 9; v += 1) {
+            const info = VER_L[v];
+            const dataCw = info.total - info.ec * info.blocks;
+            const overhead = 4 + 8;
+            if (bytes * 8 + overhead <= dataCw * 8) return v;
+          }
+          throw new Error("QR data too long for L9");
+        }
+        function buildBytes(text, version) {
+          const data = utf8(text);
+          const info = VER_L[version];
+          const dataCw = info.total - info.ec * info.blocks;
+          const bits = [];
+          function push(value, n) { for (let i = n - 1; i >= 0; i -= 1) bits.push((value >>> i) & 1); }
+          push(0b0100, 4);
+          push(data.length, 8);
+          data.forEach(function (b) { push(b, 8); });
+          const target = dataCw * 8;
+          const term = Math.min(4, Math.max(0, target - bits.length));
+          for (let i = 0; i < term; i += 1) bits.push(0);
+          while (bits.length % 8 !== 0) bits.push(0);
+          const padBytes = [0xEC, 0x11];
+          let pad = 0;
+          while (bits.length < target) push(padBytes[pad++ % 2], 8);
+          const out = [];
+          for (let i = 0; i < bits.length; i += 8) {
+            let b = 0;
+            for (let j = 0; j < 8; j += 1) b = (b << 1) | bits[i + j];
+            out.push(b);
+          }
+          return out;
+        }
+        function interleave(dataBytes, version) {
+          const info = VER_L[version];
+          const blocks = info.blocks;
+          const ecLen = info.ec;
+          const dataPerBlock = (info.total - ecLen * blocks) / blocks;
+          const dataBlocks = [];
+          const ecBlocks = [];
+          for (let i = 0; i < blocks; i += 1) {
+            const block = dataBytes.slice(i * dataPerBlock, (i + 1) * dataPerBlock);
+            dataBlocks.push(block);
+            ecBlocks.push(rsEncode(block, ecLen));
+          }
+          const out = [];
+          for (let i = 0; i < dataPerBlock; i += 1) {
+            for (let j = 0; j < blocks; j += 1) out.push(dataBlocks[j][i]);
+          }
+          for (let i = 0; i < ecLen; i += 1) {
+            for (let j = 0; j < blocks; j += 1) out.push(ecBlocks[j][i]);
+          }
+          return out;
+        }
+        function makeMatrix(version) {
+          const size = 17 + 4 * version;
+          const m = []; const r = [];
+          for (let i = 0; i < size; i += 1) { m.push(new Array(size).fill(false)); r.push(new Array(size).fill(false)); }
+          function set(x, y, on) { if (x < 0 || y < 0 || x >= size || y >= size) return; m[y][x] = on; r[y][x] = true; }
+          function finder(x, y) {
+            for (let dy = -1; dy <= 7; dy += 1) {
+              for (let dx = -1; dx <= 7; dx += 1) {
+                const px = x + dx, py = y + dy;
+                if (px < 0 || py < 0 || px >= size || py >= size) continue;
+                const on = (dx >= 0 && dx <= 6 && dy >= 0 && dy <= 6) && ((dx === 0 || dx === 6) || (dy === 0 || dy === 6) || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4));
+                set(px, py, on);
+              }
+            }
+          }
+          finder(0, 0);
+          finder(size - 7, 0);
+          finder(0, size - 7);
+          for (let i = 8; i < size - 8; i += 1) {
+            set(i, 6, i % 2 === 0);
+            set(6, i, i % 2 === 0);
+          }
+          const aligns = ALIGN[version] || [];
+          for (let i = 0; i < aligns.length; i += 1) {
+            for (let j = 0; j < aligns.length; j += 1) {
+              const cx = aligns[i], cy = aligns[j];
+              if ((cx === 6 && cy === 6) || (cx === 6 && cy === size - 7) || (cx === size - 7 && cy === 6)) continue;
+              for (let dy = -2; dy <= 2; dy += 1) {
+                for (let dx = -2; dx <= 2; dx += 1) {
+                  const ring = Math.abs(dx) === 2 || Math.abs(dy) === 2 || (dx === 0 && dy === 0);
+                  set(cx + dx, cy + dy, ring);
+                }
+              }
+            }
+          }
+          set(8, size - 8, true);
+          for (let i = 0; i <= 8; i += 1) {
+            if (i !== 6) r[8][i] = true;
+            if (i !== 6) r[i][8] = true;
+          }
+          for (let i = size - 8; i < size; i += 1) {
+            r[8][i] = true;
+            r[i][8] = true;
+          }
+          return { m, r, size };
+        }
+        function placeData(matrix, reserved, codewords) {
+          const size = matrix.length;
+          const totalBits = codewords.length * 8;
+          let bi = 0;
+          let upward = true;
+          for (let xRight = size - 1; xRight > 0; xRight -= 2) {
+            let xR = xRight;
+            if (xR === 6) xR = 5;
+            for (let yi = 0; yi < size; yi += 1) {
+              const y = upward ? size - 1 - yi : yi;
+              for (let dx = 0; dx < 2; dx += 1) {
+                const x = xR - dx;
+                if (!reserved[y][x]) {
+                  let bit = 0;
+                  if (bi < totalBits) bit = (codewords[bi >> 3] >>> (7 - (bi & 7))) & 1;
+                  matrix[y][x] = bit === 1;
+                  bi += 1;
+                }
+              }
+            }
+            upward = !upward;
+          }
+        }
+        function maskFn(p, x, y) {
+          switch (p) {
+            case 0: return ((y + x) % 2) === 0;
+            case 1: return (y % 2) === 0;
+            case 2: return (x % 3) === 0;
+            case 3: return ((y + x) % 3) === 0;
+            case 4: return ((Math.floor(y / 2) + Math.floor(x / 3)) % 2) === 0;
+            case 5: return (((y * x) % 2) + ((y * x) % 3)) === 0;
+            case 6: return ((((y * x) % 2) + ((y * x) % 3)) % 2) === 0;
+            case 7: return ((((y + x) % 2) + ((y * x) % 3)) % 2) === 0;
+          }
+          return false;
+        }
+        function applyMask(matrix, reserved, pattern) {
+          const size = matrix.length;
+          const out = matrix.map(function (row) { return row.slice(); });
+          for (let y = 0; y < size; y += 1) {
+            for (let x = 0; x < size; x += 1) {
+              if (!reserved[y][x] && maskFn(pattern, x, y)) out[y][x] = !out[y][x];
+            }
+          }
+          return out;
+        }
+        function penalty(matrix) {
+          const size = matrix.length;
+          let p = 0;
+          for (let y = 0; y < size; y += 1) {
+            let run = 1;
+            for (let x = 1; x < size; x += 1) {
+              if (matrix[y][x] === matrix[y][x - 1]) run += 1;
+              else { if (run >= 5) p += 3 + (run - 5); run = 1; }
+            }
+            if (run >= 5) p += 3 + (run - 5);
+          }
+          for (let x = 0; x < size; x += 1) {
+            let run = 1;
+            for (let y = 1; y < size; y += 1) {
+              if (matrix[y][x] === matrix[y - 1][x]) run += 1;
+              else { if (run >= 5) p += 3 + (run - 5); run = 1; }
+            }
+            if (run >= 5) p += 3 + (run - 5);
+          }
+          for (let y = 0; y < size - 1; y += 1) {
+            for (let x = 0; x < size - 1; x += 1) {
+              const c = matrix[y][x];
+              if (c === matrix[y][x + 1] && c === matrix[y + 1][x] && c === matrix[y + 1][x + 1]) p += 3;
+            }
+          }
+          let dark = 0;
+          for (let y = 0; y < size; y += 1) for (let x = 0; x < size; x += 1) if (matrix[y][x]) dark += 1;
+          const ratio = dark / (size * size);
+          p += Math.abs(Math.floor(ratio * 100) - 50) * 2;
+          return p;
+        }
+        function formatBits(maskPattern) {
+          const data = (0b01 << 3) | maskPattern;
+          let bits = data << 10;
+          const gen = 0b10100110111;
+          for (let i = 14; i >= 10; i -= 1) {
+            if ((bits >>> i) & 1) bits ^= gen << (i - 10);
+          }
+          return ((data << 10) | (bits & 0x3FF)) ^ 0b101010000010010;
+        }
+        function placeFormat(matrix, maskPattern) {
+          const size = matrix.length;
+          const fb = formatBits(maskPattern);
+          function bit(i) { return ((fb >>> i) & 1) === 1; }
+          for (let i = 0; i <= 5; i += 1) matrix[8][i] = bit(i);
+          matrix[8][7] = bit(6);
+          matrix[8][8] = bit(7);
+          matrix[7][8] = bit(8);
+          for (let i = 9; i <= 14; i += 1) matrix[14 - i][8] = bit(i);
+          for (let i = 0; i <= 7; i += 1) matrix[size - 1 - i][8] = bit(i);
+          for (let i = 8; i <= 14; i += 1) matrix[8][size - 15 + i] = bit(i);
+        }
+        function encode(text) {
+          const bytes = utf8(text).length;
+          const version = chooseVersion(bytes);
+          const data = buildBytes(text, version);
+          const codewords = interleave(data, version);
+          const built = makeMatrix(version);
+          placeData(built.m, built.r, codewords);
+          let bestMatrix = null;
+          let bestScore = Infinity;
+          let bestMask = 0;
+          for (let mp = 0; mp < 8; mp += 1) {
+            const masked = applyMask(built.m, built.r, mp);
+            placeFormat(masked, mp);
+            const score = penalty(masked);
+            if (score < bestScore) { bestScore = score; bestMatrix = masked; bestMask = mp; }
+          }
+          return { matrix: bestMatrix, size: built.size, version: version, mask: bestMask };
+        }
+        return { encode: encode };
+      })();
+
+      function drawRealQr(ctx, x, y, size, text) {
+        ctx.save();
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(x, y, size, size);
+        let result = null;
+        try { result = QrEncoder.encode(text || ""); } catch (e) { result = null; }
+        if (!result) {
+          ctx.fillStyle = "rgba(21,18,14,0.4)";
+          ctx.fillRect(x + size * 0.1, y + size * 0.1, size * 0.8, size * 0.8);
+          ctx.restore();
+          return;
+        }
+        const quiet = 4;
+        const modulesWithQuiet = result.size + quiet * 2;
+        const cell = size / modulesWithQuiet;
+        ctx.fillStyle = "#15120e";
+        for (let row = 0; row < result.size; row += 1) {
+          for (let col = 0; col < result.size; col += 1) {
+            if (result.matrix[row][col]) {
+              ctx.fillRect(x + (col + quiet) * cell, y + (row + quiet) * cell, cell + 0.5, cell + 0.5);
+            }
           }
         }
         ctx.restore();
+      }
+
+      function drawQrPlaceholder(ctx, x, y, size, label) {
+        drawRealQr(ctx, x, y, size, String(label || ""));
       }
 
       function fileToDataUrl(file) {
@@ -968,20 +1267,84 @@
         return state.qr;
       }
 
-      function campaignConfig() {
+      function sanitizeSlug(text, fallback) {
+        const base = String(text || "").trim();
+        if (!base) return fallback || "preview";
+        const cleaned = base
+          .normalize("NFD").replace(/[̀-ͯ]/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .replace(/-{2,}/g, "-")
+          .slice(0, 48);
+        return cleaned || fallback || "preview";
+      }
+
+      function clientFileNameBase() {
+        const brand = sanitizeSlug(getValue("brand"), "");
+        const campaign = sanitizeSlug(getValue("campaign") || getValue("headline"), "");
+        if (brand && campaign) return "dynamic-motion-banner-" + brand + "-" + campaign + "-preview";
+        if (brand) return "dynamic-motion-banner-" + brand + "-preview";
+        if (campaign) return "dynamic-motion-banner-" + campaign + "-preview";
+        return "dynamic-motion-banner-client-preview-" + Date.now();
+      }
+
+      function escapeHtml(text) {
+        return String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      function dataUrlToBytes(dataUrl) {
+        const comma = String(dataUrl || "").indexOf(",");
+        if (comma < 0) return new Uint8Array(0);
+        const base64 = dataUrl.slice(comma + 1);
+        const binary = atob(base64);
+        const out = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i += 1) out[i] = binary.charCodeAt(i);
+        return out;
+      }
+
+      function generateClientPreviewDataUrl() {
+        updateTexture();
+        return textureCanvas.toDataURL("image/png");
+      }
+
+      function generateClientPreviewBytes() {
+        return dataUrlToBytes(generateClientPreviewDataUrl());
+      }
+
+      function clientManifest() {
+        const qrState = state.qr || {};
+        const gallery = state.gallery || { enabled: false, count: 0 };
         return {
-          version: "v0.3",
+          version: "0.3.1",
+          exportType: "client-preview-package",
+          generatedAt: new Date().toISOString(),
           brand: getValue("brand"),
+          campaign: getValue("campaign") || getValue("headline"),
           headline: getValue("headline"),
           subheadline: getValue("subheadline"),
           cta: getValue("cta"),
           note: getValue("note"),
-          qr: state.qr,
-          mediaMode: state.mediaMode,
-          image: state.image,
-          logo: state.logo,
-          gallery: { enabled: state.gallery.enabled, count: state.gallery.count }
+          qr: {
+            type: qrState.type || "",
+            input: getValue("qr"),
+            resolvedDestination: qrState.valid ? (qrState.resolved || "") : "",
+            scanValidation: "pending"
+          },
+          gallery: {
+            enabled: !!gallery.enabled,
+            count: gallery.enabled ? Math.max(0, Math.min(3, Number(gallery.count) || 0)) : 0
+          },
+          assets: { bannerPreview: "assets/banner-preview.png" },
+          notes: "Client preview package. Open index.html after extracting ZIP."
         };
+      }
+
+      // Kept as compatibility wrapper - external callers within this module may reference it.
+      function campaignConfig() {
+        return clientManifest();
       }
 
       function downloadBlob(blob, filename) {
@@ -1053,37 +1416,72 @@
       }
 
       function drawLogoLayer(ctx, palette) {
-        const plateX = 650;
-        const plateY = 36;
-        const plateW = 302;
-        const plateH = 88;
-        const x = plateX + 24 + state.logo.offsetX;
-        const y = plateY + 18 + state.logo.offsetY;
-        const maxW = 160 * state.logo.scale;
-        const maxH = 42 * state.logo.scale;
+        if (!state.logo.visible) return;
+        const hasLogoImage = !!(state.logoElement && state.logoElement.naturalWidth);
+        const brand = getValue("brand") || "";
+        if (!hasLogoImage && !brand) return;
+        // Brand-safe area: inside cream content plate, top-right.
+        const baseW = Math.round(textureSize * 0.165); // ~16.5% of texture width
+        const baseH = Math.round(baseW * 0.34);
+        const padX = 18;
+        const padY = 14;
+        const plateW = baseW;
+        const plateH = baseH;
+        const plateX = textureSize - plateW - 96 + Math.round(state.logo.offsetX * 0.4);
+        const plateY = 220 + Math.round(state.logo.offsetY * 0.4);
+        const cardMode = state.logo.card || "translucent";
         ctx.save();
-        ctx.fillStyle = "rgba(21,18,14,0.72)";
-        ctx.fillRect(plateX, plateY, plateW, plateH);
-        ctx.strokeStyle = "rgba(248,240,227,0.18)";
-        ctx.strokeRect(plateX + 0.5, plateY + 0.5, plateW - 1, plateH - 1);
         ctx.globalAlpha = state.logo.opacity;
-        if (state.logo.visible && state.logoElement && state.logoElement.naturalWidth) {
+        // capsule
+        if (cardMode !== "none") {
+          const radius = 14;
+          let fill = "rgba(21,18,14,0.55)";
+          let stroke = "rgba(248,240,227,0.22)";
+          let textFill = "#f8f0e3";
+          if (cardMode === "light") { fill = "rgba(248,240,227,0.92)"; stroke = "rgba(21,18,14,0.15)"; textFill = "#1a1612"; }
+          else if (cardMode === "dark") { fill = "rgba(15,12,10,0.92)"; stroke = "rgba(248,240,227,0.18)"; textFill = "#f8f0e3"; }
+          else if (cardMode === "translucent") { fill = "rgba(21,18,14,0.55)"; stroke = "rgba(248,240,227,0.22)"; textFill = "#f8f0e3"; }
+          ctx.fillStyle = fill;
+          ctx.beginPath();
+          const r = radius, rx = plateX, ry = plateY, rw = plateW, rh = plateH;
+          ctx.moveTo(rx + r, ry);
+          ctx.lineTo(rx + rw - r, ry);
+          ctx.quadraticCurveTo(rx + rw, ry, rx + rw, ry + r);
+          ctx.lineTo(rx + rw, ry + rh - r);
+          ctx.quadraticCurveTo(rx + rw, ry + rh, rx + rw - r, ry + rh);
+          ctx.lineTo(rx + r, ry + rh);
+          ctx.quadraticCurveTo(rx, ry + rh, rx, ry + rh - r);
+          ctx.lineTo(rx, ry + r);
+          ctx.quadraticCurveTo(rx, ry, rx + r, ry);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          state.logo.__textFill = textFill;
+        } else {
+          state.logo.__textFill = "#1a1612";
+        }
+        const innerX = plateX + padX;
+        const innerY = plateY + padY;
+        const innerW = (plateW - padX * 2) * state.logo.scale;
+        const innerH = (plateH - padY * 2) * state.logo.scale;
+        if (hasLogoImage) {
           const ratio = state.logoElement.naturalWidth / state.logoElement.naturalHeight;
-          let drawW = maxW;
+          let drawW = innerW;
           let drawH = drawW / ratio;
-          if (state.logo.fit === "contain" && drawH > maxH) {
-            drawH = maxH;
+          if (state.logo.fit === "contain" && drawH > innerH) {
+            drawH = innerH;
             drawW = drawH * ratio;
           }
-          ctx.drawImage(state.logoElement, x, y + (maxH - drawH) / 2, drawW, drawH);
+          ctx.drawImage(state.logoElement, innerX + (innerW - drawW) / 2, innerY + (innerH - drawH) / 2, drawW, drawH);
         } else {
-          ctx.fillStyle = "#f8f0e3";
-          ctx.font = "700 " + Math.round(26 * state.logo.scale) + "px Inter, Arial, sans-serif";
-          ctx.fillText(getValue("brand") || "RUBIK SOTA", x, y + 6);
+          ctx.fillStyle = state.logo.__textFill;
+          const fontPx = Math.round(Math.min(innerH * 0.6, 28));
+          ctx.font = "700 " + fontPx + "px Inter, Arial, sans-serif";
+          ctx.textBaseline = "middle";
+          ctx.fillText(brand, innerX, innerY + innerH / 2);
         }
-        ctx.font = "500 14px Inter, Arial, sans-serif";
-        ctx.fillStyle = palette[1];
-        ctx.fillText("DYNAMIC MOTION BANNERS v0.3", x, plateY + plateH - 26);
         ctx.restore();
       }
 
@@ -1659,8 +2057,8 @@
 
         if (state.exportNextFrame) {
           const link = document.createElement("a");
-          link.href = canvas.toDataURL("image/png");
-          link.download = "dynamic-motion-banner-" + Date.now() + ".png";
+          link.href = generateClientPreviewDataUrl();
+          link.download = clientFileNameBase() + ".png";
           document.body.appendChild(link);
           link.click();
           link.remove();
@@ -1711,6 +2109,7 @@
         state.logo.opacity = Number(logoOpacity.value);
         state.logo.visible = logoVisible.checked;
         state.logo.fit = logoFit.value;
+        state.logo.card = logoCard ? logoCard.value : "translucent";
         state.gallery.enabled = galleryEnabled.checked;
         state.gallery.count = state.gallery.enabled ? Number(galleryCount.value) : 0;
         state.audioElement.volume = Number(audioVolume.value);
@@ -1840,6 +2239,7 @@
         logoOffsetY.value = "0";
         logoOpacity.value = "1";
         logoFit.value = "contain";
+        if (logoCard) logoCard.value = "translucent";
         logoVisible.checked = true;
         logoStatus.textContent = "Sin logo adjunto. Se muestra la marca textual.";
         updateLayerControls();
@@ -1861,7 +2261,7 @@
           const blob = new Blob(state.recordedChunks, { type: "video/webm" });
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
-          link.download = "dynamic-motion-banner-" + Date.now() + ".webm";
+          link.download = clientFileNameBase() + ".webm";
           document.body.appendChild(link);
           link.click();
           setTimeout(() => URL.revokeObjectURL(link.href), 500);
@@ -1885,17 +2285,47 @@
         setTimeout(resize, 80);
       }
 
+      function clientPreviewHtmlTemplate(opts) {
+        opts = opts || {};
+        const config = clientManifest();
+        const imageSrc = opts.imageSrc || generateClientPreviewDataUrl();
+        const brand = escapeHtml(config.brand || "");
+        const campaign = escapeHtml(config.campaign || "");
+        const qrDest = escapeHtml(config.qr.resolvedDestination || "");
+        const generated = escapeHtml(config.generatedAt.replace("T", " ").slice(0, 16));
+        const title = brand && campaign ? brand + " — " + campaign : (brand || campaign || "Preview de campana");
+        return ""
+          + "<!DOCTYPE html>\n"
+          + "<html lang=\"es\"><head><meta charset=\"UTF-8\">"
+          + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+          + "<title>" + title + " — preview</title>"
+          + "<style>"
+          + "html,body{margin:0;padding:0;background:#0d0c0a;color:#efe6d9;font-family:Inter,system-ui,-apple-system,sans-serif;}"
+          + "body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3vh 4vw 5vh;box-sizing:border-box;}"
+          + ".piece{display:block;width:auto;height:auto;max-width:min(92vw,1100px);max-height:84vh;object-fit:contain;box-shadow:0 24px 80px rgba(0,0,0,.55);border-radius:6px;background:#000;}"
+          + ".meta{margin-top:2.4vh;max-width:min(92vw,1100px);width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.6rem 1.4rem;font-size:0.78rem;letter-spacing:0.02em;color:rgba(239,230,217,0.72);}"
+          + ".meta .k{display:block;font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(239,230,217,0.42);margin-bottom:0.2rem;}"
+          + ".meta .v{color:#efe6d9;font-weight:600;word-break:break-word;}"
+          + "@media (max-width:640px){body{padding:2vh 3vw 4vh;}.piece{max-width:96vw;max-height:78vh;}}"
+          + "</style></head><body>"
+          + "<img class=\"piece\" alt=\"Preview de campana\" src=\"" + imageSrc + "\">"
+          + "<div class=\"meta\">"
+          + (brand ? "<div><span class=\"k\">Marca</span><span class=\"v\">" + brand + "</span></div>" : "")
+          + (campaign ? "<div><span class=\"k\">Campana</span><span class=\"v\">" + campaign + "</span></div>" : "")
+          + (qrDest ? "<div><span class=\"k\">Destino QR</span><span class=\"v\">" + qrDest + "</span></div>" : "")
+          + "<div><span class=\"k\">Generado</span><span class=\"v\">" + generated + "</span></div>"
+          + "</div></body></html>";
+      }
+
       function previewHtml() {
-        updateTexture();
-        const image = textureCanvas.toDataURL("image/png");
-        const config = campaignConfig();
-        return "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Dynamic Motion Banners preview</title>\n<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#080706;color:#f7f1e8;font-family:Inter,system-ui,sans-serif}.wrap{width:min(94vw,980px)}img{width:100%;height:auto;display:block;box-shadow:0 28px 90px rgba(0,0,0,.55)}pre{white-space:pre-wrap;color:#b8aa98;font-size:12px}</style>\n</head>\n<body>\n<div class=\"wrap\">\n<img alt=\"Dynamic Motion Banners preview\" src=\"" + image + "\">\n<pre id=\"config\">" + JSON.stringify(config, null, 2).replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c])) + "</pre>\n</div>\n<script type=\"application/json\" id=\"campaign-config\">" + JSON.stringify(config).replace(/</g, "\\u003c") + "<\/script>\n</body>\n</html>";
+        return clientPreviewHtmlTemplate({});
       }
 
       function exportHtml() {
-        const blob = new Blob([previewHtml()], { type: "text/html;charset=utf-8" });
-        downloadBlob(blob, "dynamic-motion-banner-preview-" + Date.now() + ".html");
-        exportStatus.textContent = "HTML preview generado con la composicion visual actual.";
+        const html = clientPreviewHtmlTemplate({});
+        const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+        downloadBlob(blob, clientFileNameBase() + ".html");
+        exportStatus.textContent = "HTML standalone exportado para revision cliente.";
       }
 
       function crc32(bytes) {
@@ -1953,22 +2383,62 @@
         return new Blob(chunks, { type: "application/zip" });
       }
 
+      function clientReadmeText(manifest) {
+        const brand = manifest.brand || "(sin marca)";
+        const campaign = manifest.campaign || "(sin campana)";
+        const generated = manifest.generatedAt.replace("T", " ").slice(0, 16);
+        const qr = manifest.qr.resolvedDestination || "(sin destino QR)";
+        const gallery = manifest.gallery.enabled ? (manifest.gallery.count + " imagen(es) integradas en la preview") : "no incluida";
+        return ""
+          + "Dynamic Motion Banner — Preview de campana\n"
+          + "===========================================\n\n"
+          + "Cliente / marca : " + brand + "\n"
+          + "Campana         : " + campaign + "\n"
+          + "Generado        : " + generated + "\n\n"
+          + "Como abrir la preview\n"
+          + "---------------------\n"
+          + "1. Extrae el ZIP en una carpeta.\n"
+          + "2. Abre index.html en Chrome, Edge o Safari moderno.\n"
+          + "3. No borres la carpeta assets. Index.html depende de assets/banner-preview.png.\n\n"
+          + "Que revisar\n"
+          + "-----------\n"
+          + "- Logo y marca\n"
+          + "- Titular y subtitulo\n"
+          + "- Imagen/video representado en la preview\n"
+          + "- Galeria inferior: " + gallery + "\n"
+          + "- QR y CTA\n\n"
+          + "Destino del QR\n"
+          + "--------------\n"
+          + qr + "\n\n"
+          + "Validacion QR\n"
+          + "-------------\n"
+          + "Antes de aprobar, escanea el QR con un movil real para confirmar que abre el destino correcto.\n\n"
+          + "Aprobacion\n"
+          + "----------\n"
+          + "- Si todo es correcto, responde aprobando esta preview.\n"
+          + "- Si necesitas cambios, indica exactamente que elemento modificar.\n\n"
+          + "Nota\n"
+          + "----\n"
+          + "Esta preview es una pieza de revision visual previa a la publicacion o produccion final.\n";
+      }
+
       function exportZip() {
-        const config = JSON.stringify(campaignConfig(), null, 2);
-        const readme = "Dynamic Motion Banners preview package\n\nOpen index.html in a browser to review the visual preview.\nThe preview is a static client review artifact generated from the current banner texture.\nLarge media assets may be embedded as data URLs only when available in this browser session.\n";
+        const manifest = clientManifest();
+        const config = JSON.stringify(manifest, null, 2);
+        const readme = clientReadmeText(manifest);
+        const previewBytes = generateClientPreviewBytes();
+        const indexHtml = clientPreviewHtmlTemplate({ imageSrc: "assets/banner-preview.png" });
         const files = [
-          { name: "index.html", data: previewHtml() },
+          { name: "index.html", data: indexHtml },
+          { name: "README.txt", data: readme },
           { name: "manifest/config.json", data: config },
-          { name: "README.txt", data: readme }
+          { name: "assets/banner-preview.png", data: previewBytes }
         ];
-        if (state.assetData.mainImage) files.push({ name: "assets/main-image.txt", data: state.assetData.mainImage });
-        if (state.assetData.logo) files.push({ name: "assets/logo.txt", data: state.assetData.logo });
-        state.gallery.dataUrls.forEach((dataUrl, index) => {
-          if (dataUrl) files.push({ name: "assets/gallery-" + (index + 1) + ".txt", data: dataUrl });
-        });
-        if (state.assetData.video) files.push({ name: "assets/video-data-url.txt", data: state.assetData.video });
-        downloadBlob(makeZip(files), "dynamic-motion-banner-preview-" + Date.now() + ".zip");
-        exportStatus.textContent = "ZIP preview generado con index.html, config y assets disponibles.";
+        const zipBlob = makeZip(files);
+        const base = clientFileNameBase();
+        downloadBlob(zipBlob, base + ".zip");
+        const kb = (zipBlob.size / 1024).toFixed(1);
+        exportStatus.textContent = "ZIP cliente exportado (" + kb + " KB). Estructura: index.html, README.txt, manifest/config.json, assets/banner-preview.png.";
       }
 
       function setAudioSource(url, label) {
@@ -1984,7 +2454,7 @@
           state.textureDirty = true;
         });
       });
-      [mainMediaMode, imageScale, imageOffsetX, imageOffsetY, imageOpacity, imageFit, logoScale, logoOffsetX, logoOffsetY, logoOpacity, logoFit, logoVisible, galleryEnabled, galleryCount, qrType, controls.qr, audioVolume, audioMuted, audioLoop].forEach((control) => {
+      [mainMediaMode, imageScale, imageOffsetX, imageOffsetY, imageOpacity, imageFit, logoScale, logoOffsetX, logoOffsetY, logoOpacity, logoFit, logoCard, logoVisible, galleryEnabled, galleryCount, qrType, controls.qr, audioVolume, audioMuted, audioLoop].forEach((control) => {
         control.addEventListener("input", updateLayerControls);
         control.addEventListener("change", updateLayerControls);
       });
@@ -2012,9 +2482,8 @@
           state.exportNextFrame = true;
         } else {
           const link = document.createElement("a");
-          updateTexture();
-          link.href = textureCanvas.toDataURL("image/png");
-          link.download = "dynamic-motion-banner-" + Date.now() + ".png";
+          link.href = generateClientPreviewDataUrl();
+          link.download = clientFileNameBase() + ".png";
           document.body.appendChild(link);
           link.click();
           link.remove();

@@ -26,8 +26,8 @@ Technical decisions
 Limitations
 -----------
 
-- The QR is generated locally as a deterministic Canvas code for preview. It should be checked with real devices before production use.
-- The ZIP package stores asset data as text data URLs when available from the browser session.
+- The QR was generated locally as a deterministic Canvas placeholder pattern in v0.3. Replaced by a real ISO/IEC 18004 byte-mode encoder in v0.3.1. See `DYNAMIC_MOTION_BANNERS_V0_3_1_NOTES.md`.
+- The ZIP package in v0.3 stored asset data as text data URLs. v0.3.1 removed that approach in favour of a single binary `assets/banner-preview.png`.
 - Browser support for WebM recording and downloads varies.
 - Codex in-app browser does not fully support file upload/download QA.
 

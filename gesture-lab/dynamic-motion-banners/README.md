@@ -78,3 +78,28 @@ Dynamic Motion Banners v0.3 adds a separate HTML file:
 - HTML preview is a static client review artifact based on the current rendered banner texture.
 - WebM recording remains visual-only.
 - Some real uploads/downloads cannot be fully validated inside the Codex in-app browser.
+
+## v0.3.1 - Client Preview Export Polish
+
+Same file as v0.3 (no version bump on disk). Polish for the export packages so they can be sent directly to a client.
+
+### Added
+
+- Campaign field (`#input-campaign`) separate from the headline.
+- Real local QR code encoder (byte mode, ISO/IEC 18004, EC level L, versions 1..9). Replaces the previous placeholder pattern. Physical scan validation remains pending until tested with a real mobile reader.
+- `generateClientPreviewDataUrl` / `generateClientPreviewBytes` central client preview generator reused by the PNG, HTML standalone and ZIP `assets/banner-preview.png` outputs so all three represent the same piece.
+- `clientPreviewHtmlTemplate({ imageSrc })` client-only HTML template with centered piece (max 84vh, 92vw) and discrete metadata below. No internal tool labels in client output.
+- Sanitized export naming: `dynamic-motion-banner-<brand>-<campaign>-preview.{png,html,zip,webm}`.
+- ZIP preview package strict structure:
+  - `index.html`
+  - `README.txt` (client-facing language, no tooling terms)
+  - `manifest/config.json` (clean schema, no data URLs, no localhost, no blobs)
+  - `assets/banner-preview.png` (binary PNG, not a `.txt` data URL)
+- Brand-safe logo capsule (`Soporte logo` control: translucent / light / dark / none). Default placement inside the cream content plate at the top-right, not in the outer dark band. Maximum width ~16.5% of texture.
+- Removed the internal "DYNAMIC MOTION BANNERS v0.3" label that was previously drawn into the texture.
+
+### v0.3.1 known limitations
+
+- QR scan validation is pending. The QR matrix is generated from the ISO spec but has not been confirmed scannable with a physical mobile reader inside this session.
+- ZIP writer remains stored mode (no DEFLATE). Banner PNG is the only large asset and is shipped uncompressed.
+- WebM recording continues to capture the WebGL canvas only.
