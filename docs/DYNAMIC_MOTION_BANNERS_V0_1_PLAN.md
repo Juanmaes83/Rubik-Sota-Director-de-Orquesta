@@ -45,7 +45,7 @@ What to preserve from the raw source
 What must change
 ----------------
 
-- remove L.A.P.D. / Evidence theme;
+- remove the original archive/crime theme;
 - remove hardcoded noir copy;
 - create neutral brand/campaign presets;
 - create premium Spanish UI;
@@ -75,3 +75,8 @@ Created module path: `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-moti
 Hub status: Not connected yet.
 
 Raw source status: Preserved and unchanged.
+
+v0.2 status
+-----------
+
+Dynamic Motion Banners v0.2 extends v0.1 with media layer controls, logo layer, WebM recording, presentation mode and audio playback support.

@@ -36,3 +36,23 @@ Not production ready.
 - Interaction QA for touch, drag, upload, video texture, and PNG export.
 - Decide when to connect the module to `gesture-lab/index.html`.
 - Prepare later production hardening only after v0.1 review.
+
+## v0.2 - Media Layers, Logo, Recording & Audio
+
+Dynamic Motion Banners v0.2 extends the standalone module without changing the current local route.
+
+### Added
+
+- Image controls for scale, X/Y position, opacity, fit mode, and reset.
+- Independent logo layer with upload, size, X/Y position, opacity, visibility toggle, and reset.
+- Separate state for main image, video, and logo layers so they do not replace each other.
+- Media mode selector for image, video, or both.
+- WebM recording of the WebGL canvas with `canvas.captureStream(30)` and `MediaRecorder` where supported.
+- Presentation mode that hides the editor and lets the canvas occupy the full experience area.
+- Audio playback support for local files and optional audio/radio URL playback.
+
+### Known limitations
+
+- WebM recording captures the visual WebGL banner only. Audio playback remains separate in this phase.
+- Some radio/audio URLs can be blocked by CORS or browser autoplay/media policies.
+- The module remains standalone and is not connected to the Hub yet.

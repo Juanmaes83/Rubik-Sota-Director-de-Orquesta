@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Motion Banners v0.1 | Rubik Sota</title>
+  <title>Dynamic Motion Banners v0.2 | Rubik Sota</title>
   <style>
     :root {
       color-scheme: dark;
@@ -190,6 +190,24 @@
       display: block;
     }
 
+    .presentation-exit-floating {
+      position: absolute;
+      right: 22px;
+      bottom: 22px;
+      z-index: 9;
+      display: none;
+      width: auto;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid var(--line-strong);
+      background: rgba(8, 7, 6, 0.72);
+      color: var(--gold);
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+    }
+
     .editor {
       position: relative;
       z-index: 10;
@@ -314,6 +332,47 @@
       gap: 10px;
     }
 
+    .control-group {
+      display: grid;
+      gap: 12px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .control-group h2 {
+      margin: 0;
+      color: var(--gold);
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .control-row input[type="range"] {
+      grid-column: 1 / -1;
+      width: 100%;
+      accent-color: var(--gold);
+    }
+
+    .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: rgba(5, 5, 5, 0.38);
+      color: var(--text);
+      padding: 12px 13px;
+      line-height: 1.4;
+    }
+
     .control-button {
       display: inline-flex;
       align-items: center;
@@ -342,7 +401,9 @@
       color: var(--muted);
     }
 
-    #media-upload {
+    #media-upload,
+    #logo-upload,
+    #audio-upload {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -368,6 +429,30 @@
       color: var(--soft);
       font-size: 0.76rem;
       line-height: 1.5;
+    }
+
+    .app-shell.is-presentation {
+      grid-template-columns: 1fr;
+    }
+
+    .app-shell.is-presentation .editor {
+      display: none;
+    }
+
+    .app-shell.is-presentation .stage,
+    .app-shell.is-presentation .canvas-wrap,
+    .app-shell.is-presentation #glcanvas {
+      min-height: 100vh;
+    }
+
+    .app-shell.is-presentation .stage-header {
+      opacity: 0.7;
+    }
+
+    .app-shell.is-presentation .presentation-exit-floating {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     @media (max-width: 980px) {
@@ -437,13 +522,14 @@
       <p id="webgl-fallback" class="fallback" role="status">
         Tu navegador no soporta WebGL. Esta experiencia necesita WebGL para mostrar la banderola dinamica.
       </p>
+      <button id="presentation-exit-floating" class="presentation-exit-floating" type="button">Salir presentacion</button>
     </section>
 
     <aside class="editor" aria-label="Editor de campana">
       <div class="editor-inner">
         <header class="editor-header">
           <div class="eyebrow">Editor de campana</div>
-          <h1>Dynamic Motion Banners</h1>
+          <h1>Dynamic Motion Banners v0.2</h1>
           <p>Banderolas interactivas para campanas, escaparates y marcas en movimiento.</p>
         </header>
 
@@ -487,8 +573,72 @@
           <button id="btn-upload-proxy" class="control-button" type="button">Subir imagen o video</button>
           <input id="media-upload" type="file" accept="image/*,video/*" aria-label="Subir imagen o video">
           <div id="media-status" class="media-status">Sin media adjunta. La textura se genera con arte de campana.</div>
+
+          <section class="control-group" aria-label="Controles de media principal">
+            <h2>Media principal</h2>
+            <div class="field">
+              <label for="main-media-mode">Media principal</label>
+              <select id="main-media-mode">
+                <option value="image">Imagen</option>
+                <option value="video">Video</option>
+                <option value="both">Ambos</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="image-fit">Modo de encaje</label>
+              <select id="image-fit">
+                <option value="cover">Cover</option>
+                <option value="contain">Contain</option>
+                <option value="stretch">Stretch</option>
+              </select>
+            </div>
+            <label class="control-row" for="image-scale">Escala imagen <span id="image-scale-value">1.00</span><input id="image-scale" type="range" min="0.5" max="2.5" step="0.05" value="1"></label>
+            <label class="control-row" for="image-offset-x">Posicion X <span id="image-offset-x-value">0</span><input id="image-offset-x" type="range" min="-300" max="300" step="5" value="0"></label>
+            <label class="control-row" for="image-offset-y">Posicion Y <span id="image-offset-y-value">0</span><input id="image-offset-y" type="range" min="-300" max="300" step="5" value="0"></label>
+            <label class="control-row" for="image-opacity">Opacidad <span id="image-opacity-value">1.00</span><input id="image-opacity" type="range" min="0" max="1" step="0.05" value="1"></label>
+            <button id="image-reset" class="control-button subtle" type="button">Reset imagen</button>
+          </section>
+
+          <section class="control-group" aria-label="Capa de logo">
+            <h2>Capa de logo</h2>
+            <button id="btn-logo-upload-proxy" class="control-button" type="button">Subir logo</button>
+            <input id="logo-upload" type="file" accept="image/png,image/jpeg,image/svg+xml" aria-label="Subir logo">
+            <div id="logo-status" class="media-status">Sin logo adjunto. Se muestra la marca textual.</div>
+            <label class="control-row" for="logo-scale">Tamano logo <span id="logo-scale-value">1.00</span><input id="logo-scale" type="range" min="0.4" max="2.5" step="0.05" value="1"></label>
+            <label class="control-row" for="logo-offset-x">Posicion logo X <span id="logo-offset-x-value">0</span><input id="logo-offset-x" type="range" min="-300" max="300" step="5" value="0"></label>
+            <label class="control-row" for="logo-offset-y">Posicion logo Y <span id="logo-offset-y-value">0</span><input id="logo-offset-y" type="range" min="-160" max="300" step="5" value="0"></label>
+            <label class="control-row" for="logo-opacity">Opacidad logo <span id="logo-opacity-value">1.00</span><input id="logo-opacity" type="range" min="0" max="1" step="0.05" value="1"></label>
+            <label class="control-row" for="logo-visible">Mostrar logo <input id="logo-visible" type="checkbox" checked></label>
+            <button id="logo-reset" class="control-button subtle" type="button">Reset logo</button>
+          </section>
+
           <button id="btn-clear-media" class="control-button subtle" type="button">Limpiar media</button>
           <button id="btn-export" class="control-button primary" type="button">Exportar banner PNG</button>
+
+          <section class="control-group" aria-label="Grabacion y presentacion">
+            <h2>Grabacion y presentacion</h2>
+            <button id="record-start" class="control-button" type="button">Iniciar grabacion</button>
+            <button id="record-stop" class="control-button subtle" type="button">Detener y descargar WebM</button>
+            <div id="record-status" class="media-status">Grabacion preparada.</div>
+            <button id="presentation-enter" class="control-button" type="button">Entrar modo presentacion</button>
+            <button id="presentation-exit" class="control-button subtle" type="button">Salir modo presentacion</button>
+          </section>
+
+          <section class="control-group" aria-label="Audio de presentacion">
+            <h2>Audio</h2>
+            <button id="btn-audio-upload-proxy" class="control-button" type="button">Subir audio</button>
+            <input id="audio-upload" type="file" accept="audio/mpeg,audio/wav,audio/ogg" aria-label="Subir audio">
+            <div class="field">
+              <label for="audio-url">URL audio/radio</label>
+              <input id="audio-url" type="url" placeholder="https://..." autocomplete="off">
+            </div>
+            <button id="audio-load-url" class="control-button subtle" type="button">Cargar URL</button>
+            <button id="audio-play" class="control-button" type="button">Play</button>
+            <button id="audio-pause" class="control-button subtle" type="button">Pause</button>
+            <label class="control-row" for="audio-volume">Volumen <span id="audio-volume-value">0.70</span><input id="audio-volume" type="range" min="0" max="1" step="0.05" value="0.7"></label>
+            <label class="control-row" for="audio-loop">Loop <input id="audio-loop" type="checkbox" checked></label>
+            <div id="audio-status" class="media-status">Audio listo. Algunas radios online pueden bloquear la reproduccion por CORS o politicas del navegador. Usa un archivo local para pruebas estables.</div>
+          </section>
         </div>
 
         <footer class="footnote">Rubik Sota Director de Orquesta · Gesture Lab</footer>
@@ -510,6 +660,38 @@
       const clearMedia = document.getElementById("btn-clear-media");
       const exportButton = document.getElementById("btn-export");
       const presetButtons = Array.from(document.querySelectorAll("[data-preset]"));
+      const appShell = document.querySelector(".app-shell");
+      const mainMediaMode = document.getElementById("main-media-mode");
+      const imageScale = document.getElementById("image-scale");
+      const imageOffsetX = document.getElementById("image-offset-x");
+      const imageOffsetY = document.getElementById("image-offset-y");
+      const imageOpacity = document.getElementById("image-opacity");
+      const imageFit = document.getElementById("image-fit");
+      const imageReset = document.getElementById("image-reset");
+      const logoUpload = document.getElementById("logo-upload");
+      const logoStatus = document.getElementById("logo-status");
+      const logoUploadProxy = document.getElementById("btn-logo-upload-proxy");
+      const logoScale = document.getElementById("logo-scale");
+      const logoOffsetX = document.getElementById("logo-offset-x");
+      const logoOffsetY = document.getElementById("logo-offset-y");
+      const logoOpacity = document.getElementById("logo-opacity");
+      const logoVisible = document.getElementById("logo-visible");
+      const logoReset = document.getElementById("logo-reset");
+      const recordStart = document.getElementById("record-start");
+      const recordStop = document.getElementById("record-stop");
+      const recordStatus = document.getElementById("record-status");
+      const presentationEnter = document.getElementById("presentation-enter");
+      const presentationExit = document.getElementById("presentation-exit");
+      const presentationExitFloating = document.getElementById("presentation-exit-floating");
+      const audioUpload = document.getElementById("audio-upload");
+      const audioUploadProxy = document.getElementById("btn-audio-upload-proxy");
+      const audioUrl = document.getElementById("audio-url");
+      const audioLoadUrl = document.getElementById("audio-load-url");
+      const audioPlay = document.getElementById("audio-play");
+      const audioPause = document.getElementById("audio-pause");
+      const audioVolume = document.getElementById("audio-volume");
+      const audioLoop = document.getElementById("audio-loop");
+      const audioStatus = document.getElementById("audio-status");
 
       const controls = {
         brand: document.getElementById("input-brand"),
@@ -561,8 +743,31 @@
 
       const state = {
         preset: "fashion",
-        mediaElement: null,
-        mediaType: "",
+        mainImageElement: null,
+        videoElement: null,
+        logoElement: null,
+        mainImageUrl: "",
+        videoUrl: "",
+        logoUrl: "",
+        mediaMode: "image",
+        image: {
+          scale: 1,
+          offsetX: 0,
+          offsetY: 0,
+          opacity: 1,
+          fit: "cover"
+        },
+        logo: {
+          scale: 1,
+          offsetX: 0,
+          offsetY: 0,
+          opacity: 1,
+          visible: true
+        },
+        recorder: null,
+        recordedChunks: [],
+        audioElement: new Audio(),
+        audioUrl: "",
         textureDirty: true,
         exportNextFrame: false
       };
@@ -616,7 +821,7 @@
         ctx.restore();
       }
 
-      function drawMedia(ctx, media, type, x, y, w, h) {
+      function drawMedia(ctx, media, type, x, y, w, h, options = {}) {
         const sourceWidth = type === "video" ? media.videoWidth : media.naturalWidth;
         const sourceHeight = type === "video" ? media.videoHeight : media.naturalHeight;
         if (!sourceWidth || !sourceHeight) return;
@@ -627,8 +832,26 @@
         let sy = 0;
         let sw = sourceWidth;
         let sh = sourceHeight;
+        let baseW = w;
+        let baseH = h;
+        const fit = options.fit || "cover";
+        const scale = options.scale || 1;
+        const offsetX = options.offsetX || 0;
+        const offsetY = options.offsetY || 0;
+        const opacity = options.opacity == null ? 1 : options.opacity;
 
-        if (sourceRatio > targetRatio) {
+        if (fit === "stretch") {
+          sx = 0;
+          sy = 0;
+          sw = sourceWidth;
+          sh = sourceHeight;
+        } else if (fit === "contain") {
+          if (sourceRatio > targetRatio) {
+            baseH = w / sourceRatio;
+          } else {
+            baseW = h * sourceRatio;
+          }
+        } else if (sourceRatio > targetRatio) {
           sw = sourceHeight * targetRatio;
           sx = (sourceWidth - sw) / 2;
         } else {
@@ -640,9 +863,46 @@
         ctx.beginPath();
         ctx.rect(x, y, w, h);
         ctx.clip();
-        ctx.drawImage(media, sx, sy, sw, sh, x, y, w, h);
+        ctx.globalAlpha = opacity;
+        if (fit === "stretch") {
+          ctx.drawImage(media, sx, sy, sw, sh, x + offsetX, y + offsetY, w * scale, h * scale);
+        } else {
+          const drawW = baseW * scale;
+          const drawH = baseH * scale;
+          const drawX = x + (w - drawW) / 2 + offsetX;
+          const drawY = y + (h - drawH) / 2 + offsetY;
+          ctx.drawImage(media, sx, sy, sw, sh, drawX, drawY, drawW, drawH);
+        }
+        ctx.globalAlpha = 1;
         ctx.fillStyle = "rgba(21,18,14,0.2)";
         ctx.fillRect(x, y, w, h);
+        ctx.restore();
+      }
+
+      function drawLogoLayer(ctx, palette) {
+        const x = 70 + state.logo.offsetX;
+        const y = 42 + state.logo.offsetY;
+        const maxW = 260 * state.logo.scale;
+        const maxH = 78 * state.logo.scale;
+        ctx.save();
+        ctx.globalAlpha = state.logo.opacity;
+        if (state.logo.visible && state.logoElement && state.logoElement.naturalWidth) {
+          const ratio = state.logoElement.naturalWidth / state.logoElement.naturalHeight;
+          let drawW = maxW;
+          let drawH = drawW / ratio;
+          if (drawH > maxH) {
+            drawH = maxH;
+            drawW = drawH * ratio;
+          }
+          ctx.drawImage(state.logoElement, x, y, drawW, drawH);
+        } else {
+          ctx.fillStyle = "#f8f0e3";
+          ctx.font = "700 " + Math.round(38 * state.logo.scale) + "px Inter, Arial, sans-serif";
+          ctx.fillText(getValue("brand") || "RUBIK SOTA", x, y + 6);
+        }
+        ctx.font = "500 22px Inter, Arial, sans-serif";
+        ctx.fillStyle = palette[1];
+        ctx.fillText("DYNAMIC MOTION BANNERS v0.2", x, y + maxH + 2);
         ctx.restore();
       }
 
@@ -671,8 +931,16 @@
         ctx.fillStyle = "rgba(21,18,14,0.1)";
         ctx.fillRect(64, 196, textureSize - 128, 590);
 
-        if (state.mediaElement) {
-          drawMedia(ctx, state.mediaElement, state.mediaType, 92, 206, 840, 328);
+        const canDrawImage = state.mainImageElement && state.mainImageElement.naturalWidth;
+        const canDrawVideo = state.videoElement && state.videoElement.readyState >= 2 && state.videoElement.videoWidth;
+        const drawImageHero = canDrawImage && (state.mediaMode === "image" || state.mediaMode === "both" || !canDrawVideo);
+        const drawVideoHero = canDrawVideo && state.mediaMode === "video";
+        const drawVideoSecondary = canDrawVideo && state.mediaMode === "both";
+
+        if (drawImageHero) {
+          drawMedia(ctx, state.mainImageElement, "image", 92, 206, 840, 328, state.image);
+        } else if (drawVideoHero) {
+          drawMedia(ctx, state.videoElement, "video", 92, 206, 840, 328, { fit: "cover", scale: 1, offsetX: 0, offsetY: 0, opacity: 1 });
         } else {
           const visual = ctx.createLinearGradient(92, 206, 932, 534);
           visual.addColorStop(0, palette[3]);
@@ -690,17 +958,18 @@
           }
         }
 
+        if (drawVideoSecondary) {
+          ctx.fillStyle = "rgba(21,18,14,0.72)";
+          ctx.fillRect(638, 334, 260, 148);
+          drawMedia(ctx, state.videoElement, "video", 650, 346, 236, 124, { fit: "cover", scale: 1, offsetX: 0, offsetY: 0, opacity: 0.95 });
+        }
+
         ctx.fillStyle = "rgba(0,0,0,0.24)";
         ctx.fillRect(92, 206, 840, 328);
 
         ctx.textBaseline = "top";
         ctx.textAlign = "left";
-        ctx.fillStyle = "#f8f0e3";
-        ctx.font = "700 38px Inter, Arial, sans-serif";
-        ctx.fillText(getValue("brand") || "RUBIK SOTA", 70, 48);
-        ctx.font = "500 22px Inter, Arial, sans-serif";
-        ctx.fillStyle = "rgba(248,240,227,0.78)";
-        ctx.fillText("DYNAMIC MOTION BANNERS", 70, 94);
+        drawLogoLayer(ctx, palette);
 
         ctx.fillStyle = palette[2];
         ctx.font = "700 66px Georgia, Times New Roman, serif";
@@ -1125,7 +1394,7 @@
       function render() {
         if (!gl) return;
         framesDrawn += 1;
-        if (state.textureDirty || (state.mediaType === "video" && state.mediaElement && state.mediaElement.readyState >= 2)) {
+        if (state.textureDirty || (state.videoElement && state.videoElement.readyState >= 2 && !state.videoElement.paused)) {
           updateTexture();
         }
 
@@ -1199,48 +1468,173 @@
         state.textureDirty = true;
       }
 
+      function releaseUrl(url) {
+        if (url) URL.revokeObjectURL(url);
+      }
+
+      function syncControlLabels() {
+        document.getElementById("image-scale-value").textContent = Number(imageScale.value).toFixed(2);
+        document.getElementById("image-offset-x-value").textContent = imageOffsetX.value;
+        document.getElementById("image-offset-y-value").textContent = imageOffsetY.value;
+        document.getElementById("image-opacity-value").textContent = Number(imageOpacity.value).toFixed(2);
+        document.getElementById("logo-scale-value").textContent = Number(logoScale.value).toFixed(2);
+        document.getElementById("logo-offset-x-value").textContent = logoOffsetX.value;
+        document.getElementById("logo-offset-y-value").textContent = logoOffsetY.value;
+        document.getElementById("logo-opacity-value").textContent = Number(logoOpacity.value).toFixed(2);
+        document.getElementById("audio-volume-value").textContent = Number(audioVolume.value).toFixed(2);
+      }
+
+      function updateLayerControls() {
+        state.mediaMode = mainMediaMode.value;
+        state.image.scale = Number(imageScale.value);
+        state.image.offsetX = Number(imageOffsetX.value);
+        state.image.offsetY = Number(imageOffsetY.value);
+        state.image.opacity = Number(imageOpacity.value);
+        state.image.fit = imageFit.value;
+        state.logo.scale = Number(logoScale.value);
+        state.logo.offsetX = Number(logoOffsetX.value);
+        state.logo.offsetY = Number(logoOffsetY.value);
+        state.logo.opacity = Number(logoOpacity.value);
+        state.logo.visible = logoVisible.checked;
+        state.audioElement.volume = Number(audioVolume.value);
+        state.audioElement.loop = audioLoop.checked;
+        syncControlLabels();
+        state.textureDirty = true;
+      }
+
       function setMedia(file) {
         if (!file) return;
         const url = URL.createObjectURL(file);
-        if (state.mediaElement && state.mediaElement.dataset.objectUrl) {
-          URL.revokeObjectURL(state.mediaElement.dataset.objectUrl);
-        }
         if (file.type.startsWith("video/")) {
+          releaseUrl(state.videoUrl);
           const video = document.createElement("video");
           video.muted = true;
           video.loop = true;
           video.playsInline = true;
           video.autoplay = true;
           video.src = url;
-          video.dataset.objectUrl = url;
           video.addEventListener("loadeddata", () => {
             video.play().catch(() => {});
             state.textureDirty = true;
           });
-          state.mediaElement = video;
-          state.mediaType = "video";
+          state.videoElement = video;
+          state.videoUrl = url;
+          mainMediaMode.value = state.mainImageElement ? "both" : "video";
         } else {
+          releaseUrl(state.mainImageUrl);
           const image = new Image();
           image.src = url;
-          image.dataset.objectUrl = url;
           image.onload = () => {
             state.textureDirty = true;
           };
-          state.mediaElement = image;
-          state.mediaType = "image";
+          state.mainImageElement = image;
+          state.mainImageUrl = url;
+          mainMediaMode.value = state.videoElement ? "both" : "image";
         }
-        mediaStatus.textContent = file.name + " adjunto como " + (state.mediaType === "video" ? "video" : "imagen") + ".";
+        updateLayerControls();
+        mediaStatus.textContent = file.name + " adjunto como " + (file.type.startsWith("video/") ? "video" : "imagen") + ".";
       }
 
       function clearAttachedMedia() {
-        if (state.mediaElement && state.mediaElement.dataset.objectUrl) {
-          URL.revokeObjectURL(state.mediaElement.dataset.objectUrl);
-        }
-        state.mediaElement = null;
-        state.mediaType = "";
+        releaseUrl(state.mainImageUrl);
+        releaseUrl(state.videoUrl);
+        state.mainImageElement = null;
+        state.videoElement = null;
+        state.mainImageUrl = "";
+        state.videoUrl = "";
         mediaUpload.value = "";
+        mainMediaMode.value = "image";
         mediaStatus.textContent = "Sin media adjunta. La textura se genera con arte de campana.";
         state.textureDirty = true;
+      }
+
+      function setLogo(file) {
+        if (!file) return;
+        releaseUrl(state.logoUrl);
+        const url = URL.createObjectURL(file);
+        const image = new Image();
+        image.onload = () => {
+          state.logoElement = image;
+          state.logoUrl = url;
+          logoStatus.textContent = file.name + " adjunto como logo.";
+          state.textureDirty = true;
+        };
+        image.onerror = () => {
+          releaseUrl(url);
+          logoStatus.textContent = "No se pudo cargar el logo.";
+        };
+        image.src = url;
+      }
+
+      function resetImageControls() {
+        imageScale.value = "1";
+        imageOffsetX.value = "0";
+        imageOffsetY.value = "0";
+        imageOpacity.value = "1";
+        imageFit.value = "cover";
+        updateLayerControls();
+      }
+
+      function resetLogoControls() {
+        releaseUrl(state.logoUrl);
+        state.logoElement = null;
+        state.logoUrl = "";
+        logoUpload.value = "";
+        logoScale.value = "1";
+        logoOffsetX.value = "0";
+        logoOffsetY.value = "0";
+        logoOpacity.value = "1";
+        logoVisible.checked = true;
+        logoStatus.textContent = "Sin logo adjunto. Se muestra la marca textual.";
+        updateLayerControls();
+      }
+
+      function startRecording() {
+        if (!canvas.captureStream || typeof MediaRecorder === "undefined") {
+          recordStatus.textContent = "Grabacion no soportada en este navegador.";
+          return;
+        }
+        const stream = canvas.captureStream(30);
+        const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+        state.recordedChunks = [];
+        state.recorder = new MediaRecorder(stream, { mimeType });
+        state.recorder.ondataavailable = (event) => {
+          if (event.data && event.data.size) state.recordedChunks.push(event.data);
+        };
+        state.recorder.onstop = () => {
+          const blob = new Blob(state.recordedChunks, { type: "video/webm" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "dynamic-motion-banner-" + Date.now() + ".webm";
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(link.href), 500);
+          link.remove();
+          recordStatus.textContent = blob.size ? "Grabacion lista." : "Grabacion no generada.";
+        };
+        state.recorder.start();
+        recordStatus.textContent = "Grabando...";
+      }
+
+      function stopRecording() {
+        if (!state.recorder || state.recorder.state !== "recording") {
+          recordStatus.textContent = "No hay grabacion activa.";
+          return;
+        }
+        state.recorder.stop();
+      }
+
+      function setPresentationMode(enabled) {
+        appShell.classList.toggle("is-presentation", enabled);
+        setTimeout(resize, 80);
+      }
+
+      function setAudioSource(url, label) {
+        state.audioElement.pause();
+        state.audioElement.src = url;
+        state.audioElement.volume = Number(audioVolume.value);
+        state.audioElement.loop = audioLoop.checked;
+        audioStatus.textContent = label;
       }
 
       Object.values(controls).forEach((control) => {
@@ -1248,11 +1642,19 @@
           state.textureDirty = true;
         });
       });
+      [mainMediaMode, imageScale, imageOffsetX, imageOffsetY, imageOpacity, imageFit, logoScale, logoOffsetX, logoOffsetY, logoOpacity, logoVisible, audioVolume, audioLoop].forEach((control) => {
+        control.addEventListener("input", updateLayerControls);
+        control.addEventListener("change", updateLayerControls);
+      });
       presetButtons.forEach((button) => {
         button.addEventListener("click", () => applyPreset(button.dataset.preset));
       });
       uploadProxy.addEventListener("click", () => mediaUpload.click());
       mediaUpload.addEventListener("change", () => setMedia(mediaUpload.files[0]));
+      logoUploadProxy.addEventListener("click", () => logoUpload.click());
+      logoUpload.addEventListener("change", () => setLogo(logoUpload.files[0]));
+      imageReset.addEventListener("click", resetImageControls);
+      logoReset.addEventListener("click", resetLogoControls);
       clearMedia.addEventListener("click", clearAttachedMedia);
       exportButton.addEventListener("click", () => {
         if (gl) {
@@ -1266,6 +1668,41 @@
           link.click();
           link.remove();
         }
+      });
+      recordStart.addEventListener("click", startRecording);
+      recordStop.addEventListener("click", stopRecording);
+      presentationEnter.addEventListener("click", () => setPresentationMode(true));
+      presentationExit.addEventListener("click", () => setPresentationMode(false));
+      presentationExitFloating.addEventListener("click", () => setPresentationMode(false));
+      audioUploadProxy.addEventListener("click", () => audioUpload.click());
+      audioUpload.addEventListener("change", () => {
+        const file = audioUpload.files[0];
+        if (!file) return;
+        releaseUrl(state.audioUrl);
+        state.audioUrl = URL.createObjectURL(file);
+        setAudioSource(state.audioUrl, file.name + " cargado como audio local.");
+      });
+      audioLoadUrl.addEventListener("click", () => {
+        const url = audioUrl.value.trim();
+        if (!url) {
+          audioStatus.textContent = "Introduce una URL de audio o radio.";
+          return;
+        }
+        releaseUrl(state.audioUrl);
+        state.audioUrl = "";
+        setAudioSource(url, "URL cargada. Si falla, puede ser por CORS o politicas del navegador.");
+      });
+      audioPlay.addEventListener("click", () => {
+        state.audioElement.play()
+          .then(() => { audioStatus.textContent = "Audio reproduciendose."; })
+          .catch(() => { audioStatus.textContent = "No se pudo reproducir el audio. Prueba con archivo local o revisa CORS."; });
+      });
+      audioPause.addEventListener("click", () => {
+        state.audioElement.pause();
+        audioStatus.textContent = "Audio pausado.";
+      });
+      state.audioElement.addEventListener("error", () => {
+        audioStatus.textContent = "El audio no pudo cargarse. Algunas URLs/radios bloquean CORS o el navegador.";
       });
 
       window.addEventListener("resize", resize);
@@ -1312,6 +1749,7 @@
       }
 
       applyPreset("fashion");
+      updateLayerControls();
       resize();
       updateTexture();
       startRenderLoop();
