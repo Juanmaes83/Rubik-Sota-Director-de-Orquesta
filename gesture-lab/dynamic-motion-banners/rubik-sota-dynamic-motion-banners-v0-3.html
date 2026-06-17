@@ -37,7 +37,7 @@
         linear-gradient(135deg, #080706 0%, #16110c 54%, #090806 100%);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     body {
@@ -61,23 +61,31 @@
       outline-offset: 3px;
     }
 
-    .app-shell {
-      min-height: 100vh;
+    .app-shell,
+    .editor-workspace {
+      height: 100vh;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 392px);
+      grid-template-columns: minmax(520px, 1fr) minmax(340px, 420px);
+      overflow: hidden;
     }
 
-    .stage {
+    .app-shell.is-preview-focus {
+      grid-template-columns: minmax(0, 1fr) 340px;
+    }
+
+    .stage,
+    .preview-column {
       position: relative;
-      min-height: 100vh;
+      height: 100vh;
       overflow: hidden;
       display: grid;
-      align-items: stretch;
+      grid-template-rows: auto minmax(0, 1fr);
       isolation: isolate;
       background:
         linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
         linear-gradient(0deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
       background-size: 92px 92px;
+      padding: 20px;
     }
 
     .stage::before {
@@ -92,10 +100,7 @@
     }
 
     .stage-header {
-      position: absolute;
-      top: 24px;
-      left: clamp(18px, 3.8vw, 48px);
-      right: clamp(18px, 3.8vw, 48px);
+      position: relative;
       z-index: 6;
       display: flex;
       justify-content: space-between;
@@ -134,13 +139,117 @@
       line-height: 1.5;
     }
 
+    .preview-toolbar {
+      position: relative;
+      z-index: 7;
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgba(8, 7, 6, 0.72);
+      backdrop-filter: blur(18px);
+    }
+
+    .preview-toolbar-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .preview-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.2;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .preview-chip strong {
+      margin-left: 5px;
+      color: var(--text);
+    }
+
+    .preview-chip[data-qa="OK"] strong {
+      color: #b9e6c9;
+    }
+
+    .preview-chip[data-qa="WARNING"] strong {
+      color: #ffd59a;
+    }
+
+    .preview-chip[data-qa="ERROR"] strong {
+      color: var(--danger);
+    }
+
+    .preview-zoom-button {
+      min-height: 32px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .preview-zoom-button:hover,
+    .preview-zoom-button.is-active {
+      border-color: var(--line-strong);
+      color: var(--text);
+      background: rgba(232, 205, 154, 0.1);
+    }
+
+    .preview-zoom-slider {
+      width: min(210px, 100%);
+      accent-color: var(--gold);
+    }
+
+    .preview-help {
+      margin: 0;
+      color: var(--soft);
+      font-size: 0.76rem;
+      line-height: 1.45;
+    }
+
+    .preview-frame {
+      position: relative;
+      z-index: 4;
+      min-height: 0;
+      margin-top: 16px;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      overscroll-behavior: contain;
+      border: 1px solid rgba(232, 205, 154, 0.18);
+      background:
+        radial-gradient(circle at center, rgba(232, 205, 154, 0.08), transparent 34rem),
+        linear-gradient(135deg, rgba(5, 5, 5, 0.74), rgba(18, 16, 14, 0.95));
+      box-shadow: inset 0 0 48px rgba(0, 0, 0, 0.36);
+      padding: 28px;
+    }
+
+    .preview-frame.is-scrollable {
+      place-items: start;
+    }
+
     .canvas-wrap {
       position: relative;
       width: 100%;
-      min-height: 100vh;
+      height: 100%;
+      min-width: 220px;
+      min-height: 160px;
       cursor: grab;
       touch-action: none;
       z-index: 3;
+      flex: 0 0 auto;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
     }
 
     .canvas-wrap:active {
@@ -151,7 +260,6 @@
       display: block;
       width: 100%;
       height: 100%;
-      min-height: 100vh;
     }
 
     .cursor-ring {
@@ -211,7 +319,7 @@
     .editor {
       position: relative;
       z-index: 10;
-      min-height: 100vh;
+      height: 100vh;
       padding: 28px;
       border-left: 1px solid var(--line);
       background:
@@ -219,6 +327,7 @@
         var(--panel);
       box-shadow: -28px 0 80px var(--shadow);
       overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
     .editor-inner {
@@ -226,6 +335,42 @@
       min-height: calc(100vh - 56px);
       gap: 24px;
       align-content: start;
+    }
+
+    .editor-context {
+      position: sticky;
+      top: -28px;
+      z-index: 12;
+      display: grid;
+      gap: 8px;
+      margin: -8px -10px 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: rgba(13, 11, 9, 0.96);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.26);
+    }
+
+    .editor-context-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .editor-context-item {
+      padding: 8px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.68rem;
+      line-height: 1.25;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .editor-context-item strong {
+      display: block;
+      margin-top: 2px;
+      color: var(--text);
+      font-size: 0.78rem;
     }
 
     .editor-header {
@@ -612,7 +757,17 @@
     .app-shell.is-presentation .stage,
     .app-shell.is-presentation .canvas-wrap,
     .app-shell.is-presentation #glcanvas {
-      min-height: 100vh;
+      height: 100vh;
+    }
+
+    .app-shell.is-presentation .stage {
+      padding: 0;
+      display: block;
+    }
+
+    .app-shell.is-presentation .preview-toolbar,
+    .app-shell.is-presentation .preview-frame {
+      display: contents;
     }
 
     .app-shell.is-presentation .stage-header {
@@ -627,13 +782,15 @@
 
     @media (max-width: 980px) {
       .app-shell {
+        height: 100vh;
         grid-template-columns: 1fr;
+        grid-template-rows: minmax(360px, 48vh) minmax(0, 1fr);
       }
 
-      .stage,
-      .canvas-wrap,
-      #glcanvas {
-        min-height: 62vh;
+      .stage {
+        height: auto;
+        min-height: 0;
+        padding: 14px;
       }
 
       .stage-header {
@@ -651,7 +808,8 @@
       }
 
       .editor {
-        min-height: auto;
+        height: auto;
+        min-height: 0;
         border-left: 0;
         border-top: 1px solid var(--line);
         padding: 22px 18px 28px;
@@ -660,6 +818,10 @@
       .editor-inner {
         min-height: auto;
       }
+
+      .editor-context {
+        top: -22px;
+      }
     }
 
     @media (max-width: 560px) {
@@ -667,17 +829,19 @@
         grid-template-columns: 1fr;
       }
 
-      .stage,
-      .canvas-wrap,
-      #glcanvas {
-        min-height: 58vh;
+      .preview-toolbar-row {
+        align-items: stretch;
+      }
+
+      .preview-zoom-slider {
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <main class="app-shell">
-    <section class="stage" aria-label="Vista previa dinamica">
+  <main class="app-shell editor-workspace">
+    <section class="stage preview-column" aria-label="Vista previa dinamica">
       <div class="stage-header">
         <div class="brand-kicker">RUBIK SOTA // DYNAMIC MOTION BANNERS</div>
         <div class="stage-copy" aria-hidden="true">
@@ -685,9 +849,31 @@
           <span>Una pieza editorial que respira, se curva y responde al gesto para escaparates, campanas y showrooms.</span>
         </div>
       </div>
-      <div id="canvas-container" class="canvas-wrap" aria-label="Lienzo WebGL interactivo">
-        <canvas id="glcanvas"></canvas>
-        <div id="cursor" class="cursor-ring"></div>
+      <div class="preview-toolbar" aria-label="Preview y zoom">
+        <div class="preview-toolbar-row">
+          <span class="preview-chip">Formato activo:<strong id="preview-format-label">Cuadrado preview</strong></span>
+          <span class="preview-chip">Tamano real:<strong id="preview-export-size">1024 x 1024</strong></span>
+          <span class="preview-chip">Ratio:<strong id="preview-ratio-label">1:1</strong></span>
+          <span class="preview-chip" id="preview-layout-qa-chip" data-qa="OK">Layout QA:<strong id="preview-layout-qa">OK</strong></span>
+        </div>
+        <div class="preview-toolbar-row">
+          <button class="preview-zoom-button is-active" type="button" data-preview-zoom="fit">Fit</button>
+          <button class="preview-zoom-button" type="button" data-preview-zoom="0.25">25%</button>
+          <button class="preview-zoom-button" type="button" data-preview-zoom="0.5">50%</button>
+          <button class="preview-zoom-button" type="button" data-preview-zoom="0.75">75%</button>
+          <button class="preview-zoom-button" type="button" data-preview-zoom="1">100%</button>
+          <input id="preview-zoom-slider" class="preview-zoom-slider" type="range" min="10" max="150" step="1" value="100" aria-label="Zoom preview">
+          <button id="preview-center" class="preview-zoom-button" type="button">Centrar</button>
+          <button id="preview-focus" class="preview-zoom-button" type="button" aria-pressed="false">Focus preview</button>
+          <span class="preview-chip">Preview:<strong id="preview-zoom-label">Fit</strong></span>
+        </div>
+        <p class="preview-help">El zoom solo afecta al visor. La descarga mantiene el tamaño real del formato.</p>
+      </div>
+      <div id="preview-frame" class="preview-frame">
+        <div id="canvas-container" class="canvas-wrap" aria-label="Lienzo WebGL interactivo">
+          <canvas id="glcanvas"></canvas>
+          <div id="cursor" class="cursor-ring"></div>
+        </div>
       </div>
       <p id="webgl-fallback" class="fallback" role="status">
         Tu navegador no soporta WebGL. Esta experiencia necesita WebGL para mostrar la banderola dinamica.
@@ -695,13 +881,21 @@
       <button id="presentation-exit-floating" class="presentation-exit-floating" type="button">Salir presentacion</button>
     </section>
 
-    <aside class="editor" aria-label="Editor de campana">
+    <aside class="editor controls-column" aria-label="Editor de campana">
       <div class="editor-inner">
         <header class="editor-header">
           <div class="eyebrow">Editor de campana</div>
           <h1>Dynamic Motion Banners v0.3</h1>
           <p>Banderolas interactivas para campanas, escaparates y marcas en movimiento.</p>
         </header>
+        <section class="editor-context" aria-label="Contexto de edicion">
+          <div class="editor-context-grid">
+            <div class="editor-context-item">Formato<strong id="editor-sticky-format">Cuadrado preview</strong></div>
+            <div class="editor-context-item">Composicion<strong id="editor-sticky-composition">Auto editorial</strong></div>
+            <div class="editor-context-item">Layout QA<strong id="editor-sticky-layout-qa">OK</strong></div>
+            <div class="editor-context-item">Export QA<strong id="editor-sticky-export-qa">Pendiente</strong></div>
+          </div>
+        </section>
 
         <section aria-label="Presets de campana">
           <div class="preset-grid">
@@ -1078,6 +1272,21 @@
 
       const canvas = document.getElementById("glcanvas");
       const canvasContainer = document.getElementById("canvas-container");
+      const previewFrame = document.getElementById("preview-frame");
+      const previewZoomButtons = Array.from(document.querySelectorAll("[data-preview-zoom]"));
+      const previewZoomSlider = document.getElementById("preview-zoom-slider");
+      const previewCenter = document.getElementById("preview-center");
+      const previewFocus = document.getElementById("preview-focus");
+      const previewZoomLabel = document.getElementById("preview-zoom-label");
+      const previewFormatLabel = document.getElementById("preview-format-label");
+      const previewExportSize = document.getElementById("preview-export-size");
+      const previewRatioLabel = document.getElementById("preview-ratio-label");
+      const previewLayoutQaChip = document.getElementById("preview-layout-qa-chip");
+      const previewLayoutQa = document.getElementById("preview-layout-qa");
+      const editorStickyFormat = document.getElementById("editor-sticky-format");
+      const editorStickyComposition = document.getElementById("editor-sticky-composition");
+      const editorStickyLayoutQa = document.getElementById("editor-sticky-layout-qa");
+      const editorStickyExportQa = document.getElementById("editor-sticky-export-qa");
       const cursorUI = document.getElementById("cursor");
       const fallback = document.getElementById("webgl-fallback");
       const mediaUpload = document.getElementById("media-upload");
@@ -1323,6 +1532,12 @@
         visualLayoutState: null,
         visualLayoutBase: { width: 1024, height: 1024 },
         layoutQa: { status: "OK", warnings: [], errors: [] },
+        preview: {
+          mode: "fit",
+          zoom: 1,
+          fitScale: 1,
+          focus: false
+        },
         lastExport: {
           pngWidth: null,
           pngHeight: null,
@@ -1818,6 +2033,72 @@
         return { id: selected.id, label: selected.label, width, height, ratio, orientation, note: selected.note || "" };
       }
 
+      function calculateFitScale(frameWidth, frameHeight, canvasWidth, canvasHeight) {
+        const safeWidth = Math.max(1, frameWidth - 56);
+        const safeHeight = Math.max(1, frameHeight - 56);
+        return Math.max(0.1, Math.min(1, safeWidth / Math.max(1, canvasWidth), safeHeight / Math.max(1, canvasHeight)));
+      }
+
+      function updatePreviewZoomLabel() {
+        const percent = Math.round(state.preview.zoom * 100);
+        previewZoomLabel.textContent = state.preview.mode === "fit" ? ("Fit · " + percent + "%") : (percent + "%");
+        previewZoomSlider.value = String(Math.round(state.preview.zoom * 100));
+        previewZoomButtons.forEach((button) => {
+          const value = button.dataset.previewZoom;
+          const active = state.preview.mode === "fit" ? value === "fit" : Math.abs(Number(value) - state.preview.zoom) < 0.005;
+          button.classList.toggle("is-active", active);
+        });
+      }
+
+      function centerPreview() {
+        requestAnimationFrame(() => {
+          const maxLeft = Math.max(0, previewFrame.scrollWidth - previewFrame.clientWidth);
+          const maxTop = Math.max(0, previewFrame.scrollHeight - previewFrame.clientHeight);
+          previewFrame.scrollLeft = maxLeft / 2;
+          previewFrame.scrollTop = maxTop / 2;
+        });
+      }
+
+      function updatePreviewWorkspace(options = {}) {
+        const preset = getActiveOutputPreset();
+        const fitScale = calculateFitScale(previewFrame.clientWidth, previewFrame.clientHeight, preset.width, preset.height);
+        state.preview.fitScale = fitScale;
+        if (state.preview.mode === "fit") state.preview.zoom = fitScale;
+        const width = Math.max(220, Math.round(preset.width * state.preview.zoom));
+        const height = Math.max(160, Math.round(preset.height * state.preview.zoom));
+        canvasContainer.style.width = width + "px";
+        canvasContainer.style.height = height + "px";
+        canvasContainer.style.aspectRatio = preset.width + " / " + preset.height;
+        previewFrame.classList.toggle("is-scrollable", width > previewFrame.clientWidth || height > previewFrame.clientHeight);
+        updatePreviewZoomLabel();
+        if (options.center !== false) centerPreview();
+        resize();
+      }
+
+      function setPreviewZoom(modeOrValue) {
+        if (modeOrValue === "fit") {
+          state.preview.mode = "fit";
+        } else {
+          state.preview.mode = "manual";
+          state.preview.zoom = Math.min(1.5, Math.max(0.1, Number(modeOrValue) || state.preview.zoom || 1));
+        }
+        updatePreviewWorkspace({ center: true });
+      }
+
+      function updatePreviewContextLabels() {
+        const preset = getActiveOutputPreset();
+        const qaStatus = (state.layoutQa && state.layoutQa.status) || "OK";
+        previewFormatLabel.textContent = preset.label;
+        previewExportSize.textContent = preset.width + " x " + preset.height;
+        previewRatioLabel.textContent = preset.ratio;
+        previewLayoutQa.textContent = qaStatus;
+        previewLayoutQaChip.dataset.qa = qaStatus;
+        editorStickyFormat.textContent = preset.label;
+        editorStickyComposition.textContent = compositionPreset.options[compositionPreset.selectedIndex] ? compositionPreset.options[compositionPreset.selectedIndex].textContent.replace(/\s+·.*$/, "") : "Auto editorial";
+        editorStickyLayoutQa.textContent = qaStatus;
+        editorStickyExportQa.textContent = exportQaState.textContent || "Pendiente";
+      }
+
       function updateOutputPanel() {
         const preset = getActiveOutputPreset();
         state.output.width = preset.width;
@@ -1836,6 +2117,8 @@
           outputWarning.textContent = "Formato listo para exportar.";
         }
         updateExportQaPanel("Pendiente", preset.width, preset.height, null, null, "Pendiente");
+        updatePreviewContextLabels();
+        updatePreviewWorkspace({ center: state.preview.mode === "fit" });
       }
 
       function updateExportQaPanel(fileLabel, expectedWidth, expectedHeight, actualWidth, actualHeight, stateLabel, extra) {
@@ -1848,6 +2131,7 @@
         exportQaActualRatio.textContent = actualRatio;
         exportQaState.textContent = stateLabel || "Pendiente";
         if (extra) exportStatus.textContent = extra;
+        updatePreviewContextLabels();
       }
 
       function updateWebmQaPanel(preset, actualWidth, actualHeight, duration, stateLabel) {
@@ -1920,7 +2204,7 @@
         const qrX = horizontal ? width - padX - qrSize - ctaW * 0.16 : width - padX - qrSize;
         const qrY = horizontal ? ctaY + ctaH + height * 0.035 : ctaY;
         return {
-          version: "0.3.5",
+          version: "0.3.6",
           compositionPreset: presetId,
           isManual: presetId === "manual",
           guidesVisible: false,
@@ -2126,6 +2410,7 @@
           li.textContent = item;
           layoutQaList.appendChild(li);
         });
+        updatePreviewContextLabels();
       }
 
       function hasBlockingLayoutErrors() {
@@ -2408,7 +2693,7 @@
         const layout = serializableVisualLayout();
         layout.layoutQa = cloneLayout(state.layoutQa || { status: "OK", warnings: [], errors: [] });
         return {
-          version: "0.3.5",
+          version: "0.3.6",
           exportType: "client-preview-package",
           generatedAt: new Date().toISOString(),
           brand: getValue("brand"),
@@ -3163,6 +3448,7 @@
         safeAreasVisible.checked = !!layout.safeAreasVisible;
         overlapVisible.checked = !!layout.overlapBoxesVisible;
         liveQa.checked = layout.liveQa !== false;
+        updatePreviewContextLabels();
       }
 
       function pullVisualControlsToState() {
@@ -3191,6 +3477,7 @@
         visualControls.forEach((control) => { delete control.dataset.dirty; });
         state.textureDirty = true;
         syncVisualControls();
+        updatePreviewContextLabels();
       }
 
       function resetVisualSection(section) {
@@ -3235,7 +3522,7 @@
         allowed.forEach((section) => {
           if (parsed[section] && typeof parsed[section] === "object") base[section] = { ...base[section], ...parsed[section] };
         });
-        base.version = "0.3.5";
+        base.version = "0.3.6";
         base.compositionPreset = parsed.compositionPreset || "manual";
         base.isManual = parsed.isManual !== false;
         base.guidesVisible = false;
@@ -3477,7 +3764,7 @@
 
       function setPresentationMode(enabled) {
         appShell.classList.toggle("is-presentation", enabled);
-        setTimeout(resize, 80);
+        setTimeout(() => updatePreviewWorkspace({ center: true }), 80);
       }
 
       function clientPreviewHtmlTemplate(opts) {
@@ -3692,6 +3979,30 @@
         control.addEventListener("input", updateLayerControls);
         control.addEventListener("change", updateLayerControls);
       });
+      previewZoomButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const value = button.dataset.previewZoom;
+          setPreviewZoom(value === "fit" ? "fit" : Number(value));
+        });
+      });
+      previewZoomSlider.addEventListener("input", () => setPreviewZoom(Number(previewZoomSlider.value) / 100));
+      previewCenter.addEventListener("click", centerPreview);
+      previewFocus.addEventListener("click", () => {
+        state.preview.focus = !state.preview.focus;
+        appShell.classList.toggle("is-preview-focus", state.preview.focus);
+        previewFocus.setAttribute("aria-pressed", state.preview.focus ? "true" : "false");
+        previewFocus.textContent = state.preview.focus ? "Salir focus" : "Focus preview";
+        setTimeout(() => updatePreviewWorkspace({ center: true }), 80);
+      });
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && state.preview.focus) {
+          state.preview.focus = false;
+          appShell.classList.remove("is-preview-focus");
+          previewFocus.setAttribute("aria-pressed", "false");
+          previewFocus.textContent = "Focus preview";
+          setTimeout(() => updatePreviewWorkspace({ center: true }), 80);
+        }
+      });
       compositionPreset.addEventListener("change", () => applyCompositionPreset(compositionPreset.value));
       visualControls.forEach((control) => {
         const handler = () => {
@@ -3809,7 +4120,7 @@
         audioStatus.textContent = "El audio no pudo cargarse. Algunas URLs/radios bloquean CORS o el navegador.";
       });
 
-      window.addEventListener("resize", resize);
+      window.addEventListener("resize", () => updatePreviewWorkspace({ center: state.preview.mode === "fit" }));
       canvasContainer.addEventListener("mousedown", handlePointerDown);
       window.addEventListener("mousemove", handlePointerMove, { passive: false });
       window.addEventListener("mouseup", handlePointerUp);
@@ -3854,7 +4165,7 @@
 
       applyPreset("fashion");
       updateLayerControls();
-      resize();
+      updatePreviewWorkspace({ center: true });
       updateTexture();
       startRenderLoop();
       setTimeout(startRenderLoop, 60);

@@ -173,3 +173,27 @@ Same file as v0.3 (no route change). Adds the minimum manual art-direction contr
 
 - This phase intentionally avoids snapshots and localStorage.
 - QR scan validation remains pending until tested with a physical mobile reader.
+
+## v0.3.6 - Sticky Preview Workspace & Zoom Controls
+
+Same file as v0.3 (no route change). UX polish for editing comfort in the visual control studio.
+
+### Added
+
+- Two-column editor workspace with sticky preview on the left and independently scrollable controls on the right.
+- `preview-frame` around the WebGL canvas so the piece can fit inside the visible viewport without global page scroll.
+- Preview toolbar with Fit, 25%, 50%, 75%, 100%, zoom slider, Center and Focus preview controls.
+- Context chips for active format, real export size, ratio and Layout QA status.
+- Sticky right-panel context header for format, composition preset, Layout QA and Export QA.
+- Microcopy clarifying that preview zoom affects only the editor viewport, not downloads.
+
+### Export guarantees
+
+- Preview zoom is not written to the manifest.
+- PNG, HTML, ZIP and WebM still use the active preset width/height and the shared `visualLayoutState`.
+- WebM continues to record from the dedicated export canvas, not from the editor viewport or toolbar.
+
+### v0.3.6 known limitations
+
+- Focus preview expands the left workspace but keeps the control column available.
+- QR scan validation remains pending until tested with a physical mobile reader.

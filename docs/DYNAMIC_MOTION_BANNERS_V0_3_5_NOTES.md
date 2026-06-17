@@ -71,3 +71,7 @@ Copy layout JSON exports `visualLayoutState` without images, base64 or uploaded 
 
 - No snapshots or localStorage in this phase.
 - QR physical scan validation remains pending.
+
+## Follow-up v0.3.6
+
+The next microphase adds a sticky preview workspace and editor-only zoom controls. It keeps the v0.3.5 `visualLayoutState` render path intact and does not serialize preview zoom into the client manifest.
