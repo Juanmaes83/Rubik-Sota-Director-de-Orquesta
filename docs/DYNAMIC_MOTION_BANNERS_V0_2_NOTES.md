@@ -40,3 +40,8 @@ Next steps
 - Review visual hierarchy and spacing after real campaign assets are tested.
 - Decide when to expose v0.2 from the Gesture Lab Hub.
 - Add stronger export presets only after product review.
+
+v0.3 follow-up
+--------------
+
+The next phase creates a separate v0.3 file focused on client preview export workflows: HTML preview, ZIP preview package, configurable QR destinations, redesigned logo placement and an optional lower gallery.

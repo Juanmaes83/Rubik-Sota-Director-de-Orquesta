@@ -56,3 +56,25 @@ Dynamic Motion Banners v0.2 extends the standalone module without changing the c
 - WebM recording captures the visual WebGL banner only. Audio playback remains separate in this phase.
 - Some radio/audio URLs can be blocked by CORS or browser autoplay/media policies.
 - The module remains standalone and is not connected to the Hub yet.
+
+## v0.3 - Exportable Preview Workflow
+
+Dynamic Motion Banners v0.3 adds a separate HTML file:
+
+`gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-3.html`
+
+### Added
+
+- Export HTML preview for client review.
+- Export ZIP preview package with `index.html`, `manifest/config.json`, `README.txt` and available asset data.
+- Configurable QR destination types: URL, phone call, WhatsApp and email.
+- Redesigned logo zone with a stable premium plate and fit control.
+- Optional lower gallery with 0, 1, 2 or 3 images.
+- Audio controls extended with stop and mute.
+
+### v0.3 limitations
+
+- ZIP generation uses a local no-dependency ZIP writer with stored files, not compression.
+- HTML preview is a static client review artifact based on the current rendered banner texture.
+- WebM recording remains visual-only.
+- Some real uploads/downloads cannot be fully validated inside the Codex in-app browser.
