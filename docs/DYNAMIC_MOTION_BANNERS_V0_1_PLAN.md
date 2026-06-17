@@ -64,3 +64,14 @@ Do not build yet
 This document is a planning note.
 
 The module will be built later in a separate branch.
+
+v0.1 implementation status
+--------------------------
+
+Status: In progress / created on branch feature/dynamic-motion-banners-v0-1.
+
+Created module path: `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-1.html`
+
+Hub status: Not connected yet.
+
+Raw source status: Preserved and unchanged.

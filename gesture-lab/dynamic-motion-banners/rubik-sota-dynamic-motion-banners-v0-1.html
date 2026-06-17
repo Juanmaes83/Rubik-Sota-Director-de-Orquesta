@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Motion Banners v0.1 | Rubik Sota</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080706;
+      --panel: #15120f;
+      --panel-soft: #1d1914;
+      --line: rgba(232, 205, 154, 0.2);
+      --line-strong: rgba(232, 205, 154, 0.42);
+      --text: #f7f1e8;
+      --muted: #b8aa98;
+      --soft: #7d7062;
+      --gold: #e8cd9a;
+      --amber: #c9964d;
+      --ink: #15120e;
+      --danger: #ffb6a5;
+      --shadow: rgba(0, 0, 0, 0.52);
+      --focus: #ffe3aa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 15% 16%, rgba(201, 150, 77, 0.18), transparent 28rem),
+        radial-gradient(circle at 75% 12%, rgba(196, 221, 205, 0.09), transparent 24rem),
+        linear-gradient(135deg, #080706 0%, #16110c 54%, #090806 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 392px);
+    }
+
+    .stage {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      display: grid;
+      align-items: stretch;
+      isolation: isolate;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 92px 92px;
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(8, 7, 6, 0.72), transparent 28%, transparent 74%, rgba(8, 7, 6, 0.82)),
+        linear-gradient(180deg, rgba(8, 7, 6, 0.68), transparent 24%, rgba(8, 7, 6, 0.62));
+      z-index: 2;
+    }
+
+    .stage-header {
+      position: absolute;
+      top: 24px;
+      left: clamp(18px, 3.8vw, 48px);
+      right: clamp(18px, 3.8vw, 48px);
+      z-index: 6;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .brand-kicker {
+      max-width: 34rem;
+      color: var(--gold);
+      font-size: 0.74rem;
+      line-height: 1.4;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .stage-copy {
+      display: grid;
+      gap: 10px;
+      color: rgba(247, 241, 232, 0.84);
+      text-align: right;
+      max-width: 24rem;
+    }
+
+    .stage-copy strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.7rem, 3vw, 3rem);
+      line-height: 0.95;
+      font-weight: 500;
+    }
+
+    .stage-copy span {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      cursor: grab;
+      touch-action: none;
+      z-index: 1;
+    }
+
+    .canvas-wrap:active {
+      cursor: grabbing;
+    }
+
+    #glcanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
+    }
+
+    .cursor-ring {
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(232, 205, 154, 0.8);
+      border-radius: 999px;
+      box-shadow: 0 0 24px rgba(232, 205, 154, 0.25), inset 0 0 18px rgba(232, 205, 154, 0.16);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(0.6);
+      transition: opacity 140ms ease, transform 140ms ease;
+      z-index: 7;
+    }
+
+    .cursor-ring.is-active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .fallback {
+      position: absolute;
+      inset: auto clamp(18px, 4vw, 54px) clamp(26px, 4vw, 54px);
+      z-index: 8;
+      max-width: 34rem;
+      padding: 18px 20px;
+      border: 1px solid rgba(255, 182, 165, 0.45);
+      background: rgba(29, 20, 17, 0.9);
+      color: var(--danger);
+      line-height: 1.5;
+      display: none;
+    }
+
+    .fallback.is-visible {
+      display: block;
+    }
+
+    .editor {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      padding: 28px;
+      border-left: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(21, 18, 15, 0.96), rgba(13, 11, 9, 0.98)),
+        var(--panel);
+      box-shadow: -28px 0 80px var(--shadow);
+      overflow-y: auto;
+    }
+
+    .editor-inner {
+      display: grid;
+      min-height: calc(100vh - 56px);
+      gap: 24px;
+      align-content: start;
+    }
+
+    .editor-header {
+      display: grid;
+      gap: 10px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 0.96;
+      font-weight: 500;
+    }
+
+    .editor-header p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .preset-button,
+    .control-button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .preset-button {
+      padding: 12px 10px;
+      text-align: left;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .preset-button.is-active,
+    .preset-button:hover,
+    .control-button:hover {
+      border-color: var(--line-strong);
+      background: rgba(232, 205, 154, 0.1);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.73rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: rgba(5, 5, 5, 0.38);
+      color: var(--text);
+      padding: 12px 13px;
+      line-height: 1.4;
+    }
+
+    .field textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: var(--soft);
+    }
+
+    .button-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .control-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 13px 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .control-button.primary {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--ink);
+      font-weight: 750;
+    }
+
+    .control-button.primary:hover {
+      background: #f5dbaa;
+      color: var(--ink);
+    }
+
+    .control-button.subtle {
+      color: var(--muted);
+    }
+
+    #media-upload {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    .media-status {
+      min-height: 42px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.35;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .footnote {
+      margin-top: auto;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--soft);
+      font-size: 0.76rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 980px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .stage,
+      .canvas-wrap,
+      #glcanvas {
+        min-height: 62vh;
+      }
+
+      .stage-header {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        padding: 22px 18px 0;
+        flex-direction: column;
+        z-index: 8;
+      }
+
+      .stage-copy {
+        text-align: left;
+      }
+
+      .editor {
+        min-height: auto;
+        border-left: 0;
+        border-top: 1px solid var(--line);
+        padding: 22px 18px 28px;
+      }
+
+      .editor-inner {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .preset-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stage,
+      .canvas-wrap,
+      #glcanvas {
+        min-height: 58vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="stage" aria-label="Vista previa dinamica">
+      <div class="stage-header">
+        <div class="brand-kicker">RUBIK SOTA // DYNAMIC MOTION BANNERS</div>
+        <div class="stage-copy" aria-hidden="true">
+          <strong>Banderolas en movimiento</strong>
+          <span>Una pieza editorial que respira, se curva y responde al gesto para escaparates, campanas y showrooms.</span>
+        </div>
+      </div>
+      <div id="canvas-container" class="canvas-wrap" aria-label="Lienzo WebGL interactivo">
+        <canvas id="glcanvas"></canvas>
+        <div id="cursor" class="cursor-ring"></div>
+      </div>
+      <p id="webgl-fallback" class="fallback" role="status">
+        Tu navegador no soporta WebGL. Esta experiencia necesita WebGL para mostrar la banderola dinamica.
+      </p>
+    </section>
+
+    <aside class="editor" aria-label="Editor de campana">
+      <div class="editor-inner">
+        <header class="editor-header">
+          <div class="eyebrow">Editor de campana</div>
+          <h1>Dynamic Motion Banners</h1>
+          <p>Banderolas interactivas para campanas, escaparates y marcas en movimiento.</p>
+        </header>
+
+        <section aria-label="Presets de campana">
+          <div class="preset-grid">
+            <button class="preset-button is-active" type="button" data-preset="fashion">Moda</button>
+            <button class="preset-button" type="button" data-preset="retail">Retail</button>
+            <button class="preset-button" type="button" data-preset="realestate">Inmobiliaria</button>
+            <button class="preset-button" type="button" data-preset="event">Evento</button>
+          </div>
+        </section>
+
+        <form class="form-grid" id="campaign-form">
+          <div class="field">
+            <label for="input-brand">Marca</label>
+            <input id="input-brand" value="RUBIK SOTA" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="input-headline">Titular</label>
+            <input id="input-headline" value="NUEVA COLECCION EN MOVIMIENTO" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="input-subheadline">Subtitular</label>
+            <textarea id="input-subheadline">Una pieza visual interactiva para convertir el escaparate en una experiencia viva.</textarea>
+          </div>
+          <div class="field">
+            <label for="input-cta">CTA</label>
+            <input id="input-cta" value="ESCANEA Y DESCUBRE" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="input-note">Nota / promocion</label>
+            <input id="input-note" value="Coleccion temporada · showroom privado" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="input-qr">URL / QR placeholder</label>
+            <input id="input-qr" value="rubiksota.com/campana" autocomplete="off">
+          </div>
+        </form>
+
+        <div class="button-stack">
+          <button id="btn-upload-proxy" class="control-button" type="button">Subir imagen o video</button>
+          <input id="media-upload" type="file" accept="image/*,video/*" aria-label="Subir imagen o video">
+          <div id="media-status" class="media-status">Sin media adjunta. La textura se genera con arte de campana.</div>
+          <button id="btn-clear-media" class="control-button subtle" type="button">Limpiar media</button>
+          <button id="btn-export" class="control-button primary" type="button">Exportar banner PNG</button>
+        </div>
+
+        <footer class="footnote">Rubik Sota Director de Orquesta · Gesture Lab</footer>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const canvas = document.getElementById("glcanvas");
+      const canvasContainer = document.getElementById("canvas-container");
+      const cursorUI = document.getElementById("cursor");
+      const fallback = document.getElementById("webgl-fallback");
+      const mediaUpload = document.getElementById("media-upload");
+      const mediaStatus = document.getElementById("media-status");
+      const uploadProxy = document.getElementById("btn-upload-proxy");
+      const clearMedia = document.getElementById("btn-clear-media");
+      const exportButton = document.getElementById("btn-export");
+      const presetButtons = Array.from(document.querySelectorAll("[data-preset]"));
+
+      const controls = {
+        brand: document.getElementById("input-brand"),
+        headline: document.getElementById("input-headline"),
+        subheadline: document.getElementById("input-subheadline"),
+        cta: document.getElementById("input-cta"),
+        note: document.getElementById("input-note"),
+        qr: document.getElementById("input-qr")
+      };
+
+      const presets = {
+        fashion: {
+          brand: "RUBIK SOTA",
+          headline: "NUEVA COLECCION EN MOVIMIENTO",
+          subheadline: "Siluetas, color y presencia editorial para activar el escaparate de temporada.",
+          cta: "ESCANEA Y DESCUBRE",
+          note: "Coleccion temporada · showroom privado",
+          qr: "rubiksota.com/lookbook",
+          palette: ["#efe5d2", "#d7a85f", "#17120f", "#744a32"]
+        },
+        retail: {
+          brand: "RUBIK SOTA RETAIL",
+          headline: "PROMOCION EN ESCAPARATE",
+          subheadline: "Un formato dinamico para atraer, explicar y convertir desde la primera mirada.",
+          cta: "VER OFERTA ACTIVA",
+          note: "Campana local · continuidad movil",
+          qr: "rubiksota.com/retail",
+          palette: ["#e9efe4", "#7fb39a", "#101615", "#c9964d"]
+        },
+        realestate: {
+          brand: "RUBIK SOTA HOMES",
+          headline: "VISITA LA PROPIEDAD",
+          subheadline: "Banderolas digitales para presentar espacios, rutas de visita y contacto inmediato.",
+          cta: "AGENDA TU VISITA",
+          note: "Landing comercial · ficha de inmueble",
+          qr: "rubiksota.com/visita",
+          palette: ["#e8ded0", "#b9a27e", "#111317", "#5d7282"]
+        },
+        event: {
+          brand: "RUBIK SOTA LIVE",
+          headline: "LANZAMIENTO ESPECIAL",
+          subheadline: "Una pieza de alto impacto para convocatorias, fechas clave y experiencias de marca.",
+          cta: "RESERVA TU ACCESO",
+          note: "Evento · invitacion digital · seguimiento",
+          qr: "rubiksota.com/evento",
+          palette: ["#f1e4d7", "#d8705f", "#151017", "#9a76bd"]
+        }
+      };
+
+      const state = {
+        preset: "fashion",
+        mediaElement: null,
+        mediaType: "",
+        textureDirty: true,
+        exportNextFrame: false
+      };
+
+      const gl = canvas.getContext("webgl", { preserveDrawingBuffer: true, antialias: true });
+      if (!gl) {
+        fallback.classList.add("is-visible");
+      }
+
+      const textureSize = 1024;
+      const textureCanvas = document.createElement("canvas");
+      textureCanvas.width = textureSize;
+      textureCanvas.height = textureSize;
+      const textureContext = textureCanvas.getContext("2d");
+
+      function getValue(name) {
+        return (controls[name].value || "").trim();
+      }
+
+      function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+        const words = String(text || "").split(/\s+/).filter(Boolean);
+        let line = "";
+        let lines = 0;
+        for (let i = 0; i < words.length; i += 1) {
+          const testLine = line ? line + " " + words[i] : words[i];
+          if (ctx.measureText(testLine).width > maxWidth && line) {
+            ctx.fillText(line, x, y + lines * lineHeight);
+            line = words[i];
+            lines += 1;
+            if (lines >= maxLines) return;
+          } else {
+            line = testLine;
+          }
+        }
+        if (line && lines < maxLines) ctx.fillText(line, x, y + lines * lineHeight);
+      }
+
+      function drawQrPlaceholder(ctx, x, y, size, label) {
+        ctx.save();
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fillRect(x, y, size, size);
+        ctx.fillStyle = "#15120e";
+        const cell = size / 9;
+        for (let row = 0; row < 9; row += 1) {
+          for (let col = 0; col < 9; col += 1) {
+            const edge = row < 2 || row > 6 || col < 2 || col > 6;
+            const active = edge || ((row * 3 + col * 5 + label.length) % 4 === 0);
+            if (active) ctx.fillRect(x + col * cell, y + row * cell, cell * 0.78, cell * 0.78);
+          }
+        }
+        ctx.restore();
+      }
+
+      function drawMedia(ctx, media, type, x, y, w, h) {
+        const sourceWidth = type === "video" ? media.videoWidth : media.naturalWidth;
+        const sourceHeight = type === "video" ? media.videoHeight : media.naturalHeight;
+        if (!sourceWidth || !sourceHeight) return;
+
+        const sourceRatio = sourceWidth / sourceHeight;
+        const targetRatio = w / h;
+        let sx = 0;
+        let sy = 0;
+        let sw = sourceWidth;
+        let sh = sourceHeight;
+
+        if (sourceRatio > targetRatio) {
+          sw = sourceHeight * targetRatio;
+          sx = (sourceWidth - sw) / 2;
+        } else {
+          sh = sourceWidth / targetRatio;
+          sy = (sourceHeight - sh) / 2;
+        }
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, w, h);
+        ctx.clip();
+        ctx.drawImage(media, sx, sy, sw, sh, x, y, w, h);
+        ctx.fillStyle = "rgba(21,18,14,0.2)";
+        ctx.fillRect(x, y, w, h);
+        ctx.restore();
+      }
+
+      function updateTexture() {
+        const palette = presets[state.preset].palette;
+        const ctx = textureContext;
+        const gradient = ctx.createLinearGradient(0, 0, textureSize, textureSize);
+        gradient.addColorStop(0, palette[0]);
+        gradient.addColorStop(0.58, "#f8f0e3");
+        gradient.addColorStop(1, "#d4c3aa");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, textureSize, textureSize);
+
+        ctx.globalAlpha = 0.38;
+        for (let i = 0; i < 4200; i += 1) {
+          const shade = Math.floor(190 + Math.random() * 52);
+          ctx.fillStyle = "rgb(" + shade + "," + (shade - 8) + "," + (shade - 24) + ")";
+          ctx.fillRect(Math.random() * textureSize, Math.random() * textureSize, 1, 1);
+        }
+        ctx.globalAlpha = 1;
+
+        ctx.fillStyle = palette[2];
+        ctx.fillRect(0, 0, textureSize, 138);
+        ctx.fillStyle = palette[1];
+        ctx.fillRect(0, 138, textureSize, 8);
+        ctx.fillStyle = "rgba(21,18,14,0.1)";
+        ctx.fillRect(64, 196, textureSize - 128, 590);
+
+        if (state.mediaElement) {
+          drawMedia(ctx, state.mediaElement, state.mediaType, 92, 206, 840, 328);
+        } else {
+          const visual = ctx.createLinearGradient(92, 206, 932, 534);
+          visual.addColorStop(0, palette[3]);
+          visual.addColorStop(0.48, palette[1]);
+          visual.addColorStop(1, palette[2]);
+          ctx.fillStyle = visual;
+          ctx.fillRect(92, 206, 840, 328);
+          ctx.strokeStyle = "rgba(255,255,255,0.42)";
+          ctx.lineWidth = 2;
+          for (let i = 0; i < 12; i += 1) {
+            ctx.beginPath();
+            ctx.moveTo(92 + i * 78, 206);
+            ctx.lineTo(20 + i * 88, 534);
+            ctx.stroke();
+          }
+        }
+
+        ctx.fillStyle = "rgba(0,0,0,0.24)";
+        ctx.fillRect(92, 206, 840, 328);
+
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#f8f0e3";
+        ctx.font = "700 38px Inter, Arial, sans-serif";
+        ctx.fillText(getValue("brand") || "RUBIK SOTA", 70, 48);
+        ctx.font = "500 22px Inter, Arial, sans-serif";
+        ctx.fillStyle = "rgba(248,240,227,0.78)";
+        ctx.fillText("DYNAMIC MOTION BANNERS", 70, 94);
+
+        ctx.fillStyle = palette[2];
+        ctx.font = "700 66px Georgia, Times New Roman, serif";
+        wrapText(ctx, getValue("headline") || "CAMPANA EN MOVIMIENTO", 92, 580, 660, 72, 3);
+        ctx.font = "400 30px Inter, Arial, sans-serif";
+        ctx.fillStyle = "rgba(21,18,14,0.78)";
+        wrapText(ctx, getValue("subheadline"), 96, 780, 560, 40, 3);
+
+        ctx.fillStyle = palette[2];
+        ctx.fillRect(690, 730, 250, 112);
+        ctx.fillStyle = palette[1];
+        ctx.font = "800 25px Inter, Arial, sans-serif";
+        wrapText(ctx, getValue("cta") || "ESCANEA", 714, 760, 198, 30, 2);
+
+        drawQrPlaceholder(ctx, 746, 862, 112, getValue("qr"));
+        ctx.fillStyle = "rgba(21,18,14,0.72)";
+        ctx.font = "500 20px Inter, Arial, sans-serif";
+        wrapText(ctx, getValue("note"), 92, 910, 560, 28, 2);
+        ctx.font = "500 17px Inter, Arial, sans-serif";
+        ctx.fillStyle = "rgba(21,18,14,0.56)";
+        ctx.textAlign = "center";
+        wrapText(ctx, getValue("qr") || "landing de campana", 802, 984, 250, 22, 1);
+
+        if (gl) {
+          gl.bindTexture(gl.TEXTURE_2D, webgl.texture);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureCanvas);
+        }
+        state.textureDirty = false;
+      }
+
+      function createShader(context, type, source) {
+        const shader = context.createShader(type);
+        context.shaderSource(shader, source);
+        context.compileShader(shader);
+        if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) {
+          throw new Error(context.getShaderInfoLog(shader) || "Shader compile error");
+        }
+        return shader;
+      }
+
+      function createProgram(context, vertexSource, fragmentSource) {
+        const program = context.createProgram();
+        context.attachShader(program, createShader(context, context.VERTEX_SHADER, vertexSource));
+        context.attachShader(program, createShader(context, context.FRAGMENT_SHADER, fragmentSource));
+        context.linkProgram(program);
+        if (!context.getProgramParameter(program, context.LINK_STATUS)) {
+          throw new Error(context.getProgramInfoLog(program) || "Program link error");
+        }
+        return program;
+      }
+
+      const m4 = {
+        perspective(fov, aspect, near, far) {
+          const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
+          const rangeInv = 1 / (near - far);
+          return new Float32Array([
+            f / aspect, 0, 0, 0,
+            0, f, 0, 0,
+            0, 0, (near + far) * rangeInv, -1,
+            0, 0, near * far * rangeInv * 2, 0
+          ]);
+        },
+        translation(tx, ty, tz) {
+          return new Float32Array([
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            tx, ty, tz, 1
+          ]);
+        },
+        multiply(a, b) {
+          const out = new Float32Array(16);
+          for (let row = 0; row < 4; row += 1) {
+            for (let col = 0; col < 4; col += 1) {
+              out[row * 4 + col] =
+                a[row * 4 + 0] * b[col + 0] +
+                a[row * 4 + 1] * b[col + 4] +
+                a[row * 4 + 2] * b[col + 8] +
+                a[row * 4 + 3] * b[col + 12];
+            }
+          }
+          return out;
+        }
+      };
+
+      function project3DTo2D(x, y, z, matrix, width, height) {
+        const w = x * matrix[3] + y * matrix[7] + z * matrix[11] + matrix[15];
+        if (w === 0) return null;
+        const px = (x * matrix[0] + y * matrix[4] + z * matrix[8] + matrix[12]) / w;
+        const py = (x * matrix[1] + y * matrix[5] + z * matrix[9] + matrix[13]) / w;
+        return { x: (px + 1) * 0.5 * width, y: (1 - py) * 0.5 * height };
+      }
+
+      const webgl = gl ? (() => {
+        const vertexSource = `
+          attribute vec4 a_position;
+          attribute vec3 a_normal;
+          attribute vec2 a_texcoord;
+          uniform mat4 u_matrix;
+          varying vec3 v_normal;
+          varying vec2 v_texcoord;
+          varying vec3 v_view;
+          void main() {
+            gl_Position = u_matrix * a_position;
+            v_normal = a_normal;
+            v_texcoord = a_texcoord;
+            v_view = vec3(0.0, 0.0, 4.6) - a_position.xyz;
+          }
+        `;
+        const fragmentSource = `
+          precision mediump float;
+          varying vec3 v_normal;
+          varying vec2 v_texcoord;
+          varying vec3 v_view;
+          uniform sampler2D u_texture;
+          uniform vec3 u_lightDirection;
+          void main() {
+            vec3 normal = normalize(v_normal);
+            vec3 viewDirection = normalize(v_view);
+            vec3 halfVector = normalize(u_lightDirection + viewDirection);
+            float diffuse = pow(max(dot(normal, u_lightDirection), 0.0), 1.35);
+            float specular = pow(max(dot(normal, halfVector), 0.0), 18.0) * 0.2;
+            vec4 texel = texture2D(u_texture, v_texcoord);
+            vec3 light = vec3(0.24, 0.2, 0.16) + diffuse * vec3(1.18, 1.02, 0.78) + specular;
+            gl_FragColor = vec4(texel.rgb * light, texel.a);
+          }
+        `;
+        const program = createProgram(gl, vertexSource, fragmentSource);
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        return {
+          program,
+          texture,
+          locs: {
+            position: gl.getAttribLocation(program, "a_position"),
+            normal: gl.getAttribLocation(program, "a_normal"),
+            texcoord: gl.getAttribLocation(program, "a_texcoord"),
+            matrix: gl.getUniformLocation(program, "u_matrix"),
+            texture: gl.getUniformLocation(program, "u_texture"),
+            light: gl.getUniformLocation(program, "u_lightDirection")
+          },
+          buffers: {
+            position: gl.createBuffer(),
+            normal: gl.createBuffer(),
+            texcoord: gl.createBuffer(),
+            index: gl.createBuffer()
+          }
+        };
+      })() : null;
+
+      const cols = 30;
+      const rows = 40;
+      const paperWidth = 2.38;
+      const paperHeight = 3.18;
+      const startX = -paperWidth / 2;
+      const startY = paperHeight / 2;
+      const spacingX = paperWidth / (cols - 1);
+      const spacingY = paperHeight / (rows - 1);
+      const particles = [];
+      const constraints = [];
+      const indices = [];
+      const texcoordData = new Float32Array(cols * rows * 2);
+      const posData = new Float32Array(cols * rows * 3);
+      const normData = new Float32Array(cols * rows * 3);
+      const normals = [];
+
+      function addConstraint(p1, p2, stiffness) {
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        const dz = p1.z - p2.z;
+        constraints.push({ p1, p2, restLength: Math.hypot(dx, dy, dz), stiffness });
+      }
+
+      for (let y = 0; y < rows; y += 1) {
+        for (let x = 0; x < cols; x += 1) {
+          const particle = {
+            x: startX + x * spacingX,
+            y: startY - y * spacingY,
+            z: 0,
+            oldX: startX + x * spacingX,
+            oldY: startY - y * spacingY,
+            oldZ: 0,
+            pinned: y === 0,
+            u: x / (cols - 1),
+            v: y / (rows - 1)
+          };
+          particles.push(particle);
+          normals.push({ x: 0, y: 0, z: 0 });
+        }
+      }
+
+      for (let y = 0; y < rows; y += 1) {
+        for (let x = 0; x < cols; x += 1) {
+          const i = y * cols + x;
+          if (x < cols - 1) addConstraint(particles[i], particles[i + 1], 1);
+          if (y < rows - 1) addConstraint(particles[i], particles[i + cols], 1);
+          if (x < cols - 1 && y < rows - 1) {
+            addConstraint(particles[i], particles[i + cols + 1], 0.88);
+            addConstraint(particles[i + 1], particles[i + cols], 0.88);
+          }
+          if (x < cols - 2) addConstraint(particles[i], particles[i + 2], 0.42);
+          if (y < rows - 2) addConstraint(particles[i], particles[i + cols * 2], 0.42);
+        }
+      }
+
+      for (let y = 0; y < rows - 1; y += 1) {
+        for (let x = 0; x < cols - 1; x += 1) {
+          const i = y * cols + x;
+          indices.push(i, i + cols, i + 1, i + 1, i + cols, i + cols + 1);
+        }
+      }
+
+      for (let i = 0; i < particles.length; i += 1) {
+        texcoordData[i * 2] = particles[i].u;
+        texcoordData[i * 2 + 1] = particles[i].v;
+      }
+
+      if (gl) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, webgl.buffers.texcoord);
+        gl.bufferData(gl.ARRAY_BUFFER, texcoordData, gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webgl.buffers.index);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+      }
+
+      let time = 0;
+      let grabbedParticle = null;
+      let pointerX = 0;
+      let pointerY = 0;
+      let viewProjMatrix = new Float32Array(16);
+      const fov = 45 * Math.PI / 180;
+      const cameraZ = 4.8;
+
+      function resize() {
+        const rect = canvasContainer.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+        canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+        if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
+      }
+
+      function findClosestParticle(x, y) {
+        let closest = null;
+        let minDistance = 2800;
+        for (const p of particles) {
+          if (p.pinned) continue;
+          const screen = project3DTo2D(p.x, p.y, p.z, viewProjMatrix, canvas.width, canvas.height);
+          if (!screen) continue;
+          const dx = screen.x - x;
+          const dy = screen.y - y;
+          const dist = dx * dx + dy * dy;
+          if (dist < minDistance) {
+            minDistance = dist;
+            closest = p;
+          }
+        }
+        return closest;
+      }
+
+      function getLocalPointer(event) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = event.touches && event.touches[0];
+        const clientX = touch ? touch.clientX : event.clientX;
+        const clientY = touch ? touch.clientY : event.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+
+      function handlePointerDown(event) {
+        const pos = getLocalPointer(event);
+        pointerX = pos.x;
+        pointerY = pos.y;
+        grabbedParticle = findClosestParticle(pointerX, pointerY);
+        if (grabbedParticle) {
+          cursorUI.classList.add("is-active");
+          cursorUI.style.left = (pointerX / (canvas.width / canvas.clientWidth)) + "px";
+          cursorUI.style.top = (pointerY / (canvas.height / canvas.clientHeight)) + "px";
+        }
+      }
+
+      function handlePointerMove(event) {
+        if (!grabbedParticle) return;
+        if (event.cancelable) event.preventDefault();
+        const pos = getLocalPointer(event);
+        pointerX = pos.x;
+        pointerY = pos.y;
+      }
+
+      function handlePointerUp() {
+        grabbedParticle = null;
+        cursorUI.classList.remove("is-active");
+      }
+
+      function updatePhysics() {
+        time += 0.016;
+        const drag = 0.925;
+        const gravity = -0.0065;
+        for (const p of particles) {
+          if (p.pinned) continue;
+          const wind = Math.sin(time * 1.8 + p.x * 3.4 + p.y * 1.2) * 0.00045;
+          p.z += wind;
+          const vx = (p.x - p.oldX) * drag;
+          const vy = (p.y - p.oldY) * drag;
+          const vz = (p.z - p.oldZ) * drag;
+          p.oldX = p.x;
+          p.oldY = p.y;
+          p.oldZ = p.z;
+          p.x += vx;
+          p.y += vy + gravity;
+          p.z += vz;
+        }
+
+        if (grabbedParticle) {
+          const aspect = canvas.width / canvas.height;
+          const ndcX = pointerX / canvas.width * 2 - 1;
+          const ndcY = pointerY / canvas.height * 2 - 1;
+          const targetX = ndcX * aspect * cameraZ * Math.tan(fov / 2);
+          const targetY = -ndcY * 2.42;
+          grabbedParticle.x += (targetX - grabbedParticle.x) * 0.22;
+          grabbedParticle.y += (targetY - grabbedParticle.y) * 0.22;
+          grabbedParticle.z += (1.16 - grabbedParticle.z) * 0.22;
+        }
+
+        for (let iteration = 0; iteration < 34; iteration += 1) {
+          for (const c of constraints) {
+            const dx = c.p1.x - c.p2.x;
+            const dy = c.p1.y - c.p2.y;
+            const dz = c.p1.z - c.p2.z;
+            const dist = Math.hypot(dx, dy, dz);
+            if (!dist) continue;
+            const diff = ((dist - c.restLength) / dist) * 0.5 * c.stiffness;
+            const ox = dx * diff;
+            const oy = dy * diff;
+            const oz = dz * diff;
+            if (!c.p1.pinned && c.p1 !== grabbedParticle) {
+              c.p1.x -= ox;
+              c.p1.y -= oy;
+              c.p1.z -= oz;
+            }
+            if (!c.p2.pinned && c.p2 !== grabbedParticle) {
+              c.p2.x += ox;
+              c.p2.y += oy;
+              c.p2.z += oz;
+            }
+          }
+          for (let x = 0; x < cols; x += 1) {
+            const p = particles[x];
+            p.x = startX + x * spacingX;
+            p.y = startY + Math.sin(time * 0.75 + x * 0.42) * 0.018;
+            p.z = Math.sin(time + x * 0.25) * 0.035;
+          }
+        }
+      }
+
+      function updateBuffers() {
+        for (const n of normals) {
+          n.x = 0;
+          n.y = 0;
+          n.z = 0;
+        }
+        for (let i = 0; i < indices.length; i += 3) {
+          const i0 = indices[i];
+          const i1 = indices[i + 1];
+          const i2 = indices[i + 2];
+          const p0 = particles[i0];
+          const p1 = particles[i1];
+          const p2 = particles[i2];
+          const ux = p1.x - p0.x;
+          const uy = p1.y - p0.y;
+          const uz = p1.z - p0.z;
+          const vx = p2.x - p0.x;
+          const vy = p2.y - p0.y;
+          const vz = p2.z - p0.z;
+          const nx = uy * vz - uz * vy;
+          const ny = uz * vx - ux * vz;
+          const nz = ux * vy - uy * vx;
+          normals[i0].x += nx; normals[i0].y += ny; normals[i0].z += nz;
+          normals[i1].x += nx; normals[i1].y += ny; normals[i1].z += nz;
+          normals[i2].x += nx; normals[i2].y += ny; normals[i2].z += nz;
+        }
+        for (let i = 0; i < particles.length; i += 1) {
+          const p = particles[i];
+          posData[i * 3] = p.x;
+          posData[i * 3 + 1] = p.y;
+          posData[i * 3 + 2] = p.z;
+          const n = normals[i];
+          const len = Math.hypot(n.x, n.y, n.z) || 1;
+          normData[i * 3] = n.x / len;
+          normData[i * 3 + 1] = n.y / len;
+          normData[i * 3 + 2] = n.z / len;
+        }
+      }
+
+      function render() {
+        if (!gl) return;
+        if (state.textureDirty || (state.mediaType === "video" && state.mediaElement && state.mediaElement.readyState >= 2)) {
+          updateTexture();
+        }
+
+        const aspect = canvas.width / canvas.height;
+        viewProjMatrix = m4.multiply(m4.perspective(fov, aspect, 0.1, 100), m4.translation(0, 0, -cameraZ));
+
+        updatePhysics();
+        updateBuffers();
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, webgl.buffers.position);
+        gl.bufferData(gl.ARRAY_BUFFER, posData, gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, webgl.buffers.normal);
+        gl.bufferData(gl.ARRAY_BUFFER, normData, gl.DYNAMIC_DRAW);
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.enable(gl.DEPTH_TEST);
+        gl.disable(gl.CULL_FACE);
+        gl.useProgram(webgl.program);
+        gl.uniformMatrix4fv(webgl.locs.matrix, false, viewProjMatrix);
+        gl.uniform3f(webgl.locs.light, 0.42, 0.68, 0.6);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, webgl.buffers.position);
+        gl.enableVertexAttribArray(webgl.locs.position);
+        gl.vertexAttribPointer(webgl.locs.position, 3, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, webgl.buffers.normal);
+        gl.enableVertexAttribArray(webgl.locs.normal);
+        gl.vertexAttribPointer(webgl.locs.normal, 3, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, webgl.buffers.texcoord);
+        gl.enableVertexAttribArray(webgl.locs.texcoord);
+        gl.vertexAttribPointer(webgl.locs.texcoord, 2, gl.FLOAT, false, 0, 0);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, webgl.texture);
+        gl.uniform1i(webgl.locs.texture, 0);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webgl.buffers.index);
+        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+        if (grabbedParticle) {
+          const screen = project3DTo2D(grabbedParticle.x, grabbedParticle.y, grabbedParticle.z, viewProjMatrix, canvas.width, canvas.height);
+          if (screen) {
+            cursorUI.style.left = (screen.x / (canvas.width / canvas.clientWidth)) + "px";
+            cursorUI.style.top = (screen.y / (canvas.height / canvas.clientHeight)) + "px";
+          }
+        }
+
+        if (state.exportNextFrame) {
+          const link = document.createElement("a");
+          link.href = canvas.toDataURL("image/png");
+          link.download = "dynamic-motion-banner-" + Date.now() + ".png";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          state.exportNextFrame = false;
+        }
+
+        requestAnimationFrame(render);
+      }
+
+      function applyPreset(name) {
+        const preset = presets[name];
+        state.preset = name;
+        Object.keys(controls).forEach((key) => {
+          controls[key].value = preset[key];
+        });
+        presetButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.preset === name);
+        });
+        state.textureDirty = true;
+      }
+
+      function setMedia(file) {
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        if (state.mediaElement && state.mediaElement.dataset.objectUrl) {
+          URL.revokeObjectURL(state.mediaElement.dataset.objectUrl);
+        }
+        if (file.type.startsWith("video/")) {
+          const video = document.createElement("video");
+          video.muted = true;
+          video.loop = true;
+          video.playsInline = true;
+          video.autoplay = true;
+          video.src = url;
+          video.dataset.objectUrl = url;
+          video.addEventListener("loadeddata", () => {
+            video.play().catch(() => {});
+            state.textureDirty = true;
+          });
+          state.mediaElement = video;
+          state.mediaType = "video";
+        } else {
+          const image = new Image();
+          image.src = url;
+          image.dataset.objectUrl = url;
+          image.onload = () => {
+            state.textureDirty = true;
+          };
+          state.mediaElement = image;
+          state.mediaType = "image";
+        }
+        mediaStatus.textContent = file.name + " adjunto como " + (state.mediaType === "video" ? "video" : "imagen") + ".";
+      }
+
+      function clearAttachedMedia() {
+        if (state.mediaElement && state.mediaElement.dataset.objectUrl) {
+          URL.revokeObjectURL(state.mediaElement.dataset.objectUrl);
+        }
+        state.mediaElement = null;
+        state.mediaType = "";
+        mediaUpload.value = "";
+        mediaStatus.textContent = "Sin media adjunta. La textura se genera con arte de campana.";
+        state.textureDirty = true;
+      }
+
+      Object.values(controls).forEach((control) => {
+        control.addEventListener("input", () => {
+          state.textureDirty = true;
+        });
+      });
+      presetButtons.forEach((button) => {
+        button.addEventListener("click", () => applyPreset(button.dataset.preset));
+      });
+      uploadProxy.addEventListener("click", () => mediaUpload.click());
+      mediaUpload.addEventListener("change", () => setMedia(mediaUpload.files[0]));
+      clearMedia.addEventListener("click", clearAttachedMedia);
+      exportButton.addEventListener("click", () => {
+        if (gl) {
+          state.exportNextFrame = true;
+        } else {
+          const link = document.createElement("a");
+          updateTexture();
+          link.href = textureCanvas.toDataURL("image/png");
+          link.download = "dynamic-motion-banner-" + Date.now() + ".png";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
+      });
+
+      window.addEventListener("resize", resize);
+      canvasContainer.addEventListener("mousedown", handlePointerDown);
+      window.addEventListener("mousemove", handlePointerMove, { passive: false });
+      window.addEventListener("mouseup", handlePointerUp);
+      canvasContainer.addEventListener("touchstart", handlePointerDown, { passive: false });
+      window.addEventListener("touchmove", handlePointerMove, { passive: false });
+      window.addEventListener("touchend", handlePointerUp);
+
+      applyPreset("fashion");
+      resize();
+      updateTexture();
+      if (gl) requestAnimationFrame(render);
+    })();
+  </script>
+</body>
+</html>
