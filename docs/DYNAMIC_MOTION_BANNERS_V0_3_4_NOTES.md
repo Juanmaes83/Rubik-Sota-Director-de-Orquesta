@@ -41,3 +41,7 @@ Use ffprobe when available:
 `ffprobe -v error -show_entries stream=width,height -of json archivo.webm`
 
 Browser QA still reports the actual recording canvas size even when blob metadata is not read directly.
+
+## Follow-up
+
+- v0.3.5 adds Visual Control Studio Core: shared `visualLayoutState`, manual composition controls, guides, Layout QA and lightweight layout JSON import/export. See `docs/DYNAMIC_MOTION_BANNERS_V0_3_5_NOTES.md`.

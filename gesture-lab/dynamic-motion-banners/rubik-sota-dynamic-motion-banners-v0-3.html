@@ -469,6 +469,70 @@
       gap: 10px;
     }
 
+    .visual-control-panel {
+      display: grid;
+      gap: 10px;
+    }
+
+    .visual-panel {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .visual-panel summary {
+      cursor: pointer;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 760;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .visual-panel-body {
+      display: grid;
+      gap: 10px;
+      padding: 0 12px 12px;
+    }
+
+    .visual-control {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.74rem;
+    }
+
+    .visual-control input[type="range"] {
+      grid-column: 1 / -1;
+      width: 100%;
+      accent-color: var(--gold);
+    }
+
+    .visual-inline {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .layout-json-box {
+      min-height: 88px;
+      font-family: Consolas, Menlo, monospace;
+      font-size: 0.72rem;
+    }
+
+    .layout-qa-list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
     .gallery-slots {
       display: grid;
       gap: 12px;
@@ -828,6 +892,123 @@
             <div id="output-warning" class="media-status">Formato listo para exportar.</div>
           </section>
 
+          <section class="control-group priority-section visual-control-panel" aria-label="CONTROL VISUAL">
+            <h2>CONTROL VISUAL</h2>
+            <p class="help-copy" id="visual-mode-status">Auto editorial activo.</p>
+            <details class="visual-panel" open>
+              <summary>Preset composicion</summary>
+              <div class="visual-panel-body">
+                <div class="field">
+                  <label for="composition-preset">Preset de composicion</label>
+                  <select id="composition-preset">
+                    <option value="auto-editorial">Auto editorial · equilibrio general</option>
+                    <option value="compact-text">Texto compacto · titulares largos</option>
+                    <option value="gallery-focus">Galeria protagonista · miniaturas visibles</option>
+                    <option value="qr-focus">QR protagonista · escaparate fisico</option>
+                    <option value="minimal-premium">Minimal premium · mas aire visual</option>
+                    <option value="manual">Manual · respeta sliders</option>
+                  </select>
+                </div>
+              </div>
+            </details>
+            <details class="visual-panel" open>
+              <summary>Titular</summary>
+              <div class="visual-panel-body">
+                <label class="visual-control">X <span id="vc-headline-x-value">0 px</span><input data-vc="headline.x" id="vc-headline-x" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Y <span id="vc-headline-y-value">0 px</span><input data-vc="headline.y" id="vc-headline-y" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Tamano <span id="vc-headline-fontSize-value">0 px</span><input data-vc="headline.fontSize" id="vc-headline-fontSize" type="range" min="24" max="180" step="1"></label>
+                <label class="visual-control">Ancho maximo <span id="vc-headline-maxWidth-value">0 px</span><input data-vc="headline.maxWidth" id="vc-headline-maxWidth" type="range" min="200" max="4096" step="1"></label>
+                <label class="visual-control">Interlineado <span id="vc-headline-lineHeight-value">1.00</span><input data-vc="headline.lineHeight" id="vc-headline-lineHeight" type="range" min="0.75" max="1.35" step="0.01"></label>
+                <label class="visual-control">Letter spacing <span id="vc-headline-letterSpacing-value">0 px</span><input data-vc="headline.letterSpacing" id="vc-headline-letterSpacing" type="range" min="-4" max="8" step="0.5"></label>
+                <label class="visual-control">Opacidad <span id="vc-headline-opacity-value">1.00</span><input data-vc="headline.opacity" id="vc-headline-opacity" type="range" min="0" max="1" step="0.01"></label>
+                <button id="vc-reset-headline" class="control-button subtle" type="button">Reset titular</button>
+              </div>
+            </details>
+            <details class="visual-panel">
+              <summary>Subtitulo / nota</summary>
+              <div class="visual-panel-body">
+                <label class="visual-control">Subtitulo X <span id="vc-subheadline-x-value">0 px</span><input data-vc="subheadline.x" id="vc-subheadline-x" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Subtitulo Y <span id="vc-subheadline-y-value">0 px</span><input data-vc="subheadline.y" id="vc-subheadline-y" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Subtitulo tamano <span id="vc-subheadline-fontSize-value">0 px</span><input data-vc="subheadline.fontSize" id="vc-subheadline-fontSize" type="range" min="16" max="80" step="1"></label>
+                <label class="visual-control">Subtitulo ancho <span id="vc-subheadline-maxWidth-value">0 px</span><input data-vc="subheadline.maxWidth" id="vc-subheadline-maxWidth" type="range" min="200" max="4096" step="1"></label>
+                <label class="visual-control">Subtitulo interlineado <span id="vc-subheadline-lineHeight-value">1.10</span><input data-vc="subheadline.lineHeight" id="vc-subheadline-lineHeight" type="range" min="0.9" max="1.5" step="0.01"></label>
+                <label class="visual-control">Subtitulo opacidad <span id="vc-subheadline-opacity-value">1.00</span><input data-vc="subheadline.opacity" id="vc-subheadline-opacity" type="range" min="0" max="1" step="0.01"></label>
+                <button id="vc-reset-subheadline" class="control-button subtle" type="button">Reset subtitulo</button>
+                <label class="visual-control">Nota X <span id="vc-note-x-value">0 px</span><input data-vc="note.x" id="vc-note-x" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Nota Y <span id="vc-note-y-value">0 px</span><input data-vc="note.y" id="vc-note-y" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Nota tamano <span id="vc-note-fontSize-value">0 px</span><input data-vc="note.fontSize" id="vc-note-fontSize" type="range" min="12" max="48" step="1"></label>
+                <label class="visual-control">Nota opacidad <span id="vc-note-opacity-value">1.00</span><input data-vc="note.opacity" id="vc-note-opacity" type="range" min="0" max="1" step="0.01"></label>
+                <button id="vc-reset-note" class="control-button subtle" type="button">Reset nota</button>
+              </div>
+            </details>
+            <details class="visual-panel" open>
+              <summary>Galeria</summary>
+              <div class="visual-panel-body">
+                <label class="visual-control">X <span id="vc-gallery-x-value">0 px</span><input data-vc="gallery.x" id="vc-gallery-x" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Y <span id="vc-gallery-y-value">0 px</span><input data-vc="gallery.y" id="vc-gallery-y" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Ancho miniatura <span id="vc-gallery-thumbWidth-value">0 px</span><input data-vc="gallery.thumbWidth" id="vc-gallery-thumbWidth" type="range" min="80" max="600" step="1"></label>
+                <label class="visual-control">Alto miniatura <span id="vc-gallery-thumbHeight-value">0 px</span><input data-vc="gallery.thumbHeight" id="vc-gallery-thumbHeight" type="range" min="50" max="300" step="1"></label>
+                <label class="visual-control">Separacion <span id="vc-gallery-gap-value">0 px</span><input data-vc="gallery.gap" id="vc-gallery-gap" type="range" min="8" max="80" step="1"></label>
+                <label class="visual-control">Opacidad <span id="vc-gallery-opacity-value">1.00</span><input data-vc="gallery.opacity" id="vc-gallery-opacity" type="range" min="0" max="1" step="0.01"></label>
+                <div class="field"><label for="vc-gallery-layoutMode">Layout</label><select data-vc="gallery.layoutMode" id="vc-gallery-layoutMode"><option value="auto">auto</option><option value="row">fila</option><option value="column">columna</option><option value="grid-2-1">grid-2-1</option></select></div>
+                <button id="vc-reset-gallery" class="control-button subtle" type="button">Reset galeria</button>
+              </div>
+            </details>
+            <details class="visual-panel" open>
+              <summary>CTA / QR</summary>
+              <div class="visual-panel-body">
+                <label class="visual-control">CTA X <span id="vc-cta-x-value">0 px</span><input data-vc="cta.x" id="vc-cta-x" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">CTA Y <span id="vc-cta-y-value">0 px</span><input data-vc="cta.y" id="vc-cta-y" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">CTA ancho <span id="vc-cta-width-value">0 px</span><input data-vc="cta.width" id="vc-cta-width" type="range" min="160" max="700" step="1"></label>
+                <label class="visual-control">CTA alto <span id="vc-cta-height-value">0 px</span><input data-vc="cta.height" id="vc-cta-height" type="range" min="48" max="180" step="1"></label>
+                <label class="visual-control">CTA texto <span id="vc-cta-fontSize-value">0 px</span><input data-vc="cta.fontSize" id="vc-cta-fontSize" type="range" min="16" max="72" step="1"></label>
+                <label class="visual-control">CTA opacidad <span id="vc-cta-opacity-value">1.00</span><input data-vc="cta.opacity" id="vc-cta-opacity" type="range" min="0" max="1" step="0.01"></label>
+                <button id="vc-reset-cta" class="control-button subtle" type="button">Reset CTA</button>
+                <label class="visual-control">QR X <span id="vc-qr-x-value">0 px</span><input data-vc="qr.x" id="vc-qr-x" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">QR Y <span id="vc-qr-y-value">0 px</span><input data-vc="qr.y" id="vc-qr-y" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">QR tamano <span id="vc-qr-size-value">0 px</span><input data-vc="qr.size" id="vc-qr-size" type="range" min="80" max="360" step="1"></label>
+                <label class="visual-inline" for="vc-qr-showUrl">Mostrar URL debajo <input data-vc="qr.showUrl" id="vc-qr-showUrl" type="checkbox" checked></label>
+                <label class="visual-control">URL tamano <span id="vc-qr-urlFontSize-value">0 px</span><input data-vc="qr.urlFontSize" id="vc-qr-urlFontSize" type="range" min="10" max="36" step="1"></label>
+                <label class="visual-control">URL offset Y <span id="vc-qr-urlOffsetY-value">0 px</span><input data-vc="qr.urlOffsetY" id="vc-qr-urlOffsetY" type="range" min="8" max="80" step="1"></label>
+                <button id="vc-reset-qr" class="control-button subtle" type="button">Reset QR</button>
+              </div>
+            </details>
+            <details class="visual-panel">
+              <summary>Logo</summary>
+              <div class="visual-panel-body">
+                <label class="visual-control">X <span id="vc-logo-x-value">0 px</span><input data-vc="logo.x" id="vc-logo-x" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Y <span id="vc-logo-y-value">0 px</span><input data-vc="logo.y" id="vc-logo-y" type="range" min="0" max="4096" step="1"></label>
+                <label class="visual-control">Ancho <span id="vc-logo-width-value">0 px</span><input data-vc="logo.width" id="vc-logo-width" type="range" min="60" max="500" step="1"></label>
+                <label class="visual-control">Opacidad <span id="vc-logo-opacity-value">1.00</span><input data-vc="logo.opacity" id="vc-logo-opacity" type="range" min="0" max="1" step="0.01"></label>
+                <label class="visual-inline" for="vc-logo-capsuleEnabled">Capsula logo <input data-vc="logo.capsuleEnabled" id="vc-logo-capsuleEnabled" type="checkbox" checked></label>
+                <label class="visual-control">Opacidad capsula <span id="vc-logo-capsuleOpacity-value">0.55</span><input data-vc="logo.capsuleOpacity" id="vc-logo-capsuleOpacity" type="range" min="0" max="1" step="0.01"></label>
+                <button id="vc-reset-logo" class="control-button subtle" type="button">Reset logo visual</button>
+              </div>
+            </details>
+            <details class="visual-panel">
+              <summary>Guias / QA</summary>
+              <div class="visual-panel-body">
+                <label class="visual-inline" for="vc-guides-visible">Mostrar guias <input id="vc-guides-visible" type="checkbox"></label>
+                <label class="visual-inline" for="vc-safeareas-visible">Mostrar zonas seguras <input id="vc-safeareas-visible" type="checkbox"></label>
+                <label class="visual-inline" for="vc-overlap-visible">Mostrar cajas de solape <input id="vc-overlap-visible" type="checkbox"></label>
+                <label class="visual-inline" for="vc-live-qa">Activar QA visual en vivo <input id="vc-live-qa" type="checkbox" checked></label>
+                <div id="layout-qa-status" class="media-status">Layout QA pendiente.</div>
+                <ul id="layout-qa-list" class="layout-qa-list"></ul>
+              </div>
+            </details>
+            <details class="visual-panel">
+              <summary>Reset / configuracion</summary>
+              <div class="visual-panel-body">
+                <button id="vc-reset-composition" class="control-button subtle" type="button">Reset composicion actual</button>
+                <button id="vc-reset-total" class="control-button subtle" type="button">Reset total visual</button>
+                <button id="vc-copy-json" class="control-button" type="button">Copiar layout JSON</button>
+                <textarea id="vc-layout-json" class="layout-json-box" placeholder="Pega aqui un layout JSON compatible"></textarea>
+                <button id="vc-paste-json" class="control-button subtle" type="button">Pegar layout JSON</button>
+                <div id="vc-json-status" class="media-status">Layout JSON listo.</div>
+              </div>
+            </details>
+          </section>
+
           <button id="btn-clear-media" class="control-button subtle" type="button">Limpiar media</button>
           <button id="btn-export" class="control-button primary" type="button">Exportar banner PNG</button>
           <button id="export-html-preview" class="control-button" type="button">Exportar HTML preview</button>
@@ -1002,6 +1183,30 @@
       const webmQaActualRatio = document.getElementById("webm-qa-actual-ratio");
       const webmQaDuration = document.getElementById("webm-qa-duration");
       const webmQaState = document.getElementById("webm-qa-state");
+      const compositionPreset = document.getElementById("composition-preset");
+      const visualModeStatus = document.getElementById("visual-mode-status");
+      const visualControls = Array.from(document.querySelectorAll("[data-vc]"));
+      const guidesVisible = document.getElementById("vc-guides-visible");
+      const safeAreasVisible = document.getElementById("vc-safeareas-visible");
+      const overlapVisible = document.getElementById("vc-overlap-visible");
+      const liveQa = document.getElementById("vc-live-qa");
+      const layoutQaStatus = document.getElementById("layout-qa-status");
+      const layoutQaList = document.getElementById("layout-qa-list");
+      const layoutJsonBox = document.getElementById("vc-layout-json");
+      const layoutJsonStatus = document.getElementById("vc-json-status");
+      const resetButtons = {
+        headline: document.getElementById("vc-reset-headline"),
+        subheadline: document.getElementById("vc-reset-subheadline"),
+        note: document.getElementById("vc-reset-note"),
+        gallery: document.getElementById("vc-reset-gallery"),
+        cta: document.getElementById("vc-reset-cta"),
+        qr: document.getElementById("vc-reset-qr"),
+        logo: document.getElementById("vc-reset-logo"),
+        composition: document.getElementById("vc-reset-composition"),
+        total: document.getElementById("vc-reset-total"),
+        copy: document.getElementById("vc-copy-json"),
+        paste: document.getElementById("vc-paste-json")
+      };
 
       const controls = {
         brand: document.getElementById("input-brand"),
@@ -1115,6 +1320,9 @@
           width: 1024,
           height: 1024
         },
+        visualLayoutState: null,
+        visualLayoutBase: { width: 1024, height: 1024 },
+        layoutQa: { status: "OK", warnings: [], errors: [] },
         lastExport: {
           pngWidth: null,
           pngHeight: null,
@@ -1657,7 +1865,7 @@
         const exportCanvas = document.createElement("canvas");
         exportCanvas.width = preset.width;
         exportCanvas.height = preset.height;
-        drawCreative(exportCanvas.getContext("2d"), preset.width, preset.height, { editorMode: false });
+        drawCreative(exportCanvas.getContext("2d"), preset.width, preset.height, { editorMode: false, exportMode: true });
         return exportCanvas;
       }
 
@@ -1669,6 +1877,267 @@
           recordStatus.textContent = "ERROR: el canvas de video no coincide con el preset. Grabacion cancelada.";
         }
         return ok;
+      }
+
+      function cloneLayout(layout) {
+        return JSON.parse(JSON.stringify(layout));
+      }
+
+      function getPathValue(root, path) {
+        return path.split(".").reduce((acc, key) => acc && acc[key], root);
+      }
+
+      function setPathValue(root, path, value) {
+        const keys = path.split(".");
+        let target = root;
+        keys.slice(0, -1).forEach((key) => { target = target[key]; });
+        target[keys[keys.length - 1]] = value;
+      }
+
+      function createVisualLayoutState(width, height, presetId = "auto-editorial") {
+        const sx = width / 1920;
+        const sy = height / 1080;
+        const s = Math.min(sx, sy);
+        const horizontal = width >= height;
+        const compact = presetId === "compact-text";
+        const galleryFocus = presetId === "gallery-focus";
+        const qrFocus = presetId === "qr-focus";
+        const minimal = presetId === "minimal-premium";
+        const padX = horizontal ? width * 0.065 : width * 0.08;
+        const heroY = height * (horizontal ? 0.18 : 0.16);
+        const heroH = height * (horizontal ? 0.31 : 0.28);
+        const textY = heroY + heroH + height * (horizontal ? 0.055 : 0.045);
+        const textWidth = horizontal ? width * 0.58 : width * 0.78;
+        const headlineSize = Math.max(24, Math.round((horizontal ? 92 : 68) * s * (compact ? 0.82 : minimal ? 0.74 : 1)));
+        const subSize = Math.max(16, Math.round((horizontal ? 34 : 30) * s * (compact ? 0.88 : minimal ? 0.82 : 1)));
+        const galleryThumbW = Math.round((horizontal ? 260 * sx : 210 * sx) * (galleryFocus ? 1.18 : minimal ? 0.82 : 1));
+        const galleryThumbH = Math.round((horizontal ? 128 * sy : 118 * sy) * (galleryFocus ? 1.14 : minimal ? 0.82 : 1));
+        const ctaW = Math.round((horizontal ? 330 * sx : 280 * sx) * (qrFocus ? 0.9 : 1));
+        const ctaH = Math.round((horizontal ? 112 * sy : 96 * sy) * (minimal ? 0.86 : 1));
+        const qrSize = Math.max(width === height ? 96 : 110, Math.round((horizontal ? 160 * s : 148 * s) * (qrFocus ? 1.28 : minimal ? 0.86 : 1)));
+        const ctaX = horizontal ? width - padX - ctaW : padX;
+        const ctaY = horizontal ? height * 0.67 : height * 0.72;
+        const qrX = horizontal ? width - padX - qrSize - ctaW * 0.16 : width - padX - qrSize;
+        const qrY = horizontal ? ctaY + ctaH + height * 0.035 : ctaY;
+        return {
+          version: "0.3.5",
+          compositionPreset: presetId,
+          isManual: presetId === "manual",
+          guidesVisible: false,
+          safeAreasVisible: false,
+          overlapBoxesVisible: false,
+          liveQa: true,
+          headline: { x: padX, y: textY, fontSize: headlineSize, maxWidth: textWidth, lineHeight: compact ? 0.92 : 1.02, letterSpacing: compact ? -1 : 0, opacity: 1 },
+          subheadline: { x: padX + width * 0.002, y: textY + headlineSize * (compact ? 2.3 : 2.55), fontSize: subSize, maxWidth: textWidth * (compact ? 0.94 : 1), lineHeight: compact ? 1.05 : 1.18, opacity: minimal ? 0.84 : 1 },
+          note: { x: padX, y: height - Math.max((horizontal ? 42 : 72) * sy, height * (horizontal ? 0.04 : 0.07)), fontSize: Math.max(12, Math.round(22 * s)), opacity: minimal ? 0.78 : 1 },
+          gallery: { x: padX, y: height * (horizontal ? 0.84 : 0.58), thumbWidth: galleryThumbW, thumbHeight: galleryThumbH, gap: Math.max(8, Math.round(22 * s)), opacity: 1, layoutMode: horizontal ? "row" : "grid-2-1" },
+          cta: { x: ctaX, y: ctaY, width: ctaW, height: ctaH, fontSize: Math.max(16, Math.round(29 * s)), opacity: 1 },
+          qr: { x: qrX, y: qrY, size: qrSize, showUrl: true, urlFontSize: Math.max(10, Math.round(16 * s)), urlOffsetY: Math.max(8, Math.round(18 * s)) },
+          logo: { x: width - padX - Math.round(220 * sx), y: height * 0.18, width: Math.round(220 * sx), opacity: 1, capsuleEnabled: true, capsuleOpacity: 0.55 }
+        };
+      }
+
+      function scaleVisualLayout(layout, fromW, fromH, toW, toH) {
+        const scaled = cloneLayout(layout);
+        const sx = toW / Math.max(1, fromW);
+        const sy = toH / Math.max(1, fromH);
+        const s = Math.min(sx, sy);
+        ["headline", "subheadline", "note", "gallery", "cta", "qr", "logo"].forEach((section) => {
+          const item = scaled[section];
+          if (!item) return;
+          ["x", "width", "maxWidth", "thumbWidth", "gap", "size", "urlOffsetY"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sx); });
+          ["y", "height", "thumbHeight"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sy); });
+          ["fontSize", "urlFontSize"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.max(1, Math.round(item[key] * s)); });
+        });
+        return scaled;
+      }
+
+      function ensureVisualLayoutState(width, height, exportMode = false) {
+        const preset = getActiveOutputPreset();
+        if (!state.visualLayoutState) {
+          state.visualLayoutState = createVisualLayoutState(width, height, "auto-editorial");
+          state.visualLayoutBase = { width, height };
+        } else if (state.visualLayoutBase.width !== width || state.visualLayoutBase.height !== height) {
+          if (state.visualLayoutState.isManual) {
+            state.visualLayoutState = scaleVisualLayout(state.visualLayoutState, state.visualLayoutBase.width, state.visualLayoutBase.height, width, height);
+          } else {
+            state.visualLayoutState = createVisualLayoutState(width, height, state.visualLayoutState.compositionPreset || "auto-editorial");
+          }
+          state.visualLayoutBase = { width, height };
+        }
+        const layout = cloneLayout(state.visualLayoutState);
+        if (exportMode) {
+          layout.guidesVisible = false;
+          layout.safeAreasVisible = false;
+          layout.overlapBoxesVisible = false;
+        }
+        return layout;
+      }
+
+      function setManualVisualControl(path, value) {
+        if (!state.visualLayoutState) {
+          const preset = getActiveOutputPreset();
+          state.visualLayoutState = createVisualLayoutState(preset.width, preset.height, "auto-editorial");
+          state.visualLayoutBase = { width: preset.width, height: preset.height };
+        }
+        setPathValue(state.visualLayoutState, path, value);
+        state.visualLayoutState.isManual = true;
+        state.visualLayoutState.compositionPreset = "manual";
+        compositionPreset.value = "manual";
+        visualModeStatus.textContent = "Modo manual activo.";
+        state.textureDirty = true;
+      }
+
+      function fitTextToBox(ctx, text, box, options) {
+        const words = String(text || "").split(/\s+/).filter(Boolean);
+        let fontSize = options.fontSize;
+        const minFontSize = options.minFontSize || Math.max(12, fontSize * 0.62);
+        let lines = [];
+        let didFit = false;
+        while (fontSize >= minFontSize && !didFit) {
+          ctx.font = (options.weight || "400") + " " + fontSize + "px " + (options.family || "Inter, Arial, sans-serif");
+          lines = [];
+          let current = "";
+          words.forEach((word) => {
+            const test = current ? current + " " + word : word;
+            if (ctx.measureText(test).width <= box.w || !current) current = test;
+            else { lines.push(current); current = word; }
+          });
+          if (current) lines.push(current);
+          const lineHeightPx = fontSize * (options.lineHeight || 1.1);
+          didFit = lines.length * lineHeightPx <= box.h;
+          if (!didFit) fontSize -= 2;
+        }
+        const lineHeightPx = fontSize * (options.lineHeight || 1.1);
+        return { lines, fontSize, lineHeightPx, boundingBox: { x: box.x, y: box.y, w: box.w, h: lines.length * lineHeightPx }, didFit };
+      }
+
+      function drawTextFit(ctx, text, box, options) {
+        const fit = fitTextToBox(ctx, text, box, options);
+        ctx.save();
+        ctx.globalAlpha = options.opacity == null ? 1 : options.opacity;
+        ctx.fillStyle = options.color;
+        ctx.font = (options.weight || "400") + " " + fit.fontSize + "px " + (options.family || "Inter, Arial, sans-serif");
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        const letterSpacing = options.letterSpacing || 0;
+        fit.lines.forEach((line, index) => {
+          if (!letterSpacing) {
+            ctx.fillText(line, box.x, box.y + index * fit.lineHeightPx);
+          } else {
+            let x = box.x;
+            Array.from(line).forEach((char) => {
+              ctx.fillText(char, x, box.y + index * fit.lineHeightPx);
+              x += ctx.measureText(char).width + letterSpacing;
+            });
+          }
+        });
+        ctx.restore();
+        return fit;
+      }
+
+      function getLayoutBoxes(ctx, layout, width, height) {
+        const headlineFit = fitTextToBox(ctx, getValue("headline") || "CAMPANA EN MOVIMIENTO", { x: layout.headline.x, y: layout.headline.y, w: layout.headline.maxWidth, h: height }, { fontSize: layout.headline.fontSize, lineHeight: layout.headline.lineHeight, weight: "700", family: "Georgia, Times New Roman, serif", letterSpacing: layout.headline.letterSpacing });
+        const subFit = fitTextToBox(ctx, getValue("subheadline"), { x: layout.subheadline.x, y: layout.subheadline.y, w: layout.subheadline.maxWidth, h: height }, { fontSize: layout.subheadline.fontSize, lineHeight: layout.subheadline.lineHeight, weight: "400" });
+        const galleryCount = Math.max(1, Math.min(3, state.gallery.count || 3));
+        const galleryCols = layout.gallery.layoutMode === "column" ? 1 : (layout.gallery.layoutMode === "grid-2-1" || (layout.gallery.layoutMode === "auto" && width < height) ? 2 : galleryCount);
+        const galleryRows = Math.ceil(galleryCount / galleryCols);
+        return {
+          media: { x: width * 0.065, y: height * 0.18, w: width * 0.87, h: height * 0.3 },
+          headline: headlineFit.boundingBox,
+          subheadline: subFit.boundingBox,
+          note: { x: layout.note.x, y: layout.note.y, w: width * 0.46, h: layout.note.fontSize * 1.3 },
+          gallery: { x: layout.gallery.x, y: layout.gallery.y, w: galleryCols * layout.gallery.thumbWidth + (galleryCols - 1) * layout.gallery.gap, h: galleryRows * layout.gallery.thumbHeight + (galleryRows - 1) * layout.gallery.gap },
+          cta: { x: layout.cta.x, y: layout.cta.y, w: layout.cta.width, h: layout.cta.height },
+          qr: { x: layout.qr.x, y: layout.qr.y, w: layout.qr.size, h: layout.qr.size },
+          qrUrl: { x: layout.qr.x - layout.qr.size * 0.45, y: layout.qr.y + layout.qr.size + layout.qr.urlOffsetY, w: layout.qr.size * 1.9, h: layout.qr.urlFontSize * 1.3 },
+          logo: { x: layout.logo.x, y: layout.logo.y, w: layout.logo.width, h: layout.logo.width * 0.34 }
+        };
+      }
+
+      function boxOutside(box, width, height) {
+        return box.x < 0 || box.y < 0 || box.x + box.w > width || box.y + box.h > height;
+      }
+
+      function boxFullyOutside(box, width, height) {
+        return box.x + box.w < 0 || box.y + box.h < 0 || box.x > width || box.y > height;
+      }
+
+      function detectLayoutIssues(boxes, canvasWidth, canvasHeight) {
+        const warnings = [];
+        const errors = [];
+        const minQr = canvasWidth === 1920 && canvasHeight === 1080 ? 140 : (canvasWidth === 1080 && canvasHeight === 1080 ? 96 : (canvasWidth === canvasHeight ? 96 : 110));
+        if (boxes.qr.w < minQr) errors.push("QR demasiado pequeno para este formato.");
+        if (boxOutside(boxes.qr, canvasWidth, canvasHeight)) errors.push("QR fuera del canvas.");
+        if (boxFullyOutside(boxes.headline, canvasWidth, canvasHeight)) errors.push("Titular completamente fuera del canvas.");
+        if (boxFullyOutside(boxes.gallery, canvasWidth, canvasHeight)) errors.push("Galeria completamente fuera del canvas.");
+        Object.entries(boxes).forEach(([name, box]) => {
+          if (boxOutside(box, canvasWidth, canvasHeight) && !["qr", "headline", "gallery"].includes(name)) warnings.push(name + " queda parcialmente fuera del canvas.");
+        });
+        if (computeBoxOverlap(boxes.headline, boxes.subheadline)) warnings.push("Titular solapa subtitulo.");
+        if (computeBoxOverlap(boxes.gallery, boxes.subheadline)) warnings.push("Galeria solapa subtitulo.");
+        if (computeBoxOverlap(boxes.gallery, boxes.note)) warnings.push("Galeria solapa nota inferior.");
+        if (computeBoxOverlap(boxes.gallery, boxes.cta)) warnings.push("Galeria solapa CTA.");
+        if (computeBoxOverlap(boxes.gallery, boxes.qr)) warnings.push("Galeria solapa QR.");
+        if (computeBoxOverlap(boxes.qr, boxes.cta)) warnings.push("QR solapa CTA.");
+        if (computeBoxOverlap(boxes.qr, boxes.headline) || computeBoxOverlap(boxes.qr, boxes.subheadline)) warnings.push("QR solapa texto.");
+        if (boxes.qrUrl.y + boxes.qrUrl.h > canvasHeight) warnings.push("URL debajo del QR puede cortarse.");
+        return { status: errors.length ? "ERROR" : (warnings.length ? "WARNING" : "OK"), warnings, errors };
+      }
+
+      function drawEditorGuides(ctx, boxes, width, height, layout) {
+        if (!layout.guidesVisible && !layout.safeAreasVisible && !layout.overlapBoxesVisible) return;
+        ctx.save();
+        ctx.lineWidth = Math.max(1, Math.round(Math.min(width, height) * 0.0015));
+        if (layout.safeAreasVisible) {
+          const marginX = width * 0.05;
+          const marginY = height * 0.05;
+          ctx.strokeStyle = "rgba(34, 120, 180, 0.55)";
+          ctx.setLineDash([12, 10]);
+          ctx.strokeRect(marginX, marginY, width - marginX * 2, height - marginY * 2);
+          ctx.strokeStyle = "rgba(44, 150, 95, 0.48)";
+          ctx.strokeRect(width * 0.62, height * 0.52, width * 0.32, height * 0.38);
+          ctx.strokeStyle = "rgba(200, 150, 60, 0.48)";
+          ctx.strokeRect(width * 0.05, height * 0.54, width * 0.58, height * 0.32);
+          ctx.setLineDash([]);
+        }
+        if (layout.guidesVisible || layout.overlapBoxesVisible) {
+          Object.entries(boxes).forEach(([name, box]) => {
+            ctx.strokeStyle = layout.overlapBoxesVisible ? "rgba(210, 68, 58, 0.72)" : "rgba(21,18,14,0.42)";
+            ctx.setLineDash(layout.overlapBoxesVisible ? [] : [8, 8]);
+            ctx.strokeRect(box.x, box.y, box.w, box.h);
+            if (layout.guidesVisible) {
+              ctx.fillStyle = "rgba(21,18,14,0.7)";
+              ctx.font = "700 " + Math.max(11, Math.round(Math.min(width, height) * 0.012)) + "px Inter, Arial, sans-serif";
+              ctx.fillText(name, box.x + 4, Math.max(2, box.y - 16));
+            }
+          });
+          ctx.setLineDash([]);
+        }
+        ctx.restore();
+      }
+
+      function updateLayoutQaPanel(result) {
+        state.layoutQa = result;
+        layoutQaStatus.textContent = "Layout QA: " + result.status;
+        layoutQaList.innerHTML = "";
+        [...result.errors, ...result.warnings].forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          layoutQaList.appendChild(li);
+        });
+      }
+
+      function hasBlockingLayoutErrors() {
+        return state.layoutQa && state.layoutQa.errors && state.layoutQa.errors.length > 0;
+      }
+
+      function blockExportForLayoutErrors(kind) {
+        if (!hasBlockingLayoutErrors()) return false;
+        const message = kind + " bloqueado por Layout QA: " + state.layoutQa.errors.join(" · ");
+        exportStatus.textContent = message;
+        updateExportQaPanel(kind, state.output.width, state.output.height, null, null, "ERROR", message);
+        return true;
       }
 
       function computeBoxOverlap(a, b) {
@@ -1716,17 +2185,21 @@
         const count = Math.min(3, state.gallery.count);
         const realImages = state.gallery.elements.slice(0, count).filter((image) => image && image.naturalWidth).length;
         if (!editorMode && realImages === 0) return;
-        const gap = Math.max(10, Math.round(box.w * 0.028));
-        const itemH = box.h;
+        const gap = box.gap || Math.max(10, Math.round(box.w * 0.028));
         let columns = count;
         let rows = 1;
-        if (box.w / Math.max(1, box.h) < 2.2 && count === 3) {
+        if (box.layoutMode === "column") {
+          columns = 1;
+          rows = count;
+        } else if (box.layoutMode === "grid-2-1" || (box.layoutMode === "auto" && box.w < box.h * 2.2 && count === 3)) {
           columns = 2;
           rows = 2;
         }
-        const itemW = Math.floor((box.w - gap * (columns - 1)) / columns);
-        const rowH = Math.floor((box.h - gap * (rows - 1)) / rows);
+        const itemW = box.thumbWidth || Math.floor((box.w - gap * (columns - 1)) / columns);
+        const rowH = box.thumbHeight || Math.floor((box.h - gap * (rows - 1)) / rows);
+        const itemH = rowH;
         ctx.save();
+        ctx.globalAlpha = box.opacity == null ? 1 : box.opacity;
         if (editorMode) {
           ctx.strokeStyle = "rgba(21,18,14,0.22)";
           ctx.setLineDash([8, 8]);
@@ -1741,7 +2214,7 @@
           const row = Math.floor(i / columns);
           const x = box.x + col * (itemW + gap);
           const y = box.y + row * (rowH + gap);
-          const w = columns === 2 && count === 3 && i === 2 ? Math.min(itemW, Math.round(box.w * 0.48)) : itemW;
+          const w = itemW;
           const h = rows > 1 ? rowH : itemH;
           ctx.fillStyle = "rgba(248,240,227,0.78)";
           drawRoundRect(ctx, x, y, w, h, 10);
@@ -1767,16 +2240,16 @@
         const hasLogoImage = !!(state.logoElement && state.logoElement.naturalWidth);
         const brand = getValue("brand") || "";
         if (!hasLogoImage && !brand) return;
-        const cardMode = state.logo.card || "translucent";
+        const cardMode = box.capsuleEnabled === false ? "none" : (state.logo.card || "translucent");
         let fill = "rgba(21,18,14,0.55)";
         let stroke = "rgba(248,240,227,0.22)";
         let textFill = "#f8f0e3";
         if (cardMode === "light") { fill = "rgba(248,240,227,0.92)"; stroke = "rgba(21,18,14,0.15)"; textFill = "#1a1612"; }
         else if (cardMode === "dark") { fill = "rgba(15,12,10,0.92)"; stroke = "rgba(248,240,227,0.18)"; textFill = "#f8f0e3"; }
         ctx.save();
-        ctx.globalAlpha = state.logo.opacity;
+        ctx.globalAlpha = box.opacity == null ? state.logo.opacity : box.opacity;
         if (cardMode !== "none") {
-          ctx.fillStyle = fill;
+          ctx.fillStyle = fill.replace(/0\.\d+\)/, (box.capsuleOpacity == null ? "0.55)" : box.capsuleOpacity + ")"));
           drawRoundRect(ctx, box.x, box.y, box.w, box.h, Math.max(10, 14 * s));
           ctx.fill();
           ctx.strokeStyle = stroke;
@@ -1786,8 +2259,8 @@
         const padY = 14 * s;
         const innerX = box.x + padX;
         const innerY = box.y + padY;
-        const innerW = Math.max(1, (box.w - padX * 2) * state.logo.scale);
-        const innerH = Math.max(1, (box.h - padY * 2) * state.logo.scale);
+        const innerW = Math.max(1, box.w - padX * 2);
+        const innerH = Math.max(1, box.h - padY * 2);
         if (hasLogoImage) {
           const ratio = state.logoElement.naturalWidth / state.logoElement.naturalHeight;
           let drawW = innerW;
@@ -1810,6 +2283,9 @@
       function drawCreative(ctx, width, height, options = {}) {
         const palette = presets[state.preset].palette;
         const qr = resolveQrDestination();
+        const exportMode = !!options.exportMode;
+        pullVisualControlsToState();
+        const visualLayout = ensureVisualLayoutState(width, height, exportMode);
         const sx = width / 1024;
         const sy = height / 1024;
         const s = Math.min(sx, sy);
@@ -1822,45 +2298,28 @@
           w: width - padX * 2,
           h: Math.max(height * 0.24, 230 * sy)
         };
-        const textBox = {
-          x: padX,
-          y: heroBox.y + heroBox.h + Math.max(34 * sy, height * 0.04),
-          w: Math.min(width * 0.64, width - padX * 2),
-          h: Math.max(height * 0.17, 150 * sy)
+        const textBox = { x: visualLayout.headline.x, y: visualLayout.headline.y, w: visualLayout.headline.maxWidth, h: visualLayout.headline.fontSize * visualLayout.headline.lineHeight * 3 };
+        const subheadlineBox = { x: visualLayout.subheadline.x, y: visualLayout.subheadline.y, w: visualLayout.subheadline.maxWidth, h: visualLayout.subheadline.fontSize * visualLayout.subheadline.lineHeight * 3 };
+        const noteBox = { x: visualLayout.note.x, y: visualLayout.note.y, w: Math.min(width * 0.52, width - visualLayout.note.x - padX), h: visualLayout.note.fontSize * 1.4 };
+        const galleryBox = {
+          x: visualLayout.gallery.x,
+          y: visualLayout.gallery.y,
+          w: visualLayout.gallery.thumbWidth * Math.min(3, Math.max(1, state.gallery.count || 3)) + visualLayout.gallery.gap * 2,
+          h: visualLayout.gallery.thumbHeight,
+          thumbWidth: visualLayout.gallery.thumbWidth,
+          thumbHeight: visualLayout.gallery.thumbHeight,
+          gap: visualLayout.gallery.gap,
+          opacity: visualLayout.gallery.opacity,
+          layoutMode: visualLayout.gallery.layoutMode
         };
-        const ctaBox = {
-          x: width - padX - Math.min(width * 0.25, 280 * sx),
-          y: Math.min(height - padX - Math.max(240 * sy, height * 0.22), textBox.y + Math.max(108 * sy, height * 0.11)),
-          w: Math.min(width * 0.25, 280 * sx),
-          h: Math.max(92 * sy, height * 0.1)
-        };
-        const qrSize = Math.min(Math.max(92 * s, Math.min(width, height) * 0.11), Math.min(width, height) * 0.17);
-        const qrBox = {
-          x: ctaBox.x + (ctaBox.w - qrSize) / 2,
-          y: Math.min(height - padX - qrSize - Math.max(34 * sy, height * 0.034), ctaBox.y + ctaBox.h + Math.max(24 * sy, height * 0.026)),
-          w: qrSize,
-          h: qrSize + Math.max(34 * sy, height * 0.035)
-        };
-        const logoBox = {
-          x: width - padX - Math.min(width * 0.18, 190 * sx) + Math.round(state.logo.offsetX * sx * 0.4),
-          y: topBandH + Math.max(38 * sy, height * 0.04) + Math.round(state.logo.offsetY * sy * 0.4),
-          w: Math.min(width * 0.18, 190 * sx),
-          h: Math.max(46 * sy, Math.min(70 * sy, height * 0.065))
-        };
-        const noteBox = {
-          x: padX,
-          y: height - padX - Math.max(58 * sy, height * 0.055),
-          w: Math.min(width * 0.55, Math.max(240, ctaBox.x - padX - 40 * sx)),
-          h: Math.max(44 * sy, height * 0.045)
-        };
-        let galleryBox = {
-          x: padX,
-          y: textBox.y + textBox.h + Math.max(28 * sy, height * 0.028),
-          w: Math.min(width * 0.56, Math.max(280, ctaBox.x - padX - 44 * sx)),
-          h: Math.max(84 * sy, Math.min(150 * sy, height * 0.12))
-        };
-        galleryBox = fitGalleryBox(galleryBox, [noteBox, ctaBox, qrBox], width, height);
-        state.layout = { heroBox, textBox, noteBox, galleryBox, ctaBox, qrBox, logoBox };
+        const ctaBox = { x: visualLayout.cta.x, y: visualLayout.cta.y, w: visualLayout.cta.width, h: visualLayout.cta.height };
+        const qrSize = visualLayout.qr.size;
+        const qrBox = { x: visualLayout.qr.x, y: visualLayout.qr.y, w: qrSize, h: qrSize };
+        const logoBox = { x: visualLayout.logo.x, y: visualLayout.logo.y, w: visualLayout.logo.width, h: visualLayout.logo.width * 0.34, opacity: visualLayout.logo.opacity, capsuleEnabled: visualLayout.logo.capsuleEnabled, capsuleOpacity: visualLayout.logo.capsuleOpacity };
+        const boxes = getLayoutBoxes(ctx, visualLayout, width, height);
+        const layoutQa = detectLayoutIssues(boxes, width, height);
+        state.layout = { heroBox, textBox, subheadlineBox, noteBox, galleryBox, ctaBox, qrBox, logoBox };
+        state.layoutQa = layoutQa;
 
         const gradient = ctx.createLinearGradient(0, 0, width, height);
         gradient.addColorStop(0, palette[0]);
@@ -1895,29 +2354,36 @@
 
         ctx.textBaseline = "top";
         ctx.textAlign = "left";
-        ctx.fillStyle = palette[2];
-        ctx.font = "700 " + Math.max(34, Math.round(66 * s)) + "px Georgia, Times New Roman, serif";
-        wrapText(ctx, getValue("headline") || "CAMPANA EN MOVIMIENTO", textBox.x, textBox.y, textBox.w, Math.max(44 * sy, 46), 3);
-        ctx.font = "400 " + Math.max(18, Math.round(30 * s)) + "px Inter, Arial, sans-serif";
-        ctx.fillStyle = "rgba(21,18,14,0.78)";
-        wrapText(ctx, getValue("subheadline"), textBox.x + 4 * sx, textBox.y + Math.max(142 * sy, textBox.h * 0.56), textBox.w, Math.max(30 * sy, 28), 2);
+        drawTextFit(ctx, getValue("headline") || "CAMPANA EN MOVIMIENTO", { x: visualLayout.headline.x, y: visualLayout.headline.y, w: visualLayout.headline.maxWidth, h: height - visualLayout.headline.y }, { fontSize: visualLayout.headline.fontSize, lineHeight: visualLayout.headline.lineHeight, letterSpacing: visualLayout.headline.letterSpacing, opacity: visualLayout.headline.opacity, color: palette[2], weight: "700", family: "Georgia, Times New Roman, serif" });
+        drawTextFit(ctx, getValue("subheadline"), { x: visualLayout.subheadline.x, y: visualLayout.subheadline.y, w: visualLayout.subheadline.maxWidth, h: height - visualLayout.subheadline.y }, { fontSize: visualLayout.subheadline.fontSize, lineHeight: visualLayout.subheadline.lineHeight, opacity: visualLayout.subheadline.opacity, color: "rgba(21,18,14,0.78)", weight: "400" });
 
         drawGalleryIntoBox(ctx, galleryBox, !!options.editorMode);
 
+        ctx.save();
+        ctx.globalAlpha = visualLayout.cta.opacity;
         ctx.fillStyle = palette[2];
         ctx.fillRect(ctaBox.x, ctaBox.y, ctaBox.w, ctaBox.h);
         ctx.fillStyle = palette[1];
-        ctx.font = "800 " + Math.max(18, Math.round(25 * s)) + "px Inter, Arial, sans-serif";
+        ctx.font = "800 " + visualLayout.cta.fontSize + "px Inter, Arial, sans-serif";
         wrapText(ctx, getValue("cta") || "ESCANEA", ctaBox.x + 24 * sx, ctaBox.y + 28 * sy, ctaBox.w - 48 * sx, Math.max(24 * sy, 24), 2);
+        ctx.restore();
 
         drawQrPlaceholder(ctx, qrBox.x, qrBox.y, qrSize, qr.valid ? qr.resolved : "invalid");
         ctx.fillStyle = "rgba(21,18,14,0.72)";
-        ctx.font = "500 " + Math.max(14, Math.round(20 * s)) + "px Inter, Arial, sans-serif";
-        wrapText(ctx, getValue("note"), noteBox.x, noteBox.y, noteBox.w, Math.max(22 * sy, 20), 2);
-        ctx.font = "500 " + Math.max(11, Math.round(15 * s)) + "px Inter, Arial, sans-serif";
-        ctx.fillStyle = "rgba(21,18,14,0.56)";
-        ctx.textAlign = "center";
-        wrapText(ctx, qr.valid ? qr.resolved : "QR pendiente", qrBox.x + qrSize / 2, qrBox.y + qrSize + 12 * sy, Math.max(qrSize * 1.9, 220 * sx), Math.max(18 * sy, 16), 1);
+        ctx.globalAlpha = visualLayout.note.opacity;
+        ctx.font = "500 " + visualLayout.note.fontSize + "px Inter, Arial, sans-serif";
+        wrapText(ctx, getValue("note"), noteBox.x, noteBox.y, noteBox.w, visualLayout.note.fontSize * 1.25, 2);
+        ctx.globalAlpha = 1;
+        if (visualLayout.qr.showUrl) {
+          ctx.font = "500 " + visualLayout.qr.urlFontSize + "px Inter, Arial, sans-serif";
+          ctx.fillStyle = "rgba(21,18,14,0.56)";
+          ctx.textAlign = "center";
+          wrapText(ctx, qr.valid ? qr.resolved : "QR pendiente", qrBox.x + qrSize / 2, qrBox.y + qrSize + visualLayout.qr.urlOffsetY, Math.max(qrSize * 1.9, 220 * sx), visualLayout.qr.urlFontSize * 1.25, 1);
+        }
+        if (!exportMode) {
+          if (liveQa.checked) updateLayoutQaPanel(layoutQa);
+          drawEditorGuides(ctx, boxes, width, height, visualLayout);
+        }
       }
 
       function generateClientPreviewDataUrl(width, height) {
@@ -1939,8 +2405,10 @@
         const qrState = state.qr || {};
         const gallery = state.gallery || { enabled: false, count: 0 };
         const preset = getActiveOutputPreset();
+        const layout = serializableVisualLayout();
+        layout.layoutQa = cloneLayout(state.layoutQa || { status: "OK", warnings: [], errors: [] });
         return {
-          version: "0.3.3",
+          version: "0.3.5",
           exportType: "client-preview-package",
           generatedAt: new Date().toISOString(),
           brand: getValue("brand"),
@@ -1975,6 +2443,7 @@
             webmHeight: state.lastExport.webmHeight,
             webmRatio: state.lastExport.webmRatio
           },
+          visualLayout: layout,
           assets: { bannerPreview: "assets/banner-preview.png" },
           notes: "Client preview package. Open index.html after extracting ZIP."
         };
@@ -2610,6 +3079,12 @@
 
         if (state.exportNextFrame) {
           const preset = getActiveOutputPreset();
+          createExportCanvasForPreset(preset);
+          if (blockExportForLayoutErrors("PNG")) {
+            state.exportNextFrame = false;
+            scheduleNextFrame();
+            return;
+          }
           const link = document.createElement("a");
           link.href = generateClientPreviewDataUrl();
           link.download = clientFileNameBase() + ".png";
@@ -2668,9 +3143,119 @@
         });
       }
 
+      function syncVisualControls() {
+        const preset = getActiveOutputPreset();
+        const layout = ensureVisualLayoutState(preset.width, preset.height, false);
+        compositionPreset.value = layout.compositionPreset || "auto-editorial";
+        visualModeStatus.textContent = layout.isManual ? "Modo manual activo." : ((compositionPreset.options[compositionPreset.selectedIndex] || {}).textContent || "Auto editorial activo.");
+        visualControls.forEach((control) => {
+          const path = control.dataset.vc;
+          const value = getPathValue(layout, path);
+          if (control.type === "checkbox") control.checked = !!value;
+          else control.value = value;
+          const label = document.getElementById(control.id + "-value");
+          if (label) {
+            const unit = path.includes("opacity") || path.includes("lineHeight") ? "" : " px";
+            label.textContent = typeof value === "number" ? (unit ? Math.round(value) + unit : Number(value).toFixed(2)) : value;
+          }
+        });
+        guidesVisible.checked = !!layout.guidesVisible;
+        safeAreasVisible.checked = !!layout.safeAreasVisible;
+        overlapVisible.checked = !!layout.overlapBoxesVisible;
+        liveQa.checked = layout.liveQa !== false;
+      }
+
+      function pullVisualControlsToState() {
+        if (!state.visualLayoutState || !state.visualLayoutState.isManual) return;
+        visualControls.forEach((control) => {
+          if (control.dataset.dirty !== "1") return;
+          const path = control.dataset.vc;
+          const value = control.type === "checkbox" ? control.checked : (control.tagName === "SELECT" ? control.value : Number(control.value));
+          setPathValue(state.visualLayoutState, path, value);
+        });
+        state.visualLayoutState.guidesVisible = guidesVisible.checked;
+        state.visualLayoutState.safeAreasVisible = safeAreasVisible.checked;
+        state.visualLayoutState.overlapBoxesVisible = overlapVisible.checked;
+        state.visualLayoutState.liveQa = liveQa.checked;
+      }
+
+      function applyCompositionPreset(id) {
+        const preset = getActiveOutputPreset();
+        const nextId = id === "manual" ? "manual" : id;
+        state.visualLayoutState = createVisualLayoutState(preset.width, preset.height, nextId);
+        state.visualLayoutBase = { width: preset.width, height: preset.height };
+        if (id === "manual") {
+          state.visualLayoutState.isManual = true;
+          state.visualLayoutState.compositionPreset = "manual";
+        }
+        visualControls.forEach((control) => { delete control.dataset.dirty; });
+        state.textureDirty = true;
+        syncVisualControls();
+      }
+
+      function resetVisualSection(section) {
+        const preset = getActiveOutputPreset();
+        const fresh = createVisualLayoutState(preset.width, preset.height, state.visualLayoutState.compositionPreset || "auto-editorial");
+        if (!state.visualLayoutState) state.visualLayoutState = fresh;
+        if (section === "composition") {
+          state.visualLayoutState = fresh;
+        } else {
+          state.visualLayoutState[section] = fresh[section];
+          visualControls.forEach((control) => {
+            if (control.dataset.vc && control.dataset.vc.startsWith(section + ".")) delete control.dataset.dirty;
+          });
+        }
+        state.visualLayoutState.isManual = true;
+        state.visualLayoutState.compositionPreset = "manual";
+        state.visualLayoutBase = { width: preset.width, height: preset.height };
+        state.textureDirty = true;
+        syncVisualControls();
+      }
+
+      function serializableVisualLayout() {
+        pullVisualControlsToState();
+        const layout = cloneLayout(state.visualLayoutState || createVisualLayoutState(state.output.width, state.output.height, "auto-editorial"));
+        layout.guidesVisible = false;
+        layout.safeAreasVisible = false;
+        layout.overlapBoxesVisible = false;
+        return layout;
+      }
+
+      function applyLayoutJson(text) {
+        let parsed;
+        try {
+          parsed = JSON.parse(text);
+        } catch (error) {
+          layoutJsonStatus.textContent = "JSON invalido. No se aplico ningun cambio.";
+          return;
+        }
+        const preset = getActiveOutputPreset();
+        const base = createVisualLayoutState(preset.width, preset.height, "manual");
+        const allowed = ["headline", "subheadline", "note", "gallery", "cta", "qr", "logo"];
+        allowed.forEach((section) => {
+          if (parsed[section] && typeof parsed[section] === "object") base[section] = { ...base[section], ...parsed[section] };
+        });
+        base.version = "0.3.5";
+        base.compositionPreset = parsed.compositionPreset || "manual";
+        base.isManual = parsed.isManual !== false;
+        base.guidesVisible = false;
+        base.safeAreasVisible = false;
+        base.overlapBoxesVisible = false;
+        state.visualLayoutState = base;
+        state.visualLayoutBase = { width: preset.width, height: preset.height };
+        state.textureDirty = true;
+        layoutJsonStatus.textContent = "Layout JSON aplicado.";
+        syncVisualControls();
+      }
+
       function updateLayerControls() {
         state.mediaMode = mainMediaMode.value;
         state.output.presetId = outputPreset.value || state.output.presetId;
+        if (!state.visualLayoutState) {
+          const preset = getActiveOutputPreset();
+          state.visualLayoutState = createVisualLayoutState(preset.width, preset.height, "auto-editorial");
+          state.visualLayoutBase = { width: preset.width, height: preset.height };
+        }
         state.image.scale = Number(imageScale.value);
         state.image.offsetX = Number(imageOffsetX.value);
         state.image.offsetY = Number(imageOffsetY.value);
@@ -2693,6 +3278,7 @@
         updateOutputPanel();
         state.textureDirty = true;
         updateGallerySlotUi();
+        syncVisualControls();
         galleryStatus.textContent = state.gallery.enabled ? "Galeria activa con " + state.gallery.count + " imagenes." : "Activa la galeria para añadir imagenes inferiores.";
       }
 
@@ -2826,6 +3412,8 @@
 
       function startRecording() {
         const preset = getActiveOutputPreset();
+        createExportCanvasForPreset(preset);
+        if (blockExportForLayoutErrors("WEBM")) return;
         if (typeof MediaRecorder === "undefined") {
           recordStatus.textContent = "Grabacion no soportada en este navegador.";
           return;
@@ -2937,10 +3525,12 @@
       }
 
       function exportHtml() {
+        const preset = getActiveOutputPreset();
+        createExportCanvasForPreset(preset);
+        if (blockExportForLayoutErrors("HTML")) return;
         const html = clientPreviewHtmlTemplate({});
         const blob = new Blob([html], { type: "text/html;charset=utf-8" });
         downloadBlob(blob, clientFileNameBase() + ".html");
-        const preset = getActiveOutputPreset();
         const check = validateExportDimensions(preset.width, preset.height, preset.width, preset.height);
         updateExportQaPanel("HTML", preset.width, preset.height, preset.width, preset.height, check.state, "HTML standalone exportado: " + preset.width + " x " + preset.height + " px.");
       }
@@ -3007,6 +3597,8 @@
         const qr = manifest.qr.resolvedDestination || "(sin destino QR)";
         const gallery = manifest.gallery.enabled ? (manifest.gallery.count + " imagen(es) integradas en la preview") : "no incluida";
         const preset = manifest.preset || {};
+        const visual = manifest.visualLayout || {};
+        const qa = visual.layoutQa || { status: "OK", warnings: [], errors: [] };
         return ""
           + "Preview de campana\n"
           + "===================\n\n"
@@ -3016,7 +3608,11 @@
           + "Tamano de salida   : " + (preset.width || "?") + " x " + (preset.height || "?") + " px\n"
           + "Ratio              : " + (preset.ratio || "?") + "\n"
           + "Orientacion        : " + (preset.orientation || "?") + "\n"
+          + "Preset composicion : " + (visual.compositionPreset || "(sin preset)") + "\n"
+          + "Layout QA          : " + (qa.status || "OK") + "\n"
           + "Generado           : " + generated + "\n\n"
+          + (qa.warnings && qa.warnings.length ? "Warnings layout\n---------------\n- " + qa.warnings.join("\n- ") + "\n\n" : "")
+          + (qa.errors && qa.errors.length ? "Errores layout\n-------------\n- " + qa.errors.join("\n- ") + "\n\n" : "")
           + "Como abrir la preview\n"
           + "---------------------\n"
           + "Abrir index.html en navegador.\n\n"
@@ -3038,7 +3634,7 @@
           + qr + "\n\n"
           + "Validacion QR\n"
           + "-------------\n"
-          + "El QR debe validarse con escaneo fisico antes de publicacion.\n\n"
+          + "Validar escaneo fisico del QR antes de publicacion.\n\n"
           + "Aprobacion\n"
           + "----------\n"
           + "- Si todo es correcto, responde aprobando esta preview.\n"
@@ -3050,6 +3646,8 @@
 
       function exportZip() {
         const preset = getActiveOutputPreset();
+        createExportCanvasForPreset(preset);
+        if (blockExportForLayoutErrors("ZIP")) return;
         const manifest = clientManifest();
         const config = JSON.stringify(manifest, null, 2);
         const readme = clientReadmeText(manifest);
@@ -3094,6 +3692,44 @@
         control.addEventListener("input", updateLayerControls);
         control.addEventListener("change", updateLayerControls);
       });
+      compositionPreset.addEventListener("change", () => applyCompositionPreset(compositionPreset.value));
+      visualControls.forEach((control) => {
+        const handler = () => {
+          const path = control.dataset.vc;
+          const value = control.type === "checkbox" ? control.checked : (control.tagName === "SELECT" ? control.value : Number(control.value));
+          control.dataset.dirty = "1";
+          setManualVisualControl(path, value);
+          syncVisualControls();
+        };
+        control.addEventListener("input", handler);
+        control.addEventListener("change", handler);
+      });
+      [guidesVisible, safeAreasVisible, overlapVisible, liveQa].forEach((control) => {
+        control.addEventListener("change", () => {
+          const preset = getActiveOutputPreset();
+          if (!state.visualLayoutState) state.visualLayoutState = createVisualLayoutState(preset.width, preset.height, "auto-editorial");
+          state.visualLayoutState.guidesVisible = guidesVisible.checked;
+          state.visualLayoutState.safeAreasVisible = safeAreasVisible.checked;
+          state.visualLayoutState.overlapBoxesVisible = overlapVisible.checked;
+          state.visualLayoutState.liveQa = liveQa.checked;
+          state.textureDirty = true;
+        });
+      });
+      resetButtons.headline.addEventListener("click", () => resetVisualSection("headline"));
+      resetButtons.subheadline.addEventListener("click", () => resetVisualSection("subheadline"));
+      resetButtons.note.addEventListener("click", () => resetVisualSection("note"));
+      resetButtons.gallery.addEventListener("click", () => resetVisualSection("gallery"));
+      resetButtons.cta.addEventListener("click", () => resetVisualSection("cta"));
+      resetButtons.qr.addEventListener("click", () => resetVisualSection("qr"));
+      resetButtons.logo.addEventListener("click", () => resetVisualSection("logo"));
+      resetButtons.composition.addEventListener("click", () => resetVisualSection("composition"));
+      resetButtons.total.addEventListener("click", () => applyCompositionPreset("auto-editorial"));
+      resetButtons.copy.addEventListener("click", () => {
+        layoutJsonBox.value = JSON.stringify(serializableVisualLayout(), null, 2);
+        if (navigator.clipboard) navigator.clipboard.writeText(layoutJsonBox.value).catch(() => {});
+        layoutJsonStatus.textContent = "Layout JSON copiado sin imagenes ni assets.";
+      });
+      resetButtons.paste.addEventListener("click", () => applyLayoutJson(layoutJsonBox.value));
       presetButtons.forEach((button) => {
         button.addEventListener("click", () => applyPreset(button.dataset.preset));
       });
@@ -3118,6 +3754,8 @@
           state.exportNextFrame = true;
         } else {
           const preset = getActiveOutputPreset();
+          createExportCanvasForPreset(preset);
+          if (blockExportForLayoutErrors("PNG")) return;
           const link = document.createElement("a");
           link.href = generateClientPreviewDataUrl();
           link.download = clientFileNameBase() + ".png";

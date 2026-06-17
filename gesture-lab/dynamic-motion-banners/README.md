@@ -154,3 +154,22 @@ Same file as v0.3 (no route change). Hardening pass for WebM export dimensions.
 
 - Browser MediaRecorder metadata is still best verified externally with ffprobe before final production delivery.
 - QR scan validation remains pending until tested with a physical mobile reader.
+
+## v0.3.5 - Visual Control Studio Core
+
+Same file as v0.3 (no route change). Adds the minimum manual art-direction controls needed to correct real compositions without editing code.
+
+### Added
+
+- `CONTROL VISUAL` panel with composition presets, manual sliders, guides, live Layout QA and lightweight layout JSON copy/paste.
+- Shared `visualLayoutState` consumed by the editor preview, PNG, HTML, ZIP and WebM renders through the same `drawCreative()` path.
+- Composition presets: Auto editorial, Texto compacto, Galeria protagonista, QR protagonista, Minimal premium and Manual.
+- Manual controls for headline, subheadline, note, gallery, CTA, QR and logo.
+- `fitTextToBox`, `getLayoutBoxes` and `detectLayoutIssues` for text fitting, bounding boxes and overlap warnings/errors.
+- Manifest version `0.3.5` includes `visualLayout` and `layoutQa`.
+- Client README includes composition preset and Layout QA status.
+
+### v0.3.5 known limitations
+
+- This phase intentionally avoids snapshots and localStorage.
+- QR scan validation remains pending until tested with a physical mobile reader.
