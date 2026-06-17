@@ -348,6 +348,19 @@
       font-weight: 700;
     }
 
+    .priority-section {
+      padding: 18px 14px;
+      border: 1px solid var(--line-strong);
+      background: rgba(232, 205, 154, 0.045);
+    }
+
+    .help-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
     .control-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -423,6 +436,65 @@
       font-size: 0.82rem;
       line-height: 1.35;
       background: rgba(255, 255, 255, 0.025);
+    }
+
+    .gallery-slots {
+      display: grid;
+      gap: 12px;
+    }
+
+    .gallery-slot {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.028);
+    }
+
+    .gallery-slot.is-inactive {
+      opacity: 0.58;
+    }
+
+    .gallery-thumb {
+      width: 88px;
+      aspect-ratio: 4 / 3;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      background: rgba(5, 5, 5, 0.36);
+      color: var(--gold);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .gallery-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gallery-slot-body {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .gallery-slot-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .gallery-file-name {
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.35;
+      word-break: break-word;
     }
 
     .footnote {
@@ -570,25 +642,29 @@
             <label for="input-note">Nota / promocion</label>
             <input id="input-note" value="Coleccion temporada · showroom privado" autocomplete="off">
           </div>
-          <div class="field">
-            <label for="input-qr">Valor QR</label>
-            <input id="input-qr" value="rubiksota.com/campana" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="qr-type">Tipo destino QR</label>
-            <select id="qr-type">
-              <option value="url">URL web</option>
-              <option value="tel">Llamada telefonica</option>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="email">Email</option>
-            </select>
-          </div>
-          <div id="qr-preview" class="media-status">Destino QR: https://rubiksota.com/campana</div>
-          <div id="qr-warning" class="media-status">QR listo.</div>
-          </div>
         </form>
 
         <div class="button-stack">
+          <section class="control-group priority-section" aria-label="QR / ACCION">
+            <h2>QR / ACCIÓN</h2>
+            <p class="help-copy">El QR se actualizara en la pieza y en el ZIP exportado.</p>
+            <div class="field">
+              <label for="qr-type">Tipo de QR</label>
+              <select id="qr-type">
+                <option value="url">URL web</option>
+                <option value="tel">Llamada</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="email">Email</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="input-qr">Destino QR</label>
+              <input id="input-qr" value="rubiksota.com/campana" placeholder="https://tudominio.com/campana" autocomplete="off">
+            </div>
+            <div id="qr-preview" class="media-status">Destino final resuelto: https://rubiksota.com/campana</div>
+            <div id="qr-warning" class="media-status">QR pendiente</div>
+          </section>
+
           <button id="btn-upload-proxy" class="control-button" type="button">Subir imagen o video</button>
           <input id="media-upload" type="file" accept="image/*,video/*" aria-label="Subir imagen o video">
           <div id="media-status" class="media-status">Sin media adjunta. La textura se genera con arte de campana.</div>
@@ -647,27 +723,51 @@
             <button id="logo-reset" class="control-button subtle" type="button">Reset logo</button>
           </section>
 
-          <section class="control-group" aria-label="Galeria inferior">
-            <h2>Galeria inferior</h2>
+          <section class="control-group priority-section" aria-label="GALERIA INFERIOR 0-3 IMAGENES">
+            <h2>GALERÍA INFERIOR 0–3 IMÁGENES</h2>
+            <p class="help-copy">Activa la galeria para anadir imagenes inferiores. Las imagenes aparecen en la franja inferior izquierda de la banderola, debajo del texto principal.</p>
             <label class="control-row" for="gallery-enabled">Activar galeria <input id="gallery-enabled" type="checkbox"></label>
             <div class="field">
-              <label for="gallery-count">Imagenes activas</label>
+              <label for="gallery-count">Numero de imagenes</label>
               <select id="gallery-count">
-                <option value="0">0 imagenes</option>
-                <option value="1">1 imagen</option>
-                <option value="2">2 imagenes</option>
-                <option value="3">3 imagenes</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
               </select>
             </div>
-            <button id="gallery-upload-1-proxy" class="control-button" type="button">Subir imagen galeria 1</button>
-            <input id="gallery-upload-1" type="file" accept="image/*" aria-label="Subir imagen galeria 1">
-            <button id="gallery-clear-1" class="control-button subtle" type="button">Quitar imagen 1</button>
-            <button id="gallery-upload-2-proxy" class="control-button" type="button">Subir imagen galeria 2</button>
-            <input id="gallery-upload-2" type="file" accept="image/*" aria-label="Subir imagen galeria 2">
-            <button id="gallery-clear-2" class="control-button subtle" type="button">Quitar imagen 2</button>
-            <button id="gallery-upload-3-proxy" class="control-button" type="button">Subir imagen galeria 3</button>
-            <input id="gallery-upload-3" type="file" accept="image/*" aria-label="Subir imagen galeria 3">
-            <button id="gallery-clear-3" class="control-button subtle" type="button">Quitar imagen 3</button>
+            <div class="gallery-slots">
+              <div class="gallery-slot is-inactive" id="gallery-slot-1">
+                <div class="gallery-thumb" id="gallery-thumb-1">IMAGEN 1</div>
+                <div class="gallery-slot-body">
+                  <p class="gallery-slot-title">Imagen 1</p>
+                  <button id="gallery-upload-1-proxy" class="control-button" type="button">Subir imagen 1</button>
+                  <input id="gallery-upload-1" type="file" accept="image/*" aria-label="Subir imagen 1">
+                  <div id="gallery-file-1" class="gallery-file-name">Sin archivo cargado</div>
+                  <button id="gallery-clear-1" class="control-button subtle" type="button">Quitar imagen 1</button>
+                </div>
+              </div>
+              <div class="gallery-slot is-inactive" id="gallery-slot-2">
+                <div class="gallery-thumb" id="gallery-thumb-2">IMAGEN 2</div>
+                <div class="gallery-slot-body">
+                  <p class="gallery-slot-title">Imagen 2</p>
+                  <button id="gallery-upload-2-proxy" class="control-button" type="button">Subir imagen 2</button>
+                  <input id="gallery-upload-2" type="file" accept="image/*" aria-label="Subir imagen 2">
+                  <div id="gallery-file-2" class="gallery-file-name">Sin archivo cargado</div>
+                  <button id="gallery-clear-2" class="control-button subtle" type="button">Quitar imagen 2</button>
+                </div>
+              </div>
+              <div class="gallery-slot is-inactive" id="gallery-slot-3">
+                <div class="gallery-thumb" id="gallery-thumb-3">IMAGEN 3</div>
+                <div class="gallery-slot-body">
+                  <p class="gallery-slot-title">Imagen 3</p>
+                  <button id="gallery-upload-3-proxy" class="control-button" type="button">Subir imagen 3</button>
+                  <input id="gallery-upload-3" type="file" accept="image/*" aria-label="Subir imagen 3">
+                  <div id="gallery-file-3" class="gallery-file-name">Sin archivo cargado</div>
+                  <button id="gallery-clear-3" class="control-button subtle" type="button">Quitar imagen 3</button>
+                </div>
+              </div>
+            </div>
             <div id="gallery-status" class="media-status">Galeria desactivada.</div>
           </section>
 
@@ -781,6 +881,21 @@
         document.getElementById("gallery-clear-2"),
         document.getElementById("gallery-clear-3")
       ];
+      const gallerySlots = [
+        document.getElementById("gallery-slot-1"),
+        document.getElementById("gallery-slot-2"),
+        document.getElementById("gallery-slot-3")
+      ];
+      const galleryThumbs = [
+        document.getElementById("gallery-thumb-1"),
+        document.getElementById("gallery-thumb-2"),
+        document.getElementById("gallery-thumb-3")
+      ];
+      const galleryFileNames = [
+        document.getElementById("gallery-file-1"),
+        document.getElementById("gallery-file-2"),
+        document.getElementById("gallery-file-3")
+      ];
       const exportHtmlPreview = document.getElementById("export-html-preview");
       const exportZipPreview = document.getElementById("export-zip-preview");
       const exportStatus = document.getElementById("export-status");
@@ -873,7 +988,8 @@
           count: 0,
           elements: [null, null, null],
           urls: ["", "", ""],
-          dataUrls: ["", "", ""]
+          dataUrls: ["", "", ""],
+          names: ["", "", ""]
         },
         assetData: {
           mainImage: "",
@@ -1262,8 +1378,8 @@
           resolved = "mailto:" + raw;
         }
         state.qr = { type, resolved, valid };
-        qrPreview.textContent = "Destino QR: " + (resolved || "sin destino");
-        qrWarning.textContent = valid ? "QR listo." : "Introduce un destino QR valido.";
+        qrPreview.textContent = "Destino final resuelto: " + (resolved || "sin destino");
+        qrWarning.textContent = valid ? "QR válido" : "QR con error: introduce un destino valido.";
         return state.qr;
       }
 
@@ -2096,6 +2212,22 @@
         document.getElementById("audio-volume-value").textContent = Number(audioVolume.value).toFixed(2);
       }
 
+      function updateGallerySlotUi() {
+        const activeCount = state.gallery.enabled ? state.gallery.count : 0;
+        gallerySlots.forEach((slot, index) => {
+          const active = index < activeCount;
+          slot.classList.toggle("is-inactive", !active);
+          galleryUploadProxies[index].disabled = !active;
+          galleryClearButtons[index].disabled = !active;
+          galleryFileNames[index].textContent = state.gallery.names[index] || (active ? "Sin archivo cargado" : "Slot inactivo");
+          if (state.gallery.dataUrls[index]) {
+            galleryThumbs[index].innerHTML = "<img alt=\"Imagen " + (index + 1) + "\" src=\"" + state.gallery.dataUrls[index] + "\">";
+          } else {
+            galleryThumbs[index].textContent = "IMAGEN " + (index + 1);
+          }
+        });
+      }
+
       function updateLayerControls() {
         state.mediaMode = mainMediaMode.value;
         state.image.scale = Number(imageScale.value);
@@ -2118,7 +2250,8 @@
         syncControlLabels();
         resolveQrDestination();
         state.textureDirty = true;
-        galleryStatus.textContent = state.gallery.enabled ? "Galeria activa con " + state.gallery.count + " imagenes." : "Galeria desactivada.";
+        updateGallerySlotUi();
+        galleryStatus.textContent = state.gallery.enabled ? "Galeria activa con " + state.gallery.count + " imagenes." : "Activa la galeria para añadir imagenes inferiores.";
       }
 
       async function setMedia(file) {
@@ -2199,7 +2332,9 @@
         image.onload = () => {
           state.gallery.elements[index] = image;
           state.gallery.urls[index] = url;
+          state.gallery.names[index] = file.name;
           state.textureDirty = true;
+          updateGallerySlotUi();
           galleryStatus.textContent = "Imagen galeria " + (index + 1) + " cargada.";
         };
         image.onerror = () => {
@@ -2214,8 +2349,10 @@
         state.gallery.elements[index] = null;
         state.gallery.urls[index] = "";
         state.gallery.dataUrls[index] = "";
+        state.gallery.names[index] = "";
         galleryUploads[index].value = "";
         state.textureDirty = true;
+        updateGallerySlotUi();
         galleryStatus.textContent = "Imagen galeria " + (index + 1) + " quitada.";
       }
 

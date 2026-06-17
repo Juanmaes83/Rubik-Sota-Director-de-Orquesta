@@ -81,7 +81,7 @@ Static
 - `git diff --check` clean.
 - JavaScript parse OK on the single script block.
 - No duplicate `id="…"`.
-- No mojibake (`Â/Ã/â/�`) or placeholder (`{{`) tokens.
+- No mojibake markers or placeholder (`{{`) tokens.
 - Forbidden strings (`DYNAMIC MOTION BANNERS`, `Dynamic Motion Banners`, `localhost`, `127.0.0.1`, `blob:`, `C:\Users`, `data-url.txt`, gallery `.txt` names) do not appear inside the client templates (`clientPreviewHtmlTemplate`, `clientReadmeText`, manifest).
 - Forbidden strings still appear in editor-only chrome (page `<title>`, `<h1>`, brand kicker) — which is allowed by the brief.
 
@@ -108,3 +108,8 @@ What stayed out of scope (deferred to v0.4 if needed)
 - Audio mixed into the WebM recording.
 - Multi-language export (currently Spanish UI / Spanish README).
 - An option to encode the QR at a higher EC level (M/Q/H) for damage-tolerance.
+
+Follow-up
+---------
+
+- v0.3.2 adds the editor-side QR and gallery visibility fix so local users can find the QR destination field, activate the lower gallery, load 3 images and export a ZIP whose manifest reflects that state. See `docs/DYNAMIC_MOTION_BANNERS_V0_3_2_NOTES.md`.

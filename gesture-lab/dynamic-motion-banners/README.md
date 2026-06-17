@@ -103,3 +103,19 @@ Same file as v0.3 (no version bump on disk). Polish for the export packages so t
 - QR scan validation is pending. The QR matrix is generated from the ISO spec but has not been confirmed scannable with a physical mobile reader inside this session.
 - ZIP writer remains stored mode (no DEFLATE). Banner PNG is the only large asset and is shipped uncompressed.
 - WebM recording continues to capture the WebGL canvas only.
+
+## v0.3.2 - Editor QR & Gallery Visibility Fix
+
+Same file as v0.3 (no version bump on disk). Editor visibility fix for the QR action controls and the lower gallery.
+
+### Added
+
+- Dedicated `QR / ACCIÓN` editor section with QR type, destination, resolved final destination and validation status.
+- Dedicated `GALERÍA INFERIOR 0–3 IMÁGENES` editor section with visible slot controls, thumbnails, filenames and remove actions.
+- Gallery slot UI now mirrors the active count and uploaded image state before export.
+- ZIP manifest continues to expose `qr.resolvedDestination`, `gallery.enabled` and `gallery.count`.
+
+### v0.3.2 known limitations
+
+- QR scan validation remains pending until tested with a physical mobile reader.
+- WebM recording continues to capture the WebGL canvas only.
