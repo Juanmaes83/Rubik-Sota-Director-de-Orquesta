@@ -246,3 +246,29 @@ Same file as v0.3 (no route change). Extends real-pixel precision controls from 
 
 - Layer order remains fixed to preserve previous behavior.
 - QR scan validation remains pending until tested with a physical mobile reader.
+
+## v0.3.9 - Multi-Vertical Premium Composition Engine
+
+Same file as v0.3 (no route change). Adds format-aware premium composition for vertical output families.
+
+### Added
+
+- Vertical composition profiles for 9:16, feed 4:5, MUPI print and custom vertical formats.
+- Dedicated base layouts for 1080x1920, 1080x1350 and 1200x1760.
+- 2160x3840 DOOH scales exactly 2x from the 1080x1920 vertical editorial base.
+- New presets: Vertical Editorial Premium, Vertical QR Focus, Vertical Gallery Story, Vertical Minimal Luxury, Feed Vertical Premium and MUPI Print Premium.
+- `visualLayoutState.conversionPanel` behind CTA and QR for premium vertical conversion blocks.
+- Vertical gallery defaults to an ordered triptych row unless the Story preset explicitly uses `grid-2-1`.
+- ZIP manifest version `0.3.9` includes `verticalProfile` and `conversionPanel`.
+
+### Export guarantees
+
+- Horizontal layouts keep the previous behavior and do not enable the vertical conversion panel by default.
+- Vertical auto layouts use the correct profile when manual mode is off.
+- Manual layouts are preserved when changing format; the editor exposes a recommended vertical preset button instead of overwriting user work.
+- PNG, HTML, ZIP and WebM continue to render through `drawCreative()` and `createExportCanvasForPreset()`.
+
+### v0.3.9 known limitations
+
+- Conversion panel precision controls are serialized and rendered, but this phase does not add dedicated UI steppers for the panel itself.
+- QR scan validation remains pending until tested with a physical mobile reader.

@@ -1189,9 +1189,16 @@
                     <option value="gallery-focus">Galeria protagonista · miniaturas visibles</option>
                     <option value="qr-focus">QR protagonista · escaparate fisico</option>
                     <option value="minimal-premium">Minimal premium · mas aire visual</option>
+                    <option value="vertical-editorial-premium">Vertical Editorial Premium</option>
+                    <option value="vertical-qr-focus">Vertical QR Focus</option>
+                    <option value="vertical-gallery-story">Vertical Gallery Story</option>
+                    <option value="vertical-minimal-luxury">Vertical Minimal Luxury</option>
+                    <option value="feed-vertical-premium">Feed Vertical Premium</option>
+                    <option value="mupi-print-premium">MUPI Print Premium</option>
                     <option value="manual">Manual · respeta sliders</option>
                   </select>
                 </div>
+                <button id="apply-vertical-recommended" class="control-button subtle" type="button">Aplicar preset vertical recomendado</button>
               </div>
             </details>
             <details class="visual-panel" open>
@@ -1488,6 +1495,7 @@
       const webmQaDuration = document.getElementById("webm-qa-duration");
       const webmQaState = document.getElementById("webm-qa-state");
       const compositionPreset = document.getElementById("composition-preset");
+      const applyVerticalRecommended = document.getElementById("apply-vertical-recommended");
       const visualModeStatus = document.getElementById("visual-mode-status");
       const visualControls = Array.from(document.querySelectorAll("[data-vc]"));
       const guidesVisible = document.getElementById("vc-guides-visible");
@@ -2273,7 +2281,135 @@
         target[keys[keys.length - 1]] = value;
       }
 
+      const verticalCompositionBases = {
+        "vertical-editorial-premium": {
+          baseWidth: 1080,
+          baseHeight: 1920,
+          verticalProfile: "vertical-9-16",
+          media: { x: 72, y: 96, width: 936, height: 620, scale: 1, offsetX: 0, offsetY: 0, opacity: 1, fitMode: "cover", layerMode: "image" },
+          logo: { x: 760, y: 126, width: 220, opacity: 0.96, capsuleEnabled: true, capsuleOpacity: 0.42 },
+          headline: { x: 72, y: 770, maxWidth: 880, fontSize: 84, lineHeight: 0.88, letterSpacing: -1.4, opacity: 1 },
+          subheadline: { x: 76, y: 1040, maxWidth: 790, fontSize: 30, lineHeight: 1.16, opacity: 1 },
+          gallery: { x: 72, y: 1115, thumbWidth: 280, thumbHeight: 185, gap: 30, opacity: 1, layoutMode: "row" },
+          conversionPanel: { enabled: true, x: 72, y: 1415, width: 936, height: 315, opacity: 0.94 },
+          cta: { x: 118, y: 1488, width: 500, height: 90, fontSize: 34, opacity: 1 },
+          qr: { x: 765, y: 1470, size: 200, showUrl: true, urlFontSize: 18, urlOffsetY: 38 },
+          note: { x: 72, y: 1810, fontSize: 24, opacity: 0.72 }
+        },
+        "feed-vertical-premium": {
+          baseWidth: 1080,
+          baseHeight: 1350,
+          verticalProfile: "vertical-feed-4-5",
+          media: { x: 72, y: 72, width: 936, height: 500, scale: 1, offsetX: 0, offsetY: 0, opacity: 1, fitMode: "cover", layerMode: "image" },
+          logo: { x: 760, y: 105, width: 190, opacity: 0.96, capsuleEnabled: true, capsuleOpacity: 0.42 },
+          headline: { x: 72, y: 635, maxWidth: 890, fontSize: 68, lineHeight: 0.9, letterSpacing: -1, opacity: 1 },
+          subheadline: { x: 76, y: 800, maxWidth: 780, fontSize: 26, lineHeight: 1.18, opacity: 1 },
+          gallery: { x: 72, y: 915, thumbWidth: 280, thumbHeight: 160, gap: 30, opacity: 1, layoutMode: "row" },
+          conversionPanel: { enabled: true, x: 72, y: 1110, width: 936, height: 170, opacity: 0.94 },
+          cta: { x: 110, y: 1150, width: 465, height: 72, fontSize: 30, opacity: 1 },
+          qr: { x: 790, y: 1134, size: 128, showUrl: false, urlFontSize: 14, urlOffsetY: 22 },
+          note: { x: 72, y: 1295, fontSize: 20, opacity: 0.72 }
+        },
+        "mupi-print-premium": {
+          baseWidth: 1200,
+          baseHeight: 1760,
+          verticalProfile: "vertical-print-mupi",
+          media: { x: 84, y: 94, width: 1032, height: 560, scale: 1, offsetX: 0, offsetY: 0, opacity: 1, fitMode: "cover", layerMode: "image" },
+          logo: { x: 855, y: 130, width: 230, opacity: 0.96, capsuleEnabled: true, capsuleOpacity: 0.42 },
+          headline: { x: 84, y: 735, maxWidth: 960, fontSize: 82, lineHeight: 0.9, letterSpacing: -1.2, opacity: 1 },
+          subheadline: { x: 88, y: 925, maxWidth: 860, fontSize: 30, lineHeight: 1.18, opacity: 1 },
+          gallery: { x: 84, y: 1068, thumbWidth: 310, thumbHeight: 190, gap: 30, opacity: 1, layoutMode: "row" },
+          conversionPanel: { enabled: true, x: 84, y: 1330, width: 1032, height: 260, opacity: 0.94 },
+          cta: { x: 130, y: 1390, width: 520, height: 88, fontSize: 34, opacity: 1 },
+          qr: { x: 855, y: 1378, size: 185, showUrl: true, urlFontSize: 17, urlOffsetY: 36 },
+          note: { x: 84, y: 1685, fontSize: 22, opacity: 0.72 }
+        }
+      };
+
+      function getVerticalCompositionProfile(activePreset) {
+        const preset = activePreset || getActiveOutputPreset();
+        if (preset.orientation !== "vertical") return null;
+        const ratio = preset.width / Math.max(1, preset.height);
+        if (preset.id === "feed-vertical" || Math.abs(ratio - 0.8) < 0.018) return "vertical-feed-4-5";
+        if (preset.id === "mupi-print-preview" || Math.abs(ratio - (1200 / 1760)) < 0.018) return "vertical-print-mupi";
+        if (Math.abs(ratio - (9 / 16)) < 0.018 || ["storefront-vertical-dooh", "storefront-vertical-dooh-4k", "mupi-digital-vertical", "mobile-story-reel"].includes(preset.id)) return "vertical-9-16";
+        return "vertical-custom";
+      }
+
+      function getRecommendedVerticalPreset(activePreset) {
+        const profile = getVerticalCompositionProfile(activePreset);
+        if (profile === "vertical-feed-4-5") return "feed-vertical-premium";
+        if (profile === "vertical-print-mupi") return "mupi-print-premium";
+        if (profile === "vertical-9-16") return "vertical-editorial-premium";
+        return "vertical-editorial-premium";
+      }
+
+      function scaleLayoutFromBase(baseLayout, targetWidth, targetHeight) {
+        const scaled = cloneLayout(baseLayout);
+        const sx = targetWidth / Math.max(1, baseLayout.baseWidth || targetWidth);
+        const sy = targetHeight / Math.max(1, baseLayout.baseHeight || targetHeight);
+        const s = Math.min(sx, sy);
+        ["media", "headline", "subheadline", "note", "gallery", "cta", "qr", "logo", "conversionPanel"].forEach((section) => {
+          const item = scaled[section];
+          if (!item) return;
+          ["x", "width", "maxWidth", "thumbWidth", "gap", "size", "urlOffsetY", "offsetX"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sx); });
+          ["y", "height", "thumbHeight", "offsetY"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sy); });
+          ["fontSize", "urlFontSize"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.max(1, Math.round(item[key] * s)); });
+          ["lineHeight", "letterSpacing", "opacity", "capsuleOpacity", "scale"].forEach((key) => { if (typeof item[key] === "number") item[key] = item[key]; });
+        });
+        delete scaled.baseWidth;
+        delete scaled.baseHeight;
+        return scaled;
+      }
+
+      function createVerticalPremiumLayout(width, height, presetId, activePreset) {
+        const profile = getVerticalCompositionProfile(activePreset || { width, height, id: "", orientation: getOrientation(width, height) });
+        let baseId = presetId;
+        if (profile === "vertical-feed-4-5") baseId = "feed-vertical-premium";
+        else if (profile === "vertical-print-mupi") baseId = "mupi-print-premium";
+        else if (["vertical-qr-focus", "vertical-gallery-story", "vertical-minimal-luxury"].includes(presetId)) baseId = "vertical-editorial-premium";
+        if (!verticalCompositionBases[baseId]) baseId = getRecommendedVerticalPreset(activePreset || { width, height, id: "", orientation: "vertical" });
+        const layout = scaleLayoutFromBase(verticalCompositionBases[baseId], width, height);
+        layout.version = "0.3.9";
+        layout.compositionPreset = presetId;
+        layout.verticalProfile = profile;
+        layout.isManual = false;
+        layout.guidesVisible = false;
+        layout.safeAreasVisible = false;
+        layout.overlapBoxesVisible = false;
+        layout.liveQa = true;
+        layout.media.layerMode = state.mediaMode || layout.media.layerMode || "image";
+        if (presetId === "vertical-qr-focus") {
+          layout.qr.size = Math.round(layout.qr.size * 1.28);
+          layout.qr.x = Math.round(layout.conversionPanel.x + layout.conversionPanel.width - layout.qr.size - width * 0.045);
+          layout.qr.y = Math.round(layout.conversionPanel.y + (layout.conversionPanel.height - layout.qr.size) / 2);
+          layout.cta.width = Math.round(layout.cta.width * 0.86);
+        } else if (presetId === "vertical-gallery-story") {
+          layout.gallery.layoutMode = "grid-2-1";
+          layout.gallery.thumbWidth = Math.round(layout.gallery.thumbWidth * 1.08);
+          layout.gallery.thumbHeight = Math.round(layout.gallery.thumbHeight * 1.06);
+          layout.gallery.y = Math.round(layout.gallery.y - height * 0.025);
+        } else if (presetId === "vertical-minimal-luxury") {
+          layout.gallery.opacity = 0.72;
+          layout.subheadline.opacity = 0.82;
+          layout.conversionPanel.opacity = 0.86;
+          layout.headline.fontSize = Math.round(layout.headline.fontSize * 0.86);
+        }
+        return layout;
+      }
+
       function createVisualLayoutState(width, height, presetId = "auto-editorial") {
+        const activePreset = { ...getActiveOutputPreset(), width, height, orientation: getOrientation(width, height), ratio: getAspectRatioLabel(width, height) };
+        const verticalPreset = getVerticalCompositionProfile(activePreset);
+        if (!verticalPreset && ["vertical-editorial-premium", "vertical-qr-focus", "vertical-gallery-story", "vertical-minimal-luxury", "feed-vertical-premium", "mupi-print-premium"].includes(presetId)) {
+          presetId = "auto-editorial";
+        }
+        if (verticalPreset && ["vertical-editorial-premium", "vertical-qr-focus", "vertical-gallery-story", "vertical-minimal-luxury", "feed-vertical-premium", "mupi-print-premium"].includes(presetId)) {
+          return createVerticalPremiumLayout(width, height, presetId, activePreset);
+        }
+        if (verticalPreset && presetId === "auto-editorial") {
+          return createVerticalPremiumLayout(width, height, getRecommendedVerticalPreset(activePreset), activePreset);
+        }
         const sx = width / 1920;
         const sy = height / 1080;
         const s = Math.min(sx, sy);
@@ -2299,8 +2435,9 @@
         const qrX = horizontal ? width - padX - qrSize - ctaW * 0.16 : width - padX - qrSize;
         const qrY = horizontal ? ctaY + ctaH + height * 0.035 : ctaY;
         return {
-          version: "0.3.8",
+          version: "0.3.9",
           compositionPreset: presetId,
+          verticalProfile: verticalPreset,
           isManual: presetId === "manual",
           guidesVisible: false,
           safeAreasVisible: false,
@@ -2311,6 +2448,7 @@
           subheadline: { x: padX + width * 0.002, y: textY + headlineSize * (compact ? 2.3 : 2.55), fontSize: subSize, maxWidth: textWidth * (compact ? 0.94 : 1), lineHeight: compact ? 1.05 : 1.18, opacity: minimal ? 0.84 : 1 },
           note: { x: padX, y: height - Math.max((horizontal ? 42 : 72) * sy, height * (horizontal ? 0.04 : 0.07)), fontSize: Math.max(12, Math.round(22 * s)), opacity: minimal ? 0.78 : 1 },
           gallery: { x: padX, y: height * (horizontal ? 0.84 : 0.58), thumbWidth: galleryThumbW, thumbHeight: galleryThumbH, gap: Math.max(8, Math.round(22 * s)), opacity: 1, layoutMode: horizontal ? "row" : "grid-2-1" },
+          conversionPanel: { enabled: false, x: 0, y: 0, width: 0, height: 0, opacity: 0 },
           cta: { x: ctaX, y: ctaY, width: ctaW, height: ctaH, fontSize: Math.max(16, Math.round(29 * s)), opacity: 1 },
           qr: { x: qrX, y: qrY, size: qrSize, showUrl: true, urlFontSize: Math.max(10, Math.round(16 * s)), urlOffsetY: Math.max(8, Math.round(18 * s)) },
           logo: { x: width - padX - Math.round(220 * sx), y: height * 0.18, width: Math.round(220 * sx), opacity: 1, capsuleEnabled: true, capsuleOpacity: 0.55 }
@@ -2322,7 +2460,7 @@
         const sx = toW / Math.max(1, fromW);
         const sy = toH / Math.max(1, fromH);
         const s = Math.min(sx, sy);
-        ["media", "headline", "subheadline", "note", "gallery", "cta", "qr", "logo"].forEach((section) => {
+        ["media", "headline", "subheadline", "note", "gallery", "cta", "qr", "logo", "conversionPanel"].forEach((section) => {
           const item = scaled[section];
           if (!item) return;
           ["x", "width", "maxWidth", "thumbWidth", "gap", "size", "urlOffsetY", "offsetX"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sx); });
@@ -2349,7 +2487,12 @@
           const fresh = createVisualLayoutState(width, height, state.visualLayoutState.compositionPreset || "auto-editorial");
           state.visualLayoutState.media = fresh.media;
         }
-        state.visualLayoutState.version = "0.3.8";
+        if (!state.visualLayoutState.conversionPanel) {
+          const fresh = createVisualLayoutState(width, height, state.visualLayoutState.compositionPreset || "auto-editorial");
+          state.visualLayoutState.conversionPanel = fresh.conversionPanel || { enabled: false, x: 0, y: 0, width: 0, height: 0, opacity: 0 };
+        }
+        state.visualLayoutState.verticalProfile = getVerticalCompositionProfile(preset);
+        state.visualLayoutState.version = "0.3.9";
         const layout = cloneLayout(state.visualLayoutState);
         if (exportMode) {
           layout.guidesVisible = false;
@@ -2575,13 +2718,14 @@
         const headlineFit = fitTextToBox(ctx, getValue("headline") || "CAMPANA EN MOVIMIENTO", { x: layout.headline.x, y: layout.headline.y, w: layout.headline.maxWidth, h: height }, { fontSize: layout.headline.fontSize, lineHeight: layout.headline.lineHeight, weight: "700", family: "Georgia, Times New Roman, serif", letterSpacing: layout.headline.letterSpacing });
         const subFit = fitTextToBox(ctx, getValue("subheadline"), { x: layout.subheadline.x, y: layout.subheadline.y, w: layout.subheadline.maxWidth, h: height }, { fontSize: layout.subheadline.fontSize, lineHeight: layout.subheadline.lineHeight, weight: "400" });
         const galleryCount = Math.max(1, Math.min(3, state.gallery.count || 3));
-        const galleryCols = layout.gallery.layoutMode === "column" ? 1 : (layout.gallery.layoutMode === "grid-2-1" || (layout.gallery.layoutMode === "auto" && width < height) ? 2 : galleryCount);
+        const galleryCols = layout.gallery.layoutMode === "column" ? 1 : (layout.gallery.layoutMode === "grid-2-1" ? 2 : galleryCount);
         const galleryRows = Math.ceil(galleryCount / galleryCols);
         return {
           media: { x: layout.media.x, y: layout.media.y, w: layout.media.width, h: layout.media.height },
           headline: headlineFit.boundingBox,
           subheadline: subFit.boundingBox,
           note: { x: layout.note.x, y: layout.note.y, w: width * 0.46, h: layout.note.fontSize * 1.3 },
+          conversionPanel: layout.conversionPanel && layout.conversionPanel.enabled ? { x: layout.conversionPanel.x, y: layout.conversionPanel.y, w: layout.conversionPanel.width, h: layout.conversionPanel.height } : { x: 0, y: 0, w: 0, h: 0 },
           gallery: { x: layout.gallery.x, y: layout.gallery.y, w: galleryCols * layout.gallery.thumbWidth + (galleryCols - 1) * layout.gallery.gap, h: galleryRows * layout.gallery.thumbHeight + (galleryRows - 1) * layout.gallery.gap },
           cta: { x: layout.cta.x, y: layout.cta.y, w: layout.cta.width, h: layout.cta.height },
           qr: { x: layout.qr.x, y: layout.qr.y, w: layout.qr.size, h: layout.qr.size },
@@ -2601,16 +2745,31 @@
       function detectLayoutIssues(boxes, canvasWidth, canvasHeight) {
         const warnings = [];
         const errors = [];
+        const preset = getActiveOutputPreset();
+        const profile = getVerticalCompositionProfile(preset);
+        const scale = profile === "vertical-9-16" && canvasWidth >= 2160 ? 2 : 1;
+        const safeConfig = profile === "vertical-feed-4-5" ? { x: 64, top: 64, bottom: 48 } : (profile === "vertical-print-mupi" ? { x: 84, top: 84, bottom: 64 } : (profile === "vertical-9-16" ? { x: 72, top: 72, bottom: 72 } : null));
+        const safe = safeConfig ? { x: safeConfig.x * scale, y: safeConfig.top * scale, w: canvasWidth - safeConfig.x * scale * 2, h: canvasHeight - (safeConfig.top + safeConfig.bottom) * scale } : null;
+        const outsideSafe = (box) => safe && (box.x < safe.x || box.y < safe.y || box.x + box.w > safe.x + safe.w || box.y + box.h > safe.y + safe.h);
+        const outsidePanel = (box) => boxes.conversionPanel && boxes.conversionPanel.w > 0 && (box.x < boxes.conversionPanel.x || box.y < boxes.conversionPanel.y || box.x + box.w > boxes.conversionPanel.x + boxes.conversionPanel.w || box.y + box.h > boxes.conversionPanel.y + boxes.conversionPanel.h);
         const minQr = canvasWidth === 1920 && canvasHeight === 1080 ? 140 : (canvasWidth === 1080 && canvasHeight === 1080 ? 96 : (canvasWidth === canvasHeight ? 96 : 110));
         if (boxes.qr.w < minQr) errors.push("QR demasiado pequeno para este formato.");
         if (boxOutside(boxes.qr, canvasWidth, canvasHeight)) errors.push("QR fuera del canvas.");
+        else if (outsideSafe(boxes.qr)) warnings.push("QR fuera del area segura.");
         if (boxFullyOutside(boxes.headline, canvasWidth, canvasHeight)) errors.push("Titular completamente fuera del canvas.");
         if (boxFullyOutside(boxes.gallery, canvasWidth, canvasHeight)) errors.push("Galeria completamente fuera del canvas.");
+        else if (boxOutside(boxes.gallery, canvasWidth, canvasHeight)) warnings.push("Galeria parcialmente fuera del canvas.");
         if (boxFullyOutside(boxes.media, canvasWidth, canvasHeight)) warnings.push("Media principal fuera del canvas.");
+        if (boxOutside(boxes.note, canvasWidth, canvasHeight)) errors.push("Nota fuera del canvas.");
         if (state.logo.visible && boxes.logo.opacity !== 0 && boxFullyOutside(boxes.logo, canvasWidth, canvasHeight)) errors.push("Logo fuera del canvas.");
         else if (state.logo.visible && boxes.logo.opacity !== 0 && boxOutside(boxes.logo, canvasWidth, canvasHeight)) warnings.push("Logo parcialmente fuera del canvas.");
+        else if (state.logo.visible && boxes.logo.opacity !== 0 && outsideSafe(boxes.logo)) warnings.push("Logo fuera del area segura.");
+        if (boxes.conversionPanel && boxes.conversionPanel.w > 0) {
+          if (outsidePanel(boxes.cta)) warnings.push("CTA fuera del panel de conversion.");
+          if (outsidePanel(boxes.qr)) warnings.push("QR fuera del panel de conversion.");
+        }
         Object.entries(boxes).forEach(([name, box]) => {
-          if (boxOutside(box, canvasWidth, canvasHeight) && !["qr", "headline", "gallery", "logo"].includes(name)) warnings.push(name + " queda parcialmente fuera del canvas.");
+          if (boxOutside(box, canvasWidth, canvasHeight) && !["qr", "headline", "gallery", "logo", "note", "conversionPanel"].includes(name)) warnings.push(name + " queda parcialmente fuera del canvas.");
         });
         if (computeBoxOverlap(boxes.headline, boxes.subheadline)) warnings.push("Titular solapa subtitulo.");
         if (computeBoxOverlap(boxes.gallery, boxes.subheadline)) warnings.push("Galeria solapa subtitulo.");
@@ -2730,13 +2889,17 @@
         if (box.layoutMode === "column") {
           columns = 1;
           rows = count;
-        } else if (box.layoutMode === "grid-2-1" || (box.layoutMode === "auto" && box.w < box.h * 2.2 && count === 3)) {
+        } else if (box.layoutMode === "grid-2-1" && count === 3) {
           columns = 2;
           rows = 2;
         }
-        const itemW = box.thumbWidth || Math.floor((box.w - gap * (columns - 1)) / columns);
+        const maxSafeWidth = Math.max(1, box.w);
+        const requestedItemW = box.thumbWidth || Math.floor((box.w - gap * (columns - 1)) / columns);
+        const itemW = Math.min(requestedItemW, Math.floor((maxSafeWidth - gap * (columns - 1)) / columns));
         const rowH = box.thumbHeight || Math.floor((box.h - gap * (rows - 1)) / rows);
         const itemH = rowH;
+        const totalRowWidth = columns * itemW + Math.max(0, columns - 1) * gap;
+        const rowOffsetX = box.layoutMode === "column" ? 0 : Math.max(0, (box.w - totalRowWidth) / 2);
         ctx.save();
         ctx.globalAlpha = box.opacity == null ? 1 : box.opacity;
         if (editorMode) {
@@ -2751,7 +2914,7 @@
         for (let i = 0; i < count; i += 1) {
           const col = i % columns;
           const row = Math.floor(i / columns);
-          const x = box.x + col * (itemW + gap);
+          const x = box.x + rowOffsetX + col * (itemW + gap);
           const y = box.y + row * (rowH + gap);
           const w = itemW;
           const h = rows > 1 ? rowH : itemH;
@@ -2835,11 +2998,14 @@
         const textBox = { x: visualLayout.headline.x, y: visualLayout.headline.y, w: visualLayout.headline.maxWidth, h: visualLayout.headline.fontSize * visualLayout.headline.lineHeight * 3 };
         const subheadlineBox = { x: visualLayout.subheadline.x, y: visualLayout.subheadline.y, w: visualLayout.subheadline.maxWidth, h: visualLayout.subheadline.fontSize * visualLayout.subheadline.lineHeight * 3 };
         const noteBox = { x: visualLayout.note.x, y: visualLayout.note.y, w: Math.min(width * 0.52, width - visualLayout.note.x - padX), h: visualLayout.note.fontSize * 1.4 };
+        const galleryCount = Math.min(3, Math.max(1, state.gallery.count || 3));
+        const galleryCols = visualLayout.gallery.layoutMode === "column" ? 1 : (visualLayout.gallery.layoutMode === "grid-2-1" && galleryCount === 3 ? 2 : galleryCount);
+        const galleryRows = Math.ceil(galleryCount / galleryCols);
         const galleryBox = {
           x: visualLayout.gallery.x,
           y: visualLayout.gallery.y,
-          w: visualLayout.gallery.thumbWidth * Math.min(3, Math.max(1, state.gallery.count || 3)) + visualLayout.gallery.gap * 2,
-          h: visualLayout.gallery.thumbHeight,
+          w: galleryCols * visualLayout.gallery.thumbWidth + Math.max(0, galleryCols - 1) * visualLayout.gallery.gap,
+          h: galleryRows * visualLayout.gallery.thumbHeight + Math.max(0, galleryRows - 1) * visualLayout.gallery.gap,
           thumbWidth: visualLayout.gallery.thumbWidth,
           thumbHeight: visualLayout.gallery.thumbHeight,
           gap: visualLayout.gallery.gap,
@@ -2852,7 +3018,7 @@
         const logoBox = { x: visualLayout.logo.x, y: visualLayout.logo.y, w: visualLayout.logo.width, h: visualLayout.logo.width * 0.34, opacity: visualLayout.logo.opacity, capsuleEnabled: visualLayout.logo.capsuleEnabled, capsuleOpacity: visualLayout.logo.capsuleOpacity };
         const boxes = getLayoutBoxes(ctx, visualLayout, width, height);
         const layoutQa = detectLayoutIssues(boxes, width, height);
-        state.layout = { heroBox, textBox, subheadlineBox, noteBox, galleryBox, ctaBox, qrBox, logoBox };
+        state.layout = { heroBox, textBox, subheadlineBox, noteBox, galleryBox, ctaBox, qrBox, logoBox, conversionPanel: visualLayout.conversionPanel };
         state.layoutQa = layoutQa;
 
         const gradient = ctx.createLinearGradient(0, 0, width, height);
@@ -2895,6 +3061,17 @@
         drawTextFit(ctx, getValue("subheadline"), { x: visualLayout.subheadline.x, y: visualLayout.subheadline.y, w: visualLayout.subheadline.maxWidth, h: height - visualLayout.subheadline.y }, { fontSize: visualLayout.subheadline.fontSize, lineHeight: visualLayout.subheadline.lineHeight, opacity: visualLayout.subheadline.opacity, color: "rgba(21,18,14,0.78)", weight: "400" });
 
         drawGalleryIntoBox(ctx, galleryBox, !!options.editorMode);
+
+        if (visualLayout.conversionPanel && visualLayout.conversionPanel.enabled) {
+          ctx.save();
+          ctx.globalAlpha = visualLayout.conversionPanel.opacity == null ? 0.94 : visualLayout.conversionPanel.opacity;
+          ctx.fillStyle = "rgba(248,240,227,0.88)";
+          drawRoundRect(ctx, visualLayout.conversionPanel.x, visualLayout.conversionPanel.y, visualLayout.conversionPanel.width, visualLayout.conversionPanel.height, Math.max(18, 28 * s));
+          ctx.fill();
+          ctx.strokeStyle = "rgba(21,18,14,0.12)";
+          ctx.stroke();
+          ctx.restore();
+        }
 
         ctx.save();
         ctx.globalAlpha = visualLayout.cta.opacity;
@@ -2945,7 +3122,7 @@
         const layout = serializableVisualLayout();
         layout.layoutQa = cloneLayout(state.layoutQa || { status: "OK", warnings: [], errors: [] });
         return {
-          version: "0.3.8",
+          version: "0.3.9",
           exportType: "client-preview-package",
           generatedAt: new Date().toISOString(),
           brand: getValue("brand"),
@@ -3689,7 +3866,10 @@
         const preset = getActiveOutputPreset();
         const layout = ensureVisualLayoutState(preset.width, preset.height, false);
         compositionPreset.value = layout.compositionPreset || "auto-editorial";
-        visualModeStatus.textContent = layout.isManual ? "Modo manual activo." : ((compositionPreset.options[compositionPreset.selectedIndex] || {}).textContent || "Auto editorial activo.");
+        const profile = getVerticalCompositionProfile(preset);
+        const recommended = profile ? getRecommendedVerticalPreset(preset) : "";
+        applyVerticalRecommended.hidden = !(profile && layout.isManual);
+        visualModeStatus.textContent = layout.isManual && profile ? ("Modo manual activo. Preset recomendado: " + recommended + ".") : (layout.isManual ? "Modo manual activo." : ((compositionPreset.options[compositionPreset.selectedIndex] || {}).textContent || "Auto editorial activo."));
         visualControls.forEach((control) => {
           const path = control.dataset.vc;
           const value = getPathValue(layout, path);
@@ -3786,11 +3966,12 @@
         }
         const preset = getActiveOutputPreset();
         const base = createVisualLayoutState(preset.width, preset.height, "manual");
-        const allowed = ["media", "headline", "subheadline", "note", "gallery", "cta", "qr", "logo"];
+        const allowed = ["media", "headline", "subheadline", "note", "gallery", "cta", "qr", "logo", "conversionPanel"];
         allowed.forEach((section) => {
           if (parsed[section] && typeof parsed[section] === "object") base[section] = { ...base[section], ...parsed[section] };
         });
-        base.version = "0.3.8";
+        base.version = "0.3.9";
+        base.verticalProfile = parsed.verticalProfile || getVerticalCompositionProfile(preset);
         base.compositionPreset = parsed.compositionPreset || "manual";
         base.isManual = parsed.isManual !== false;
         base.guidesVisible = false;
@@ -3805,14 +3986,23 @@
 
       function updateLayerControls() {
         state.mediaMode = mainMediaMode.value;
+        const previousPresetId = state.output.presetId;
         state.output.presetId = outputPreset.value || state.output.presetId;
+        const outputChanged = previousPresetId !== state.output.presetId;
         if (!state.visualLayoutState) {
           const preset = getActiveOutputPreset();
           state.visualLayoutState = createVisualLayoutState(preset.width, preset.height, "auto-editorial");
           state.visualLayoutBase = { width: preset.width, height: preset.height };
         }
         const activePreset = getActiveOutputPreset();
-        ensureVisualLayoutState(activePreset.width, activePreset.height, false);
+        const profile = getVerticalCompositionProfile(activePreset);
+        if (outputChanged && profile && !state.visualLayoutState.isManual) {
+          const recommended = getRecommendedVerticalPreset(activePreset);
+          state.visualLayoutState = createVisualLayoutState(activePreset.width, activePreset.height, recommended);
+          state.visualLayoutBase = { width: activePreset.width, height: activePreset.height };
+        } else {
+          ensureVisualLayoutState(activePreset.width, activePreset.height, false);
+        }
         state.image.opacity = Number(imageOpacity.value);
         state.image.fit = imageFit.value;
         state.visualLayoutState.media.opacity = Number(imageOpacity.value);
@@ -4158,6 +4348,7 @@
           + "Tamano de salida   : " + (preset.width || "?") + " x " + (preset.height || "?") + " px\n"
           + "Ratio              : " + (preset.ratio || "?") + "\n"
           + "Orientacion        : " + (preset.orientation || "?") + "\n"
+          + "Vertical profile   : " + (visual.verticalProfile || "(no aplica)") + "\n"
           + "Preset composicion : " + (visual.compositionPreset || "(sin preset)") + "\n"
           + "Layout QA          : " + (qa.status || "OK") + "\n"
           + "Media fitMode      : " + ((visual.media && visual.media.fitMode) || "(sin media)") + "\n"
@@ -4330,6 +4521,12 @@
         }
       });
       compositionPreset.addEventListener("change", () => applyCompositionPreset(compositionPreset.value));
+      applyVerticalRecommended.addEventListener("click", () => {
+        const preset = getActiveOutputPreset();
+        const recommended = getRecommendedVerticalPreset(preset);
+        compositionPreset.value = recommended;
+        applyCompositionPreset(recommended);
+      });
       visualControls.forEach((control) => {
         const handler = () => {
           const path = control.dataset.vc;

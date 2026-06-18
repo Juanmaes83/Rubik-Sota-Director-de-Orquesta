@@ -83,3 +83,7 @@ The ZIP manifest version is `0.3.8` and includes `visualLayout.media`, `visualLa
 - Logo precision regression check from v0.3.7.
 - Sticky preview and zoom regression check from v0.3.6.
 - WebM dimension regression check from 425129a.
+
+## Follow-up v0.3.9
+
+v0.3.9 builds on the same `visualLayoutState` model and adds vertical composition profiles, dedicated vertical bases and `conversionPanel` serialization. The universal precision controls remain the manual override path.
