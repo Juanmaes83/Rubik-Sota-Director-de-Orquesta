@@ -12,8 +12,8 @@ Integrar Dynamic Motion Banners v0.3.9 en el Hub principal de Gesture Lab para q
 - Dynamic Motion Banners queda integrado como módulo activo.
 - Actualizados contadores del Hub:
   - 34 módulos.
-  - 10 activos.
-  - 24 en planificación.
+  - 11 activos.
+  - 23 en planificación.
 - Actualizado estado visual del Hub a v2.0.2.
 - Actualizado README del módulo.
 - Añadida documentación de integración v0.4.
