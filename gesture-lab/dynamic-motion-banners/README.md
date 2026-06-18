@@ -272,3 +272,18 @@ Same file as v0.3 (no route change). Adds format-aware premium composition for v
 
 - Conversion panel precision controls are serialized and rendered, but this phase does not add dedicated UI steppers for the panel itself.
 - QR scan validation remains pending until tested with a physical mobile reader.
+
+## Estado actual — v0.4 Hub Integration
+
+- Versión estable del editor: v0.3.9.
+- Tag estable: `dynamic-motion-banners-v0.3.9`.
+- Integrado en Gesture Lab Hub: v0.4.
+- Ruta del editor: `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-3.html`.
+- Exporta: PNG, HTML, ZIP y WebM.
+- Formatos: horizontal, vertical 9:16, vertical 4:5, MUPI print y custom.
+- Controles: media principal, texto, galería, CTA, QR y logo.
+- QR configurable.
+- Galería 0–3 imágenes.
+- Preview sticky con zoom.
+- Control preciso universal.
+- Motor multi-vertical premium.
