@@ -221,3 +221,28 @@ Same file as v0.3 (no route change). Fixes logo control precision by aligning th
 
 - Numeric steppers are limited to logo controls in this phase. Similar steppers for headline, gallery, CTA and QR can be evaluated in a later phase.
 - QR scan validation remains pending until tested with a physical mobile reader.
+
+## v0.3.8 - Universal Precision Controls
+
+Same file as v0.3 (no route change). Extends real-pixel precision controls from logo to the main editable composition blocks.
+
+### Added
+
+- `visualLayoutState.media` as the exportable source of truth for the main image/video frame.
+- Numeric steppers for media frame X/Y/width/height, internal scale and internal offsets.
+- Numeric steppers for headline, subheadline, note, gallery, CTA and QR layout values.
+- Shared stepper behavior: `-10`, `-1`, numeric input, `+1`, `+10`, with decimal deltas where relevant.
+- Main media fit mode now writes to `visualLayoutState.media.fitMode`.
+- Main media layer mode now writes to `visualLayoutState.media.layerMode`.
+- ZIP manifest version `0.3.8` includes `visualLayout.media`.
+
+### Export guarantees
+
+- Editor preview, PNG, HTML, ZIP and WebM continue to render through `drawCreative()`.
+- Preview zoom, focus state and panel scroll remain editor-only.
+- Main media, text, gallery, CTA, QR and logo all use real preset coordinates, not CSS or viewport measurements.
+
+### v0.3.8 known limitations
+
+- Layer order remains fixed to preserve previous behavior.
+- QR scan validation remains pending until tested with a physical mobile reader.

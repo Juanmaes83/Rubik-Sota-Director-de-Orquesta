@@ -57,3 +57,7 @@ PNG, HTML, ZIP and WebM continue to render through `drawCreative()` and use `vis
 ## Deferred
 
 The numeric stepper pattern was not extended to headline, gallery, CTA or QR in this phase to keep the fix focused on the logo issue.
+
+## Follow-up v0.3.8
+
+The next microphase extends the same numeric stepper pattern to media, headline, subheadline, note, gallery, CTA and QR. It also adds `visualLayoutState.media` so image/video frame controls use the same real-pixel source of truth as exports.

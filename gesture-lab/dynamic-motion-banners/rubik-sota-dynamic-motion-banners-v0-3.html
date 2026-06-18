@@ -714,6 +714,15 @@
       text-align: right;
     }
 
+    .precision-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .visual-control.is-stepper-backed {
+      display: none;
+    }
+
     .layout-json-box {
       min-height: 88px;
       font-family: Consolas, Menlo, monospace;
@@ -1018,17 +1027,17 @@
                 <option value="both">Ambos</option>
               </select>
             </div>
+            <p class="help-copy">Marco y contenido en pixeles reales del formato. El zoom no afecta a la descarga.</p>
+            <div id="media-precision-controls" class="precision-grid" aria-label="Controles precisos de media principal"></div>
             <div class="field">
               <label for="image-fit">Modo de encaje</label>
               <select id="image-fit">
                 <option value="cover">Cover</option>
                 <option value="contain">Contain</option>
-                <option value="stretch">Stretch</option>
+                <option value="fill">Fill</option>
+                <option value="manual">Manual</option>
               </select>
             </div>
-            <label class="control-row" for="image-scale">Escala imagen <span id="image-scale-value">1.00</span><input id="image-scale" type="range" min="0.5" max="2.5" step="0.05" value="1"></label>
-            <label class="control-row" for="image-offset-x">Posicion X <span id="image-offset-x-value">0</span><input id="image-offset-x" type="range" min="-300" max="300" step="5" value="0"></label>
-            <label class="control-row" for="image-offset-y">Posicion Y <span id="image-offset-y-value">0</span><input id="image-offset-y" type="range" min="-300" max="300" step="5" value="0"></label>
             <label class="control-row" for="image-opacity">Opacidad <span id="image-opacity-value">1.00</span><input id="image-opacity" type="range" min="0" max="1" step="0.05" value="1"></label>
             <button id="image-reset" class="control-button subtle" type="button">Reset imagen</button>
           </section>
@@ -1188,6 +1197,7 @@
             <details class="visual-panel" open>
               <summary>Titular</summary>
               <div class="visual-panel-body">
+                <div id="headline-precision-controls" class="precision-grid" aria-label="Controles precisos de titular"></div>
                 <label class="visual-control">X <span id="vc-headline-x-value">0 px</span><input data-vc="headline.x" id="vc-headline-x" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">Y <span id="vc-headline-y-value">0 px</span><input data-vc="headline.y" id="vc-headline-y" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">Tamano <span id="vc-headline-fontSize-value">0 px</span><input data-vc="headline.fontSize" id="vc-headline-fontSize" type="range" min="24" max="180" step="1"></label>
@@ -1201,6 +1211,7 @@
             <details class="visual-panel">
               <summary>Subtitulo / nota</summary>
               <div class="visual-panel-body">
+                <div id="subheadline-precision-controls" class="precision-grid" aria-label="Controles precisos de subtitulo"></div>
                 <label class="visual-control">Subtitulo X <span id="vc-subheadline-x-value">0 px</span><input data-vc="subheadline.x" id="vc-subheadline-x" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">Subtitulo Y <span id="vc-subheadline-y-value">0 px</span><input data-vc="subheadline.y" id="vc-subheadline-y" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">Subtitulo tamano <span id="vc-subheadline-fontSize-value">0 px</span><input data-vc="subheadline.fontSize" id="vc-subheadline-fontSize" type="range" min="16" max="80" step="1"></label>
@@ -1208,6 +1219,7 @@
                 <label class="visual-control">Subtitulo interlineado <span id="vc-subheadline-lineHeight-value">1.10</span><input data-vc="subheadline.lineHeight" id="vc-subheadline-lineHeight" type="range" min="0.9" max="1.5" step="0.01"></label>
                 <label class="visual-control">Subtitulo opacidad <span id="vc-subheadline-opacity-value">1.00</span><input data-vc="subheadline.opacity" id="vc-subheadline-opacity" type="range" min="0" max="1" step="0.01"></label>
                 <button id="vc-reset-subheadline" class="control-button subtle" type="button">Reset subtitulo</button>
+                <div id="note-precision-controls" class="precision-grid" aria-label="Controles precisos de nota"></div>
                 <label class="visual-control">Nota X <span id="vc-note-x-value">0 px</span><input data-vc="note.x" id="vc-note-x" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">Nota Y <span id="vc-note-y-value">0 px</span><input data-vc="note.y" id="vc-note-y" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">Nota tamano <span id="vc-note-fontSize-value">0 px</span><input data-vc="note.fontSize" id="vc-note-fontSize" type="range" min="12" max="48" step="1"></label>
@@ -1218,6 +1230,7 @@
             <details class="visual-panel" open>
               <summary>Galeria</summary>
               <div class="visual-panel-body">
+                <div id="gallery-precision-controls" class="precision-grid" aria-label="Controles precisos de galeria"></div>
                 <label class="visual-control">X <span id="vc-gallery-x-value">0 px</span><input data-vc="gallery.x" id="vc-gallery-x" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">Y <span id="vc-gallery-y-value">0 px</span><input data-vc="gallery.y" id="vc-gallery-y" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">Ancho miniatura <span id="vc-gallery-thumbWidth-value">0 px</span><input data-vc="gallery.thumbWidth" id="vc-gallery-thumbWidth" type="range" min="80" max="600" step="1"></label>
@@ -1231,6 +1244,7 @@
             <details class="visual-panel" open>
               <summary>CTA / QR</summary>
               <div class="visual-panel-body">
+                <div id="cta-precision-controls" class="precision-grid" aria-label="Controles precisos de CTA"></div>
                 <label class="visual-control">CTA X <span id="vc-cta-x-value">0 px</span><input data-vc="cta.x" id="vc-cta-x" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">CTA Y <span id="vc-cta-y-value">0 px</span><input data-vc="cta.y" id="vc-cta-y" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">CTA ancho <span id="vc-cta-width-value">0 px</span><input data-vc="cta.width" id="vc-cta-width" type="range" min="160" max="700" step="1"></label>
@@ -1238,6 +1252,7 @@
                 <label class="visual-control">CTA texto <span id="vc-cta-fontSize-value">0 px</span><input data-vc="cta.fontSize" id="vc-cta-fontSize" type="range" min="16" max="72" step="1"></label>
                 <label class="visual-control">CTA opacidad <span id="vc-cta-opacity-value">1.00</span><input data-vc="cta.opacity" id="vc-cta-opacity" type="range" min="0" max="1" step="0.01"></label>
                 <button id="vc-reset-cta" class="control-button subtle" type="button">Reset CTA</button>
+                <div id="qr-precision-controls" class="precision-grid" aria-label="Controles precisos de QR"></div>
                 <label class="visual-control">QR X <span id="vc-qr-x-value">0 px</span><input data-vc="qr.x" id="vc-qr-x" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">QR Y <span id="vc-qr-y-value">0 px</span><input data-vc="qr.y" id="vc-qr-y" type="range" min="0" max="4096" step="1"></label>
                 <label class="visual-control">QR tamano <span id="vc-qr-size-value">0 px</span><input data-vc="qr.size" id="vc-qr-size" type="range" min="80" max="360" step="1"></label>
@@ -1377,9 +1392,6 @@
       const presetButtons = Array.from(document.querySelectorAll("[data-preset]"));
       const appShell = document.querySelector(".app-shell");
       const mainMediaMode = document.getElementById("main-media-mode");
-      const imageScale = document.getElementById("image-scale");
-      const imageOffsetX = document.getElementById("image-offset-x");
-      const imageOffsetY = document.getElementById("image-offset-y");
       const imageOpacity = document.getElementById("image-opacity");
       const imageFit = document.getElementById("image-fit");
       const imageReset = document.getElementById("image-reset");
@@ -2287,13 +2299,14 @@
         const qrX = horizontal ? width - padX - qrSize - ctaW * 0.16 : width - padX - qrSize;
         const qrY = horizontal ? ctaY + ctaH + height * 0.035 : ctaY;
         return {
-          version: "0.3.7",
+          version: "0.3.8",
           compositionPreset: presetId,
           isManual: presetId === "manual",
           guidesVisible: false,
           safeAreasVisible: false,
           overlapBoxesVisible: false,
           liveQa: true,
+          media: { x: padX, y: heroY, width: width - padX * 2, height: heroH, scale: 1, offsetX: 0, offsetY: 0, opacity: 1, fitMode: "cover", layerMode: state.mediaMode || "image" },
           headline: { x: padX, y: textY, fontSize: headlineSize, maxWidth: textWidth, lineHeight: compact ? 0.92 : 1.02, letterSpacing: compact ? -1 : 0, opacity: 1 },
           subheadline: { x: padX + width * 0.002, y: textY + headlineSize * (compact ? 2.3 : 2.55), fontSize: subSize, maxWidth: textWidth * (compact ? 0.94 : 1), lineHeight: compact ? 1.05 : 1.18, opacity: minimal ? 0.84 : 1 },
           note: { x: padX, y: height - Math.max((horizontal ? 42 : 72) * sy, height * (horizontal ? 0.04 : 0.07)), fontSize: Math.max(12, Math.round(22 * s)), opacity: minimal ? 0.78 : 1 },
@@ -2309,11 +2322,11 @@
         const sx = toW / Math.max(1, fromW);
         const sy = toH / Math.max(1, fromH);
         const s = Math.min(sx, sy);
-        ["headline", "subheadline", "note", "gallery", "cta", "qr", "logo"].forEach((section) => {
+        ["media", "headline", "subheadline", "note", "gallery", "cta", "qr", "logo"].forEach((section) => {
           const item = scaled[section];
           if (!item) return;
-          ["x", "width", "maxWidth", "thumbWidth", "gap", "size", "urlOffsetY"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sx); });
-          ["y", "height", "thumbHeight"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sy); });
+          ["x", "width", "maxWidth", "thumbWidth", "gap", "size", "urlOffsetY", "offsetX"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sx); });
+          ["y", "height", "thumbHeight", "offsetY"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.round(item[key] * sy); });
           ["fontSize", "urlFontSize"].forEach((key) => { if (typeof item[key] === "number") item[key] = Math.max(1, Math.round(item[key] * s)); });
         });
         return scaled;
@@ -2332,6 +2345,11 @@
           }
           state.visualLayoutBase = { width, height };
         }
+        if (!state.visualLayoutState.media) {
+          const fresh = createVisualLayoutState(width, height, state.visualLayoutState.compositionPreset || "auto-editorial");
+          state.visualLayoutState.media = fresh.media;
+        }
+        state.visualLayoutState.version = "0.3.8";
         const layout = cloneLayout(state.visualLayoutState);
         if (exportMode) {
           layout.guidesVisible = false;
@@ -2361,6 +2379,100 @@
         const number = Number(value);
         if (!Number.isFinite(number)) return min;
         return Math.min(max, Math.max(min, Math.round(number)));
+      }
+
+      function parseNumericInput(value) {
+        if (typeof value === "string") value = value.trim().replace(",", ".");
+        const number = Number(value);
+        return Number.isFinite(number) ? number : null;
+      }
+
+      function clampPrecisionValue(value, min, max, decimals) {
+        const parsed = parseNumericInput(value);
+        if (parsed == null) return null;
+        const clamped = Math.min(max, Math.max(min, parsed));
+        const factor = Math.pow(10, decimals || 0);
+        return Math.round(clamped * factor) / factor;
+      }
+
+      function formatPrecisionValue(value, decimals) {
+        return (decimals || 0) > 0 ? Number(value).toFixed(decimals) : String(Math.round(Number(value)));
+      }
+
+      function precisionBounds(config) {
+        const preset = getActiveOutputPreset();
+        const min = typeof config.min === "function" ? config.min(preset) : config.min;
+        const max = typeof config.max === "function" ? config.max(preset) : config.max;
+        return { min, max };
+      }
+
+      const precisionControls = [];
+
+      function createNumericStepperControl(config) {
+        const mount = document.getElementById(config.mountId);
+        if (!mount) return null;
+        const wrapper = document.createElement("div");
+        wrapper.className = "numeric-stepper";
+        wrapper.dataset.precisionPath = config.path;
+        wrapper.innerHTML = ""
+          + "<div class=\"numeric-stepper-label\"><span>" + config.label + "</span><span>" + (config.unit || "") + "</span></div>"
+          + "<div class=\"numeric-stepper-row\">"
+          + "<button type=\"button\" data-step=\"large-neg\">" + (config.largeNegLabel || ("-" + config.stepLarge)) + "</button>"
+          + "<button type=\"button\" data-step=\"small-neg\">" + (config.smallNegLabel || ("-" + config.stepSmall)) + "</button>"
+          + "<input id=\"" + config.id + "\" type=\"text\" inputmode=\"decimal\" aria-label=\"" + config.label + "\">"
+          + "<button type=\"button\" data-step=\"small-pos\">" + (config.smallPosLabel || ("+" + config.stepSmall)) + "</button>"
+          + "<button type=\"button\" data-step=\"large-pos\">" + (config.largePosLabel || ("+" + config.stepLarge)) + "</button>"
+          + "</div>";
+        mount.appendChild(wrapper);
+        const input = wrapper.querySelector("input");
+        const apply = (raw, fallback) => {
+          const bounds = precisionBounds(config);
+          let next = clampPrecisionValue(raw, bounds.min, bounds.max, config.decimals || 0);
+          if (next == null) next = fallback;
+          input.value = formatPrecisionValue(next, config.decimals || 0);
+          setManualVisualControl(config.path, next);
+          syncVisualControls();
+        };
+        wrapper.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => {
+            const current = parseNumericInput(input.value);
+            const fallback = getPathValue(state.visualLayoutState, config.path);
+            const base = current == null ? fallback : current;
+            const deltaMap = {
+              "large-neg": -config.stepLarge,
+              "small-neg": -config.stepSmall,
+              "small-pos": config.stepSmall,
+              "large-pos": config.stepLarge
+            };
+            apply(base + deltaMap[button.dataset.step], fallback);
+          });
+        });
+        input.addEventListener("change", () => apply(input.value, getPathValue(state.visualLayoutState, config.path)));
+        input.addEventListener("blur", () => apply(input.value, getPathValue(state.visualLayoutState, config.path)));
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            apply(input.value, getPathValue(state.visualLayoutState, config.path));
+          }
+        });
+        const source = document.querySelector("[data-vc=\"" + config.path + "\"]");
+        if (source && source.closest(".visual-control")) source.closest(".visual-control").classList.add("is-stepper-backed");
+        const control = { ...config, input };
+        precisionControls.push(control);
+        return control;
+      }
+
+      function syncPrecisionControls(layout) {
+        const preset = getActiveOutputPreset();
+        const source = layout || ensureVisualLayoutState(preset.width, preset.height, false);
+        precisionControls.forEach((control) => {
+          const bounds = precisionBounds(control);
+          const value = clampPrecisionValue(getPathValue(source, control.path), bounds.min, bounds.max, control.decimals || 0);
+          control.input.min = String(bounds.min);
+          control.input.max = String(bounds.max);
+          control.input.step = String(control.stepSmall);
+          if (value != null) control.input.value = formatPrecisionValue(value, control.decimals || 0);
+        });
       }
 
       function logoPrecisionBounds(key) {
@@ -2466,7 +2578,7 @@
         const galleryCols = layout.gallery.layoutMode === "column" ? 1 : (layout.gallery.layoutMode === "grid-2-1" || (layout.gallery.layoutMode === "auto" && width < height) ? 2 : galleryCount);
         const galleryRows = Math.ceil(galleryCount / galleryCols);
         return {
-          media: { x: width * 0.065, y: height * 0.18, w: width * 0.87, h: height * 0.3 },
+          media: { x: layout.media.x, y: layout.media.y, w: layout.media.width, h: layout.media.height },
           headline: headlineFit.boundingBox,
           subheadline: subFit.boundingBox,
           note: { x: layout.note.x, y: layout.note.y, w: width * 0.46, h: layout.note.fontSize * 1.3 },
@@ -2494,6 +2606,7 @@
         if (boxOutside(boxes.qr, canvasWidth, canvasHeight)) errors.push("QR fuera del canvas.");
         if (boxFullyOutside(boxes.headline, canvasWidth, canvasHeight)) errors.push("Titular completamente fuera del canvas.");
         if (boxFullyOutside(boxes.gallery, canvasWidth, canvasHeight)) errors.push("Galeria completamente fuera del canvas.");
+        if (boxFullyOutside(boxes.media, canvasWidth, canvasHeight)) warnings.push("Media principal fuera del canvas.");
         if (state.logo.visible && boxes.logo.opacity !== 0 && boxFullyOutside(boxes.logo, canvasWidth, canvasHeight)) errors.push("Logo fuera del canvas.");
         else if (state.logo.visible && boxes.logo.opacity !== 0 && boxOutside(boxes.logo, canvasWidth, canvasHeight)) warnings.push("Logo parcialmente fuera del canvas.");
         Object.entries(boxes).forEach(([name, box]) => {
@@ -2503,7 +2616,7 @@
         if (computeBoxOverlap(boxes.gallery, boxes.subheadline)) warnings.push("Galeria solapa subtitulo.");
         if (computeBoxOverlap(boxes.gallery, boxes.note)) warnings.push("Galeria solapa nota inferior.");
         if (computeBoxOverlap(boxes.gallery, boxes.cta)) warnings.push("Galeria solapa CTA.");
-        if (computeBoxOverlap(boxes.gallery, boxes.qr)) warnings.push("Galeria solapa QR.");
+        if (computeBoxOverlap(boxes.gallery, boxes.qr)) errors.push("Galeria solapa QR.");
         if (computeBoxOverlap(boxes.qr, boxes.cta)) warnings.push("QR solapa CTA.");
         if (computeBoxOverlap(boxes.qr, boxes.headline) || computeBoxOverlap(boxes.qr, boxes.subheadline)) warnings.push("QR solapa texto.");
         if (boxes.qrUrl.y + boxes.qrUrl.h > canvasHeight) warnings.push("URL debajo del QR puede cortarse.");
@@ -2718,12 +2831,7 @@
         const padX = Math.max(40 * sx, width * 0.065);
         const topBandH = Math.max(92 * sy, height * 0.12);
         const accentH = Math.max(6, height * 0.008);
-        const heroBox = {
-          x: padX,
-          y: topBandH + Math.max(42 * sy, height * 0.055),
-          w: width - padX * 2,
-          h: Math.max(height * 0.24, 230 * sy)
-        };
+        const heroBox = { x: visualLayout.media.x, y: visualLayout.media.y, w: visualLayout.media.width, h: visualLayout.media.height };
         const textBox = { x: visualLayout.headline.x, y: visualLayout.headline.y, w: visualLayout.headline.maxWidth, h: visualLayout.headline.fontSize * visualLayout.headline.lineHeight * 3 };
         const subheadlineBox = { x: visualLayout.subheadline.x, y: visualLayout.subheadline.y, w: visualLayout.subheadline.maxWidth, h: visualLayout.subheadline.fontSize * visualLayout.subheadline.lineHeight * 3 };
         const noteBox = { x: visualLayout.note.x, y: visualLayout.note.y, w: Math.min(width * 0.52, width - visualLayout.note.x - padX), h: visualLayout.note.fontSize * 1.4 };
@@ -2762,10 +2870,13 @@
 
         const canDrawImage = state.mainImageElement && state.mainImageElement.naturalWidth;
         const canDrawVideo = state.videoElement && state.videoElement.readyState >= 2 && state.videoElement.videoWidth;
-        if (canDrawImage && (state.mediaMode === "image" || state.mediaMode === "both" || !canDrawVideo)) {
-          drawMedia(ctx, state.mainImageElement, "image", heroBox.x, heroBox.y, heroBox.w, heroBox.h, state.image);
-        } else if (canDrawVideo && state.mediaMode === "video") {
-          drawMedia(ctx, state.videoElement, "video", heroBox.x, heroBox.y, heroBox.w, heroBox.h, { fit: "cover", scale: 1, offsetX: 0, offsetY: 0, opacity: 1 });
+        const mediaMode = visualLayout.media.layerMode || state.mediaMode;
+        const mediaOptions = { fit: visualLayout.media.fitMode || state.image.fit || "cover", scale: visualLayout.media.scale || 1, offsetX: visualLayout.media.offsetX || 0, offsetY: visualLayout.media.offsetY || 0, opacity: visualLayout.media.opacity == null ? 1 : visualLayout.media.opacity };
+        if (canDrawImage && (mediaMode === "image" || mediaMode === "both" || !canDrawVideo)) {
+          drawMedia(ctx, state.mainImageElement, "image", heroBox.x, heroBox.y, heroBox.w, heroBox.h, mediaOptions);
+          if (canDrawVideo && mediaMode === "both") drawMedia(ctx, state.videoElement, "video", heroBox.x, heroBox.y, heroBox.w, heroBox.h, { ...mediaOptions, opacity: mediaOptions.opacity * 0.58 });
+        } else if (canDrawVideo && (mediaMode === "video" || mediaMode === "both")) {
+          drawMedia(ctx, state.videoElement, "video", heroBox.x, heroBox.y, heroBox.w, heroBox.h, mediaOptions);
         } else {
           const visual = ctx.createLinearGradient(heroBox.x, heroBox.y, heroBox.x + heroBox.w, heroBox.y + heroBox.h);
           visual.addColorStop(0, palette[3]);
@@ -2834,7 +2945,7 @@
         const layout = serializableVisualLayout();
         layout.layoutQa = cloneLayout(state.layoutQa || { status: "OK", warnings: [], errors: [] });
         return {
-          version: "0.3.7",
+          version: "0.3.8",
           exportType: "client-preview-package",
           generatedAt: new Date().toISOString(),
           brand: getValue("brand"),
@@ -2909,7 +3020,7 @@
         const offsetY = options.offsetY || 0;
         const opacity = options.opacity == null ? 1 : options.opacity;
 
-        if (fit === "stretch") {
+        if (fit === "stretch" || fit === "fill") {
           sx = 0;
           sy = 0;
           sw = sourceWidth;
@@ -2933,7 +3044,7 @@
         ctx.rect(x, y, w, h);
         ctx.clip();
         ctx.globalAlpha = opacity;
-        if (fit === "stretch") {
+        if (fit === "stretch" || fit === "fill") {
           ctx.drawImage(media, sx, sy, sw, sh, x + offsetX, y + offsetY, w * scale, h * scale);
         } else {
           const drawW = baseW * scale;
@@ -3553,9 +3664,6 @@
       }
 
       function syncControlLabels() {
-        document.getElementById("image-scale-value").textContent = Number(imageScale.value).toFixed(2);
-        document.getElementById("image-offset-x-value").textContent = imageOffsetX.value;
-        document.getElementById("image-offset-y-value").textContent = imageOffsetY.value;
         document.getElementById("image-opacity-value").textContent = Number(imageOpacity.value).toFixed(2);
         document.getElementById("logo-opacity-value").textContent = Number(logoOpacity.value).toFixed(2);
         document.getElementById("audio-volume-value").textContent = Number(audioVolume.value).toFixed(2);
@@ -3597,6 +3705,11 @@
         safeAreasVisible.checked = !!layout.safeAreasVisible;
         overlapVisible.checked = !!layout.overlapBoxesVisible;
         liveQa.checked = layout.liveQa !== false;
+        syncPrecisionControls(layout);
+        imageOpacity.value = String(layout.media.opacity == null ? 1 : layout.media.opacity);
+        imageFit.value = layout.media.fitMode || "cover";
+        mainMediaMode.value = layout.media.layerMode || state.mediaMode || "image";
+        document.getElementById("image-opacity-value").textContent = Number(imageOpacity.value).toFixed(2);
         syncLogoPrecisionControls(layout);
         logoOpacity.value = String(layout.logo.opacity == null ? 1 : layout.logo.opacity);
         document.getElementById("logo-opacity-value").textContent = Number(logoOpacity.value).toFixed(2);
@@ -3673,11 +3786,11 @@
         }
         const preset = getActiveOutputPreset();
         const base = createVisualLayoutState(preset.width, preset.height, "manual");
-        const allowed = ["headline", "subheadline", "note", "gallery", "cta", "qr", "logo"];
+        const allowed = ["media", "headline", "subheadline", "note", "gallery", "cta", "qr", "logo"];
         allowed.forEach((section) => {
           if (parsed[section] && typeof parsed[section] === "object") base[section] = { ...base[section], ...parsed[section] };
         });
-        base.version = "0.3.7";
+        base.version = "0.3.8";
         base.compositionPreset = parsed.compositionPreset || "manual";
         base.isManual = parsed.isManual !== false;
         base.guidesVisible = false;
@@ -3698,11 +3811,13 @@
           state.visualLayoutState = createVisualLayoutState(preset.width, preset.height, "auto-editorial");
           state.visualLayoutBase = { width: preset.width, height: preset.height };
         }
-        state.image.scale = Number(imageScale.value);
-        state.image.offsetX = Number(imageOffsetX.value);
-        state.image.offsetY = Number(imageOffsetY.value);
+        const activePreset = getActiveOutputPreset();
+        ensureVisualLayoutState(activePreset.width, activePreset.height, false);
         state.image.opacity = Number(imageOpacity.value);
         state.image.fit = imageFit.value;
+        state.visualLayoutState.media.opacity = Number(imageOpacity.value);
+        state.visualLayoutState.media.fitMode = imageFit.value;
+        state.visualLayoutState.media.layerMode = mainMediaMode.value;
         state.logo.opacity = Number(logoOpacity.value);
         state.logo.visible = logoVisible.checked;
         state.logo.fit = logoFit.value;
@@ -3824,11 +3939,9 @@
       }
 
       function resetImageControls() {
-        imageScale.value = "1";
-        imageOffsetX.value = "0";
-        imageOffsetY.value = "0";
         imageOpacity.value = "1";
         imageFit.value = "cover";
+        resetVisualSection("media");
         updateLayerControls();
       }
 
@@ -4047,6 +4160,7 @@
           + "Orientacion        : " + (preset.orientation || "?") + "\n"
           + "Preset composicion : " + (visual.compositionPreset || "(sin preset)") + "\n"
           + "Layout QA          : " + (qa.status || "OK") + "\n"
+          + "Media fitMode      : " + ((visual.media && visual.media.fitMode) || "(sin media)") + "\n"
           + "Generado           : " + generated + "\n\n"
           + (qa.warnings && qa.warnings.length ? "Warnings layout\n---------------\n- " + qa.warnings.join("\n- ") + "\n\n" : "")
           + (qa.errors && qa.errors.length ? "Errores layout\n-------------\n- " + qa.errors.join("\n- ") + "\n\n" : "")
@@ -4120,12 +4234,51 @@
       });
       outputPreset.value = state.output.presetId;
 
+      [
+        { mountId: "media-precision-controls", id: "media-precision-x", label: "Media X", path: "media.x", min: (p) => -p.width, max: (p) => p.width * 2, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "media-precision-controls", id: "media-precision-y", label: "Media Y", path: "media.y", min: (p) => -p.height, max: (p) => p.height * 2, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "media-precision-controls", id: "media-precision-width", label: "Media ancho", path: "media.width", min: 50, max: (p) => p.width * 2, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "media-precision-controls", id: "media-precision-height", label: "Media alto", path: "media.height", min: 50, max: (p) => p.height * 2, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "media-precision-controls", id: "media-precision-scale", label: "Escala interna", path: "media.scale", min: 0.1, max: 5, stepSmall: 0.01, stepLarge: 0.1, decimals: 2, unit: "x" },
+        { mountId: "media-precision-controls", id: "media-precision-offset-x", label: "Offset X interno", path: "media.offsetX", min: (p) => -p.width, max: (p) => p.width, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "media-precision-controls", id: "media-precision-offset-y", label: "Offset Y interno", path: "media.offsetY", min: (p) => -p.height, max: (p) => p.height, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "headline-precision-controls", id: "headline-precision-x", label: "Titular X", path: "headline.x", min: -500, max: (p) => p.width + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "headline-precision-controls", id: "headline-precision-y", label: "Titular Y", path: "headline.y", min: -500, max: (p) => p.height + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "headline-precision-controls", id: "headline-precision-font-size", label: "Titular tamano", path: "headline.fontSize", min: 12, max: 220, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "headline-precision-controls", id: "headline-precision-max-width", label: "Titular ancho max", path: "headline.maxWidth", min: 80, max: (p) => p.width, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "headline-precision-controls", id: "headline-precision-line-height", label: "Titular interlineado", path: "headline.lineHeight", min: 0.6, max: 1.8, stepSmall: 0.01, stepLarge: 0.1, decimals: 2, unit: "" },
+        { mountId: "headline-precision-controls", id: "headline-precision-letter-spacing", label: "Titular letter spacing", path: "headline.letterSpacing", min: -10, max: 20, stepSmall: 0.1, stepLarge: 1, decimals: 1, unit: "px" },
+        { mountId: "subheadline-precision-controls", id: "subheadline-precision-x", label: "Subtitulo X", path: "subheadline.x", min: -500, max: (p) => p.width + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "subheadline-precision-controls", id: "subheadline-precision-y", label: "Subtitulo Y", path: "subheadline.y", min: -500, max: (p) => p.height + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "subheadline-precision-controls", id: "subheadline-precision-font-size", label: "Subtitulo tamano", path: "subheadline.fontSize", min: 8, max: 120, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "subheadline-precision-controls", id: "subheadline-precision-max-width", label: "Subtitulo ancho max", path: "subheadline.maxWidth", min: 80, max: (p) => p.width, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "subheadline-precision-controls", id: "subheadline-precision-line-height", label: "Subtitulo interlineado", path: "subheadline.lineHeight", min: 0.6, max: 1.8, stepSmall: 0.01, stepLarge: 0.1, decimals: 2, unit: "" },
+        { mountId: "note-precision-controls", id: "note-precision-x", label: "Nota X", path: "note.x", min: -500, max: (p) => p.width + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "note-precision-controls", id: "note-precision-y", label: "Nota Y", path: "note.y", min: -500, max: (p) => p.height + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "note-precision-controls", id: "note-precision-font-size", label: "Nota tamano", path: "note.fontSize", min: 6, max: 80, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "gallery-precision-controls", id: "gallery-precision-x", label: "Galeria X", path: "gallery.x", min: -500, max: (p) => p.width + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "gallery-precision-controls", id: "gallery-precision-y", label: "Galeria Y", path: "gallery.y", min: -500, max: (p) => p.height + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "gallery-precision-controls", id: "gallery-precision-thumb-width", label: "Miniatura ancho", path: "gallery.thumbWidth", min: 40, max: (p) => p.width, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "gallery-precision-controls", id: "gallery-precision-thumb-height", label: "Miniatura alto", path: "gallery.thumbHeight", min: 30, max: (p) => p.height, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "gallery-precision-controls", id: "gallery-precision-gap", label: "Galeria separacion", path: "gallery.gap", min: 0, max: 160, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "cta-precision-controls", id: "cta-precision-x", label: "CTA X", path: "cta.x", min: -500, max: (p) => p.width + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "cta-precision-controls", id: "cta-precision-y", label: "CTA Y", path: "cta.y", min: -500, max: (p) => p.height + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "cta-precision-controls", id: "cta-precision-width", label: "CTA ancho", path: "cta.width", min: 80, max: (p) => p.width, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "cta-precision-controls", id: "cta-precision-height", label: "CTA alto", path: "cta.height", min: 32, max: (p) => p.height, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "cta-precision-controls", id: "cta-precision-font-size", label: "CTA texto", path: "cta.fontSize", min: 8, max: 120, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "qr-precision-controls", id: "qr-precision-x", label: "QR X", path: "qr.x", min: -500, max: (p) => p.width + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "qr-precision-controls", id: "qr-precision-y", label: "QR Y", path: "qr.y", min: -500, max: (p) => p.height + 500, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "qr-precision-controls", id: "qr-precision-size", label: "QR tamano", path: "qr.size", min: 40, max: 520, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "qr-precision-controls", id: "qr-precision-url-offset-y", label: "QR URL offset Y", path: "qr.urlOffsetY", min: -120, max: 180, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" },
+        { mountId: "qr-precision-controls", id: "qr-precision-url-font-size", label: "QR URL tamano", path: "qr.urlFontSize", min: 6, max: 60, stepSmall: 1, stepLarge: 10, decimals: 0, unit: "px" }
+      ].forEach(createNumericStepperControl);
+
       Object.values(controls).forEach((control) => {
         control.addEventListener("input", () => {
           state.textureDirty = true;
         });
       });
-      [mainMediaMode, imageScale, imageOffsetX, imageOffsetY, imageOpacity, imageFit, logoFit, logoCard, logoVisible, galleryEnabled, galleryCount, qrType, controls.qr, outputPreset, customOutputWidth, customOutputHeight, audioVolume, audioMuted, audioLoop].forEach((control) => {
+      [mainMediaMode, imageOpacity, imageFit, logoFit, logoCard, logoVisible, galleryEnabled, galleryCount, qrType, controls.qr, outputPreset, customOutputWidth, customOutputHeight, audioVolume, audioMuted, audioLoop].forEach((control) => {
         control.addEventListener("input", updateLayerControls);
         control.addEventListener("change", updateLayerControls);
       });
