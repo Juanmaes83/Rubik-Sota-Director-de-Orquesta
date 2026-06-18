@@ -287,3 +287,44 @@ Same file as v0.3 (no route change). Adds format-aware premium composition for v
 - Preview sticky con zoom.
 - Control preciso universal.
 - Motor multi-vertical premium.
+
+## v0.4 — Gesture Interactive Edition
+
+Proxima fase aprobada para una version experimental separada con interaccion gestual.
+
+Archivo previsto:
+
+`gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-4-gesture.html`
+
+Base:
+
+`gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-3.html`
+
+Reglas de fase:
+
+- No tocar ni romper la version estable v0.3.
+- No conectar todavia al Hub.
+- Mantener exportaciones existentes siempre que sea posible.
+- Ampliar el pipeline gestual validado, no sustituirlo.
+
+Componentes previstos:
+
+- `InputManager`
+- `HandTrackingAdapter`
+- `GestureClassifier`
+- `GestureStabilizer`
+- `BannerPhysicsController`
+- `FallbackManager`
+- `ExportManager`
+- `QA/Debug Panel`
+
+Gestos MVP:
+
+- mouse drag = mover/deformar banderola;
+- touch drag = mover/deformar banderola;
+- open palm = viento / mover suavemente;
+- pinch = agarrar punto de banderola;
+- pinch + drag = estirar/deformar;
+- swipe = latigazo visual / cambio de estado;
+- palma quieta = reset suave;
+- mano sobre QR = iluminar/ampliar CTA.

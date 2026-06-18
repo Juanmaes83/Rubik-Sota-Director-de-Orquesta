@@ -35,6 +35,16 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 08 - Interactive Gesture Catalog / Retail Catalog - Disponible - v2.7
 - 09 - Interactive Retail Window - Disponible - v2.8
 
+### Dynamic Motion Banners v0.4 — Gesture Interactive Edition
+
+Estrategia aprobada para preparar una version gestual separada de Dynamic Motion Banners.
+
+- Se amplia el motor gestual validado; no se sustituye el pipeline actual.
+- No se toca la version estable v0.3.
+- Se creara una version separada v0.4 para experimentar con Gesture Mode.
+- `quiet-node/gesture-lab` y `Prachi142/gesture-cube` se usan como referencias tecnicas, no como dependencias.
+- Documento estrategico: [DYNAMIC_MOTION_BANNERS_V0_4_GESTURE_INTERACTIVE_STRATEGY.md](docs/DYNAMIC_MOTION_BANNERS_V0_4_GESTURE_INTERACTIVE_STRATEGY.md)
+
 **Versiones estables actuales:**
 
 - Bola de Imagen v1.3
