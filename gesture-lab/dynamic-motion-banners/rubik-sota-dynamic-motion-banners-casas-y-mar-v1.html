@@ -1310,6 +1310,15 @@
           <button id="export-html-preview" class="control-button" type="button">Exportar HTML preview</button>
           <button id="export-zip-preview" class="control-button" type="button">Exportar ZIP preview</button>
           <div id="export-status" class="media-status">Exportaciones listas. WebM captura solo la pieza visual.</div>
+
+          <section class="control-group priority-section" aria-label="Producto final cliente">
+            <h2>PRODUCTO FINAL CLIENTE</h2>
+            <p class="help-copy">Salida cliente-facing: pieza animada limpia, sin editor ni controles. Lista para abrir, descargar como entrega o incrustar en la Web Demo.</p>
+            <button id="btn-client-generate" class="control-button primary" type="button">GENERAR EXPERIENCIA VISUAL FINAL</button>
+            <button id="btn-client-zip" class="control-button" type="button">DESCARGAR ZIP FINAL</button>
+            <button id="btn-client-open" class="control-button subtle" type="button">ABRIR PRODUCTO FINAL</button>
+            <div id="client-export-status" class="media-status">El producto final consume la versión publicada en /dynamic-motion-banner/casas-y-mar-visita-propiedad/.</div>
+          </section>
           <section class="control-group priority-section" aria-label="EXPORT QA">
             <h2>EXPORT QA</h2>
             <div id="export-qa-summary" class="export-qa-grid">
@@ -5075,6 +5084,227 @@
         });
       }
       bootstrapCasasYMarClientAssets();
+
+      // ──────────────────────────────────────────────────────────────────────
+      // Producto final cliente (FASE 4A.7.2)
+      // Consume la versión canónica del producto final ubicada en
+      //   /dynamic-motion-banner/casas-y-mar-visita-propiedad/
+      // y la sirve al usuario interno como (a) abrir en pestaña limpia,
+      // (b) descargar el HTML autocontenido, (c) descargar ZIP de entrega.
+      // ──────────────────────────────────────────────────────────────────────
+      (function wireClientProductExporter() {
+        const ROOT = new URL("../../dynamic-motion-banner/casas-y-mar-visita-propiedad/", window.location.href).href;
+        const PUBLIC_URL = "https://rubik-sota-director-de-orquesta.vercel.app/dynamic-motion-banner/casas-y-mar-visita-propiedad/";
+        const FILES = [
+          "index.html",
+          "banner-horizontal.html",
+          "banner-vertical.html",
+          "embed.html",
+          "banner-engine.js",
+          "config.js",
+          "manifest.json"
+        ];
+        const ASSET_FILES = ["logo.svg", "logo-smart.svg", "property-1.jpg", "property-2.jpg", "property-3.jpg"];
+
+        const btnGen = document.getElementById("btn-client-generate");
+        const btnZip = document.getElementById("btn-client-zip");
+        const btnOpen = document.getElementById("btn-client-open");
+        const status = document.getElementById("client-export-status");
+        function say(msg) { if (status) status.textContent = msg; }
+
+        async function fetchText(rel) {
+          const res = await fetch(ROOT + rel, { cache: "no-store" });
+          if (!res.ok) throw new Error("No se pudo cargar " + rel + " (" + res.status + ")");
+          return await res.text();
+        }
+        async function fetchBytes(rel) {
+          const res = await fetch(ROOT + rel, { cache: "no-store" });
+          if (!res.ok) throw new Error("No se pudo cargar " + rel + " (" + res.status + ")");
+          return new Uint8Array(await res.arrayBuffer());
+        }
+
+        // ── Mini-ZIP STORE (sin compresión). Suficiente para entrega cliente.
+        function crc32(bytes) {
+          let crc = 0xffffffff;
+          for (let i = 0; i < bytes.length; i++) {
+            crc ^= bytes[i];
+            for (let j = 0; j < 8; j++) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+          }
+          return (crc ^ 0xffffffff) >>> 0;
+        }
+        function strToBytes(s) {
+          return new TextEncoder().encode(s);
+        }
+        function writeUint16(view, off, v) { view.setUint16(off, v, true); }
+        function writeUint32(view, off, v) { view.setUint32(off, v >>> 0, true); }
+        function buildZip(entries) {
+          // entries: [{name, bytes}]
+          const localParts = [];
+          const central = [];
+          let offset = 0;
+          for (const e of entries) {
+            const nameBytes = strToBytes(e.name);
+            const data = e.bytes;
+            const c = crc32(data);
+            const localHeader = new ArrayBuffer(30);
+            const lv = new DataView(localHeader);
+            writeUint32(lv, 0, 0x04034b50);
+            writeUint16(lv, 4, 20); // version
+            writeUint16(lv, 6, 0);  // flags
+            writeUint16(lv, 8, 0);  // method = stored
+            writeUint16(lv, 10, 0); // time
+            writeUint16(lv, 12, 0); // date
+            writeUint32(lv, 14, c);
+            writeUint32(lv, 18, data.length);
+            writeUint32(lv, 22, data.length);
+            writeUint16(lv, 26, nameBytes.length);
+            writeUint16(lv, 28, 0); // extra
+            localParts.push(new Uint8Array(localHeader));
+            localParts.push(nameBytes);
+            localParts.push(data);
+
+            const centralHeader = new ArrayBuffer(46);
+            const cv = new DataView(centralHeader);
+            writeUint32(cv, 0, 0x02014b50);
+            writeUint16(cv, 4, 20);
+            writeUint16(cv, 6, 20);
+            writeUint16(cv, 8, 0);
+            writeUint16(cv, 10, 0);
+            writeUint16(cv, 12, 0);
+            writeUint16(cv, 14, 0);
+            writeUint32(cv, 16, c);
+            writeUint32(cv, 20, data.length);
+            writeUint32(cv, 24, data.length);
+            writeUint16(cv, 28, nameBytes.length);
+            writeUint16(cv, 30, 0);
+            writeUint16(cv, 32, 0);
+            writeUint16(cv, 34, 0);
+            writeUint16(cv, 36, 0);
+            writeUint32(cv, 38, 0);
+            writeUint32(cv, 42, offset);
+            central.push({ header: new Uint8Array(centralHeader), name: nameBytes });
+            offset += 30 + nameBytes.length + data.length;
+          }
+          const centralStart = offset;
+          const centralChunks = [];
+          let centralSize = 0;
+          for (const c of central) {
+            centralChunks.push(c.header, c.name);
+            centralSize += c.header.length + c.name.length;
+          }
+          const end = new ArrayBuffer(22);
+          const ev = new DataView(end);
+          writeUint32(ev, 0, 0x06054b50);
+          writeUint16(ev, 4, 0);
+          writeUint16(ev, 6, 0);
+          writeUint16(ev, 8, entries.length);
+          writeUint16(ev, 10, entries.length);
+          writeUint32(ev, 12, centralSize);
+          writeUint32(ev, 16, centralStart);
+          writeUint16(ev, 20, 0);
+          const out = [...localParts, ...centralChunks, new Uint8Array(end)];
+          return new Blob(out, { type: "application/zip" });
+        }
+
+        const README = [
+          "Experiencia Visual de Propiedad — Casas y Mar",
+          "==============================================",
+          "",
+          "Pieza visual final lista para uso comercial. NO es el editor: es el producto entregable.",
+          "",
+          "Qué abrir",
+          "---------",
+          "• index.html            → vista principal con la pieza animada (vertical por defecto).",
+          "• banner-horizontal.html → variante 1920×1080 para web, escaparate panorámico y pantallas horizontales.",
+          "• banner-vertical.html   → variante 1080×1920 para reel, story, MUPI digital y escaparate vertical.",
+          "• embed.html             → versión limpia preparada para iframe embebido en webs externas.",
+          "",
+          "Cómo usar",
+          "---------",
+          "• Web / landing: enlazar a index.html o incrustar embed.html en un iframe.",
+          "• Redes (reel / story): grabar pantalla de banner-vertical.html o exportar como vídeo.",
+          "• Escaparate / MUPI digital: abrir la variante horizontal o vertical en pantalla completa.",
+          "• QR de campaña: el código QR del propio banner apunta a la demo premium de Casas y Mar.",
+          "",
+          "Notas",
+          "-----",
+          "• Movimiento automático en loop. No requiere interacción del usuario.",
+          "• Assets bajo /assets/ (logo + 3 propiedades). Sustituibles por imágenes definitivas de Casas y Mar.",
+          "• URL pública del producto final:",
+          "    " + PUBLIC_URL,
+          ""
+        ].join("\r\n");
+
+        async function buildClientZipBlob() {
+          say("Empaquetando producto final…");
+          const entries = [];
+          const root = "casas-y-mar-visita-propiedad/";
+          for (const f of FILES) {
+            entries.push({ name: root + f, bytes: await fetchBytes(f) });
+          }
+          for (const a of ASSET_FILES) {
+            entries.push({ name: root + "assets/" + a, bytes: await fetchBytes("assets/" + a) });
+          }
+          entries.push({ name: root + "README.txt", bytes: strToBytes(README) });
+          return buildZip(entries);
+        }
+
+        function downloadBlob(blob, filename) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 600);
+        }
+
+        if (btnGen) {
+          btnGen.addEventListener("click", async () => {
+            try {
+              say("Generando HTML final cliente…");
+              const html = await fetchText("index.html");
+              const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+              // Abrimos el HTML autocontenido en una pestaña limpia. Para que las rutas
+              // relativas a assets / banner-engine.js sigan funcionando en esa pestaña
+              // (sin servidor), enlazamos a la URL real del producto final servida.
+              const tab = window.open(ROOT + "index.html", "_blank", "noopener,noreferrer");
+              if (!tab) {
+                // Fallback: descarga directa del HTML
+                downloadBlob(blob, "casas-y-mar-experiencia-visual.html");
+                say("Bloqueado por el navegador: descargado HTML final.");
+              } else {
+                say("Producto final abierto en pestaña nueva.");
+              }
+            } catch (e) {
+              console.error(e);
+              say("No se pudo generar el producto final: " + e.message);
+            }
+          });
+        }
+
+        if (btnZip) {
+          btnZip.addEventListener("click", async () => {
+            btnZip.disabled = true;
+            try {
+              const blob = await buildClientZipBlob();
+              downloadBlob(blob, "casas-y-mar-experiencia-visual-final.zip");
+              say("ZIP final descargado (" + Math.round(blob.size / 1024) + " KB).");
+            } catch (e) {
+              console.error(e);
+              say("No se pudo construir el ZIP: " + e.message);
+            } finally {
+              btnZip.disabled = false;
+            }
+          });
+        }
+
+        if (btnOpen) {
+          btnOpen.addEventListener("click", () => {
+            window.open(PUBLIC_URL, "_blank", "noopener,noreferrer");
+          });
+        }
+      })();
 
       updateLayerControls();
       updatePreviewWorkspace({ center: true });
