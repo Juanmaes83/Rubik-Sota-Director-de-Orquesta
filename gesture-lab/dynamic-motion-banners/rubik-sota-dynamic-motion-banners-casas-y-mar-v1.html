@@ -1372,6 +1372,47 @@
     (() => {
       "use strict";
 
+      // ──────────────────────────────────────────────────────────────────────────
+      // CASAS Y MAR · Capa de cliente derivada del sistema v0.3.
+      // Estructura reutilizable para clonar a otros clientes en futuras variantes.
+      // ──────────────────────────────────────────────────────────────────────────
+      const CASAS_Y_MAR_CLIENT = {
+        brand: {
+          name: "CASAS Y MAR",
+          claim: "Tu sueño, nuestra pasión",
+          zone: "Torrevieja · Costa Blanca Sur"
+        },
+        contact: {
+          url: "casasymar.com",
+          urlFull: "https://casasymar.com/",
+          email: "contactos@casasymar.es",
+          phone: "+34 965 714 261",
+          whatsapp: "+34 629 581 574",
+          address: "Avda. Habaneras 121, 03182 Torrevieja",
+          raicv: "1058"
+        },
+        hero: {
+          src: "casas-y-mar-assets/property-1.jpg",
+          alt: "Propiedad hero Casas y Mar"
+        },
+        gallery: [
+          { src: "casas-y-mar-assets/property-2.jpg", alt: "Propiedad 2" },
+          { src: "casas-y-mar-assets/property-3.jpg", alt: "Propiedad 3" },
+          { src: "casas-y-mar-assets/property-1.jpg", alt: "Propiedad 1" }
+        ],
+        logo: {
+          src: "casas-y-mar-assets/logo.svg",
+          defaultScale: 2.6
+        },
+        qr: {
+          destination: "https://aurum-properties-boutique.vercel.app/casas-y-mar",
+          short: "aurum-properties-boutique.vercel.app/casas-y-mar"
+        },
+        notes: "Tour 360 · Video · QR · Visita desde móvil · Torrevieja"
+      };
+      // Exposición global mínima por si se quiere consultar desde devtools.
+      window.CASAS_Y_MAR_CLIENT = CASAS_Y_MAR_CLIENT;
+
       const canvas = document.getElementById("glcanvas");
       const canvasContainer = document.getElementById("canvas-container");
       const previewFrame = document.getElementById("preview-frame");
@@ -3094,10 +3135,57 @@
           ctx.textAlign = "center";
           wrapText(ctx, qr.valid ? qr.resolved : "QR pendiente", qrBox.x + qrSize / 2, qrBox.y + qrSize + visualLayout.qr.urlOffsetY, Math.max(qrSize * 1.9, 220 * sx), visualLayout.qr.urlFontSize * 1.25, 1);
         }
+        drawCasasYMarFooterBar(ctx, width, height);
         if (!exportMode) {
           if (liveQa.checked) updateLayoutQaPanel(layoutQa);
           drawEditorGuides(ctx, boxes, width, height, visualLayout);
         }
+      }
+
+      // Casas y Mar · franja inferior fija con URL + teléfono + dirección.
+      // Se pinta SIEMPRE sobre el canvas (preview y export), antes de las guías de editor.
+      function drawCasasYMarFooterBar(ctx, width, height) {
+        const data = (typeof CASAS_Y_MAR_CLIENT !== "undefined") ? CASAS_Y_MAR_CLIENT : null;
+        if (!data || !data.contact) return;
+        const c = data.contact;
+        const stripH = Math.max(54, Math.round(height * 0.062));
+        const y = height - stripH;
+        const padX = Math.max(28, Math.round(width * 0.035));
+        ctx.save();
+        // Capa de fondo: marina profunda con leve gradiente
+        const grad = ctx.createLinearGradient(0, y, width, y);
+        grad.addColorStop(0, "rgba(11,34,48,0.96)");
+        grad.addColorStop(1, "rgba(14,42,58,0.94)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, y, width, stripH);
+        // Filete dorado superior
+        ctx.fillStyle = "#c9964d";
+        ctx.fillRect(0, y, width, Math.max(2, Math.round(height * 0.0025)));
+        // Tipografía
+        const fontSize = Math.max(13, Math.round(Math.min(width, height) * 0.018));
+        ctx.fillStyle = "#f7f1e8";
+        ctx.font = "600 " + fontSize + "px Inter, Arial, sans-serif";
+        ctx.textBaseline = "middle";
+        const cy = y + stripH / 2;
+        const isPortrait = height > width * 1.05;
+        if (isPortrait) {
+          // En vertical: dos líneas centradas
+          const f2 = Math.max(11, Math.round(fontSize * 0.86));
+          ctx.textAlign = "center";
+          ctx.font = "700 " + fontSize + "px Inter, Arial, sans-serif";
+          ctx.fillText(c.url + "  ·  " + c.phone + "  ·  WhatsApp " + c.whatsapp, width / 2, cy - fontSize * 0.55);
+          ctx.font = "500 " + f2 + "px Inter, Arial, sans-serif";
+          ctx.fillStyle = "rgba(247,241,232,0.82)";
+          ctx.fillText(c.address + "  ·  RAICV " + c.raicv, width / 2, cy + f2 * 0.7);
+        } else {
+          // En horizontal/cuadrado: una línea, datos a izquierda, dirección a derecha
+          ctx.textAlign = "left";
+          ctx.fillText(c.url + "   ·   " + c.phone + "   ·   WhatsApp " + c.whatsapp, padX, cy);
+          ctx.textAlign = "right";
+          ctx.fillStyle = "rgba(247,241,232,0.86)";
+          ctx.fillText(c.address + "   ·   RAICV " + c.raicv, width - padX, cy);
+        }
+        ctx.restore();
       }
 
       function generateClientPreviewDataUrl(width, height) {
@@ -4688,11 +4776,15 @@
 
       applyPreset("casasymar");
 
-      // Casas y Mar · precarga de assets reales (logo + galeria) desde la carpeta colocalizada.
+      // Casas y Mar · precarga de assets reales (hero + galería + logo) usando la capa CASAS_Y_MAR_CLIENT.
       (function preloadCasasYMarAssets() {
-        const base = "casas-y-mar-assets/";
-        const galleryFiles = ["property-1.jpg", "property-2.jpg", "property-3.jpg"];
-        const logoFile = "logo.svg";
+        const client = CASAS_Y_MAR_CLIENT;
+
+        // Logo destacado: escala por defecto mayor para más presencia comercial.
+        state.logo.scale = client.logo.defaultScale || 2.6;
+        if (typeof logoOpacity !== "undefined" && logoOpacity) logoOpacity.value = "1";
+        state.logo.opacity = 1;
+        state.logo.visible = true;
 
         function loadImg(src) {
           return new Promise((resolve) => {
@@ -4704,10 +4796,11 @@
           });
         }
 
-        loadImg(base + logoFile).then((img) => {
+        // Logo
+        loadImg(client.logo.src).then((img) => {
           if (!img) return;
           state.logoElement = img;
-          state.logoUrl = base + logoFile;
+          state.logoUrl = client.logo.src;
           if (typeof logoStatus !== "undefined" && logoStatus) {
             logoStatus.textContent = "Logo Casas y Mar precargado.";
           }
@@ -4715,18 +4808,30 @@
           if (typeof updateLayerControls === "function") updateLayerControls();
         });
 
-        galleryFiles.forEach((file, i) => {
-          loadImg(base + file).then((img) => {
+        // Hero / imagen principal
+        loadImg(client.hero.src).then((img) => {
+          if (!img) return;
+          state.mainImageElement = img;
+          state.mainImageUrl = client.hero.src;
+          if (typeof mainMediaMode !== "undefined" && mainMediaMode) {
+            mainMediaMode.value = state.videoElement ? "both" : "image";
+          }
+          if (typeof mediaStatus !== "undefined" && mediaStatus) {
+            mediaStatus.textContent = "Hero Casas y Mar precargada (" + client.hero.src + ").";
+          }
+          state.textureDirty = true;
+          if (typeof updateLayerControls === "function") updateLayerControls();
+        });
+
+        // Galería · hasta 3 imágenes secundarias
+        client.gallery.slice(0, 3).forEach((entry, i) => {
+          loadImg(entry.src).then((img) => {
             if (!img) return;
             state.gallery.elements[i] = img;
-            state.gallery.urls[i] = base + file;
-            state.gallery.names[i] = file;
+            state.gallery.urls[i] = entry.src;
+            state.gallery.names[i] = entry.src.split("/").pop();
             state.gallery.count = state.gallery.elements.filter(Boolean).length;
             state.gallery.enabled = state.gallery.count > 0;
-            if (i === 0) {
-              state.mainImageElement = img;
-              state.mainImageUrl = base + file;
-            }
             state.textureDirty = true;
             if (typeof updateGallerySlotUi === "function") updateGallerySlotUi();
             if (typeof updateLayerControls === "function") updateLayerControls();
