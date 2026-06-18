@@ -960,6 +960,233 @@
         width: 100%;
       }
     }
+    /* Mobile Gesture Test Mode */
+    .mobile-qa-toggle {
+      display: inline-flex;
+      width: 100%;
+      min-height: 44px;
+      margin-top: 10px;
+      border: 1px solid var(--line-strong);
+      background: rgba(232, 205, 154, 0.12);
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .mobile-qa-toggle[aria-pressed="true"] {
+      background: var(--gold);
+      color: var(--ink);
+    }
+
+    .app-shell.is-mobile-qa .editor-header,
+    .app-shell.is-mobile-qa .preset-grid,
+    .app-shell.is-mobile-qa #campaign-form,
+    .app-shell.is-mobile-qa .button-stack > *:not(.gesture-mode-panel),
+    .app-shell.is-mobile-qa .output-grid,
+    .app-shell.is-mobile-qa .export-qa-grid,
+    .app-shell.is-mobile-qa .editor-context-item:nth-child(2),
+    .app-shell.is-mobile-qa .editor-context-item:nth-child(4) {
+      display: none !important;
+    }
+    .app-shell.is-mobile-qa .editor-context {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .app-shell.is-mobile-qa .gesture-mode-panel {
+      border-radius: 0;
+      border-left: 0;
+      border-right: 0;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-qa-toggle {
+        display: none;
+      }
+      html,
+      body {
+        overflow: hidden;
+      }
+      .app-shell.editor-workspace,
+      .app-shell {
+        height: 100dvh;
+        grid-template-columns: 1fr;
+        grid-template-rows: 36vh minmax(0, 1fr);
+      }
+      .stage {
+        height: 36vh;
+        min-height: 0;
+        padding: 10px;
+        overflow: hidden;
+        grid-template-rows: auto auto minmax(0, 1fr);
+      }
+      .stage-header {
+        padding: 8px 4px 0;
+        gap: 6px;
+        flex-direction: row;
+        align-items: center;
+      }
+      .stage-copy {
+        display: none;
+      }
+      .brand-kicker {
+        font-size: 0.58rem;
+        letter-spacing: 0.12em;
+      }
+      .preview-toolbar {
+        margin-top: 6px;
+        padding: 6px;
+        gap: 6px;
+      }
+      .preview-toolbar-row {
+        flex-wrap: nowrap;
+        gap: 6px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .preview-toolbar-row::-webkit-scrollbar {
+        display: none;
+      }
+      .preview-help {
+        display: none;
+      }
+      .preview-zoom-slider {
+        flex: 1 1 auto;
+        min-width: 80px;
+      }
+      .preview-frame {
+        margin-top: 8px;
+        padding: 8px;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .canvas-wrap {
+        min-width: 0;
+        min-height: 0;
+      }
+      #glcanvas {
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      .editor {
+        height: calc(64vh - env(safe-area-inset-bottom));
+        min-height: 0;
+        padding: 0 0 env(safe-area-inset-bottom);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+      .editor-inner {
+        min-height: auto;
+        gap: 0;
+      }
+      .editor-context {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        margin: 0;
+        padding: 8px 10px;
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+      }
+      .editor-context-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .editor-context-item {
+        padding: 6px;
+        font-size: 0.6rem;
+      }
+      .editor-context-item strong {
+        font-size: 0.72rem;
+      }
+
+      .app-shell .editor-header,
+      .app-shell .preset-grid,
+      .app-shell #campaign-form,
+      .app-shell .button-stack > *:not(.gesture-mode-panel) {
+        display: none !important;
+      }
+
+      .gesture-mode-panel {
+        position: relative;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
+      }
+      .gesture-mode-panel h2 {
+        font-size: 0.72rem;
+      }
+      .gesture-mode-panel .help-copy {
+        font-size: 0.72rem;
+      }
+      .gesture-component-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .gesture-component {
+        padding: 7px 6px;
+        font-size: 0.56rem;
+        letter-spacing: 0.02em;
+      }
+      .gesture-main-actions {
+        position: sticky;
+        bottom: env(safe-area-inset-bottom);
+        z-index: 30;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 0 -10px -12px;
+        padding: 10px;
+        background: rgba(8, 7, 6, 0.92);
+        backdrop-filter: blur(18px);
+        border-top: 1px solid var(--line-strong);
+      }
+      .gesture-main-actions .control-button {
+        min-height: 52px;
+        font-size: 0.82rem;
+      }
+      .gesture-action-row {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+      }
+      .gesture-action-row::-webkit-scrollbar {
+        display: none;
+      }
+      .gesture-action-row .control-button {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: none;
+        min-width: 110px;
+        min-height: 48px;
+      }
+      .gesture-debug-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .gesture-debug-item {
+        padding: 6px 7px;
+        border-radius: 8px;
+      }
+      .gesture-debug-item span {
+        font-size: 0.54rem;
+      }
+      .gesture-debug-item strong {
+        margin-top: 2px;
+        font-size: 0.68rem;
+      }
+      .media-status {
+        min-height: 38px;
+        padding: 9px;
+        font-size: 0.72rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1018,6 +1245,7 @@
             <div class="editor-context-item">Layout QA<strong id="editor-sticky-layout-qa">OK</strong></div>
             <div class="editor-context-item">Export QA<strong id="editor-sticky-export-qa">Pendiente</strong></div>
           </div>
+          <button id="mobile-qa-toggle" class="control-button mobile-qa-toggle" type="button" aria-pressed="false">Mobile QA</button>
         </section>
 
         <section aria-label="Presets de campana">
@@ -1116,9 +1344,11 @@
               <div class="gesture-component">BannerPhysicsController</div>
               <div class="gesture-component">QA/Debug Panel activo</div>
             </div>
-            <div class="gesture-action-row" aria-label="Simulacion local de gestos">
+            <div class="gesture-main-actions" aria-label="Controles principales de camara">
               <button id="gesture-start-camera" class="control-button primary" type="button">Start Camera</button>
               <button id="gesture-stop-camera" class="control-button subtle" type="button">Stop Camera</button>
+            </div>
+            <div class="gesture-action-row" aria-label="Simulacion local de gestos">
               <button id="gesture-open-palm" class="control-button" type="button">Open palm</button>
               <button id="gesture-pinch" class="control-button" type="button">Pinch</button>
               <button id="gesture-pinch-drag" class="control-button" type="button">Pinch drag</button>
@@ -5351,6 +5581,24 @@
           if (canvasContainer.getBoundingClientRect().width > 0) startRenderLoop();
         });
         bootObserver.observe(canvasContainer);
+      }
+
+      const mobileQaToggle = document.getElementById("mobile-qa-toggle");
+      if (mobileQaToggle) {
+        mobileQaToggle.addEventListener("click", () => {
+          appShell.classList.toggle("is-mobile-qa");
+          const isMobileQa = appShell.classList.contains("is-mobile-qa");
+          mobileQaToggle.textContent = isMobileQa ? "Exit Mobile QA" : "Mobile QA";
+          mobileQaToggle.setAttribute("aria-pressed", String(isMobileQa));
+          updatePreviewWorkspace({ center: state.preview.mode === "fit" });
+        });
+      }
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        appShell.classList.add("is-mobile-qa");
+        if (mobileQaToggle) {
+          mobileQaToggle.textContent = "Exit Mobile QA";
+          mobileQaToggle.setAttribute("aria-pressed", "true");
+        }
       }
 
       applyPreset("fashion");
