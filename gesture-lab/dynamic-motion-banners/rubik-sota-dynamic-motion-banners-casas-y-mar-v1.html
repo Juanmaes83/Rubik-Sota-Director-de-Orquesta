@@ -896,6 +896,65 @@
         width: 100%;
       }
     }
+
+    /* ── CLEAN CLIENT MODE (FASE 4A.7.2B) ──────────────────────────────────
+       Activado por pathname /dynamic-motion-banner/casas-y-mar-visita-propiedad/
+       o por ?clean=1 / ?embed=1. Oculta editor, toolbar, header y deja
+       únicamente el canvas con la tela ondulada a pantalla completa. */
+    html.is-clean,
+    body.is-clean {
+      background: var(--bg) !important;
+      overflow: hidden !important;
+    }
+    body.is-clean .controls-column,
+    body.is-clean .stage-header,
+    body.is-clean .preview-toolbar,
+    body.is-clean .preview-help,
+    body.is-clean .presentation-exit-floating,
+    body.is-clean #webgl-fallback {
+      display: none !important;
+    }
+    body.is-clean .app-shell,
+    body.is-clean .editor-workspace {
+      grid-template-columns: 1fr !important;
+      grid-template-rows: 1fr !important;
+      height: 100vh !important;
+    }
+    body.is-clean .stage,
+    body.is-clean .preview-column {
+      padding: 0 !important;
+      background: var(--bg) !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      grid-template-rows: 1fr !important;
+    }
+    body.is-clean .stage::before,
+    body.is-clean .stage::after {
+      display: none !important;
+    }
+    body.is-clean .preview-frame {
+      margin: 0 !important;
+      border: none !important;
+      background: var(--bg) !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      place-items: center !important;
+      overflow: hidden !important;
+    }
+    body.is-clean .canvas-wrap {
+      cursor: default !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+    }
+    body.is-clean .canvas-wrap canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
   </style>
 </head>
 <body>
@@ -1313,11 +1372,11 @@
 
           <section class="control-group priority-section" aria-label="Producto final cliente">
             <h2>PRODUCTO FINAL CLIENTE</h2>
-            <p class="help-copy">Salida cliente-facing: pieza animada limpia, sin editor ni controles. Lista para abrir, descargar como entrega o incrustar en la Web Demo.</p>
-            <button id="btn-client-generate" class="control-button primary" type="button">GENERAR EXPERIENCIA VISUAL FINAL</button>
-            <button id="btn-client-zip" class="control-button" type="button">DESCARGAR ZIP FINAL</button>
-            <button id="btn-client-open" class="control-button subtle" type="button">ABRIR PRODUCTO FINAL</button>
-            <div id="client-export-status" class="media-status">El producto final consume la versión publicada en /dynamic-motion-banner/casas-y-mar-visita-propiedad/.</div>
+            <p class="help-copy">La pieza animada con tela ondulada vive online. Estas acciones abren, copian el enlace o empaquetan el dossier de entrega (no genera HTML offline auto-suficiente).</p>
+            <button id="btn-client-open" class="control-button primary" type="button">ABRIR PRODUCTO FINAL</button>
+            <button id="btn-client-copy" class="control-button" type="button">COPIAR ENLACE DEL PRODUCTO FINAL</button>
+            <button id="btn-client-zip" class="control-button subtle" type="button">DESCARGAR PAQUETE DE ENTREGA</button>
+            <div id="client-export-status" class="media-status">URL pública: /dynamic-motion-banner/casas-y-mar-visita-propiedad/ (sirve la pieza real con tela ondulada en modo limpio).</div>
           </section>
           <section class="control-group priority-section" aria-label="EXPORT QA">
             <h2>EXPORT QA</h2>
@@ -1380,6 +1439,29 @@
   <script>
     (() => {
       "use strict";
+
+      // ──────────────────────────────────────────────────────────────────────────
+      // CLEAN CLIENT MODE (FASE 4A.7.2B)
+      // El mismo archivo v1 sirve como editor interno Y como producto final.
+      // Se activa el modo limpio cuando:
+      //   · la ruta del navegador es /dynamic-motion-banner/casas-y-mar-visita-propiedad/
+      //   · o ?clean=1 está en la query
+      //   · o ?embed=1 está en la query (para iframe en AURUM)
+      // En modo limpio: editor / paneles / toolbar / textos internos ocultos,
+      // sólo se ve la tela animada centrada y a pantalla completa.
+      // ──────────────────────────────────────────────────────────────────────────
+      const __CLIENT_PUBLIC_PATH = "/dynamic-motion-banner/casas-y-mar-visita-propiedad";
+      let __IS_CLIENT_ROUTE = false;
+      let __IS_CLEAN_MODE = false;
+      try {
+        const __params = new URLSearchParams(window.location.search);
+        __IS_CLIENT_ROUTE = window.location.pathname.indexOf(__CLIENT_PUBLIC_PATH) !== -1;
+        __IS_CLEAN_MODE = __params.has("clean") || __params.get("embed") === "1" || __IS_CLIENT_ROUTE;
+        if (__IS_CLEAN_MODE) {
+          document.documentElement.classList.add("is-clean");
+          if (document.body) document.body.classList.add("is-clean");
+        }
+      } catch (e) { /* noop */ }
 
       // ──────────────────────────────────────────────────────────────────────────
       // CASAS Y MAR · Capa de cliente derivada del sistema v0.3.
@@ -4915,8 +4997,16 @@
         const client = CASAS_Y_MAR_CLIENT;
 
         function resolveSrc(rel) {
-          try { return new URL(rel, window.location.href).href; }
-          catch (e) { return rel; }
+          // Cuando v1 se sirve via rewrite en /dynamic-motion-banner/...,
+          // las rutas relativas de los assets se romperían (resuelven contra
+          // la URL pública). Forzamos base = /gesture-lab/dynamic-motion-banners/
+          // sólo en ese caso. Editor interno funciona con la lógica original.
+          try {
+            const base = __IS_CLIENT_ROUTE
+              ? window.location.origin + "/gesture-lab/dynamic-motion-banners/"
+              : window.location.href;
+            return new URL(rel, base).href;
+          } catch (e) { return rel; }
         }
 
         function imageToDataUrl(img) {
@@ -5086,40 +5176,32 @@
       bootstrapCasasYMarClientAssets();
 
       // ──────────────────────────────────────────────────────────────────────
-      // Producto final cliente (FASE 4A.7.2)
-      // Consume la versión canónica del producto final ubicada en
-      //   /dynamic-motion-banner/casas-y-mar-visita-propiedad/
-      // y la sirve al usuario interno como (a) abrir en pestaña limpia,
-      // (b) descargar el HTML autocontenido, (c) descargar ZIP de entrega.
+      // Producto final cliente (FASE 4A.7.2B)
+      // La pieza animada con tela ondulada vive ONLINE en la URL pública
+      // (servida por Vercel rewrite → este mismo v1 con clean mode activado).
+      // Los botones aquí NO generan un HTML offline auto-suficiente porque
+      // el motor real requiere los assets en /gesture-lab/dynamic-motion-banners/
+      // accesibles vía red. En su lugar:
+      //   · ABRIR PRODUCTO FINAL   → abre la URL pública en pestaña nueva.
+      //   · COPIAR ENLACE          → copia la URL pública al portapapeles.
+      //   · DESCARGAR PAQUETE      → ZIP con README + enlaces + assets +
+      //                              un wrapper HTML que iframea la pieza online.
       // ──────────────────────────────────────────────────────────────────────
       (function wireClientProductExporter() {
-        const ROOT = new URL("../../dynamic-motion-banner/casas-y-mar-visita-propiedad/", window.location.href).href;
         const PUBLIC_URL = "https://rubik-sota-director-de-orquesta.vercel.app/dynamic-motion-banner/casas-y-mar-visita-propiedad/";
-        const FILES = [
-          "index.html",
-          "banner-horizontal.html",
-          "banner-vertical.html",
-          "embed.html",
-          "banner-engine.js",
-          "config.js",
-          "manifest.json"
-        ];
+        const EMBED_URL = PUBLIC_URL + "?embed=1";
+        const ASSET_BASE = new URL("casas-y-mar-assets/", window.location.origin + "/gesture-lab/dynamic-motion-banners/").href;
         const ASSET_FILES = ["logo.svg", "logo-smart.svg", "property-1.jpg", "property-2.jpg", "property-3.jpg"];
 
-        const btnGen = document.getElementById("btn-client-generate");
-        const btnZip = document.getElementById("btn-client-zip");
         const btnOpen = document.getElementById("btn-client-open");
+        const btnCopy = document.getElementById("btn-client-copy");
+        const btnZip = document.getElementById("btn-client-zip");
         const status = document.getElementById("client-export-status");
         function say(msg) { if (status) status.textContent = msg; }
 
-        async function fetchText(rel) {
-          const res = await fetch(ROOT + rel, { cache: "no-store" });
-          if (!res.ok) throw new Error("No se pudo cargar " + rel + " (" + res.status + ")");
-          return await res.text();
-        }
-        async function fetchBytes(rel) {
-          const res = await fetch(ROOT + rel, { cache: "no-store" });
-          if (!res.ok) throw new Error("No se pudo cargar " + rel + " (" + res.status + ")");
+        async function fetchBytes(absUrl) {
+          const res = await fetch(absUrl, { cache: "no-store" });
+          if (!res.ok) throw new Error("No se pudo cargar " + absUrl + " (" + res.status + ")");
           return new Uint8Array(await res.arrayBuffer());
         }
 
@@ -5210,42 +5292,91 @@
           "Experiencia Visual de Propiedad — Casas y Mar",
           "==============================================",
           "",
-          "Pieza visual final lista para uso comercial. NO es el editor: es el producto entregable.",
+          "Este paquete es el dossier de entrega comercial de la Experiencia Visual",
+          "de Propiedad personalizada para Casas y Mar. NO es el editor.",
           "",
-          "Qué abrir",
-          "---------",
-          "• index.html            → vista principal con la pieza animada (vertical por defecto).",
-          "• banner-horizontal.html → variante 1920×1080 para web, escaparate panorámico y pantallas horizontales.",
-          "• banner-vertical.html   → variante 1080×1920 para reel, story, MUPI digital y escaparate vertical.",
-          "• embed.html             → versión limpia preparada para iframe embebido en webs externas.",
+          "Importante",
+          "----------",
+          "La pieza animada con tela ondulada vive ONLINE. Esta entrega NO contiene",
+          "una versión offline auto-suficiente: para ver la experiencia animada final,",
+          "abre la URL pública o el HTML online incluido. Esta entrega no es el editor.",
+          "",
+          "URL pública del producto final:",
+          "    " + PUBLIC_URL,
+          "",
+          "URL embed (iframe):",
+          "    " + EMBED_URL,
+          "",
+          "Qué incluye este paquete",
+          "------------------------",
+          "• experiencia-online.html  → wrapper ligero que abre la pieza online en una",
+          "                             ventana limpia. Necesita conexión a internet.",
+          "• enlaces.txt              → URLs públicas listas para compartir.",
+          "• assets/                  → logo y 3 propiedades piloto (sustituibles por",
+          "                             imágenes definitivas de Casas y Mar).",
+          "• README.txt               → este archivo.",
           "",
           "Cómo usar",
           "---------",
-          "• Web / landing: enlazar a index.html o incrustar embed.html en un iframe.",
-          "• Redes (reel / story): grabar pantalla de banner-vertical.html o exportar como vídeo.",
-          "• Escaparate / MUPI digital: abrir la variante horizontal o vertical en pantalla completa.",
-          "• QR de campaña: el código QR del propio banner apunta a la demo premium de Casas y Mar.",
-          "",
-          "Notas",
-          "-----",
-          "• Movimiento automático en loop. No requiere interacción del usuario.",
-          "• Assets bajo /assets/ (logo + 3 propiedades). Sustituibles por imágenes definitivas de Casas y Mar.",
-          "• URL pública del producto final:",
-          "    " + PUBLIC_URL,
+          "• Compartir con cliente: enviar la URL pública (ver enlaces.txt).",
+          "• Incrustar en una web: usar la URL pública con ?embed=1 dentro de un iframe.",
+          "• Escaparate / MUPI digital: abrir la URL pública en pantalla completa.",
+          "• QR de campaña: el código QR de la pieza apunta a la demo premium",
+          "  https://aurum-properties-boutique.vercel.app/casas-y-mar",
           ""
         ].join("\r\n");
 
+        const ENLACES = [
+          "URLs públicas — Experiencia Visual de Propiedad · Casas y Mar",
+          "=============================================================",
+          "",
+          "Producto final (cliente-facing, pieza animada limpia):",
+          "    " + PUBLIC_URL,
+          "",
+          "Embed para iframe (sin chrome, listo para incrustar en una web):",
+          "    " + EMBED_URL,
+          "",
+          "Destino del QR de la pieza:",
+          "    https://aurum-properties-boutique.vercel.app/casas-y-mar",
+          ""
+        ].join("\r\n");
+
+        const ONLINE_WRAPPER_HTML = [
+          "<!DOCTYPE html>",
+          "<html lang=\"es\">",
+          "<head>",
+          "<meta charset=\"UTF-8\">",
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+          "<title>Casas y Mar · Experiencia Visual de Propiedad</title>",
+          "<meta name=\"robots\" content=\"noindex, nofollow\">",
+          "<style>",
+          "  html, body { margin:0; height:100%; background:#080706; color:#f7f1e8; font-family:Inter, system-ui, sans-serif; }",
+          "  .frame { position:fixed; inset:0; width:100%; height:100%; border:0; background:#080706; }",
+          "  .note { position:fixed; left:14px; top:14px; z-index:5; background:rgba(0,0,0,0.55); color:#e8cd9a; font-size:12px; padding:8px 12px; border-radius:4px; backdrop-filter:blur(6px); }",
+          "  .note a { color:#c9a66b; }",
+          "</style>",
+          "</head>",
+          "<body>",
+          "<div class=\"note\">Pieza online. Si no carga: <a href=\"" + PUBLIC_URL + "\" target=\"_blank\" rel=\"noopener noreferrer\">abrir directamente</a></div>",
+          "<iframe class=\"frame\" src=\"" + EMBED_URL + "\" title=\"Experiencia Visual de Propiedad — Casas y Mar\" allow=\"autoplay; fullscreen\"></iframe>",
+          "</body>",
+          "</html>"
+        ].join("\n");
+
         async function buildClientZipBlob() {
-          say("Empaquetando producto final…");
+          say("Empaquetando dossier de entrega…");
+          const root = "casas-y-mar-experiencia-visual/";
           const entries = [];
-          const root = "casas-y-mar-visita-propiedad/";
-          for (const f of FILES) {
-            entries.push({ name: root + f, bytes: await fetchBytes(f) });
-          }
-          for (const a of ASSET_FILES) {
-            entries.push({ name: root + "assets/" + a, bytes: await fetchBytes("assets/" + a) });
-          }
           entries.push({ name: root + "README.txt", bytes: strToBytes(README) });
+          entries.push({ name: root + "enlaces.txt", bytes: strToBytes(ENLACES) });
+          entries.push({ name: root + "experiencia-online.html", bytes: strToBytes(ONLINE_WRAPPER_HTML) });
+          for (const a of ASSET_FILES) {
+            try {
+              entries.push({ name: root + "assets/" + a, bytes: await fetchBytes(ASSET_BASE + a) });
+            } catch (e) {
+              console.warn("Asset opcional no incluido:", a, e.message);
+            }
+          }
           return buildZip(entries);
         }
 
@@ -5259,27 +5390,32 @@
           setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 600);
         }
 
-        if (btnGen) {
-          btnGen.addEventListener("click", async () => {
-            try {
-              say("Generando HTML final cliente…");
-              const html = await fetchText("index.html");
-              const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-              // Abrimos el HTML autocontenido en una pestaña limpia. Para que las rutas
-              // relativas a assets / banner-engine.js sigan funcionando en esa pestaña
-              // (sin servidor), enlazamos a la URL real del producto final servida.
-              const tab = window.open(ROOT + "index.html", "_blank", "noopener,noreferrer");
-              if (!tab) {
-                // Fallback: descarga directa del HTML
-                downloadBlob(blob, "casas-y-mar-experiencia-visual.html");
-                say("Bloqueado por el navegador: descargado HTML final.");
-              } else {
-                say("Producto final abierto en pestaña nueva.");
-              }
-            } catch (e) {
-              console.error(e);
-              say("No se pudo generar el producto final: " + e.message);
-            }
+        function copyToClipboardSafe(text, okMsg) {
+          const done = () => say(okMsg || "Enlace copiado al portapapeles.");
+          const fail = () => {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand("copy"); done(); }
+            catch (e) { say("Copia manual: " + text); }
+            document.body.removeChild(ta);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(fail);
+          } else { fail(); }
+        }
+
+        if (btnOpen) {
+          btnOpen.addEventListener("click", () => {
+            window.open(PUBLIC_URL, "_blank", "noopener,noreferrer");
+            say("Producto final abierto en pestaña nueva: " + PUBLIC_URL);
+          });
+        }
+
+        if (btnCopy) {
+          btnCopy.addEventListener("click", () => {
+            copyToClipboardSafe(PUBLIC_URL, "Enlace copiado: " + PUBLIC_URL);
           });
         }
 
@@ -5288,20 +5424,14 @@
             btnZip.disabled = true;
             try {
               const blob = await buildClientZipBlob();
-              downloadBlob(blob, "casas-y-mar-experiencia-visual-final.zip");
-              say("ZIP final descargado (" + Math.round(blob.size / 1024) + " KB).");
+              downloadBlob(blob, "casas-y-mar-experiencia-visual-dossier.zip");
+              say("Dossier descargado (" + Math.round(blob.size / 1024) + " KB). La pieza animada sigue viva en " + PUBLIC_URL);
             } catch (e) {
               console.error(e);
-              say("No se pudo construir el ZIP: " + e.message);
+              say("No se pudo construir el dossier: " + e.message);
             } finally {
               btnZip.disabled = false;
             }
-          });
-        }
-
-        if (btnOpen) {
-          btnOpen.addEventListener("click", () => {
-            window.open(PUBLIC_URL, "_blank", "noopener,noreferrer");
           });
         }
       })();

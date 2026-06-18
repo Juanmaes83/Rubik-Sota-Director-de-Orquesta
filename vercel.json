@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/dynamic-motion-banner/casas-y-mar-visita-propiedad",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-casas-y-mar-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-y-mar-visita-propiedad/",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-casas-y-mar-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-y-mar-visita-propiedad/index.html",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-casas-y-mar-v1.html"
+    }
+  ]
+}
