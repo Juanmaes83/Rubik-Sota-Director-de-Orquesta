@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Casas y Mar · Visita Propiedad · Embebible</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #080706; color: #f7f1e8; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    body { padding: 2rem; }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; margin: 0 0 0.5rem; }
+    p { margin: 0 0 1.5rem; color: #b8aa98; }
+    .preview { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .preview { grid-template-columns: 1fr; } }
+    .frame { border: 1px solid rgba(232,205,154,0.2); background: #15120f; }
+    .label { padding: 0.5rem 0.75rem; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: #b8aa98; border-bottom: 1px solid rgba(232,205,154,0.2); }
+    iframe { display: block; width: 100%; border: 0; background: #0f0e0c; }
+    .code { margin-top: 1.5rem; }
+    .code label { display: block; color: #b8aa98; font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .code textarea { width: 100%; min-height: 120px; background: #1d1914; border: 1px solid rgba(232,205,154,0.2); color: #f7f1e8; padding: 0.75rem; font-family: "JetBrains Mono", monospace; font-size: 0.78rem; resize: vertical; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Casas y Mar · Visita Propiedad</h1>
+    <p>HTML embebible. Selecciona el formato que necesites y copia el iframe.</p>
+    <div class="preview">
+      <div class="frame">
+        <div class="label">Vertical 9:16 · 540×960</div>
+        <iframe id="vertical-frame" src="./banner-vertical.html" width="100%" height="540"></iframe>
+      </div>
+      <div class="frame">
+        <div class="label">Horizontal 16:9 · 960×540</div>
+        <iframe id="horizontal-frame" src="./banner-horizontal.html" width="100%" height="405"></iframe>
+      </div>
+    </div>
+    <div class="code">
+      <label>Iframe vertical (copia y pega)</label>
+      <textarea readonly>&lt;iframe src="./banner-vertical.html" width="540" height="960" frameborder="0" allow="autoplay" style="max-width:100%;"&gt;&lt;/iframe&gt;</textarea>
+    </div>
+    <div class="code">
+      <label>Iframe horizontal (copia y pega)</label>
+      <textarea readonly>&lt;iframe src="./banner-horizontal.html" width="960" height="540" frameborder="0" allow="autoplay" style="max-width:100%;"&gt;&lt;/iframe&gt;</textarea>
+    </div>
+  </div>
+</body>
+</html>

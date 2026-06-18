@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Casas y Mar · Visita Propiedad · Dynamic Motion Banner</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    :root {
+      --bg: #080706;
+      --panel: #15120f;
+      --panel-soft: #1d1914;
+      --line: rgba(232, 205, 154, 0.2);
+      --line-strong: rgba(232, 205, 154, 0.42);
+      --text: #f7f1e8;
+      --muted: #b8aa98;
+      --gold: #c9a66b;
+      --amber: #e8cd9a;
+      --ink: #15120e;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { padding: 2rem; }
+    header { max-width: 1200px; margin: 0 auto 2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    header img { height: 48px; width: auto; }
+    header h1 { font-family: Georgia, "Times New Roman", serif; font-size: 1.75rem; font-weight: 500; margin: 0; }
+    header p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .meta { max-width: 1200px; margin: 0 auto 1.5rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .chip { padding: 0.4rem 0.75rem; border: 1px solid var(--line); color: var(--muted); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .chip strong { color: var(--amber); margin-left: 0.35rem; }
+    .toolbar { max-width: 1200px; margin: 0 auto 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .toolbar button { padding: 0.65rem 1rem; border: 1px solid var(--line); background: var(--panel-soft); color: var(--text); cursor: pointer; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; transition: all 0.2s; }
+    .toolbar button:hover, .toolbar button.is-active { border-color: var(--line-strong); background: rgba(232, 205, 154, 0.12); color: var(--amber); }
+    .stage { max-width: 1200px; margin: 0 auto; display: grid; place-items: center; min-height: 60vh; background: radial-gradient(circle at center, rgba(232,205,154,0.08), transparent 28rem), var(--panel); border: 1px solid var(--line); padding: 2rem; }
+    .canvas-wrap { box-shadow: 0 24px 70px rgba(0,0,0,0.48); background: var(--bg); position: relative; }
+    canvas { display: block; }
+    .qr-layer { position: absolute; pointer-events: none; }
+    .links { max-width: 1200px; margin: 2rem auto 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .links a { display: block; padding: 1rem; border: 1px solid var(--line); color: var(--text); text-decoration: none; font-size: 0.85rem; transition: all 0.2s; }
+    .links a:hover { border-color: var(--line-strong); background: var(--panel-soft); }
+    .links a small { display: block; color: var(--muted); margin-top: 0.35rem; font-size: 0.75rem; }
+    .embed-code { max-width: 1200px; margin: 2rem auto 0; }
+    .embed-code label { display: block; color: var(--muted); font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .embed-code textarea { width: 100%; min-height: 80px; background: var(--panel-soft); border: 1px solid var(--line); color: var(--text); padding: 0.75rem; font-family: "JetBrains Mono", monospace; font-size: 0.78rem; resize: vertical; }
+    footer { max-width: 1200px; margin: 3rem auto 0; color: var(--muted); font-size: 0.78rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <header>
+    <img src="./assets/logo.svg" alt="Casas y Mar">
+    <div>
+      <h1>Casas y Mar · Visita Propiedad</h1>
+      <p>Dynamic Motion Banner · Preview interna · Activos pendientes de validación</p>
+    </div>
+  </header>
+
+  <div class="meta">
+    <span class="chip">Cliente<strong>Casas y Mar</strong></span>
+    <span class="chip">Campaña<strong>Visita propiedad</strong></span>
+    <span class="chip">Zona<strong>Torrevieja · Costa Blanca Sur</strong></span>
+    <span class="chip">QR<strong>Demo premium Casas y Mar</strong></span>
+  </div>
+
+  <div class="toolbar">
+    <button id="btn-vertical" class="is-active">Vertical 9:16 · 1080×1920</button>
+    <button id="btn-horizontal">Horizontal 16:9 · 1920×1080</button>
+    <button id="btn-open-vertical" type="button">Abrir vertical</button>
+    <button id="btn-open-horizontal" type="button">Abrir horizontal</button>
+  </div>
+
+  <div class="stage">
+    <div id="wrap" class="canvas-wrap" style="width: 540px; height: 960px;">
+      <canvas id="banner-canvas" width="540" height="960"></canvas>
+      <div id="qr-layer" class="qr-layer"></div>
+    </div>
+  </div>
+
+  <div class="links">
+    <a href="https://aurum-properties-boutique.vercel.app/casas-y-mar" target="_blank" rel="noopener noreferrer">
+      Ver propuesta web premium completa
+      <small>aurum-properties-boutique.vercel.app/casas-y-mar</small>
+    </a>
+    <a href="./banner-vertical.html" target="_blank" rel="noopener noreferrer">
+      Versión vertical standalone
+      <small>1080×1920 · Story / Reel / Mupi</small>
+    </a>
+    <a href="./banner-horizontal.html" target="_blank" rel="noopener noreferrer">
+      Versión horizontal standalone
+      <small>1920×1080 · Banner / Escaparate</small>
+    </a>
+    <a href="./embed.html" target="_blank" rel="noopener noreferrer">
+      HTML embebible
+      <small>Snippet listo para insertar</small>
+    </a>
+  </div>
+
+  <div class="embed-code">
+    <label>Código embebible (iframe)</label>
+    <textarea id="embed-code" readonly></textarea>
+  </div>
+
+  <footer>
+    Preview conceptual privada. Activos públicos/candidatos pendientes de validación comercial por Casas y Mar.
+    No exponer como herramienta interna de Rubik Sota.
+  </footer>
+
+  <script type="module">
+    import { BannerEngine } from "./banner-engine.js";
+
+    const wrap = document.getElementById("wrap");
+    const canvas = document.getElementById("banner-canvas");
+    const qrLayer = document.getElementById("qr-layer");
+    const embedInput = document.getElementById("embed-code");
+    let engine;
+    let orientation = "vertical";
+
+    const sizes = {
+      vertical: { w: 540, h: 960 },
+      horizontal: { w: 960, h: 540 },
+    };
+
+    function setOrientation(o) {
+      orientation = o;
+      wrap.style.width = sizes[o].w + "px";
+      wrap.style.height = sizes[o].h + "px";
+      canvas.width = sizes[o].w;
+      canvas.height = sizes[o].h;
+      canvas.style.width = sizes[o].w + "px";
+      canvas.style.height = sizes[o].h + "px";
+      const qrSize = o === "vertical" ? sizes[o].w * 0.22 : sizes[o].w * 0.12;
+      const qrRight = o === "vertical" ? sizes[o].w * 0.085 : sizes[o].w * 0.07;
+      const qrBottom = o === "vertical" ? sizes[o].h * 0.26 - qrSize : sizes[o].h * 0.42 - qrSize;
+      qrLayer.style.width = qrSize + "px";
+      qrLayer.style.height = qrSize + "px";
+      qrLayer.style.right = qrRight + "px";
+      qrLayer.style.bottom = Math.max(0, qrBottom) + "px";
+      qrLayer.innerHTML = "";
+      if (engine) engine.running = false;
+      engine = new BannerEngine("banner-canvas", { orientation: o, qrContainer: qrLayer });
+      document.getElementById("btn-vertical").classList.toggle("is-active", o === "vertical");
+      document.getElementById("btn-horizontal").classList.toggle("is-active", o === "horizontal");
+      updateEmbed();
+    }
+
+    function updateEmbed() {
+      const file = orientation === "vertical" ? "banner-vertical.html" : "banner-horizontal.html";
+      embedInput.value = `<iframe src="${file}" width="${sizes[orientation].w}" height="${sizes[orientation].h}" frameborder="0" allow="autoplay" style="max-width:100%;"></iframe>`;
+    }
+
+    document.getElementById("btn-vertical").addEventListener("click", () => setOrientation("vertical"));
+    document.getElementById("btn-horizontal").addEventListener("click", () => setOrientation("horizontal"));
+    document.getElementById("btn-open-vertical").addEventListener("click", () => window.open("./banner-vertical.html", "_blank"));
+    document.getElementById("btn-open-horizontal").addEventListener("click", () => window.open("./banner-horizontal.html", "_blank"));
+
+    window.addEventListener("resize", () => {
+      if (engine) engine.resize();
+    });
+
+    setOrientation("vertical");
+  </script>
+</body>
+</html>
