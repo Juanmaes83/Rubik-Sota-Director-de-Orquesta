@@ -1413,6 +1413,39 @@
       // Exposición global mínima por si se quiere consultar desde devtools.
       window.CASAS_Y_MAR_CLIENT = CASAS_Y_MAR_CLIENT;
 
+      // ──────────────────────────────────────────────────────────────────────
+      // CLIENT_LAYOUT_DEFAULTS · reglas reutilizables para futuros clientes.
+      // Reservan zona segura inferior para el footer y suavizan tratamientos
+      // visuales (hero overlay, cápsula del logo). Aplicado por
+      // applyClientLayoutDefaults() en cada repintado, sin tocar el motor v0.3.
+      // ──────────────────────────────────────────────────────────────────────
+      const CLIENT_LAYOUT_DEFAULTS = {
+        footerStrip: {
+          enabled: true,
+          reservedHeightRatio: 0.07,
+          minHeight: 58,
+          maxHeight: 130,
+          paddingXRatio: 0.035,
+          safeMarginRatio: 0.018
+        },
+        heroTreatment: {
+          horizontalOverlay: 0.12,
+          verticalOverlay: 0.17,
+          panoramicOverlay: 0.10
+        },
+        logoTreatment: {
+          capsuleOpacity: 0.28
+        },
+        safeGaps: {
+          qrToFooter: 34,
+          ctaToFooter: 24,
+          galleryToFooter: 20,
+          noteToFooter: 14,
+          subheadlineToGallery: 8
+        }
+      };
+      window.CLIENT_LAYOUT_DEFAULTS = CLIENT_LAYOUT_DEFAULTS;
+
       const canvas = document.getElementById("glcanvas");
       const canvasContainer = document.getElementById("canvas-container");
       const previewFrame = document.getElementById("preview-frame");
@@ -3028,7 +3061,7 @@
         const qr = resolveQrDestination();
         const exportMode = !!options.exportMode;
         pullVisualControlsToState();
-        const visualLayout = ensureVisualLayoutState(width, height, exportMode);
+        const visualLayout = applyClientLayoutDefaults(ensureVisualLayoutState(width, height, exportMode), width, height);
         const sx = width / 1024;
         const sy = height / 1024;
         const s = Math.min(sx, sy);
@@ -3092,7 +3125,9 @@
           ctx.fillStyle = visual;
           ctx.fillRect(heroBox.x, heroBox.y, heroBox.w, heroBox.h);
         }
-        ctx.fillStyle = "rgba(0,0,0,0.24)";
+        // Hero overlay suavizado por CLIENT_LAYOUT_DEFAULTS.heroTreatment para que la propiedad tenga protagonismo.
+        const heroOverlayAlpha = (visualLayout._clientHeroOverlay != null) ? visualLayout._clientHeroOverlay : 0.16;
+        ctx.fillStyle = "rgba(0,0,0," + heroOverlayAlpha.toFixed(3) + ")";
         ctx.fillRect(heroBox.x, heroBox.y, heroBox.w, heroBox.h);
         drawLogoIntoBox(ctx, logoBox, s);
 
@@ -3142,15 +3177,100 @@
         }
       }
 
+      // Métricas del footer reservadas en CLIENT_LAYOUT_DEFAULTS.
+      // Usadas por applyClientLayoutDefaults y por drawCasasYMarFooterBar
+      // para que la zona segura y la banda pintada SIEMPRE coincidan.
+      function getClientFooterMetrics(width, height) {
+        const d = CLIENT_LAYOUT_DEFAULTS.footerStrip;
+        const raw = height * d.reservedHeightRatio;
+        const footerHeight = Math.max(d.minHeight, Math.min(d.maxHeight, Math.round(raw)));
+        const padX = Math.max(28, Math.round(width * d.paddingXRatio));
+        const safeMargin = Math.max(10, Math.round(height * d.safeMarginRatio));
+        const footerY = height - footerHeight;
+        const safeBottom = footerY - safeMargin;
+        return { footerHeight, footerY, padX, safeMargin, safeBottom };
+      }
+
+      // Reserva zona segura: empuja note/gallery/cta/qr/conversionPanel
+      // por encima del footer para que nada quede tapado.
+      // También suaviza la cápsula del logo. Reusable para clones futuros.
+      function applyClientLayoutDefaults(layout, width, height) {
+        if (!CLIENT_LAYOUT_DEFAULTS.footerStrip.enabled) return layout;
+        const m = getClientFooterMetrics(width, height);
+        const gaps = CLIENT_LAYOUT_DEFAULTS.safeGaps;
+        const scaleS = Math.min(width, height) / 1024;
+
+        // Logo · cápsula más ligera por defecto.
+        if (layout.logo) {
+          layout.logo.capsuleOpacity = CLIENT_LAYOUT_DEFAULTS.logoTreatment.capsuleOpacity;
+        }
+
+        // Gallery · 1 fila por defecto en el cálculo (grid-2-1 cubierto por margen extra).
+        if (layout.gallery) {
+          const rows = layout.gallery.layoutMode === "grid-2-1" ? 2 : 1;
+          const thumbH = layout.gallery.thumbHeight || 0;
+          const gap = layout.gallery.gap || 0;
+          const galleryBottom = layout.gallery.y + rows * thumbH + Math.max(0, rows - 1) * gap;
+          const limit = m.safeBottom - gaps.galleryToFooter * scaleS;
+          if (galleryBottom > limit) {
+            const newY = Math.max(0, limit - (rows * thumbH + Math.max(0, rows - 1) * gap));
+            layout.gallery.y = newY;
+          }
+        }
+
+        // CTA
+        if (layout.cta) {
+          const ctaBottom = layout.cta.y + layout.cta.height;
+          const limit = m.safeBottom - gaps.ctaToFooter * scaleS;
+          if (ctaBottom > limit) layout.cta.y = Math.max(0, limit - layout.cta.height);
+        }
+
+        // QR · cuenta también la caption URL si está activa.
+        if (layout.qr) {
+          const urlLineH = layout.qr.showUrl
+            ? ((layout.qr.urlOffsetY || 0) + (layout.qr.urlFontSize || 0) * 1.4)
+            : 0;
+          const qrBottom = layout.qr.y + layout.qr.size + urlLineH;
+          const limit = m.safeBottom - gaps.qrToFooter * scaleS;
+          if (qrBottom > limit) layout.qr.y = Math.max(0, limit - layout.qr.size - urlLineH);
+        }
+
+        // Conversion panel
+        if (layout.conversionPanel && layout.conversionPanel.enabled) {
+          const cpBottom = layout.conversionPanel.y + layout.conversionPanel.height;
+          const limit = m.safeBottom - gaps.ctaToFooter * scaleS;
+          if (cpBottom > limit) layout.conversionPanel.y = Math.max(0, limit - layout.conversionPanel.height);
+        }
+
+        // Note · sube por encima del safeBottom (2 líneas estimadas).
+        if (layout.note) {
+          const noteH = (layout.note.fontSize || 16) * 1.25 * 2;
+          const noteBottom = layout.note.y + noteH;
+          const limit = m.safeBottom - gaps.noteToFooter * scaleS;
+          if (noteBottom > limit) layout.note.y = Math.max(0, limit - noteH);
+        }
+
+        // Tratamiento del hero overlay disponible para drawCreative vía hint.
+        const orientation = width >= height * 1.4 ? "panoramic" : (height > width * 1.05 ? "vertical" : "horizontal");
+        layout._clientHeroOverlay = orientation === "vertical"
+          ? CLIENT_LAYOUT_DEFAULTS.heroTreatment.verticalOverlay
+          : (orientation === "panoramic"
+            ? CLIENT_LAYOUT_DEFAULTS.heroTreatment.panoramicOverlay
+            : CLIENT_LAYOUT_DEFAULTS.heroTreatment.horizontalOverlay);
+        layout._clientFooterMetrics = m;
+        return layout;
+      }
+
       // Casas y Mar · franja inferior fija con URL + teléfono + dirección.
       // Se pinta SIEMPRE sobre el canvas (preview y export), antes de las guías de editor.
       function drawCasasYMarFooterBar(ctx, width, height) {
         const data = (typeof CASAS_Y_MAR_CLIENT !== "undefined") ? CASAS_Y_MAR_CLIENT : null;
         if (!data || !data.contact) return;
         const c = data.contact;
-        const stripH = Math.max(54, Math.round(height * 0.062));
-        const y = height - stripH;
-        const padX = Math.max(28, Math.round(width * 0.035));
+        const metrics = getClientFooterMetrics(width, height);
+        const stripH = metrics.footerHeight;
+        const y = metrics.footerY;
+        const padX = metrics.padX;
         ctx.save();
         // Capa de fondo: marina profunda con leve gradiente
         const grad = ctx.createLinearGradient(0, y, width, y);
