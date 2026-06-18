@@ -669,7 +669,7 @@
         <div class="gallery-head">
           <div>
             <h2>Galería de proyectos</h2>
-            <p>Selecciona una pieza, sube contenido propio o limpia los archivos guardados en este navegador. Todo lo local se guarda con IndexedDB, no con trucos frágiles de localStorage.</p>
+            <p>Selecciona una pieza demo, sube contenido propio o abre directamente uno de los módulos activos de Rubik Sota. La galería funciona como escaparate comercial y lanzador de experiencias.</p>
           </div>
         </div>
         <div class="project-gallery" id="projectGallery"></div>
@@ -843,6 +843,117 @@
           src: demoThumbThree,
           thumb: demoThumbThree,
           createdAt: "demo"
+        }
+      ,
+        {
+          id: "module-bola-imagen",
+          sourceKind: "module",
+          title: "Bola de Imagen",
+          description: "Imagen plana convertida en esfera 3D gestual.",
+          type: "módulo",
+          href: "./gesture-lab/bola-imagen/rubik-sota-gesture-lab-bola-imagen-v1-3.html",
+          thumb: svgDataUri("Módulo activo", "Bola de Imagen", "#00ffcc", "#101010"),
+          createdAt: "module"
+        },
+        {
+          id: "module-before-after-reforma",
+          sourceKind: "module",
+          title: "Before / After Reforma",
+          description: "Comparador visual para reformas, interiorismo y home staging.",
+          type: "módulo",
+          href: "./gesture-lab/before-after-reforma/rubik-sota-before-after-reforma-v2-1-2.html",
+          thumb: svgDataUri("Módulo activo", "Before / After", "#e8d8a8", "#111111"),
+          createdAt: "module"
+        },
+        {
+          id: "module-community-improvement-vecinia",
+          sourceKind: "module",
+          title: "Community Improvement / Vecinia",
+          description: "Comparación visual de mejoras para comunidades y zonas comunes.",
+          type: "módulo",
+          href: "./gesture-lab/community-improvement-vecinia/rubik-sota-community-improvement-vecinia-v2-2-1.html",
+          thumb: svgDataUri("Módulo activo", "Vecinia", "#d8ff3e", "#101010"),
+          createdAt: "module"
+        },
+        {
+          id: "module-real-estate-immersive-viewer",
+          sourceKind: "module",
+          title: "Real Estate Immersive Viewer",
+          description: "Viewer inmobiliario inmersivo para zonas, estancias y comparativas.",
+          type: "módulo",
+          href: "./gesture-lab/real-estate-immersive-viewer/rubik-sota-real-estate-immersive-viewer-v2-3.html",
+          thumb: svgDataUri("Módulo activo", "Real Estate", "#00ffcc", "#111111"),
+          createdAt: "module"
+        },
+        {
+          id: "module-real-estate-capture-tour",
+          sourceKind: "module",
+          title: "Real Estate Capture Tour",
+          description: "Captura guiada por estancias para crear una mini-presentación comercial.",
+          type: "módulo",
+          href: "./gesture-lab/real-estate-capture-tour/rubik-sota-real-estate-capture-tour-v2-4.html",
+          thumb: svgDataUri("Módulo activo", "Capture Tour", "#e8d8a8", "#101010"),
+          createdAt: "module"
+        },
+        {
+          id: "module-golf-experience-home-practice",
+          sourceKind: "module",
+          title: "Golf Experience / Home Practice",
+          description: "Feedback visual para postura, grip y fases del golpe.",
+          type: "módulo",
+          href: "./gesture-lab/golf-experience-home-practice/rubik-sota-golf-experience-home-practice-v2-5.html",
+          thumb: svgDataUri("Módulo activo", "Golf Practice", "#d8ff3e", "#111111"),
+          createdAt: "module"
+        },
+        {
+          id: "module-retail-catalog",
+          sourceKind: "module",
+          title: "Retail Catalog",
+          description: "Catálogo visual con productos, favoritos y carrito local.",
+          type: "módulo",
+          href: "./gesture-lab/retail-catalog/rubik-sota-retail-catalog-v2-6.html",
+          thumb: svgDataUri("Módulo activo", "Retail Catalog", "#00ffcc", "#101010"),
+          createdAt: "module"
+        },
+        {
+          id: "module-interactive-gesture-catalog",
+          sourceKind: "module",
+          title: "Interactive Gesture Catalog",
+          description: "Catálogo retail controlado por gestos y fallback táctil.",
+          type: "módulo",
+          href: "./gesture-lab/interactive-gesture-catalog/rubik-sota-interactive-gesture-catalog-v2-7.html",
+          thumb: svgDataUri("Módulo activo", "Gesture Catalog", "#ff3366", "#101010"),
+          createdAt: "module"
+        },
+        {
+          id: "module-interactive-retail-window",
+          sourceKind: "module",
+          title: "Interactive Retail Window",
+          description: "Escaparate digital con attract loop, promociones y CTA móvil.",
+          type: "módulo",
+          href: "./gesture-lab/interactive-retail-window/rubik-sota-interactive-retail-window-v2-8.html",
+          thumb: svgDataUri("Módulo activo", "Retail Window", "#e8d8a8", "#111111"),
+          createdAt: "module"
+        },
+        {
+          id: "module-fashion-lookbook",
+          sourceKind: "module",
+          title: "Fashion Lookbook",
+          description: "Lookbook editorial para moda, accesorios, campañas y showrooms.",
+          type: "módulo",
+          href: "./gesture-lab/fashion-lookbook/rubik-sota-fashion-lookbook-v2-9.html",
+          thumb: svgDataUri("Módulo activo", "Fashion Lookbook", "#ff3366", "#101010"),
+          createdAt: "module"
+        },
+        {
+          id: "module-dynamic-motion-banners",
+          sourceKind: "module",
+          title: "Dynamic Motion Banners",
+          description: "Editor premium para banderolas digitales, MUPI, DOOH, QR, WebM, ZIP y campañas multi-formato.",
+          type: "módulo",
+          href: "./gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-3.html",
+          thumb: svgDataUri("Módulo activo", "Motion Banners", "#00ffcc", "#111111"),
+          createdAt: "module"
         }
       ];
 
@@ -1066,13 +1177,17 @@
           card.innerHTML = `
             <div class="project-thumb" style="background-image:url('${thumb.replace(/'/g, "%27")}')"></div>
             <span class="project-card-content">
-              <span class="project-card-type">${project.sourceKind === "user" ? "Contenido propio" : "Proyecto demo"} · ${project.type}</span>
+              <span class="project-card-type">${project.sourceKind === "module" ? "Módulo activo" : (project.sourceKind === "user" ? "Contenido propio" : "Proyecto demo")} · ${project.type}</span>
               <strong class="project-card-title">${escapeHtml(project.title)}</strong>
-              <span class="project-card-meta">${project.fileName ? escapeHtml(project.fileName) : "Rubik Sota Experience"}</span>
+              <span class="project-card-meta">${project.href ? "Abrir módulo →" : (project.fileName ? escapeHtml(project.fileName) : "Rubik Sota Experience")}</span>
             </span>
           `;
           card.addEventListener("click", () => {
             markInteraction();
+            if (project.href) {
+              window.location.href = project.href;
+              return;
+            }
             setActiveProject(project.id, true);
           });
           els.projectGallery.appendChild(card);
