@@ -65,3 +65,7 @@ WebM still records from the dedicated export canvas, not from the editor viewpor
 - 100% zoom scrolls inside the preview frame instead of the whole page.
 - ZIP and PNG after zoom keep real preset dimensions.
 - WebM after zoom keeps real preset dimensions.
+
+## Follow-up v0.3.7
+
+The next microphase fixes logo precision controls. The sticky preview and zoom model remain editor-only; logo X/Y/width are controlled in real preset pixels through `visualLayoutState.logo`.

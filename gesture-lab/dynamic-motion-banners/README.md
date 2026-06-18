@@ -197,3 +197,27 @@ Same file as v0.3 (no route change). UX polish for editing comfort in the visual
 
 - Focus preview expands the left workspace but keeps the control column available.
 - QR scan validation remains pending until tested with a physical mobile reader.
+
+## v0.3.7 - Logo Precision Controls & Numeric Steppers
+
+Same file as v0.3 (no route change). Fixes logo control precision by aligning the visible logo panel with the exportable visual layout state.
+
+### Added
+
+- Numeric steppers for logo X, logo Y and logo width in real preset pixels.
+- Fine controls: `-10`, `-1`, editable number, `+1`, `+10`.
+- Dynamic clamps based on active format: X/Y allow off-canvas QA tests, width clamps from 20 px to `min(canvasWidth, 800)`.
+- Main logo panel now writes directly to `visualLayoutState.logo`.
+- Logo capsule enabled and capsule opacity controls are exposed in the main logo panel and stay synchronized with the visual controls panel.
+- Layout QA now reports `Logo parcialmente fuera del canvas.` and `Logo fuera del canvas.`.
+
+### Export guarantees
+
+- Logo X/Y/width are real canvas coordinates and are serialized in `manifest/config.json` under `visualLayout.logo`.
+- Preview zoom does not affect logo position or size.
+- PNG, HTML, ZIP and WebM use the same `drawCreative()` and `visualLayoutState.logo` source as the editor preview.
+
+### v0.3.7 known limitations
+
+- Numeric steppers are limited to logo controls in this phase. Similar steppers for headline, gallery, CTA and QR can be evaluated in a later phase.
+- QR scan validation remains pending until tested with a physical mobile reader.

@@ -664,6 +664,56 @@
       font-size: 0.78rem;
     }
 
+    .numeric-stepper {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .numeric-stepper-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .numeric-stepper-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(44px, auto)) minmax(82px, 1fr) repeat(2, minmax(44px, auto));
+      gap: 6px;
+      align-items: center;
+    }
+
+    .numeric-stepper button {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+    }
+
+    .numeric-stepper button:hover {
+      border-color: var(--line-strong);
+      color: var(--text);
+      background: rgba(232, 205, 154, 0.1);
+    }
+
+    .numeric-stepper input {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid var(--line-strong);
+      background: rgba(5, 5, 5, 0.5);
+      color: var(--text);
+      padding: 8px;
+      text-align: right;
+    }
+
     .layout-json-box {
       min-height: 88px;
       font-family: Consolas, Menlo, monospace;
@@ -988,9 +1038,37 @@
             <button id="btn-logo-upload-proxy" class="control-button" type="button">Subir logo</button>
             <input id="logo-upload" type="file" accept="image/png,image/jpeg,image/svg+xml" aria-label="Subir logo">
             <div id="logo-status" class="media-status">Sin logo adjunto. Se muestra la marca textual.</div>
-            <label class="control-row" for="logo-scale">Tamano logo <span id="logo-scale-value">1.00</span><input id="logo-scale" type="range" min="0.4" max="2.5" step="0.05" value="1"></label>
-            <label class="control-row" for="logo-offset-x">Posicion logo X <span id="logo-offset-x-value">0</span><input id="logo-offset-x" type="range" min="-300" max="300" step="5" value="0"></label>
-            <label class="control-row" for="logo-offset-y">Posicion logo Y <span id="logo-offset-y-value">0</span><input id="logo-offset-y" type="range" min="-160" max="300" step="5" value="0"></label>
+            <p class="help-copy">Coordenadas en pixeles reales del formato. El zoom no afecta a la descarga.</p>
+            <div class="numeric-stepper" data-logo-stepper="x">
+              <div class="numeric-stepper-label"><span>Logo X</span><span>px</span></div>
+              <div class="numeric-stepper-row">
+                <button type="button" data-logo-stepper-target="x" data-logo-stepper-delta="-10">-10</button>
+                <button type="button" data-logo-stepper-target="x" data-logo-stepper-delta="-1">-1</button>
+                <input id="logo-precision-x" type="number" step="1" value="0" aria-label="Logo X en pixeles">
+                <button type="button" data-logo-stepper-target="x" data-logo-stepper-delta="1">+1</button>
+                <button type="button" data-logo-stepper-target="x" data-logo-stepper-delta="10">+10</button>
+              </div>
+            </div>
+            <div class="numeric-stepper" data-logo-stepper="y">
+              <div class="numeric-stepper-label"><span>Logo Y</span><span>px</span></div>
+              <div class="numeric-stepper-row">
+                <button type="button" data-logo-stepper-target="y" data-logo-stepper-delta="-10">-10</button>
+                <button type="button" data-logo-stepper-target="y" data-logo-stepper-delta="-1">-1</button>
+                <input id="logo-precision-y" type="number" step="1" value="0" aria-label="Logo Y en pixeles">
+                <button type="button" data-logo-stepper-target="y" data-logo-stepper-delta="1">+1</button>
+                <button type="button" data-logo-stepper-target="y" data-logo-stepper-delta="10">+10</button>
+              </div>
+            </div>
+            <div class="numeric-stepper" data-logo-stepper="width">
+              <div class="numeric-stepper-label"><span>Logo ancho</span><span>px</span></div>
+              <div class="numeric-stepper-row">
+                <button type="button" data-logo-stepper-target="width" data-logo-stepper-delta="-10">-10</button>
+                <button type="button" data-logo-stepper-target="width" data-logo-stepper-delta="-1">-1</button>
+                <input id="logo-precision-width" type="number" step="1" value="220" aria-label="Ancho del logo en pixeles">
+                <button type="button" data-logo-stepper-target="width" data-logo-stepper-delta="1">+1</button>
+                <button type="button" data-logo-stepper-target="width" data-logo-stepper-delta="10">+10</button>
+              </div>
+            </div>
             <label class="control-row" for="logo-opacity">Opacidad logo <span id="logo-opacity-value">1.00</span><input id="logo-opacity" type="range" min="0" max="1" step="0.05" value="1"></label>
             <div class="field">
               <label for="logo-fit">Ajuste logo</label>
@@ -1008,6 +1086,8 @@
                 <option value="none">Sin capsula</option>
               </select>
             </div>
+            <label class="control-row" for="logo-capsule-enabled">Capsula logo <input id="logo-capsule-enabled" type="checkbox" checked></label>
+            <label class="control-row" for="logo-capsule-opacity">Opacidad capsula <span id="logo-capsule-opacity-value">0.55</span><input id="logo-capsule-opacity" type="range" min="0" max="1" step="0.01" value="0.55"></label>
             <label class="control-row" for="logo-visible">Mostrar logo <input id="logo-visible" type="checkbox" checked></label>
             <button id="logo-reset" class="control-button subtle" type="button">Reset logo</button>
           </section>
@@ -1170,9 +1250,9 @@
             <details class="visual-panel">
               <summary>Logo</summary>
               <div class="visual-panel-body">
-                <label class="visual-control">X <span id="vc-logo-x-value">0 px</span><input data-vc="logo.x" id="vc-logo-x" type="range" min="0" max="4096" step="1"></label>
-                <label class="visual-control">Y <span id="vc-logo-y-value">0 px</span><input data-vc="logo.y" id="vc-logo-y" type="range" min="0" max="4096" step="1"></label>
-                <label class="visual-control">Ancho <span id="vc-logo-width-value">0 px</span><input data-vc="logo.width" id="vc-logo-width" type="range" min="60" max="500" step="1"></label>
+                <label class="visual-control">X <span id="vc-logo-x-value">0 px</span><input data-vc="logo.x" id="vc-logo-x" type="range" min="-500" max="4596" step="1"></label>
+                <label class="visual-control">Y <span id="vc-logo-y-value">0 px</span><input data-vc="logo.y" id="vc-logo-y" type="range" min="-500" max="4596" step="1"></label>
+                <label class="visual-control">Ancho <span id="vc-logo-width-value">0 px</span><input data-vc="logo.width" id="vc-logo-width" type="range" min="20" max="800" step="1"></label>
                 <label class="visual-control">Opacidad <span id="vc-logo-opacity-value">1.00</span><input data-vc="logo.opacity" id="vc-logo-opacity" type="range" min="0" max="1" step="0.01"></label>
                 <label class="visual-inline" for="vc-logo-capsuleEnabled">Capsula logo <input data-vc="logo.capsuleEnabled" id="vc-logo-capsuleEnabled" type="checkbox" checked></label>
                 <label class="visual-control">Opacidad capsula <span id="vc-logo-capsuleOpacity-value">0.55</span><input data-vc="logo.capsuleOpacity" id="vc-logo-capsuleOpacity" type="range" min="0" max="1" step="0.01"></label>
@@ -1306,10 +1386,13 @@
       const logoUpload = document.getElementById("logo-upload");
       const logoStatus = document.getElementById("logo-status");
       const logoUploadProxy = document.getElementById("btn-logo-upload-proxy");
-      const logoScale = document.getElementById("logo-scale");
-      const logoOffsetX = document.getElementById("logo-offset-x");
-      const logoOffsetY = document.getElementById("logo-offset-y");
+      const logoPrecisionX = document.getElementById("logo-precision-x");
+      const logoPrecisionY = document.getElementById("logo-precision-y");
+      const logoPrecisionWidth = document.getElementById("logo-precision-width");
+      const logoStepperButtons = Array.from(document.querySelectorAll("[data-logo-stepper-target]"));
       const logoOpacity = document.getElementById("logo-opacity");
+      const logoCapsuleEnabled = document.getElementById("logo-capsule-enabled");
+      const logoCapsuleOpacity = document.getElementById("logo-capsule-opacity");
       const logoVisible = document.getElementById("logo-visible");
       const logoReset = document.getElementById("logo-reset");
       const recordStart = document.getElementById("record-start");
@@ -2204,7 +2287,7 @@
         const qrX = horizontal ? width - padX - qrSize - ctaW * 0.16 : width - padX - qrSize;
         const qrY = horizontal ? ctaY + ctaH + height * 0.035 : ctaY;
         return {
-          version: "0.3.6",
+          version: "0.3.7",
           compositionPreset: presetId,
           isManual: presetId === "manual",
           guidesVisible: false,
@@ -2259,10 +2342,12 @@
       }
 
       function setManualVisualControl(path, value) {
+        const preset = getActiveOutputPreset();
         if (!state.visualLayoutState) {
-          const preset = getActiveOutputPreset();
           state.visualLayoutState = createVisualLayoutState(preset.width, preset.height, "auto-editorial");
           state.visualLayoutBase = { width: preset.width, height: preset.height };
+        } else if (state.visualLayoutBase.width !== preset.width || state.visualLayoutBase.height !== preset.height) {
+          ensureVisualLayoutState(preset.width, preset.height, false);
         }
         setPathValue(state.visualLayoutState, path, value);
         state.visualLayoutState.isManual = true;
@@ -2270,6 +2355,60 @@
         compositionPreset.value = "manual";
         visualModeStatus.textContent = "Modo manual activo.";
         state.textureDirty = true;
+      }
+
+      function clampNumber(value, min, max) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return min;
+        return Math.min(max, Math.max(min, Math.round(number)));
+      }
+
+      function logoPrecisionBounds(key) {
+        const preset = getActiveOutputPreset();
+        if (key === "x") return { min: -500, max: preset.width + 500 };
+        if (key === "y") return { min: -500, max: preset.height + 500 };
+        return { min: 20, max: Math.min(preset.width, 800) };
+      }
+
+      function logoPrecisionInput(key) {
+        if (key === "x") return logoPrecisionX;
+        if (key === "y") return logoPrecisionY;
+        return logoPrecisionWidth;
+      }
+
+      function syncLogoPrecisionControls(layout) {
+        const preset = getActiveOutputPreset();
+        const source = layout || ensureVisualLayoutState(preset.width, preset.height, false);
+        ["x", "y", "width"].forEach((key) => {
+          const input = logoPrecisionInput(key);
+          const bounds = logoPrecisionBounds(key);
+          input.min = String(bounds.min);
+          input.max = String(bounds.max);
+          input.value = String(clampNumber(source.logo[key], bounds.min, bounds.max));
+        });
+      }
+
+      function setLogoPrecisionControl(key, value) {
+        const bounds = logoPrecisionBounds(key);
+        const next = clampNumber(value, bounds.min, bounds.max);
+        const input = logoPrecisionInput(key);
+        input.value = String(next);
+        setManualVisualControl("logo." + key, next);
+        syncVisualControls();
+        syncLogoPrecisionControls();
+      }
+
+      function setLogoOpacityControl(value) {
+        const next = Math.min(1, Math.max(0, Number(value) || 0));
+        logoOpacity.value = String(next);
+        setManualVisualControl("logo.opacity", next);
+        syncVisualControls();
+      }
+
+      function setLogoCapsuleControl(key, value) {
+        const next = key === "capsuleEnabled" ? !!value : Math.min(1, Math.max(0, Number(value) || 0));
+        setManualVisualControl("logo." + key, next);
+        syncVisualControls();
       }
 
       function fitTextToBox(ctx, text, box, options) {
@@ -2335,7 +2474,7 @@
           cta: { x: layout.cta.x, y: layout.cta.y, w: layout.cta.width, h: layout.cta.height },
           qr: { x: layout.qr.x, y: layout.qr.y, w: layout.qr.size, h: layout.qr.size },
           qrUrl: { x: layout.qr.x - layout.qr.size * 0.45, y: layout.qr.y + layout.qr.size + layout.qr.urlOffsetY, w: layout.qr.size * 1.9, h: layout.qr.urlFontSize * 1.3 },
-          logo: { x: layout.logo.x, y: layout.logo.y, w: layout.logo.width, h: layout.logo.width * 0.34 }
+          logo: { x: layout.logo.x, y: layout.logo.y, w: layout.logo.width, h: layout.logo.width * 0.34, opacity: layout.logo.opacity }
         };
       }
 
@@ -2355,8 +2494,10 @@
         if (boxOutside(boxes.qr, canvasWidth, canvasHeight)) errors.push("QR fuera del canvas.");
         if (boxFullyOutside(boxes.headline, canvasWidth, canvasHeight)) errors.push("Titular completamente fuera del canvas.");
         if (boxFullyOutside(boxes.gallery, canvasWidth, canvasHeight)) errors.push("Galeria completamente fuera del canvas.");
+        if (state.logo.visible && boxes.logo.opacity !== 0 && boxFullyOutside(boxes.logo, canvasWidth, canvasHeight)) errors.push("Logo fuera del canvas.");
+        else if (state.logo.visible && boxes.logo.opacity !== 0 && boxOutside(boxes.logo, canvasWidth, canvasHeight)) warnings.push("Logo parcialmente fuera del canvas.");
         Object.entries(boxes).forEach(([name, box]) => {
-          if (boxOutside(box, canvasWidth, canvasHeight) && !["qr", "headline", "gallery"].includes(name)) warnings.push(name + " queda parcialmente fuera del canvas.");
+          if (boxOutside(box, canvasWidth, canvasHeight) && !["qr", "headline", "gallery", "logo"].includes(name)) warnings.push(name + " queda parcialmente fuera del canvas.");
         });
         if (computeBoxOverlap(boxes.headline, boxes.subheadline)) warnings.push("Titular solapa subtitulo.");
         if (computeBoxOverlap(boxes.gallery, boxes.subheadline)) warnings.push("Galeria solapa subtitulo.");
@@ -2693,7 +2834,7 @@
         const layout = serializableVisualLayout();
         layout.layoutQa = cloneLayout(state.layoutQa || { status: "OK", warnings: [], errors: [] });
         return {
-          version: "0.3.6",
+          version: "0.3.7",
           exportType: "client-preview-package",
           generatedAt: new Date().toISOString(),
           brand: getValue("brand"),
@@ -2910,7 +3051,18 @@
 
       function updateTexture() {
         const ctx = textureContext;
-        drawCreative(ctx, textureSize, textureSize, { editorMode: true });
+        const preset = getActiveOutputPreset();
+        const creativeCanvas = document.createElement("canvas");
+        creativeCanvas.width = preset.width;
+        creativeCanvas.height = preset.height;
+        drawCreative(creativeCanvas.getContext("2d"), preset.width, preset.height, { editorMode: true });
+        ctx.clearRect(0, 0, textureSize, textureSize);
+        ctx.fillStyle = "#0d0c0a";
+        ctx.fillRect(0, 0, textureSize, textureSize);
+        const scale = Math.min(textureSize / preset.width, textureSize / preset.height);
+        const drawW = preset.width * scale;
+        const drawH = preset.height * scale;
+        ctx.drawImage(creativeCanvas, (textureSize - drawW) / 2, (textureSize - drawH) / 2, drawW, drawH);
 
         if (gl) {
           gl.bindTexture(gl.TEXTURE_2D, webgl.texture);
@@ -3405,9 +3557,6 @@
         document.getElementById("image-offset-x-value").textContent = imageOffsetX.value;
         document.getElementById("image-offset-y-value").textContent = imageOffsetY.value;
         document.getElementById("image-opacity-value").textContent = Number(imageOpacity.value).toFixed(2);
-        document.getElementById("logo-scale-value").textContent = Number(logoScale.value).toFixed(2);
-        document.getElementById("logo-offset-x-value").textContent = logoOffsetX.value;
-        document.getElementById("logo-offset-y-value").textContent = logoOffsetY.value;
         document.getElementById("logo-opacity-value").textContent = Number(logoOpacity.value).toFixed(2);
         document.getElementById("audio-volume-value").textContent = Number(audioVolume.value).toFixed(2);
       }
@@ -3448,6 +3597,12 @@
         safeAreasVisible.checked = !!layout.safeAreasVisible;
         overlapVisible.checked = !!layout.overlapBoxesVisible;
         liveQa.checked = layout.liveQa !== false;
+        syncLogoPrecisionControls(layout);
+        logoOpacity.value = String(layout.logo.opacity == null ? 1 : layout.logo.opacity);
+        document.getElementById("logo-opacity-value").textContent = Number(logoOpacity.value).toFixed(2);
+        logoCapsuleEnabled.checked = layout.logo.capsuleEnabled !== false;
+        logoCapsuleOpacity.value = String(layout.logo.capsuleOpacity == null ? 0.55 : layout.logo.capsuleOpacity);
+        document.getElementById("logo-capsule-opacity-value").textContent = Number(logoCapsuleOpacity.value).toFixed(2);
         updatePreviewContextLabels();
       }
 
@@ -3522,7 +3677,7 @@
         allowed.forEach((section) => {
           if (parsed[section] && typeof parsed[section] === "object") base[section] = { ...base[section], ...parsed[section] };
         });
-        base.version = "0.3.6";
+        base.version = "0.3.7";
         base.compositionPreset = parsed.compositionPreset || "manual";
         base.isManual = parsed.isManual !== false;
         base.guidesVisible = false;
@@ -3548,9 +3703,6 @@
         state.image.offsetY = Number(imageOffsetY.value);
         state.image.opacity = Number(imageOpacity.value);
         state.image.fit = imageFit.value;
-        state.logo.scale = Number(logoScale.value);
-        state.logo.offsetX = Number(logoOffsetX.value);
-        state.logo.offsetY = Number(logoOffsetY.value);
         state.logo.opacity = Number(logoOpacity.value);
         state.logo.visible = logoVisible.checked;
         state.logo.fit = logoFit.value;
@@ -3686,14 +3838,12 @@
         state.logoUrl = "";
         state.assetData.logo = "";
         logoUpload.value = "";
-        logoScale.value = "1";
-        logoOffsetX.value = "0";
-        logoOffsetY.value = "0";
         logoOpacity.value = "1";
         logoFit.value = "contain";
         if (logoCard) logoCard.value = "translucent";
         logoVisible.checked = true;
         logoStatus.textContent = "Sin logo adjunto. Se muestra la marca textual.";
+        resetVisualSection("logo");
         updateLayerControls();
       }
 
@@ -3975,10 +4125,33 @@
           state.textureDirty = true;
         });
       });
-      [mainMediaMode, imageScale, imageOffsetX, imageOffsetY, imageOpacity, imageFit, logoScale, logoOffsetX, logoOffsetY, logoOpacity, logoFit, logoCard, logoVisible, galleryEnabled, galleryCount, qrType, controls.qr, outputPreset, customOutputWidth, customOutputHeight, audioVolume, audioMuted, audioLoop].forEach((control) => {
+      [mainMediaMode, imageScale, imageOffsetX, imageOffsetY, imageOpacity, imageFit, logoFit, logoCard, logoVisible, galleryEnabled, galleryCount, qrType, controls.qr, outputPreset, customOutputWidth, customOutputHeight, audioVolume, audioMuted, audioLoop].forEach((control) => {
         control.addEventListener("input", updateLayerControls);
         control.addEventListener("change", updateLayerControls);
       });
+      [logoPrecisionX, logoPrecisionY, logoPrecisionWidth].forEach((input) => {
+        const key = input === logoPrecisionX ? "x" : (input === logoPrecisionY ? "y" : "width");
+        input.addEventListener("change", () => setLogoPrecisionControl(key, input.value));
+        input.addEventListener("blur", () => setLogoPrecisionControl(key, input.value));
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            setLogoPrecisionControl(key, input.value);
+          }
+        });
+      });
+      logoStepperButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const key = button.dataset.logoStepperTarget;
+          const input = logoPrecisionInput(key);
+          setLogoPrecisionControl(key, Number(input.value) + Number(button.dataset.logoStepperDelta));
+        });
+      });
+      logoOpacity.addEventListener("input", () => setLogoOpacityControl(logoOpacity.value));
+      logoOpacity.addEventListener("change", () => setLogoOpacityControl(logoOpacity.value));
+      logoCapsuleEnabled.addEventListener("change", () => setLogoCapsuleControl("capsuleEnabled", logoCapsuleEnabled.checked));
+      logoCapsuleOpacity.addEventListener("input", () => setLogoCapsuleControl("capsuleOpacity", logoCapsuleOpacity.value));
+      logoCapsuleOpacity.addEventListener("change", () => setLogoCapsuleControl("capsuleOpacity", logoCapsuleOpacity.value));
       previewZoomButtons.forEach((button) => {
         button.addEventListener("click", () => {
           const value = button.dataset.previewZoom;
