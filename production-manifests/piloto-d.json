@@ -1,0 +1,89 @@
+{
+  "slug": "piloto-d",
+  "clientName": "Piloto Etapa D",
+  "generatedBy": "immersphere-production-orchestrator-v0.2",
+  "fourHooks": {
+    "visualExperience": {
+      "label": "Experiencia Visual de Propiedad",
+      "status": "planned",
+      "targetUrl": "https://aurum-properties-boutique.vercel.app/piloto-d/visual-experience",
+      "purpose": "Primer impacto visual interactivo para captar atencion."
+    },
+    "landing": {
+      "label": "Landing Comercial Personalizada",
+      "status": "planned",
+      "targetUrl": "https://aurum-properties-boutique.vercel.app/piloto-d",
+      "purpose": "Pagina breve para explicar oportunidad, CTA y siguiente paso."
+    },
+    "webCompleta": {
+      "label": "Web Desarrollada Completa",
+      "status": "planned",
+      "targetUrl": "https://aurum-properties-boutique.vercel.app/piloto-d/web-completa",
+      "purpose": "Demo completa con narrativa, servicios, visual experience y CTA."
+    },
+    "bannerPack": {
+      "label": "Pack de Banners Personalizados",
+      "status": "planned",
+      "targetUrl": "https://aurum-properties-boutique.vercel.app/banners/piloto-d",
+      "verticalUrl": "https://aurum-properties-boutique.vercel.app/banners/piloto-d/vertical",
+      "horizontalUrl": "https://aurum-properties-boutique.vercel.app/banners/piloto-d/horizontal",
+      "purpose": "Creatividades vertical/horizontal para campanas y remarketing."
+    }
+  },
+  "files": [
+    "dynamic-motion-banner/piloto-d/index.html",
+    "dynamic-motion-banner/piloto-d/banner-vertical.html",
+    "dynamic-motion-banner/piloto-d/banner-horizontal.html"
+  ],
+  "config": {
+    "clientName": "Piloto Etapa D",
+    "slug": "piloto-d",
+    "sector": "residencial",
+    "zone": "Madrid",
+    "assets": {
+      "logo": {
+        "url": null,
+        "source": "manual",
+        "status": "pending_validation"
+      },
+      "favicon": {
+        "url": null,
+        "status": "candidate"
+      },
+      "heroImage": {
+        "url": null,
+        "status": "pending_validation"
+      },
+      "propertyImages": [],
+      "videos": [
+        {
+          "url": "/VIDEO_AURUM_HEROWEB.mp4",
+          "source": "aurum_default",
+          "status": "pending_validation",
+          "recommendedUse": "hero"
+        }
+      ],
+      "brandColors": [],
+      "notes": []
+    },
+    "targetRoutes": {
+      "visualExperience": "https://aurum-properties-boutique.vercel.app/piloto-d/visual-experience",
+      "landing": "https://aurum-properties-boutique.vercel.app/piloto-d",
+      "webCompleta": "https://aurum-properties-boutique.vercel.app/piloto-d/web-completa",
+      "bannerPack": "https://aurum-properties-boutique.vercel.app/banners/piloto-d",
+      "bannerVertical": "https://aurum-properties-boutique.vercel.app/banners/piloto-d/vertical",
+      "bannerHorizontal": "https://aurum-properties-boutique.vercel.app/banners/piloto-d/horizontal"
+    },
+    "internalEngine": "Rubik SOTA",
+    "note": "Motor interno. No usar como URL cliente-facing.",
+    "copy": {
+      "claim": "video_hero",
+      "cta": "Solicitar revision de propuesta"
+    },
+    "qa": [
+      "Validar assets",
+      "Revisar responsive",
+      "Confirmar que AURUM sera URL publica"
+    ]
+  }
+}
