@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Costa Invest · Banner Horizontal · 1920×1080</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #080706; }
+    body { display: grid; place-items: center; min-height: 100vh; }
+    .canvas-wrap { width: 1920px; height: 1080px; box-shadow: 0 24px 70px rgba(0,0,0,0.48); position: relative; background: #0d0b09; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .qr-layer { position: absolute; right: 96px; bottom: 238px; width: 230px; height: 230px; pointer-events: none; }
+    @media (max-width: 1960px) { .canvas-wrap { transform: scale(0.48); transform-origin: top center; } }
+    @media (max-width: 980px) { .canvas-wrap { transform: scale(0.32); transform-origin: top center; } }
+    @media (max-width: 620px) { .canvas-wrap { transform: scale(0.22); transform-origin: top center; } }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="canvas-wrap">
+    <canvas id="banner-canvas" width="1920" height="1080"></canvas>
+    <div id="qr-layer" class="qr-layer"></div>
+  </div>
+  <script type="module">
+    import { BannerEngine } from "./banner-engine.js";
+    new BannerEngine("banner-canvas", {
+      orientation: "horizontal",
+      qrContainer: document.getElementById("qr-layer")
+    });
+  </script>
+</body>
+</html>
