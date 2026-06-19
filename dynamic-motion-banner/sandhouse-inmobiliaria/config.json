@@ -28,7 +28,7 @@
     ],
     "brandColors": [],
     "notes": [
-      "Sitio web: https://www.sandhouse.es/ � pendiente de auditar para extraer assets reales"
+      "Web auditada: https://www.sandhouse.es/ | email: info@sandhouse.es | telefonos: +34 655 187 116 / +34 646 65 97 20 / +34 623 133 321 | Assets visuales pendientes de importar y validar derechos de uso."
     ]
   },
   "targetRoutes": {
@@ -42,7 +42,7 @@
   "internalEngine": "Rubik SOTA",
   "note": "Motor interno. No usar como URL cliente-facing.",
   "copy": {
-    "claim": "experiencia_visual_premium",
+    "claim": "Tu hogar en Torrevieja y la Costa Levantina",
     "cta": "Solicitar revision de propuesta"
   },
   "qa": [
