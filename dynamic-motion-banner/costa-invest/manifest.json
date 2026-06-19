@@ -1,0 +1,12 @@
+﻿{
+  "id": "dynamic-motion-banner-costa-invest",
+  "name": "Costa Invest · Experiencia Visual de Propiedad",
+  "type": "dynamic-motion-banner",
+  "status": "conceptual_preview",
+  "client": { "name": "Costa Invest", "sector": "Inmobiliaria", "location": "Playa Flamenca · Orihuela Costa" },
+  "campaign": { "type": "property_visit", "headline": "DESCUBRE LA PROPIEDAD", "subheadline": "Experiencia visual, QR y contacto directo para compradores internacionales en Orihuela Costa.", "cta": "SOLICITA INFORMACIÓN" },
+  "outputs": ["/dynamic-motion-banner/costa-invest/", "/dynamic-motion-banner/costa-invest/?embed=1"],
+  "destinations": { "qrUrl": "https://aurum-properties-boutique.vercel.app/costa-invest", "premiumDemoUrl": "https://aurum-properties-boutique.vercel.app/costa-invest" },
+  "assetsStatus": "public_candidate_pending_validation",
+  "notes": "Preview conceptual privada basada en datos y assets públicos de Costa Invest. Pendiente de validación comercial por el cliente."
+}
