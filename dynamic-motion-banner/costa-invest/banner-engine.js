@@ -166,31 +166,35 @@ class BannerEngine {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // Overlays oscuros
-    const gradTop = ctx.createLinearGradient(0, 0, 0, H * 0.55);
-    gradTop.addColorStop(0, hexToRgba(theme.background, 0.85));
+    // Overlays oscuros — vertical más contenido, horizontal más ligero para revelar imagen
+    const topOpacity = isVertical ? 0.78 : 0.58;
+    const gradTop = ctx.createLinearGradient(0, 0, 0, H * (isVertical ? 0.5 : 0.45));
+    gradTop.addColorStop(0, hexToRgba(theme.background, topOpacity));
     gradTop.addColorStop(1, hexToRgba(theme.background, 0));
     ctx.fillStyle = gradTop;
-    ctx.fillRect(0, 0, W, H * 0.55);
+    ctx.fillRect(0, 0, W, H * (isVertical ? 0.5 : 0.45));
 
-    const gradBottom = ctx.createLinearGradient(0, H * 0.45, 0, H);
+    const bottomOpacity = isVertical ? 0.88 : 0.82;
+    const gradBottom = ctx.createLinearGradient(0, H * 0.48, 0, H);
     gradBottom.addColorStop(0, hexToRgba(theme.background, 0));
-    gradBottom.addColorStop(0.55, hexToRgba(theme.background, 0.58));
-    gradBottom.addColorStop(1, hexToRgba(theme.background, 0.92));
+    gradBottom.addColorStop(0.5, hexToRgba(theme.background, isVertical ? 0.52 : 0.44));
+    gradBottom.addColorStop(1, hexToRgba(theme.background, bottomOpacity));
     ctx.fillStyle = gradBottom;
-    ctx.fillRect(0, H * 0.45, W, H * 0.55);
+    ctx.fillRect(0, H * 0.48, W, H * 0.52);
 
-    // Logo
+    // Logo — tamaño reducido con límite de ancho para logos horizontales
     if (this.logo) {
-      const logoH = isVertical ? H * 0.07 : H * 0.1;
-      const logoW = (this.logo.width / this.logo.height) * logoH;
+      const logoH = isVertical ? H * 0.055 : H * 0.075;
+      let logoW = (this.logo.width / this.logo.height) * logoH;
+      const maxLogoW = isVertical ? W * 0.32 : W * 0.18;
+      if (logoW > maxLogoW) logoW = maxLogoW;
       const lx = isVertical ? W * 0.065 : W * 0.045;
-      const ly = isVertical ? H * 0.045 : H * 0.06;
+      const ly = isVertical ? H * 0.04 : H * 0.055;
       ctx.drawImage(this.logo, lx, ly, logoW, logoH);
     }
 
     // Badges
-    const badgeY = isVertical ? H * 0.175 : H * 0.225;
+    const badgeY = isVertical ? H * 0.165 : H * 0.185;
     const badgeX = isVertical ? W * 0.065 : W * 0.045;
     const badges = campaign.badges;
     const visibleBadges = isVertical ? badges : badges.slice(0, 4);
@@ -220,11 +224,11 @@ class BannerEngine {
       bx += bw + (isVertical ? W * 0.02 : W * 0.012);
     });
 
-    // Headline
+    // Headline — en horizontal subimos para aprovechar más espacio central
     const textX = isVertical ? W * 0.065 : W * 0.045;
-    const textY = isVertical ? H * 0.28 : H * 0.34;
-    const maxTextW = isVertical ? W * 0.87 : W * 0.46;
-    const headlineSize = isVertical ? W * 0.098 : W * 0.062;
+    const textY = isVertical ? H * 0.27 : H * 0.28;
+    const maxTextW = isVertical ? W * 0.87 : W * 0.5;
+    const headlineSize = isVertical ? W * 0.092 : W * 0.058;
     const { size, lines } = fitHeadline(ctx, campaign.headline, maxTextW, headlineSize);
     ctx.save();
     ctx.globalAlpha = clamp((alpha - 0.1) / 0.5, 0, 1);
@@ -254,11 +258,11 @@ class BannerEngine {
     ctx.restore();
 
     // CTA
-    const ctaW = isVertical ? W * 0.58 : W * 0.22;
-    const ctaH = isVertical ? W * 0.12 : W * 0.065;
+    const ctaW = isVertical ? W * 0.58 : W * 0.24;
+    const ctaH = isVertical ? W * 0.12 : W * 0.06;
     const ctaX = isVertical ? textX : W * 0.045;
-    const ctaY = isVertical ? H * 0.73 : H * 0.72;
-    const ctaSize = isVertical ? W * 0.034 : W * 0.02;
+    const ctaY = isVertical ? H * 0.73 : H * 0.68;
+    const ctaSize = isVertical ? W * 0.034 : W * 0.019;
     ctx.save();
     ctx.globalAlpha = clamp((alpha - 0.35) / 0.5, 0, 1);
     ctx.fillStyle = theme.gold;
@@ -273,9 +277,9 @@ class BannerEngine {
     ctx.restore();
 
     // QR + label
-    const qrSize = isVertical ? W * 0.22 : W * 0.12;
-    const qrX = isVertical ? W * 0.695 : W * 0.81;
-    const qrY = isVertical ? H * 0.74 : H * 0.58;
+    const qrSize = isVertical ? W * 0.22 : W * 0.13;
+    const qrX = isVertical ? W * 0.695 : W * 0.8;
+    const qrY = isVertical ? H * 0.74 : H * 0.52;
 
     ctx.save();
     ctx.globalAlpha = clamp((alpha - 0.45) / 0.5, 0, 1);
