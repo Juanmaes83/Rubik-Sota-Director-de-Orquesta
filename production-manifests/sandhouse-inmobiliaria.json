@@ -1,0 +1,91 @@
+{
+  "slug": "sandhouse-inmobiliaria",
+  "clientName": "Sandhouse Inmobiliaria",
+  "generatedBy": "immersphere-production-orchestrator-v0.2",
+  "fourHooks": {
+    "visualExperience": {
+      "label": "Experiencia Visual de Propiedad",
+      "status": "planned",
+      "targetUrl": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria/visual-experience",
+      "purpose": "Primer impacto visual interactivo para captar atencion."
+    },
+    "landing": {
+      "label": "Landing Comercial Personalizada",
+      "status": "planned",
+      "targetUrl": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria",
+      "purpose": "Pagina breve para explicar oportunidad, CTA y siguiente paso."
+    },
+    "webCompleta": {
+      "label": "Web Desarrollada Completa",
+      "status": "planned",
+      "targetUrl": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria/web-completa",
+      "purpose": "Demo completa con narrativa, servicios, visual experience y CTA."
+    },
+    "bannerPack": {
+      "label": "Pack de Banners Personalizados",
+      "status": "planned",
+      "targetUrl": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria",
+      "verticalUrl": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria/vertical",
+      "horizontalUrl": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria/horizontal",
+      "purpose": "Creatividades vertical/horizontal para campanas y remarketing."
+    }
+  },
+  "files": [
+    "dynamic-motion-banner/sandhouse-inmobiliaria/index.html",
+    "dynamic-motion-banner/sandhouse-inmobiliaria/banner-vertical.html",
+    "dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal.html"
+  ],
+  "config": {
+    "clientName": "Sandhouse Inmobiliaria",
+    "slug": "sandhouse-inmobiliaria",
+    "sector": "residencial",
+    "zone": "Torrevieja",
+    "assets": {
+      "logo": {
+        "url": null,
+        "source": "manual",
+        "status": "pending_validation"
+      },
+      "favicon": {
+        "url": null,
+        "status": "candidate"
+      },
+      "heroImage": {
+        "url": null,
+        "status": "pending_validation"
+      },
+      "propertyImages": [],
+      "videos": [
+        {
+          "url": "/VIDEO_AURUM_HEROWEB.mp4",
+          "source": "aurum_default",
+          "status": "pending_validation",
+          "recommendedUse": "hero"
+        }
+      ],
+      "brandColors": [],
+      "notes": [
+        "Sitio web: https://www.sandhouse.es/ � pendiente de auditar para extraer assets reales"
+      ]
+    },
+    "targetRoutes": {
+      "visualExperience": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria/visual-experience",
+      "landing": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria",
+      "webCompleta": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria/web-completa",
+      "bannerPack": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria",
+      "bannerVertical": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria/vertical",
+      "bannerHorizontal": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria/horizontal"
+    },
+    "internalEngine": "Rubik SOTA",
+    "note": "Motor interno. No usar como URL cliente-facing.",
+    "copy": {
+      "claim": "experiencia_visual_premium",
+      "cta": "Solicitar revision de propuesta"
+    },
+    "qa": [
+      "Validar assets",
+      "Revisar responsive",
+      "Confirmar que AURUM sera URL publica"
+    ]
+  }
+}
