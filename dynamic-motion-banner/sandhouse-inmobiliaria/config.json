@@ -1,0 +1,53 @@
+{
+  "clientName": "Sandhouse Inmobiliaria",
+  "slug": "sandhouse-inmobiliaria",
+  "sector": "residencial",
+  "zone": "Torrevieja",
+  "assets": {
+    "logo": {
+      "url": null,
+      "source": "manual",
+      "status": "pending_validation"
+    },
+    "favicon": {
+      "url": null,
+      "status": "candidate"
+    },
+    "heroImage": {
+      "url": null,
+      "status": "pending_validation"
+    },
+    "propertyImages": [],
+    "videos": [
+      {
+        "url": "/VIDEO_AURUM_HEROWEB.mp4",
+        "source": "aurum_default",
+        "status": "pending_validation",
+        "recommendedUse": "hero"
+      }
+    ],
+    "brandColors": [],
+    "notes": [
+      "Web auditada: https://www.sandhouse.es/ | email: info@sandhouse.es | telefonos: +34 655 187 116 / +34 646 65 97 20 / +34 623 133 321 | Assets visuales pendientes de importar y validar derechos de uso."
+    ]
+  },
+  "targetRoutes": {
+    "visualExperience": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria/visual-experience",
+    "landing": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria",
+    "webCompleta": "https://aurum-properties-boutique.vercel.app/sandhouse-inmobiliaria/web-completa",
+    "bannerPack": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria",
+    "bannerVertical": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria/vertical",
+    "bannerHorizontal": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria/horizontal"
+  },
+  "internalEngine": "Rubik SOTA",
+  "note": "Motor interno. No usar como URL cliente-facing.",
+  "copy": {
+    "claim": "Tu hogar en Torrevieja y la Costa Levantina",
+    "cta": "Solicitar revision de propuesta"
+  },
+  "qa": [
+    "Validar assets",
+    "Revisar responsive",
+    "Confirmar que AURUM sera URL publica"
+  ]
+}
