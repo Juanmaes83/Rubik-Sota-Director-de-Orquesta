@@ -57,6 +57,18 @@
       "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal.html"
     },
     {
+      "source": "/dynamic-motion-banner/embassy-levante",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-embassy-levante-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante/",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-embassy-levante-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante/index.html",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-embassy-levante-v1.html"
+    },
+    {
       "source": "/dynamic-motion-banner/embassy-levante/banner-pack/vertical",
       "destination": "/dynamic-motion-banner/embassy-levante/banner-vertical.html"
     },
