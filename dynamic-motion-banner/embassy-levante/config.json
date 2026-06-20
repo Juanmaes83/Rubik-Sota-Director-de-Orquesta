@@ -4,22 +4,27 @@
   "sector": "Inmobiliaria",
   "zone": "Torrevieja",
   "configSource": "dynamic-motion-banner/_shared/embassy-levante-rubik-config.js",
-  "renderEngine": "rubik-shared-render-v4",
+  "renderEngine": "rubik-gesture-lab-v1",
   "assets": {
     "logo": {
-      "url": null,
-      "source": "manual",
-      "status": "awaiting_rights_validation"
+      "url": "https://aurum-properties-boutique.vercel.app/embassylevante/website-logo.png",
+      "source": "https://www.embassylevante.com/img/header/logo.png",
+      "status": "public_candidate_pending_validation"
     },
     "favicon": {
       "url": null,
       "status": "awaiting_rights_validation"
     },
     "heroImage": {
-      "url": null,
-      "status": "awaiting_rights_validation"
+      "url": "https://aurum-properties-boutique.vercel.app/IMAGEN_AURUM_HEROWEB_2.jpeg",
+      "source": "aurum_generic_placeholder",
+      "status": "placeholder_pending_client_assets"
     },
-    "propertyImages": [],
+    "propertyImages": [
+      { "file": "gesture-lab/dynamic-motion-banners/embassy-levante-assets/property-1.jpg", "source": "aurum_generic_placeholder", "status": "placeholder_pending_client_assets" },
+      { "file": "gesture-lab/dynamic-motion-banners/embassy-levante-assets/property-2.jpg", "source": "aurum_generic_placeholder", "status": "placeholder_pending_client_assets" },
+      { "file": "gesture-lab/dynamic-motion-banners/embassy-levante-assets/property-3.jpg", "source": "aurum_generic_placeholder", "status": "placeholder_pending_client_assets" }
+    ],
     "videos": [
       {
         "url": "/VIDEO_AURUM_HEROWEB.mp4",

@@ -133,8 +133,8 @@ const EMBASSY_LEVANTE_RAW_SPECS = {
       'El propietario quiere saber cómo venderéis su vivienda. Immersphere lo muestra antes de firmar.',
     cta: 'Solicitar información',
     palette: { primary: '#c4a96a', background: '#080604', text: '#f5f0e8' },
-    logo: null,
-    heroImage: null,
+    logo: 'https://aurum-properties-boutique.vercel.app/embassylevante/website-logo.png',
+    heroImage: 'https://aurum-properties-boutique.vercel.app/IMAGEN_AURUM_HEROWEB_2.jpeg',
   },
 };
 
