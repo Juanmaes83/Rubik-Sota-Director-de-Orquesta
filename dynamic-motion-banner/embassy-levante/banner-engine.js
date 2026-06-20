@@ -152,15 +152,22 @@ class BannerEngine {
     // Fondo imagen
     if (this.images.length) {
       const img = this.images[this.currentImageIndex];
-      const scale = Math.max(W / img.width, H / img.height);
-      const dw = img.width * scale;
-      const dh = img.height * scale;
-      const dx = (W - dw) / 2;
-      const dy = (H - dh) / 2;
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.drawImage(img, dx, dy, dw, dh);
-      ctx.restore();
+      if (!img) {
+        ctx.fillStyle = theme.background;
+        ctx.fillRect(0, 0, W, H);
+      } else {
+        const iw = img.naturalWidth || img.width || 1;
+        const ih = img.naturalHeight || img.height || 1;
+        const scale = Math.max(W / iw, H / ih);
+        const dw = iw * scale;
+        const dh = ih * scale;
+        const dx = (W - dw) / 2;
+        const dy = (H - dh) / 2;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.drawImage(img, dx, dy, dw, dh);
+        ctx.restore();
+      }
     } else {
       ctx.fillStyle = theme.background;
       ctx.fillRect(0, 0, W, H);
