@@ -39,6 +39,22 @@
     {
       "source": "/dynamic-motion-banner/costa-invest/index.html",
       "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-costa-invest-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/vertical",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/vertical/",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/horizontal",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/horizontal/",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal.html"
     }
   ]
 }
