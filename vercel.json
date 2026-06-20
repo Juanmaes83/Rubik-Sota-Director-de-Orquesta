@@ -83,6 +83,34 @@
     {
       "source": "/dynamic-motion-banner/embassy-levante/banner-pack/horizontal/",
       "destination": "/dynamic-motion-banner/embassy-levante/banner-horizontal.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-espania",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-casas-espania-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-espania/",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-casas-espania-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-espania/index.html",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-casas-espania-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-espania/banner-pack/vertical",
+      "destination": "/dynamic-motion-banner/casas-espania/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-espania/banner-pack/vertical/",
+      "destination": "/dynamic-motion-banner/casas-espania/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-espania/banner-pack/horizontal",
+      "destination": "/dynamic-motion-banner/casas-espania/banner-horizontal.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/casas-espania/banner-pack/horizontal/",
+      "destination": "/dynamic-motion-banner/casas-espania/banner-horizontal.html"
     }
   ]
 }

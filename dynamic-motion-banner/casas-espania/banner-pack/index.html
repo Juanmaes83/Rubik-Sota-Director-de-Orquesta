@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Casas Espania · Pack de Banners Personalizados</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    :root {
+      --bg: #080604;
+      --surface: #14110e;
+      --border: rgba(196,169,106,0.18);
+      --gold: #c4a96a;
+      --amber: #e0c48a;
+      --text: #f5f0e8;
+      --muted: #b0a390;
+      --ink: #080604;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      min-height: 100%;
+    }
+    body { padding: 48px 24px 80px; }
+
+    .header {
+      max-width: 860px;
+      margin: 0 auto 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      background: rgba(196,169,106,0.06);
+      padding: 8px 18px;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-family: ui-monospace, Consolas, monospace;
+      width: fit-content;
+    }
+    .logo-wrap { display: flex; align-items: center; gap: 14px; }
+    .logo-wrap img { height: 40px; width: auto; background: white; padding: 6px 10px; }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--text);
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 640px;
+    }
+    .meta {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-family: ui-monospace, Consolas, monospace;
+    }
+
+    .grid {
+      max-width: 860px;
+      margin: 0 auto;
+      display: grid;
+      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card-label {
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-family: ui-monospace, Consolas, monospace;
+    }
+    .card h2 {
+      font-size: 1.5rem;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+    }
+    .card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .spec {
+      font-size: 11px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      color: var(--amber);
+      font-family: ui-monospace, Consolas, monospace;
+    }
+    .uses {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .uses li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding-left: 16px;
+      position: relative;
+    }
+    .uses li::before {
+      content: '·';
+      position: absolute;
+      left: 4px;
+      color: var(--gold);
+    }
+    .btn {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--ink);
+      padding: 14px 28px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s;
+      margin-top: auto;
+      text-align: center;
+    }
+    .btn:hover { background: var(--amber); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+    }
+    .btn-outline:hover { background: rgba(196,169,106,0.1); }
+
+    .divider {
+      max-width: 860px;
+      margin: 48px auto;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .info-section {
+      max-width: 860px;
+      margin: 0 auto;
+      display: grid;
+      gap: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+    .info-block { display: flex; flex-direction: column; gap: 8px; }
+    .info-block .label {
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-family: ui-monospace, Consolas, monospace;
+    }
+    .info-block .value {
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .info-block .sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .footer {
+      max-width: 860px;
+      margin: 64px auto 0;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo { height: 28px; width: auto; background: white; padding: 3px 6px; }
+    .footer-text { font-size: 11px; color: var(--muted); letter-spacing: 0.12em; }
+    .footer-disclaimer { font-size: 11px; color: var(--muted); opacity: 0.7; text-align: right; }
+
+    @media (max-width: 600px) {
+      body { padding: 32px 16px 60px; }
+      .footer { flex-direction: column; align-items: flex-start; }
+      .footer-disclaimer { text-align: left; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge">Pack de Banners Personalizados · Casas Espania</div>
+    <div class="logo-wrap">
+      <img src="../assets/logo.svg" alt="Casas Espania" onerror="this.style.display='none'">
+    </div>
+    <h1>Banners animados para Casas Espania.</h1>
+    <p class="subtitle">
+      Piezas visuales personalizadas para captación de propietarios en Torrevieja.
+      Cada banner muestra propiedades con galería animada, QR de contacto y CTA directo.
+    </p>
+    <p class="meta">Captación · Compra · Venta · Torrevieja · Alicante</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="card-label">Formato Vertical · 9:16</span>
+      <h2>Banner Vertical</h2>
+      <p>
+        Pensado para móvil, stories, WhatsApp, Reel y mupi digital.
+        Dimensiones nativas 1080×1920 px. Galería animada con propiedades
+        de Casas Espania, QR de contacto y CTA personalizado.
+      </p>
+      <div class="specs">
+        <span class="spec">1080 × 1920</span>
+        <span class="spec">9:16</span>
+        <span class="spec">Canvas 2D</span>
+        <span class="spec">QR incluido</span>
+      </div>
+      <ul class="uses">
+        <li>Reel · Story</li>
+        <li>WhatsApp</li>
+        <li>Mupi digital vertical</li>
+        <li>Escaparate móvil</li>
+      </ul>
+      <a href="../banner-vertical.html" class="btn" target="_blank">Ver Banner Vertical</a>
+    </div>
+
+    <div class="card">
+      <span class="card-label">Formato Horizontal · 16:9</span>
+      <h2>Banner Horizontal</h2>
+      <p>
+        Pensado para web, header, display, presentación comercial y pantalla panorámica.
+        Dimensiones nativas 1920×1080 px. Galería animada con propiedades de Casas Espania,
+        QR integrado y CTA directo.
+      </p>
+      <div class="specs">
+        <span class="spec">1920 × 1080</span>
+        <span class="spec">16:9</span>
+        <span class="spec">Canvas 2D</span>
+        <span class="spec">QR incluido</span>
+      </div>
+      <ul class="uses">
+        <li>Banner web · Header</li>
+        <li>Pantalla horizontal</li>
+        <li>Presentación comercial</li>
+        <li>Display publicitario</li>
+      </ul>
+      <a href="../banner-horizontal.html" class="btn" target="_blank">Ver Banner Horizontal</a>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="info-section">
+    <div class="info-block">
+      <span class="label">Cliente</span>
+      <span class="value">Casas Espania</span>
+      <span class="sub">Torrevieja · Alicante</span>
+    </div>
+    <div class="info-block">
+      <span class="label">Contacto</span>
+      <span class="value">+34 966 785 202</span>
+      <span class="sub">info@casasespania.com</span>
+    </div>
+    <div class="info-block">
+      <span class="label">Web</span>
+      <span class="value">casasespania.com</span>
+      <span class="sub">Agencia inmobiliaria en Torrevieja</span>
+    </div>
+    <div class="info-block">
+      <span class="label">QR destino</span>
+      <span class="value">Landing Casas Espania</span>
+      <span class="sub">aurum-properties-boutique.vercel.app/casas-espania</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div style="max-width:860px;margin:0 auto;display:flex;gap:16px;flex-wrap:wrap;">
+    <a href="https://aurum-properties-boutique.vercel.app/casas-espania" class="btn" target="_blank">
+      Ver Landing Casas Espania
+    </a>
+    <a href="https://rubik-sota-director-de-orquesta.vercel.app/dynamic-motion-banner/casas-espania/" class="btn btn-outline" target="_blank">
+      Ver Experiencia Visual
+    </a>
+    <a href="https://wa.me/34966785202?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20c%C3%B3mo%20vender%20mi%20propiedad%20en%20Torrevieja." class="btn btn-outline" target="_blank">
+      Contactar por WhatsApp
+    </a>
+  </div>
+
+  <div class="footer">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img src="../assets/logo.svg" alt="Casas Espania" class="footer-logo" onerror="this.style.display='none'">
+      <span class="footer-text">Casas Espania · Torrevieja · Alicante</span>
+    </div>
+    <span class="footer-disclaimer">
+      Preview conceptual · Activos pendientes de validación<br>
+      Generado por Immersphere Pro · 2026
+    </span>
+  </div>
+
+</body>
+</html>
