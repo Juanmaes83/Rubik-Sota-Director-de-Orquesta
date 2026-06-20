@@ -3,32 +3,41 @@
   "slug": "sandhouse-inmobiliaria",
   "sector": "residencial",
   "zone": "Torrevieja",
+  "configSource": "dynamic-motion-banner/_shared/sandhouse-rubik-config.js",
+  "renderEngine": "rubik-shared-render-v4",
   "assets": {
     "logo": {
       "url": null,
       "source": "manual",
-      "status": "pending_validation"
+      "status": "awaiting_rights_validation"
     },
     "favicon": {
       "url": null,
-      "status": "candidate"
+      "status": "awaiting_rights_validation"
     },
     "heroImage": {
       "url": null,
-      "status": "pending_validation"
+      "status": "awaiting_rights_validation"
     },
     "propertyImages": [],
     "videos": [
       {
         "url": "/VIDEO_AURUM_HEROWEB.mp4",
         "source": "aurum_default",
-        "status": "pending_validation",
+        "status": "awaiting_rights_validation",
         "recommendedUse": "hero"
       }
     ],
-    "brandColors": [],
+    "brandColors": [
+      { "name": "primary", "value": "#c4a96a" },
+      { "name": "background", "value": "#080604" },
+      { "name": "text", "value": "#f5f0e8" }
+    ],
     "notes": [
-      "Web auditada: https://www.sandhouse.es/ | email: info@sandhouse.es | telefonos: +34 655 187 116 / +34 646 65 97 20 / +34 623 133 321 | Assets visuales pendientes de importar y validar derechos de uso."
+      "Web auditada: https://www.sandhouse.es/",
+      "email: info@sandhouse.es",
+      "telefonos: +34 655 187 116 / +34 646 65 97 20 / +34 623 133 321",
+      "Assets visuales por importar y validar derechos de uso."
     ]
   },
   "targetRoutes": {
@@ -39,11 +48,18 @@
     "bannerVertical": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria/vertical",
     "bannerHorizontal": "https://aurum-properties-boutique.vercel.app/banners/sandhouse-inmobiliaria/horizontal"
   },
+  "rubikRoutes": {
+    "visualExperience": "/dynamic-motion-banner/sandhouse-inmobiliaria/",
+    "bannerPack": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/",
+    "bannerVertical": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-vertical.html",
+    "bannerHorizontal": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal.html",
+    "embedSuffix": "?embed=1"
+  },
   "internalEngine": "Rubik SOTA",
-  "note": "Motor interno. No usar como URL cliente-facing.",
+  "note": "Motor interno. AURUM es la URL publica cliente-facing.",
   "copy": {
-    "claim": "Tu hogar en Torrevieja y la Costa Levantina",
-    "cta": "Solicitar revision de propuesta"
+    "claim": "La mejor manera de encontrar tu hogar en Torrevieja y en la costa levantina.",
+    "cta": "Solicitar visita"
   },
   "qa": [
     "Validar assets",

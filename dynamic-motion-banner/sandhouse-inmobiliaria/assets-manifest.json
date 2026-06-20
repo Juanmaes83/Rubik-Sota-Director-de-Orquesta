@@ -2,20 +2,21 @@
   "logo": {
     "url": null,
     "source": "manual",
-    "status": "pending_validation"
+    "status": "awaiting_rights_validation"
   },
   "heroImage": {
     "url": null,
-    "status": "pending_validation"
+    "status": "awaiting_rights_validation"
   },
   "propertyImages": [],
   "videos": [
     {
       "url": "/VIDEO_AURUM_HEROWEB.mp4",
       "source": "aurum_default",
-      "status": "pending_validation",
+      "status": "awaiting_rights_validation",
       "recommendedUse": "hero"
     }
   ],
-  "rightsReviewRequired": true
+  "rightsReviewRequired": true,
+  "renderEngine": "rubik-shared-render-v4"
 }
