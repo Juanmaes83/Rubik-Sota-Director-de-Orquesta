@@ -8,10 +8,12 @@
  */
 
 import { sandhouseRubikConfig } from './sandhouse-rubik-config.js';
+import { embassyLevanteRubikConfig } from './embassy-levante-rubik-config.js';
 
 /** @type {Record<string, import('./types.js').RubikClientConfig>} */
 const REGISTRY = {
   [sandhouseRubikConfig.slug]: sandhouseRubikConfig,
+  [embassyLevanteRubikConfig.slug]: embassyLevanteRubikConfig,
 };
 
 /**

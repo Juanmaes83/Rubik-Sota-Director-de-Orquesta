@@ -1,0 +1,71 @@
+{
+  "clientName": "Embassy Levante",
+  "slug": "embassy-levante",
+  "sector": "Inmobiliaria",
+  "zone": "Torrevieja",
+  "configSource": "dynamic-motion-banner/_shared/embassy-levante-rubik-config.js",
+  "renderEngine": "rubik-shared-render-v4",
+  "assets": {
+    "logo": {
+      "url": null,
+      "source": "manual",
+      "status": "awaiting_rights_validation"
+    },
+    "favicon": {
+      "url": null,
+      "status": "awaiting_rights_validation"
+    },
+    "heroImage": {
+      "url": null,
+      "status": "awaiting_rights_validation"
+    },
+    "propertyImages": [],
+    "videos": [
+      {
+        "url": "/VIDEO_AURUM_HEROWEB.mp4",
+        "source": "aurum_default",
+        "status": "awaiting_rights_validation",
+        "recommendedUse": "hero"
+      }
+    ],
+    "brandColors": [
+      { "name": "primary", "value": "#c4a96a" },
+      { "name": "background", "value": "#080604" },
+      { "name": "text", "value": "#f5f0e8" }
+    ],
+    "notes": [
+      "Web auditada: https://www.embassylevante.com/",
+      "email: luisiglesias@embassylevante.com",
+      "telefono/whatsapp: +34 691 502 743",
+      "Direccion: Torrevieja, Alicante (no localizado exacto).",
+      "Assets visuales por importar y validar derechos de uso."
+    ]
+  },
+  "targetRoutes": {
+    "visualExperience": "https://aurum-properties-boutique.vercel.app/visual-experience/embassy-levante",
+    "landing": "https://aurum-properties-boutique.vercel.app/embassy-levante",
+    "webCompleta": "https://aurum-properties-boutique.vercel.app/embassy-levante-web-completa",
+    "bannerPack": "https://aurum-properties-boutique.vercel.app/banners/embassy-levante",
+    "bannerVertical": "https://aurum-properties-boutique.vercel.app/banners/embassy-levante/vertical",
+    "bannerHorizontal": "https://aurum-properties-boutique.vercel.app/banners/embassy-levante/horizontal"
+  },
+  "rubikRoutes": {
+    "visualExperience": "/dynamic-motion-banner/embassy-levante/",
+    "bannerPack": "/dynamic-motion-banner/embassy-levante/banner-pack/",
+    "bannerVertical": "/dynamic-motion-banner/embassy-levante/banner-vertical.html",
+    "bannerHorizontal": "/dynamic-motion-banner/embassy-levante/banner-horizontal.html",
+    "embedSuffix": "?embed=1"
+  },
+  "internalEngine": "Rubik SOTA",
+  "note": "Motor interno. AURUM es la URL publica cliente-facing.",
+  "copy": {
+    "claim": "El propietario quiere saber cómo venderéis su vivienda. Immersphere lo muestra antes de firmar.",
+    "cta": "Solicitar información"
+  },
+  "qa": [
+    "Validar assets cuando Embassy Levante los proporcione",
+    "Revisar responsive en móvil y desktop",
+    "Confirmar que AURUM sera URL publica cliente-facing",
+    "Confirmar derechos de logo y fotos antes de producir"
+  ]
+}
