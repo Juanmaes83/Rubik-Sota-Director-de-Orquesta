@@ -47,26 +47,26 @@ export const embassyLevanteMotionBanner = {
   },
   assets: {
     logo: {
-      url: "./assets/logo.png",
-      smartUrl: "./assets/logo.png",
+      url: "/dynamic-motion-banner/embassy-levante/assets/logo.png",
+      smartUrl: "/dynamic-motion-banner/embassy-levante/assets/logo.png",
       status: "public_candidate_pending_validation",
       notes: "Logo descargado de embassylevante.com/img/header/logo.png",
     },
     images: [
       {
-        url: "./assets/property-1.jpg",
+        url: "/dynamic-motion-banner/embassy-levante/assets/property-1.jpg",
         source: "aurum_generic_placeholder",
         usage: "hero_media",
         status: "placeholder_pending_client_assets",
       },
       {
-        url: "./assets/property-2.jpg",
+        url: "/dynamic-motion-banner/embassy-levante/assets/property-2.jpg",
         source: "aurum_generic_placeholder",
         usage: "hero_media",
         status: "placeholder_pending_client_assets",
       },
       {
-        url: "./assets/property-3.jpg",
+        url: "/dynamic-motion-banner/embassy-levante/assets/property-3.jpg",
         source: "aurum_generic_placeholder",
         usage: "gallery_media",
         status: "placeholder_pending_client_assets",
@@ -74,7 +74,7 @@ export const embassyLevanteMotionBanner = {
     ],
     fallbackAssets: [
       {
-        url: "./assets/property-1.jpg",
+        url: "/dynamic-motion-banner/embassy-levante/assets/property-1.jpg",
         usage: "fallback_hero",
         status: "placeholder_pending_client_assets",
       },
