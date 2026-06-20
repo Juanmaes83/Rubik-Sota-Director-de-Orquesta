@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "description": "Biblioteca de assets fallback premium para clientes sin imágenes reales validadas",
+  "policy": {
+    "triggerConditions": [
+      "clientImages.length === 0",
+      "image fails onload (onerror fires)",
+      "naturalWidth === 0 after load",
+      "HTTP 404 on asset URL",
+      "assets.images[].status === 'placeholder_pending_client_assets'"
+    ],
+    "rule": "El sistema debe usar automáticamente un fallback premium cuando no hay imágenes reales del cliente"
+  },
+  "assets": [
+    {
+      "assetId": "fallback-hero-exterior-sunset",
+      "type": "image/png",
+      "localPath": "/IMAGEN_AURUM_HEROWEB.png",
+      "aurumPublicPath": "https://aurum-properties-boutique.vercel.app/IMAGEN_AURUM_HEROWEB.png",
+      "usage": "hero_exterior",
+      "orientation": ["horizontal", "vertical"],
+      "rightsStatus": "internal_generated_asset",
+      "notes": "Villa de lujo con piscina al atardecer. Sin texto visible. Apto para cualquier cliente inmobiliario de Costa Blanca."
+    },
+    {
+      "assetId": "fallback-interior-kitchen",
+      "type": "image/png",
+      "localPath": "/IMAGEN_AURUM_INTERIORES.png",
+      "aurumPublicPath": "https://aurum-properties-boutique.vercel.app/IMAGEN_AURUM_INTERIORES.png",
+      "usage": "hero_interior",
+      "orientation": ["vertical", "horizontal"],
+      "rightsStatus": "internal_generated_asset",
+      "notes": "Interior moderno con cocina abierta y ventanas arqueadas. Sin texto visible."
+    },
+    {
+      "assetId": "fallback-lifestyle-pool-sunset",
+      "type": "image/png",
+      "localPath": "/IMAGEN_AURUM_ESTILODEVIDA.png",
+      "aurumPublicPath": "https://aurum-properties-boutique.vercel.app/IMAGEN_AURUM_ESTILODEVIDA.png",
+      "usage": "lifestyle_mood",
+      "orientation": ["horizontal"],
+      "rightsStatus": "internal_generated_asset",
+      "notes": "Lifestyle — piscina infinita al atardecer mediterráneo. Sin texto visible."
+    },
+    {
+      "assetId": "fallback-interior-bedroom-seaview",
+      "type": "image/png",
+      "localPath": "/IMAGEN_AURUM_INTERIORES_2.png",
+      "aurumPublicPath": "https://aurum-properties-boutique.vercel.app/IMAGEN_AURUM_INTERIORES_2.png",
+      "usage": "hero_interior",
+      "orientation": ["vertical"],
+      "rightsStatus": "internal_generated_asset",
+      "notes": "Dormitorio minimalista con vistas al mar. Sin texto visible."
+    }
+  ],
+  "excluded": [
+    {
+      "assetId": "IMAGEN_AURUM_HEROWEB_2",
+      "reason": "Contiene texto editorial 'ARCHITECTURAL DIGEST' — NO usar como fondo de banner"
+    },
+    {
+      "assetId": "IMAGEN_AURUM_HEROWEB_3",
+      "reason": "Contiene anotaciones de planos de arquitectura superpuestas — NO usar como fondo de banner"
+    }
+  ],
+  "lastUpdated": "2026-06-20"
+}
