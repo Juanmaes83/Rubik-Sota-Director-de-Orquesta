@@ -7,5 +7,5 @@ window.BANNER_CONFIG = {
   heroImage: "",
   primaryColor: "#1a1a2e",
   accentColor: "#d4af37",
-  waHref: "#contact",
+  waHref: "https://wa.me/34655187116",
 };
