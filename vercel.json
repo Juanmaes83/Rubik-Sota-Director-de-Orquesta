@@ -39,6 +39,66 @@
     {
       "source": "/dynamic-motion-banner/costa-invest/index.html",
       "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-costa-invest-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/vertical",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/vertical/",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/horizontal",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/horizontal/",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-embassy-levante-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante/",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-embassy-levante-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante/index.html",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-embassy-levante-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante/banner-pack/vertical",
+      "destination": "/dynamic-motion-banner/embassy-levante/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante/banner-pack/vertical/",
+      "destination": "/dynamic-motion-banner/embassy-levante/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante/banner-pack/horizontal",
+      "destination": "/dynamic-motion-banner/embassy-levante/banner-horizontal.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/embassy-levante/banner-pack/horizontal/",
+      "destination": "/dynamic-motion-banner/embassy-levante/banner-horizontal.html"
+    },
+    {
+      "source": "/gesture-lab/sandhouse-inmobiliaria-v1",
+      "destination": "/gesture-lab/sandhouse-inmobiliaria-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-pack/index.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-vertical",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-vertical.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal",
+      "destination": "/dynamic-motion-banner/sandhouse-inmobiliaria/banner-horizontal.html"
     }
   ]
 }
