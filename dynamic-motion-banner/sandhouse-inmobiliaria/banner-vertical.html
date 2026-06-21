@@ -2,30 +2,29 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sandhouse Inmobiliaria - vertical</title>
+  <title>Sandhouse Inmobiliaria — Banner vertical</title>
+  <script src="../config.js"></script>
+  <script src="../banner-engine.js"></script>
   <style>
-    body{margin:0;font-family:Arial,sans-serif;background:#111;color:#fff;display:grid;place-items:center;min-height:100vh}
-    main{min-height: 900px; max-width: 520px; width:100%;padding:48px;box-sizing:border-box;background:linear-gradient(135deg,#151515,#3a2f1d 55%,#0f0f0f);display:flex;flex-direction:column;justify-content:space-between}
-    .eyebrow{letter-spacing:.18em;text-transform:uppercase;color:#d8b46a;font-size:12px}
-    h1{font-size:clamp(36px,8vw,92px);line-height:.95;margin:24px 0}
-    p{font-size:clamp(18px,3vw,28px);max-width:760px;color:#f1e7d0}
-    a{display:inline-block;color:#111;background:#d8b46a;padding:14px 22px;text-decoration:none;font-weight:700}
-    small{color:#b9b9b9}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{width:400px;height:700px;overflow:hidden;font-family:Arial,sans-serif;background:#1a1a2e}
+    .wrap{width:100%;height:100%;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:24px 20px;}
+    .hero{position:absolute;inset:0;z-index:0}
+    .hero img{width:100%;height:100%;object-fit:cover;opacity:.42}
+    .cnt{position:relative;z-index:1;}
+    .lw img{max-height:36px;filter:brightness(0) invert(1)} h2{color:#fff;font-size:22px;margin-top:12px} p{color:rgba(255,255,255,.8);font-size:13px;margin-top:8px;max-width:320px}
+    .cta{display:inline-block;background:#d4af37;color:#000;font-weight:700;font-size:14px;padding:12px 20px;text-decoration:none;white-space:nowrap;border-radius:1px;flex-shrink:0}
   </style>
 </head>
 <body>
-  <main data-client-slug="sandhouse-inmobiliaria" data-format="vertical">
-    <section>
-      <div class="eyebrow">Rubik internal engine - review draft</div>
-      <h1>Sandhouse Inmobiliaria</h1>
-      <p>Tu hogar en Torrevieja y la Costa Levantina</p>
-    </section>
-    <section>
-      <a href="#" aria-label="Solicitar revision de propuesta">Solicitar revision de propuesta</a>
-      <br><br>
-      <small>Internal draft. AURUM must be the public client-facing layer. Replace placeholder visuals after media validation.</small>
-    </section>
-  </main>
+  <div class="wrap" data-slug="sandhouse-inmobiliaria" data-format="vertical">
+    <div class="hero"></div>
+    <div class="cnt">
+      <div class="lw"></div>
+      <h2 data-b-name>Sandhouse Inmobiliaria</h2>
+      <p data-b-claim>Experiencia inmobiliaria premium</p>
+    </div>
+    <a class="cta" href="#contact" data-b-cta target="_blank" rel="noopener">Solicitar Propuesta</a>
+  </div>
 </body>
 </html>
