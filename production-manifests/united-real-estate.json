@@ -1,0 +1,12 @@
+{
+  "slug": "united-real-estate",
+  "clientName": "United Real Estate",
+  "generatedBy": "immersphere-production-orchestrator-v0.4.0",
+  "assetMode": "client_real_asset",
+  "files": [
+    "gesture-lab/united-real-estate-v1.html",
+    "dynamic-motion-banner/united-real-estate/banner-pack/index.html",
+    "dynamic-motion-banner/united-real-estate/banner-vertical.html",
+    "dynamic-motion-banner/united-real-estate/banner-horizontal.html"
+  ]
+}
