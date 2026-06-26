@@ -25,8 +25,8 @@
     "./embed.html"
   ],
   "destinations": {
-    "qrUrl": "https://aurum-properties-boutique.vercel.app/casas-y-mar",
-    "premiumDemoUrl": "https://aurum-properties-boutique.vercel.app/casas-y-mar"
+    "qrUrl": "https://aurum-properties-boutique.vercel.app/torrevieja-sur-web-completa",
+    "premiumDemoUrl": "https://aurum-properties-boutique.vercel.app/torrevieja-sur-web-completa"
   },
   "assetsStatus": "public_candidate_pending_validation",
   "notes": "Preview conceptual privada. Activos pendientes de validación comercial por Torrevieja Sur."

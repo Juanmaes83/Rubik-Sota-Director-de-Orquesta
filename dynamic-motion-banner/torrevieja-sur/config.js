@@ -60,7 +60,7 @@ export const torreviejaSurMotionBanner = {
       smartUrl: "./assets/logo-smart.svg",
       status: "public_candidate_pending_validation",
       notes:
-        "Logo candidato derivado de la plantilla base hasta validar asset oficial de Torrevieja Sur.",
+        "Wordmark neutral de Torrevieja Sur. No reutiliza identidad visual de otro lead; sustituir por logo oficial validado si el cliente lo aporta.",
     },
     images: [
       {

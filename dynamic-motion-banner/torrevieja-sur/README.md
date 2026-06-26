@@ -72,8 +72,8 @@ Campaña: **Visita propiedad**.
 
 | Destino | URL |
 |---------|-----|
-| QR | https://aurum-properties-boutique.vercel.app/casas-y-mar |
-| Web premium demo | https://aurum-properties-boutique.vercel.app/casas-y-mar |
+| QR | https://aurum-properties-boutique.vercel.app/torrevieja-sur-web-completa |
+| Web premium demo | https://aurum-properties-boutique.vercel.app/torrevieja-sur-web-completa |
 | Preview esperada | https://rubik-sota-director-de-orquesta.vercel.app/dynamic-motion-banner/torrevieja-sur/ |
 
 ---
@@ -146,6 +146,6 @@ npx serve dynamic-motion-banner/torrevieja-sur
 Esta pieza es el **primer impacto visual comercial**.
 La **demo web premium completa** está en:
 
-https://aurum-properties-boutique.vercel.app/casas-y-mar
+https://aurum-properties-boutique.vercel.app/torrevieja-sur-web-completa
 
 Lógica comercial: Motion Banner → interés → QR/CTA → demo web premium.

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torrevieja Sur · Experiencia visual</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Banderola visual personalizada para Torrevieja Sur.">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #080706;
+      color: #f7f1e8;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .stage {
+      position: relative;
+      width: min(100vw, calc(100vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      background: #0f0e0c;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .qr-layer {
+      position: absolute;
+      right: 5%;
+      bottom: 22%;
+      width: 12%;
+      aspect-ratio: 1;
+      pointer-events: none;
+    }
+    .fallback {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 6vw;
+      background:
+        linear-gradient(180deg, rgba(8,7,6,0.35), rgba(8,7,6,0.92)),
+        url("./assets/property-2.jpg") center / cover no-repeat;
+    }
+    .fallback[hidden] { display: none; }
+    .fallback img {
+      width: min(260px, 40vw);
+      height: auto;
+      margin-bottom: 24px;
+    }
+    .fallback h1 {
+      margin: 0 0 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(42px, 8vw, 104px);
+      font-weight: 600;
+      line-height: 0.95;
+    }
+    .fallback p {
+      margin: 0;
+      color: #e8cd9a;
+      font-size: clamp(16px, 2vw, 28px);
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <main class="stage" aria-label="Experiencia visual Torrevieja Sur">
+    <canvas id="banner-canvas" width="1920" height="1080"></canvas>
+    <div id="qr-layer" class="qr-layer"></div>
+    <div id="fallback" class="fallback" hidden>
+      <div>
+        <img src="./assets/logo-smart.svg" alt="Torrevieja Sur">
+        <h1>Torrevieja Sur</h1>
+        <p>Visita la propiedad antes de pisarla.</p>
+      </div>
+    </div>
+  </main>
+  <script type="module">
+    import { BannerEngine } from "./banner-engine.js";
+
+    const fallback = document.getElementById("fallback");
+    try {
+      new BannerEngine("banner-canvas", {
+        orientation: "horizontal",
+        qrContainer: document.getElementById("qr-layer")
+      });
+    } catch (error) {
+      console.error("No se pudo iniciar la banderola publica", error);
+      fallback.hidden = false;
+    }
+  </script>
+</body>
+</html>
