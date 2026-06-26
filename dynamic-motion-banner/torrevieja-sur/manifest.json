@@ -1,0 +1,33 @@
+{
+  "id": "dynamic-motion-banner-torrevieja-sur",
+  "name": "Torrevieja Sur · Visita Propiedad",
+  "type": "dynamic-motion-banner",
+  "status": "conceptual_preview",
+  "client": {
+    "name": "Torrevieja Sur",
+    "sector": "Inmobiliaria",
+    "location": "Torrevieja · Costa Blanca Sur"
+  },
+  "campaign": {
+    "type": "property_visit",
+    "headline": "VISITA LA PROPIEDAD",
+    "subheadline": "Tour, vídeo y QR para recorrer una vivienda en Torrevieja antes de visitarla.",
+    "cta": "AGENDA TU VISITA"
+  },
+  "formats": [
+    { "id": "vertical", "width": 1080, "height": 1920, "ratio": "9:16" },
+    { "id": "horizontal", "width": 1920, "height": 1080, "ratio": "16:9" }
+  ],
+  "outputs": [
+    "./index.html",
+    "./banner-vertical.html",
+    "./banner-horizontal.html",
+    "./embed.html"
+  ],
+  "destinations": {
+    "qrUrl": "https://aurum-properties-boutique.vercel.app/casas-y-mar",
+    "premiumDemoUrl": "https://aurum-properties-boutique.vercel.app/casas-y-mar"
+  },
+  "assetsStatus": "public_candidate_pending_validation",
+  "notes": "Preview conceptual privada. Activos pendientes de validación comercial por Torrevieja Sur."
+}
