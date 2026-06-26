@@ -1,0 +1,12 @@
+{
+  "slug": "torrevieja-sur",
+  "clientName": "Torrevieja Sur",
+  "generatedBy": "immersphere-production-orchestrator-v0.4.0",
+  "assetMode": "fallback_internal_library",
+  "files": [
+    "gesture-lab/torrevieja-sur-v1.html",
+    "dynamic-motion-banner/torrevieja-sur/banner-pack/index.html",
+    "dynamic-motion-banner/torrevieja-sur/banner-vertical.html",
+    "dynamic-motion-banner/torrevieja-sur/banner-horizontal.html"
+  ]
+}
