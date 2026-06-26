@@ -105,6 +105,18 @@
       "destination": "/gesture-lab/torrevieja-sur-v1.html"
     },
     {
+      "source": "/dynamic-motion-banner/torrevieja-sur",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-torrevieja-sur-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/torrevieja-sur/",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-torrevieja-sur-v1.html"
+    },
+    {
+      "source": "/dynamic-motion-banner/torrevieja-sur/index.html",
+      "destination": "/gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-torrevieja-sur-v1.html"
+    },
+    {
       "source": "/dynamic-motion-banner/torrevieja-sur/banner-pack",
       "destination": "/dynamic-motion-banner/torrevieja-sur/banner-pack/index.html"
     },
