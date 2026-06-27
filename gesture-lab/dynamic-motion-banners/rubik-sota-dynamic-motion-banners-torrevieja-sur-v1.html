@@ -2211,7 +2211,7 @@
         const base = String(text || "").trim();
         if (!base) return fallback || "preview";
         const cleaned = base
-          .normalize("NFD").replace(/[`-?]/g, "")
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "")
