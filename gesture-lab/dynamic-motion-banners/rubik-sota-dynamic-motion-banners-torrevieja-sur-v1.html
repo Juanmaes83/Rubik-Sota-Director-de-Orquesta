@@ -1458,8 +1458,14 @@
         __IS_CLIENT_ROUTE = window.location.pathname.indexOf(__CLIENT_PUBLIC_PATH) !== -1;
         __IS_CLEAN_MODE = __params.has("clean") || __params.get("embed") === "1" || __IS_CLIENT_ROUTE;
         if (__IS_CLEAN_MODE) {
-          document.documentElement.classList.add("is-clean");
-          if (document.body) document.body.classList.add("is-clean");
+          const __applyCleanBody = () => {
+            document.documentElement.classList.add("is-clean");
+            if (document.body) document.body.classList.add("is-clean");
+          };
+          __applyCleanBody();
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", __applyCleanBody, { once: true });
+          }
         }
       } catch (e) { /* noop */ }
 
@@ -1479,7 +1485,7 @@
           email: "info@torreviejasur.com",
           phone: "+34 679 48 16 79",
           whatsapp: "+34 679 48 16 79",
-          address: "Torrevieja, Alicante Torrevieja",
+          address: "Torrevieja, Alicante",
           raicv: "1058"
         },
         hero: {
@@ -1492,8 +1498,8 @@
           { src: "torrevieja-sur-assets/property-1.jpg", alt: "Propiedad 1" }
         ],
         logo: {
-          src: "torrevieja-sur-assets/logo.svg",
-          defaultScale: 2.6
+          src: "torrevieja-sur-assets/logo-real.jpg",
+          defaultScale: 4
         },
         qr: {
           destination: "https://aurum-properties-boutique.vercel.app/torrevieja-sur-web-completa",
@@ -2452,13 +2458,13 @@
           baseHeight: 1920,
           verticalProfile: "vertical-9-16",
           media: { x: 72, y: 96, width: 936, height: 620, scale: 1, offsetX: 0, offsetY: 0, opacity: 1, fitMode: "cover", layerMode: "image" },
-          logo: { x: 760, y: 126, width: 220, opacity: 0.96, capsuleEnabled: true, capsuleOpacity: 0.42 },
+          logo: { x: 370, y: 124, width: 640, opacity: 0.98, capsuleEnabled: true, capsuleOpacity: 0.34 },
           headline: { x: 72, y: 770, maxWidth: 880, fontSize: 84, lineHeight: 0.88, letterSpacing: -1.4, opacity: 1 },
           subheadline: { x: 76, y: 1040, maxWidth: 790, fontSize: 30, lineHeight: 1.16, opacity: 1 },
           gallery: { x: 72, y: 1115, thumbWidth: 280, thumbHeight: 185, gap: 30, opacity: 1, layoutMode: "row" },
           conversionPanel: { enabled: true, x: 72, y: 1415, width: 936, height: 315, opacity: 0.94 },
           cta: { x: 118, y: 1488, width: 500, height: 90, fontSize: 34, opacity: 1 },
-          qr: { x: 765, y: 1470, size: 200, showUrl: true, urlFontSize: 18, urlOffsetY: 38 },
+          qr: { x: 748, y: 1460, size: 230, showUrl: false, urlFontSize: 16, urlOffsetY: 28 },
           note: { x: 72, y: 1810, fontSize: 24, opacity: 0.72 }
         },
         "feed-vertical-premium": {
@@ -2466,13 +2472,13 @@
           baseHeight: 1350,
           verticalProfile: "vertical-feed-4-5",
           media: { x: 72, y: 72, width: 936, height: 500, scale: 1, offsetX: 0, offsetY: 0, opacity: 1, fitMode: "cover", layerMode: "image" },
-          logo: { x: 760, y: 105, width: 190, opacity: 0.96, capsuleEnabled: true, capsuleOpacity: 0.42 },
+          logo: { x: 430, y: 92, width: 560, opacity: 0.98, capsuleEnabled: true, capsuleOpacity: 0.34 },
           headline: { x: 72, y: 635, maxWidth: 890, fontSize: 68, lineHeight: 0.9, letterSpacing: -1, opacity: 1 },
           subheadline: { x: 76, y: 800, maxWidth: 780, fontSize: 26, lineHeight: 1.18, opacity: 1 },
           gallery: { x: 72, y: 915, thumbWidth: 280, thumbHeight: 160, gap: 30, opacity: 1, layoutMode: "row" },
           conversionPanel: { enabled: true, x: 72, y: 1110, width: 936, height: 170, opacity: 0.94 },
           cta: { x: 110, y: 1150, width: 465, height: 72, fontSize: 30, opacity: 1 },
-          qr: { x: 790, y: 1134, size: 128, showUrl: false, urlFontSize: 14, urlOffsetY: 22 },
+          qr: { x: 790, y: 1130, size: 148, showUrl: false, urlFontSize: 14, urlOffsetY: 22 },
           note: { x: 72, y: 1295, fontSize: 20, opacity: 0.72 }
         },
         "mupi-print-premium": {
@@ -2480,13 +2486,13 @@
           baseHeight: 1760,
           verticalProfile: "vertical-print-mupi",
           media: { x: 84, y: 94, width: 1032, height: 560, scale: 1, offsetX: 0, offsetY: 0, opacity: 1, fitMode: "cover", layerMode: "image" },
-          logo: { x: 855, y: 130, width: 230, opacity: 0.96, capsuleEnabled: true, capsuleOpacity: 0.42 },
+          logo: { x: 455, y: 125, width: 640, opacity: 0.98, capsuleEnabled: true, capsuleOpacity: 0.34 },
           headline: { x: 84, y: 735, maxWidth: 960, fontSize: 82, lineHeight: 0.9, letterSpacing: -1.2, opacity: 1 },
           subheadline: { x: 88, y: 925, maxWidth: 860, fontSize: 30, lineHeight: 1.18, opacity: 1 },
           gallery: { x: 84, y: 1068, thumbWidth: 310, thumbHeight: 190, gap: 30, opacity: 1, layoutMode: "row" },
           conversionPanel: { enabled: true, x: 84, y: 1330, width: 1032, height: 260, opacity: 0.94 },
           cta: { x: 130, y: 1390, width: 520, height: 88, fontSize: 34, opacity: 1 },
-          qr: { x: 855, y: 1378, size: 185, showUrl: true, urlFontSize: 17, urlOffsetY: 36 },
+          qr: { x: 845, y: 1368, size: 220, showUrl: false, urlFontSize: 15, urlOffsetY: 28 },
           note: { x: 84, y: 1685, fontSize: 22, opacity: 0.72 }
         }
       };
@@ -2615,8 +2621,8 @@
           gallery: { x: padX, y: height * (horizontal ? 0.84 : 0.58), thumbWidth: galleryThumbW, thumbHeight: galleryThumbH, gap: Math.max(8, Math.round(22 * s)), opacity: 1, layoutMode: horizontal ? "row" : "grid-2-1" },
           conversionPanel: { enabled: false, x: 0, y: 0, width: 0, height: 0, opacity: 0 },
           cta: { x: ctaX, y: ctaY, width: ctaW, height: ctaH, fontSize: Math.max(16, Math.round(29 * s)), opacity: 1 },
-          qr: { x: qrX, y: qrY, size: qrSize, showUrl: true, urlFontSize: Math.max(10, Math.round(16 * s)), urlOffsetY: Math.max(8, Math.round(18 * s)) },
-          logo: { x: width - padX - Math.round(220 * sx), y: height * 0.18, width: Math.round(220 * sx), opacity: 1, capsuleEnabled: true, capsuleOpacity: 0.55 }
+          qr: { x: qrX, y: qrY, size: Math.round(qrSize * 1.18), showUrl: false, urlFontSize: Math.max(10, Math.round(14 * s)), urlOffsetY: Math.max(8, Math.round(16 * s)) },
+          logo: { x: width - padX - Math.round(520 * sx), y: height * 0.14, width: Math.round(520 * sx), opacity: 1, capsuleEnabled: true, capsuleOpacity: 0.34 }
         };
       }
 
@@ -3102,6 +3108,27 @@
         ctx.restore();
       }
 
+      function drawClientTopRibbon(ctx, heroBox, width, height, s) {
+        const data = (typeof CASAS_Y_MAR_CLIENT !== "undefined") ? CASAS_Y_MAR_CLIENT : null;
+        const name = data && data.brand && data.brand.name ? data.brand.name.toUpperCase() : "TORREVIEJA SUR";
+        const ribbonH = Math.max(42, Math.round(Math.min(width, height) * 0.062));
+        ctx.save();
+        const grad = ctx.createLinearGradient(heroBox.x, heroBox.y, heroBox.x + heroBox.w, heroBox.y);
+        grad.addColorStop(0, "rgba(5,54,104,0.96)");
+        grad.addColorStop(0.55, "rgba(4,91,138,0.94)");
+        grad.addColorStop(1, "rgba(5,54,104,0.96)");
+        ctx.fillStyle = grad;
+        drawRoundRect(ctx, heroBox.x, heroBox.y, heroBox.w, ribbonH, Math.max(6, 10 * s));
+        ctx.fill();
+        ctx.fillStyle = "#d7b866";
+        ctx.fillRect(heroBox.x, heroBox.y + ribbonH - Math.max(2, Math.round(3 * s)), heroBox.w, Math.max(2, Math.round(3 * s)));
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#f8f0e3";
+        ctx.font = "800 " + Math.max(20, Math.round(ribbonH * 0.42)) + "px Inter, Arial, sans-serif";
+        ctx.fillText(name, heroBox.x + heroBox.w / 2, heroBox.y + ribbonH * 0.48);
+        ctx.restore();
+      }
       function drawLogoIntoBox(ctx, box, s) {
         if (!state.logo.visible) return;
         const hasLogoImage = !!(state.logoElement && state.logoElement.naturalWidth);
@@ -3220,6 +3247,7 @@
         const heroOverlayAlpha = (visualLayout._clientHeroOverlay != null) ? visualLayout._clientHeroOverlay : 0.16;
         ctx.fillStyle = "rgba(0,0,0," + heroOverlayAlpha.toFixed(3) + ")";
         ctx.fillRect(heroBox.x, heroBox.y, heroBox.w, heroBox.h);
+        drawClientTopRibbon(ctx, heroBox, width, height, s);
         drawLogoIntoBox(ctx, logoBox, s);
 
         ctx.textBaseline = "top";
@@ -3384,14 +3412,14 @@
           const f2 = Math.max(11, Math.round(fontSize * 0.86));
           ctx.textAlign = "center";
           ctx.font = "700 " + fontSize + "px Inter, Arial, sans-serif";
-          ctx.fillText(c.url + "  |  " + c.phone + "  |  WhatsApp " + c.whatsapp, width / 2, cy - fontSize * 0.55);
+          ctx.fillText(c.url + "  |  " + c.phone, width / 2, cy - fontSize * 0.55);
           ctx.font = "500 " + f2 + "px Inter, Arial, sans-serif";
           ctx.fillStyle = "rgba(247,241,232,0.82)";
           ctx.fillText(c.address + "  |  RAICV " + c.raicv, width / 2, cy + f2 * 0.7);
         } else {
           // En horizontal/cuadrado: una línea, datos a izquierda, dirección a derecha
           ctx.textAlign = "left";
-          ctx.fillText(c.url + "   |   " + c.phone + "   |   WhatsApp " + c.whatsapp, padX, cy);
+          ctx.fillText(c.url + "   |   " + c.phone, padX, cy);
           ctx.textAlign = "right";
           ctx.fillStyle = "rgba(247,241,232,0.86)";
           ctx.fillText(c.address + "   |   RAICV " + c.raicv, width - padX, cy);
@@ -5191,7 +5219,7 @@
         const PUBLIC_URL = "https://rubik-sota-director-de-orquesta.vercel.app/dynamic-motion-banner/torrevieja-sur/";
         const EMBED_URL = PUBLIC_URL + "?embed=1";
         const ASSET_BASE = new URL("torrevieja-sur-assets/", window.location.origin + "/gesture-lab/dynamic-motion-banners/").href;
-        const ASSET_FILES = ["logo.svg", "logo-smart.svg", "property-1.jpg", "property-2.jpg", "property-3.jpg"];
+        const ASSET_FILES = ["logo-real.jpg", "logo.svg", "logo-smart.svg", "property-1.jpg", "property-2.jpg", "property-3.jpg"];
 
         const btnOpen = document.getElementById("btn-client-open");
         const btnCopy = document.getElementById("btn-client-copy");
