@@ -329,7 +329,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script type="module">
-    import { FilesetResolver, PoseLandmarker, ImageSegmenter } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
+    import { FilesetResolver, PoseLandmarker, ImageSegmenter } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35";
     window.RubikMediaPipeVision = { FilesetResolver, PoseLandmarker, ImageSegmenter };
     window.dispatchEvent(new Event("rubik-mediapipe-ready"));
   </script>
@@ -802,7 +802,7 @@
       try {
         const visionLib = await waitForMediaPipeVision();
         if (!visionLib) throw new Error("MediaPipe CDN no disponible");
-        const vision = await visionLib.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm");
+        const vision = await visionLib.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm");
         state.ai.pose = await visionLib.PoseLandmarker.createFromOptions(vision, {
           baseOptions: { modelAssetPath: POSE_MODEL_URL, delegate: "GPU" },
           runningMode: "IMAGE",
