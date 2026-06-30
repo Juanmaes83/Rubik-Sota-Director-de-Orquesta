@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota Gesture Lab 13 - Dental Kids v2.11. Coach educativo de cepillado real con camara, Face/Hand Landmarker, seis zonas, temporizador de 2 minutos y gamificacion diaria." />
+  <title>Rubik Sota Gesture Lab 13 - Dental Kids v2.11</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #061014;
+      --fg: #f8fffd;
+      --muted: rgba(248,255,253,0.68);
+      --line: rgba(255,255,255,0.16);
+      --panel: rgba(255,255,255,0.07);
+      --panel-2: rgba(255,255,255,0.04);
+      --aqua: #24e6d2;
+      --mint: #85ff9d;
+      --pink: #ff6aa2;
+      --sun: #ffd35c;
+      --blue: #68a7ff;
+      --bad: #ff756a;
+      --shadow: 0 24px 70px rgba(0,0,0,0.42);
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--fg); }
+    body {
+      background:
+        radial-gradient(circle at 12% 8%, rgba(36,230,210,0.2), transparent 30%),
+        radial-gradient(circle at 84% 12%, rgba(255,106,162,0.18), transparent 30%),
+        linear-gradient(180deg, #061014 0%, #0b1d22 52%, #05090c 100%);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.36;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(circle at 50% 25%, #000, transparent 76%);
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { position: relative; z-index: 1; width: min(1440px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 28px; display: grid; gap: 14px; }
+    .topbar, .hero, .panel, .stage { border: 1px solid var(--line); background: linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.032)); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
+    .topbar { border-radius: var(--radius-xl); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-mark { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-weight: 900; background: linear-gradient(135deg, var(--aqua), var(--pink)); color: #031013; }
+    .brand-name { display: block; font-weight: 900; letter-spacing: -0.04em; }
+    .brand-sub { display: block; margin-top: 2px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.72rem; font-weight: 900; }
+    .btn, .mode-btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.07);
+      color: var(--fg);
+      padding: 10px 13px;
+      font-size: 0.84rem;
+      font-weight: 900;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      transition: 0.16s ease;
+    }
+    .btn:hover, .mode-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.32); }
+    .btn-primary { background: var(--aqua); color: #01201d; border-color: var(--aqua); }
+    .btn-pink { background: var(--pink); color: #260010; border-color: var(--pink); }
+    .btn-sun { background: rgba(255,211,92,0.18); color: #fff0b5; border-color: rgba(255,211,92,0.5); }
+    .btn:disabled { opacity: 0.48; cursor: not-allowed; transform: none; }
+    .top-actions, .action-row, .pill-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .hero { border-radius: var(--radius-xl); padding: clamp(18px, 3vw, 30px); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr); gap: clamp(16px, 3vw, 28px); align-items: stretch; overflow: hidden; }
+    .eyebrow { color: var(--aqua); font-weight: 900; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.74rem; }
+    h1 { margin: 10px 0 12px; font-family: Nunito, Inter, sans-serif; font-size: clamp(2.4rem, 6vw, 5.6rem); line-height: 0.9; letter-spacing: -0.055em; max-width: 9ch; }
+    .hero p, .panel p { color: var(--muted); line-height: 1.55; margin: 0; }
+    .hero-card { border: 1px solid var(--line); border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(36,230,210,0.12), rgba(255,106,162,0.10)); min-height: 260px; padding: 18px; display: grid; align-content: end; position: relative; overflow: hidden; }
+    .hero-card::before { content: ""; position: absolute; width: 220px; height: 150px; border-radius: 52% 52% 42% 42%; left: 50%; top: 36%; transform: translate(-50%, -50%); background: #fff; box-shadow: inset 0 -18px 0 rgba(36,230,210,0.16); }
+    .hero-card::after { content: ""; position: absolute; width: 280px; height: 22px; border-radius: 999px; left: 50%; top: 36%; transform: translate(-50%, -50%) rotate(-8deg); background: linear-gradient(90deg, var(--aqua), var(--pink)); box-shadow: 0 12px 32px rgba(0,0,0,0.28); }
+    .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+    .metric { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px; background: rgba(255,255,255,0.045); }
+    .metric strong { display: block; font-size: 1.18rem; }
+    .metric span { display: block; color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
+    .workspace { display: grid; grid-template-columns: minmax(290px, 360px) minmax(0, 1fr) minmax(300px, 370px); gap: 14px; align-items: start; }
+    .panel { border-radius: var(--radius-xl); padding: 14px; display: grid; gap: 12px; }
+    .panel h2 { margin: 0; font-size: 1.05rem; letter-spacing: -0.025em; }
+    .label { display: block; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.68rem; font-weight: 900; }
+    .stage { border-radius: var(--radius-xl); overflow: hidden; min-height: 720px; display: grid; grid-template-rows: auto minmax(460px, 1fr) auto; }
+    .stage-head, .stage-foot { padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+    .stage-foot { border-top: 1px solid var(--line); border-bottom: 0; }
+    .camera-wrap { position: relative; min-height: 560px; background: #020506; display: grid; place-items: center; overflow: hidden; }
+    #cameraVideo { display: none; }
+    #coachCanvas { width: 100%; height: 100%; display: block; touch-action: none; }
+    .hud { position: absolute; inset: 12px auto auto 12px; display: grid; gap: 7px; pointer-events: none; }
+    .hud-pill { width: fit-content; border: 1px solid rgba(255,255,255,0.18); background: rgba(0,0,0,0.58); border-radius: var(--radius-pill); padding: 7px 10px; color: rgba(255,255,255,0.86); font-size: 0.76rem; font-weight: 850; backdrop-filter: blur(10px); }
+    .zone-grid { display: grid; gap: 8px; }
+    .zone-card { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px; background: rgba(255,255,255,0.045); display: grid; gap: 7px; }
+    .zone-card.is-active { border-color: var(--aqua); background: rgba(36,230,210,0.12); }
+    .zone-card.is-done { border-color: rgba(133,255,157,0.62); background: rgba(133,255,157,0.1); }
+    .zone-top { display: flex; justify-content: space-between; gap: 8px; font-weight: 900; font-size: 0.82rem; }
+    .bar { height: 9px; border-radius: var(--radius-pill); background: rgba(255,255,255,0.1); overflow: hidden; }
+    .bar > span { display: block; height: 100%; width: 0%; border-radius: inherit; background: linear-gradient(90deg, var(--aqua), var(--mint)); transition: width 0.18s ease; }
+    .status-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .status-card { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px; min-height: 72px; background: rgba(255,255,255,0.045); }
+    .status-card strong { display: block; font-size: 1.05rem; }
+    .status-card span { color: var(--muted); font-size: 0.75rem; line-height: 1.35; }
+    .mission-list { display: grid; gap: 8px; }
+    .mission { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px; background: rgba(255,255,255,0.045); display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .mission.is-done { border-color: rgba(255,211,92,0.55); background: rgba(255,211,92,0.1); }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .badge { border: 1px solid var(--line); border-radius: var(--radius-pill); padding: 7px 10px; background: rgba(255,255,255,0.05); color: var(--muted); font-size: 0.75rem; font-weight: 900; }
+    .badge.is-earned { border-color: var(--sun); color: #fff1b8; background: rgba(255,211,92,0.13); }
+    .mode-btn.is-active { border-color: var(--aqua); background: rgba(36,230,210,0.13); }
+    .toast { position: fixed; right: 16px; bottom: 16px; z-index: 10000; max-width: 360px; border: 1px solid rgba(36,230,210,0.38); background: rgba(0,0,0,0.82); border-radius: var(--radius-md); padding: 12px 14px; opacity: 0; transform: translateY(18px); transition: 0.18s ease; pointer-events: none; box-shadow: var(--shadow); }
+    .toast.is-visible { opacity: 1; transform: translateY(0); }
+    @media (max-width: 1120px) { .workspace, .hero { grid-template-columns: 1fr; } .stage { min-height: 640px; } }
+    @media (max-width: 620px) { .shell { width: min(100% - 18px, 1440px); } .metrics, .status-grid { grid-template-columns: 1fr; } .btn, .mode-btn { width: 100%; } .top-actions, .action-row, .pill-row { width: 100%; } .camera-wrap { min-height: 520px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="../index.html" aria-label="Volver al hub Gesture Lab">
+        <span class="brand-mark">DK</span>
+        <span><span class="brand-name">Rubik Sota Gesture Lab</span><span class="brand-sub">13 - Dental Kids Brush Coach - v2.11</span></span>
+      </a>
+      <div class="top-actions">
+        <button class="btn btn-primary" id="cameraBtn" type="button">Activar cámara</button>
+        <button class="btn btn-pink" id="startBtn" type="button">Iniciar reto</button>
+        <a class="btn" href="../index.html">Hub</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Face + Hand tracking · 6 zonas · 3 veces al día</div>
+        <h1>Dental Kids Coach.</h1>
+        <p>Entrenador educativo de cepillado real: detecta cara/boca, mano cerca de la zona activa y movimiento repetido. Guía 6 zonas en 2 minutos y convierte el hábito diario en una misión con recompensas.</p>
+        <div class="action-row" style="margin-top:14px;">
+          <button class="btn btn-primary" id="heroCameraBtn" type="button">Probar con cámara</button>
+          <button class="btn btn-sun" id="practiceBtn" type="button">Modo práctica</button>
+          <button class="btn" id="resetDayBtn" type="button">Reiniciar día</button>
+        </div>
+        <div class="metrics">
+          <div class="metric"><strong>2:00</strong><span>reto guiado</span></div>
+          <div class="metric"><strong>6</strong><span>zonas de boca</span></div>
+          <div class="metric"><strong>3x</strong><span>misiones diarias</span></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div style="position:relative; z-index:1;">
+          <div class="eyebrow">Alcance realista</div>
+          <p style="color:var(--fg); font-weight:800;">Coach educativo de hábito. No es diagnóstico clínico ni garantiza limpieza dental médica.</p>
+        </div>
+      </div>
+    </section>
+
+    <main class="workspace">
+      <aside class="panel">
+        <div>
+          <span class="label">Reto de cepillado</span>
+          <h2>6 zonas · 20 segundos</h2>
+          <p>Cada zona suma progreso si la mano/cepillo está cerca de la zona oral correcta y hay movimiento de cepillado.</p>
+        </div>
+        <div class="zone-grid" id="zoneGrid"></div>
+      </aside>
+
+      <section class="stage" aria-label="Coach de cepillado con cámara">
+        <div class="stage-head">
+          <div>
+            <span class="label" id="coachKicker">Esperando cámara</span>
+            <h2 id="zoneTitle" style="margin:2px 0 0;">Zona 1 · Superior izquierda</h2>
+          </div>
+          <div class="action-row">
+            <button class="btn btn-primary" id="startChallengeBtn" type="button">Iniciar 2 min</button>
+            <button class="btn" id="pauseBtn" type="button">Pausar</button>
+            <button class="btn btn-sun" id="manualBrushBtn" type="button">Fallback manual</button>
+          </div>
+        </div>
+        <div class="camera-wrap" id="cameraWrap">
+          <video id="cameraVideo" playsinline muted autoplay></video>
+          <canvas id="coachCanvas" width="1280" height="900" aria-label="Cámara con guía de cepillado"></canvas>
+          <div class="hud">
+            <span class="hud-pill" id="cameraStatus">Cámara: no iniciada</span>
+            <span class="hud-pill" id="aiStatus">IA: lista para cargar</span>
+            <span class="hud-pill" id="motionStatus">Movimiento: pendiente</span>
+          </div>
+        </div>
+        <div class="stage-foot">
+          <div class="pill-row">
+            <button class="mode-btn is-active" id="guidedModeBtn" type="button">Reto guiado</button>
+            <button class="mode-btn" id="freeModeBtn" type="button">Práctica libre</button>
+          </div>
+          <div class="action-row">
+            <button class="btn btn-pink" id="finishBtn" type="button">Finalizar sesión</button>
+            <button class="btn" id="downloadBtn" type="button">Diploma PNG</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div>
+          <span class="label">Gamificación</span>
+          <h2>Recurrencia diaria</h2>
+          <p>Mañana, tarde y noche se registran localmente. No se sube vídeo ni datos del menor.</p>
+        </div>
+        <div class="status-grid">
+          <div class="status-card"><strong id="timerText">02:00</strong><span>Tiempo de sesión</span></div>
+          <div class="status-card"><strong id="scoreText">0%</strong><span>Puntuación global</span></div>
+          <div class="status-card"><strong id="starsText">☆☆☆</strong><span>Estrellas</span></div>
+          <div class="status-card"><strong id="streakText">0 días</strong><span>Racha local</span></div>
+        </div>
+        <div>
+          <span class="label">Misiones de hoy</span>
+          <div class="mission-list" id="missionList"></div>
+        </div>
+        <div>
+          <span class="label">Insignias</span>
+          <div class="badge-row" id="badgeRow"></div>
+        </div>
+        <p id="coachMessage">Activa la cámara, coloca el rostro centrado y empieza por la zona superior izquierda.</p>
+      </aside>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+    import { FilesetResolver, FaceLandmarker, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35";
+    window.RubikDentalVision = { FilesetResolver, FaceLandmarker, HandLandmarker };
+    window.dispatchEvent(new Event("rubik-dental-vision-ready"));
+  </script>
+  <script>
+    const STORAGE_KEY = "rubik-sota-dental-kids-v2-11";
+    const FACE_MODEL = "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task";
+    const HAND_MODEL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task";
+    const ZONE_SECONDS = 20;
+    const TOTAL_SECONDS = 120;
+    const ZONES = [
+      { id: "upper-left", name: "Superior izquierda", row: "upper", col: "left" },
+      { id: "upper-center", name: "Superior centro", row: "upper", col: "center" },
+      { id: "upper-right", name: "Superior derecha", row: "upper", col: "right" },
+      { id: "lower-left", name: "Inferior izquierda", row: "lower", col: "left" },
+      { id: "lower-center", name: "Inferior centro", row: "lower", col: "center" },
+      { id: "lower-right", name: "Inferior derecha", row: "lower", col: "right" }
+    ];
+    const MISSIONS = [
+      { id: "morning", label: "Mañana" },
+      { id: "afternoon", label: "Tarde" },
+      { id: "night", label: "Noche" }
+    ];
+    const els = {};
+    ["cameraBtn","heroCameraBtn","startBtn","startChallengeBtn","practiceBtn","resetDayBtn","pauseBtn","manualBrushBtn","guidedModeBtn","freeModeBtn","finishBtn","downloadBtn","cameraVideo","coachCanvas","cameraWrap","cameraStatus","aiStatus","motionStatus","coachKicker","zoneTitle","zoneGrid","timerText","scoreText","starsText","streakText","missionList","badgeRow","coachMessage","toast"].forEach(id => els[id] = document.getElementById(id));
+    const ctx = els.coachCanvas.getContext("2d");
+    const state = {
+      stream: null,
+      running: false,
+      paused: false,
+      freeMode: false,
+      startedAt: 0,
+      pausedAt: 0,
+      elapsedPause: 0,
+      activeZone: 0,
+      zoneProgress: ZONES.map(() => 0),
+      face: null,
+      hand: null,
+      mouthRect: null,
+      handPoint: null,
+      zoneRects: [],
+      motionHistory: [],
+      lastFrameTs: 0,
+      ai: { loading: false, ready: false, face: null, hand: null, fallback: "manual disponible" },
+      day: loadDayState()
+    };
+    function todayKey() { return new Date().toISOString().slice(0, 10); }
+    function defaultDayState() { return { date: todayKey(), missions: {}, streak: 0, lastCompletedDate: "", badges: {}, bestScore: 0 }; }
+    function loadDayState() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        const base = Object.assign(defaultDayState(), data);
+        if (base.date !== todayKey()) return Object.assign(defaultDayState(), { streak: base.streak || 0, lastCompletedDate: base.lastCompletedDate || "", badges: base.badges || {}, bestScore: base.bestScore || 0 });
+        return base;
+      } catch { return defaultDayState(); }
+    }
+    function saveDayState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.day)); } catch {} }
+    function showToast(msg) {
+      els.toast.textContent = msg;
+      els.toast.classList.add("is-visible");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => els.toast.classList.remove("is-visible"), 2400);
+    }
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function formatTime(seconds) {
+      seconds = Math.max(0, Math.ceil(seconds));
+      return String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
+    }
+    function resizeCanvas() {
+      const rect = els.cameraWrap.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      els.coachCanvas.width = Math.max(900, Math.floor(rect.width * dpr));
+      els.coachCanvas.height = Math.max(680, Math.floor(rect.height * dpr));
+      draw();
+    }
+    function renderZones() {
+      els.zoneGrid.innerHTML = "";
+      ZONES.forEach((zone, index) => {
+        const card = document.createElement("div");
+        card.className = "zone-card" + (index === state.activeZone ? " is-active" : "") + (state.zoneProgress[index] >= 100 ? " is-done" : "");
+        card.innerHTML = '<div class="zone-top"><span>' + (index + 1) + ". " + zone.name + '</span><span>' + Math.round(state.zoneProgress[index]) + '%</span></div><div class="bar"><span style="width:' + clamp(state.zoneProgress[index], 0, 100) + '%"></span></div>';
+        els.zoneGrid.appendChild(card);
+      });
+      const active = ZONES[state.activeZone] || ZONES[0];
+      els.zoneTitle.textContent = "Zona " + (state.activeZone + 1) + " · " + active.name;
+    }
+    function sessionElapsedSeconds() {
+      if (!state.running) return 0;
+      const now = state.paused ? state.pausedAt : performance.now();
+      return Math.min(TOTAL_SECONDS, (now - state.startedAt - state.elapsedPause) / 1000);
+    }
+    function zoneElapsedSeconds() {
+      return state.freeMode ? 0 : sessionElapsedSeconds() - state.activeZone * ZONE_SECONDS;
+    }
+    function globalScore() {
+      return state.zoneProgress.reduce((sum, value) => sum + value, 0) / ZONES.length;
+    }
+    function starsForScore(score) {
+      if (score >= 88) return "★★★";
+      if (score >= 66) return "★★☆";
+      if (score >= 42) return "★☆☆";
+      return "☆☆☆";
+    }
+    function renderMissions() {
+      els.missionList.innerHTML = "";
+      MISSIONS.forEach(mission => {
+        const done = !!state.day.missions[mission.id];
+        const row = document.createElement("div");
+        row.className = "mission" + (done ? " is-done" : "");
+        row.innerHTML = '<strong>' + mission.label + '</strong><span>' + (done ? "Completada" : "Pendiente") + '</span>';
+        els.missionList.appendChild(row);
+      });
+      const badges = [
+        ["first", "Primera sonrisa"],
+        ["three", "Sonrisa 3x"],
+        ["streak3", "Racha 3 días"],
+        ["perfect", "Cepillado Pro"]
+      ];
+      els.badgeRow.innerHTML = "";
+      badges.forEach(([id, label]) => {
+        const badge = document.createElement("span");
+        badge.className = "badge" + (state.day.badges[id] ? " is-earned" : "");
+        badge.textContent = label;
+        els.badgeRow.appendChild(badge);
+      });
+    }
+    function updateUi() {
+      const elapsed = sessionElapsedSeconds();
+      const remaining = state.running ? TOTAL_SECONDS - elapsed : TOTAL_SECONDS;
+      const score = globalScore();
+      els.timerText.textContent = formatTime(remaining);
+      els.scoreText.textContent = Math.round(score) + "%";
+      els.starsText.textContent = starsForScore(score);
+      els.streakText.textContent = (state.day.streak || 0) + " días";
+      els.coachKicker.textContent = state.running ? (state.paused ? "Reto pausado" : "Reto en marcha") : (state.freeMode ? "Práctica libre" : "Preparado");
+      els.aiStatus.textContent = "IA: " + (state.ai.ready ? "Face + Hand activos" : state.ai.fallback);
+      renderZones();
+      renderMissions();
+    }
+    async function waitVision() {
+      if (window.RubikDentalVision) return window.RubikDentalVision;
+      await new Promise(resolve => {
+        const timer = setTimeout(resolve, 5000);
+        window.addEventListener("rubik-dental-vision-ready", () => { clearTimeout(timer); resolve(); }, { once: true });
+      });
+      return window.RubikDentalVision;
+    }
+    async function initAi() {
+      if (state.ai.ready || state.ai.loading) return state.ai.ready;
+      state.ai.loading = true;
+      updateUi();
+      try {
+        const lib = await waitVision();
+        if (!lib) throw new Error("MediaPipe no disponible");
+        const vision = await lib.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm");
+        state.ai.face = await lib.FaceLandmarker.createFromOptions(vision, {
+          baseOptions: { modelAssetPath: FACE_MODEL, delegate: "GPU" },
+          runningMode: "VIDEO",
+          numFaces: 1,
+          minFaceDetectionConfidence: 0.45,
+          minFacePresenceConfidence: 0.45,
+          minTrackingConfidence: 0.45
+        });
+        state.ai.hand = await lib.HandLandmarker.createFromOptions(vision, {
+          baseOptions: { modelAssetPath: HAND_MODEL, delegate: "GPU" },
+          runningMode: "VIDEO",
+          numHands: 2,
+          minHandDetectionConfidence: 0.42,
+          minHandPresenceConfidence: 0.42,
+          minTrackingConfidence: 0.42
+        });
+        state.ai.ready = true;
+        state.ai.fallback = "modelos listos";
+      } catch (error) {
+        state.ai.ready = false;
+        state.ai.fallback = "fallback manual";
+        showToast("No se pudo cargar Face/Hand. Fallback manual activo.");
+      } finally {
+        state.ai.loading = false;
+        updateUi();
+      }
+      return state.ai.ready;
+    }
+    async function startCamera() {
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("Camara no disponible");
+        if (!state.stream) {
+          try {
+            state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "user" }, width: { ideal: 1280 }, height: { ideal: 900 } }, audio: false });
+          } catch {
+            state.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          }
+          els.cameraVideo.srcObject = state.stream;
+          await els.cameraVideo.play();
+        }
+        els.cameraStatus.textContent = "Cámara: activa";
+        await initAi();
+        requestAnimationFrame(loop);
+        showToast("Cámara activa. Coloca rostro y mano cerca de la boca.");
+      } catch (error) {
+        els.cameraStatus.textContent = "Cámara: fallback manual";
+        showToast("La cámara requiere HTTPS y permisos. Puedes usar fallback manual.");
+      }
+    }
+    function startChallenge() {
+      state.running = true;
+      state.paused = false;
+      state.startedAt = performance.now();
+      state.elapsedPause = 0;
+      state.activeZone = 0;
+      state.zoneProgress = ZONES.map(() => 0);
+      state.motionHistory = [];
+      els.coachMessage.textContent = "Empieza por superior izquierda. Mantén el cepillo en la zona y mueve suave.";
+      speakCue("Empieza zona superior izquierda");
+      updateUi();
+      requestAnimationFrame(loop);
+    }
+    function pauseChallenge() {
+      if (!state.running) return;
+      if (!state.paused) {
+        state.paused = true;
+        state.pausedAt = performance.now();
+        els.pauseBtn.textContent = "Continuar";
+      } else {
+        state.paused = false;
+        state.elapsedPause += performance.now() - state.pausedAt;
+        els.pauseBtn.textContent = "Pausar";
+        requestAnimationFrame(loop);
+      }
+      updateUi();
+    }
+    function speakCue(text) {
+      if (!("speechSynthesis" in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "es-ES";
+        utter.rate = 1.02;
+        utter.volume = 0.7;
+        window.speechSynthesis.speak(utter);
+      } catch {}
+    }
+    function currentMissionId() {
+      const h = new Date().getHours();
+      if (h < 12) return "morning";
+      if (h < 19) return "afternoon";
+      return "night";
+    }
+    function finishSession() {
+      const score = globalScore();
+      state.running = false;
+      state.paused = false;
+      state.day.bestScore = Math.max(state.day.bestScore || 0, Math.round(score));
+      if (score >= 60) {
+        state.day.missions[currentMissionId()] = true;
+        state.day.badges.first = true;
+      }
+      const doneCount = MISSIONS.filter(m => state.day.missions[m.id]).length;
+      if (doneCount >= 3) state.day.badges.three = true;
+      if (score >= 88) state.day.badges.perfect = true;
+      if (doneCount >= 3 && state.day.lastCompletedDate !== todayKey()) {
+        state.day.streak = (state.day.streak || 0) + 1;
+        state.day.lastCompletedDate = todayKey();
+        if (state.day.streak >= 3) state.day.badges.streak3 = true;
+      }
+      saveDayState();
+      updateUi();
+      showToast("Sesión guardada: " + Math.round(score) + "% · " + starsForScore(score));
+    }
+    function resetDay() {
+      state.day = defaultDayState();
+      saveDayState();
+      updateUi();
+      showToast("Día reiniciado.");
+    }
+    function manualBrush() {
+      const idx = state.activeZone;
+      state.zoneProgress[idx] = clamp(state.zoneProgress[idx] + 12, 0, 100);
+      if (state.zoneProgress[idx] >= 100 && idx < ZONES.length - 1) {
+        state.activeZone += 1;
+        speakCue("Cambio de zona. Ahora " + ZONES[state.activeZone].name);
+      }
+      updateUi();
+      draw();
+    }
+    function mirroredPoint(lm, w, h) { return { x: (1 - lm.x) * w, y: lm.y * h, z: lm.z || 0 }; }
+    function detect(video, now) {
+      if (!state.ai.ready || !video.videoWidth) return;
+      try {
+        const faceResult = state.ai.face.detectForVideo(video, now);
+        const handResult = state.ai.hand.detectForVideo(video, now);
+        state.face = faceResult.faceLandmarks && faceResult.faceLandmarks[0] ? faceResult.faceLandmarks[0] : null;
+        state.hand = handResult.landmarks && handResult.landmarks[0] ? handResult.landmarks[0] : null;
+      } catch {}
+    }
+    function computeZones(w, h) {
+      if (!state.face) {
+        const mw = w * 0.34, mh = h * 0.22, x = w * 0.33, y = h * 0.39;
+        state.mouthRect = { x, y, w: mw, h: mh };
+      } else {
+        const ids = [13, 14, 61, 291, 0, 17, 78, 308];
+        const pts = ids.map(id => state.face[id]).filter(Boolean).map(p => mirroredPoint(p, w, h));
+        const minX = Math.min(...pts.map(p => p.x)), maxX = Math.max(...pts.map(p => p.x));
+        const minY = Math.min(...pts.map(p => p.y)), maxY = Math.max(...pts.map(p => p.y));
+        const padX = Math.max(44, (maxX - minX) * 1.05);
+        const padY = Math.max(54, (maxY - minY) * 2.3);
+        state.mouthRect = { x: minX - padX * 0.45, y: minY - padY * 0.45, w: (maxX - minX) + padX, h: (maxY - minY) + padY };
+      }
+      const r = state.mouthRect;
+      state.zoneRects = ZONES.map(zone => {
+        const col = zone.col === "left" ? 0 : zone.col === "center" ? 1 : 2;
+        const row = zone.row === "upper" ? 0 : 1;
+        return { x: r.x + col * r.w / 3, y: r.y + row * r.h / 2, w: r.w / 3, h: r.h / 2 };
+      });
+    }
+    function computeHand(w, h) {
+      if (!state.hand) { state.handPoint = null; return; }
+      const tip = state.hand[8] || state.hand[0];
+      state.handPoint = mirroredPoint(tip, w, h);
+      state.motionHistory.push({ x: state.handPoint.x, y: state.handPoint.y, t: performance.now() });
+      state.motionHistory = state.motionHistory.filter(p => performance.now() - p.t < 1400);
+    }
+    function pointInRect(p, r) { return p && r && p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h; }
+    function movementScore() {
+      if (state.motionHistory.length < 4) return 0;
+      let dist = 0;
+      for (let i = 1; i < state.motionHistory.length; i++) dist += Math.hypot(state.motionHistory[i].x - state.motionHistory[i - 1].x, state.motionHistory[i].y - state.motionHistory[i - 1].y);
+      return clamp(dist / 110, 0, 1);
+    }
+    function updateRecognitionProgress(dt) {
+      if (!state.running || state.paused) return;
+      if (!state.freeMode) {
+        const nextZone = Math.min(ZONES.length - 1, Math.floor(sessionElapsedSeconds() / ZONE_SECONDS));
+        if (nextZone !== state.activeZone) {
+          state.activeZone = nextZone;
+          speakCue("Cambio de zona. Ahora " + ZONES[state.activeZone].name);
+          showToast("Cambio de zona: " + ZONES[state.activeZone].name);
+        }
+      }
+      const idx = state.activeZone;
+      const activeRect = state.zoneRects[idx];
+      const zoneOk = pointInRect(state.handPoint, activeRect);
+      const mouthOk = state.mouthRect && state.handPoint && pointInRect(state.handPoint, state.mouthRect);
+      const motion = movementScore();
+      let gain = 0;
+      if (zoneOk && motion > 0.22) gain = dt * 10.5;
+      else if (zoneOk) gain = dt * 5.2;
+      else if (mouthOk && motion > 0.22) gain = dt * 2.2;
+      if (gain > 0) state.zoneProgress[idx] = clamp(state.zoneProgress[idx] + gain, 0, 100);
+      els.motionStatus.textContent = "Movimiento: " + (zoneOk && motion > 0.22 ? "correcto" : mouthOk ? "cerca de boca" : "buscando zona");
+      els.coachMessage.textContent = zoneOk ? "Bien. Sigue cepillando " + ZONES[idx].name + "." : "Acerca el cepillo a " + ZONES[idx].name + ".";
+      if (sessionElapsedSeconds() >= TOTAL_SECONDS) finishSession();
+    }
+    function drawDemoMouth(w, h) {
+      ctx.fillStyle = "#061014";
+      ctx.fillRect(0,0,w,h);
+      const grd = ctx.createRadialGradient(w*0.5,h*0.38,20,w*0.5,h*0.4,Math.max(w,h)*0.5);
+      grd.addColorStop(0,"rgba(36,230,210,0.22)");
+      grd.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = "rgba(255,255,255,0.92)";
+      roundRect(w*0.31,h*0.34,w*0.38,h*0.23,70); ctx.fill();
+      ctx.fillStyle = "rgba(255,106,162,0.58)";
+      roundRect(w*0.28,h*0.32,w*0.44,h*0.06,34); ctx.fill();
+      roundRect(w*0.28,h*0.54,w*0.44,h*0.06,34); ctx.fill();
+    }
+    function roundRect(x,y,w,h,r) {
+      r = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+    }
+    function draw() {
+      const w = els.coachCanvas.width, h = els.coachCanvas.height;
+      ctx.clearRect(0,0,w,h);
+      const video = els.cameraVideo;
+      if (video.videoWidth) {
+        ctx.save();
+        ctx.translate(w, 0);
+        ctx.scale(-1, 1);
+        const scale = Math.max(w / video.videoWidth, h / video.videoHeight);
+        const vw = video.videoWidth * scale, vh = video.videoHeight * scale;
+        ctx.drawImage(video, (w - vw) / 2, (h - vh) / 2, vw, vh);
+        ctx.restore();
+        ctx.fillStyle = "rgba(0,0,0,0.22)";
+        ctx.fillRect(0,0,w,h);
+      } else {
+        drawDemoMouth(w,h);
+      }
+      computeZones(w,h);
+      computeHand(w,h);
+      drawGuides(w,h);
+    }
+    function drawGuides(w,h) {
+      state.zoneRects.forEach((r, i) => {
+        ctx.save();
+        ctx.strokeStyle = i === state.activeZone ? "#24e6d2" : "rgba(255,255,255,0.26)";
+        ctx.fillStyle = i === state.activeZone ? "rgba(36,230,210,0.13)" : "rgba(255,255,255,0.04)";
+        ctx.lineWidth = i === state.activeZone ? Math.max(4, w*0.004) : Math.max(2, w*0.002);
+        roundRect(r.x, r.y, r.w, r.h, 18); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 " + Math.floor(w * 0.018) + "px Inter, sans-serif";
+        ctx.fillText(String(i + 1), r.x + 12, r.y + 28);
+        ctx.restore();
+      });
+      if (state.handPoint) {
+        ctx.save();
+        ctx.fillStyle = "#ffd35c";
+        ctx.beginPath(); ctx.arc(state.handPoint.x, state.handPoint.y, Math.max(10, w*0.012), 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = "rgba(255,211,92,0.45)";
+        ctx.lineWidth = Math.max(3, w*0.004);
+        ctx.beginPath();
+        state.motionHistory.forEach((p,i) => { if (i) ctx.lineTo(p.x,p.y); else ctx.moveTo(p.x,p.y); });
+        ctx.stroke();
+        ctx.restore();
+      }
+      const score = globalScore();
+      ctx.save();
+      ctx.fillStyle = "rgba(0,0,0,0.58)";
+      roundRect(w*0.04, h - 118, w*0.92, 90, 26); ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "900 " + Math.floor(w*0.03) + "px Nunito, Inter, sans-serif";
+      ctx.fillText(ZONES[state.activeZone].name + " · " + Math.round(state.zoneProgress[state.activeZone]) + "%", w*0.06, h - 70);
+      ctx.fillStyle = "rgba(255,255,255,0.68)";
+      ctx.font = "700 " + Math.floor(w*0.016) + "px Inter, sans-serif";
+      ctx.fillText("Global " + Math.round(score) + "% · " + starsForScore(score) + " · " + formatTime(TOTAL_SECONDS - sessionElapsedSeconds()), w*0.06, h - 42);
+      ctx.restore();
+    }
+    function loop(now) {
+      const dt = state.lastFrameTs ? Math.min(0.1, (now - state.lastFrameTs) / 1000) : 0;
+      state.lastFrameTs = now;
+      const video = els.cameraVideo;
+      if (video.videoWidth && state.ai.ready) detect(video, now);
+      draw();
+      updateRecognitionProgress(dt);
+      updateUi();
+      if (state.running && !state.paused) requestAnimationFrame(loop);
+      else if (state.stream) requestAnimationFrame(loop);
+    }
+    function downloadDiploma() {
+      const c = document.createElement("canvas");
+      c.width = 1400; c.height = 900;
+      const g = c.getContext("2d");
+      const score = Math.round(globalScore());
+      const grad = g.createLinearGradient(0,0,c.width,c.height);
+      grad.addColorStop(0,"#061014"); grad.addColorStop(1,"#0c2d35");
+      g.fillStyle = grad; g.fillRect(0,0,c.width,c.height);
+      g.fillStyle = "#24e6d2"; g.font = "900 54px Inter, sans-serif"; g.fillText("Dental Kids Brush Coach", 90, 130);
+      g.fillStyle = "#fff"; g.font = "900 104px Nunito, Inter, sans-serif"; g.fillText(starsForScore(score), 90, 270);
+      g.font = "900 72px Inter, sans-serif"; g.fillText(score + "% completado", 90, 390);
+      g.fillStyle = "rgba(255,255,255,0.72)"; g.font = "700 34px Inter, sans-serif"; g.fillText("Reto educativo de cepillado de 2 minutos · " + new Date().toLocaleDateString("es-ES"), 90, 470);
+      ZONES.forEach((zone, i) => {
+        const x = 90 + (i % 3) * 390, y = 575 + Math.floor(i / 3) * 115;
+        g.fillStyle = "rgba(255,255,255,0.08)"; roundRectFor(g, x, y, 340, 70, 22); g.fill();
+        g.fillStyle = "#fff"; g.font = "800 24px Inter, sans-serif"; g.fillText(zone.name, x + 20, y + 30);
+        g.fillStyle = "#85ff9d"; g.fillText(Math.round(state.zoneProgress[i]) + "%", x + 20, y + 58);
+      });
+      const a = document.createElement("a");
+      a.href = c.toDataURL("image/png");
+      a.download = "rubik-sota-dental-kids-v2-11-diploma.png";
+      a.click();
+    }
+    function roundRectFor(g,x,y,w,h,r) {
+      r = Math.min(r,w/2,h/2);
+      g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();
+    }
+    function initEvents() {
+      els.cameraBtn.addEventListener("click", startCamera);
+      els.heroCameraBtn.addEventListener("click", startCamera);
+      els.startBtn.addEventListener("click", startChallenge);
+      els.startChallengeBtn.addEventListener("click", startChallenge);
+      els.practiceBtn.addEventListener("click", () => { state.freeMode = true; state.running = true; state.startedAt = performance.now(); updateUi(); requestAnimationFrame(loop); showToast("Práctica libre activa."); });
+      els.pauseBtn.addEventListener("click", pauseChallenge);
+      els.manualBrushBtn.addEventListener("click", manualBrush);
+      els.finishBtn.addEventListener("click", finishSession);
+      els.downloadBtn.addEventListener("click", downloadDiploma);
+      els.resetDayBtn.addEventListener("click", resetDay);
+      els.guidedModeBtn.addEventListener("click", () => { state.freeMode = false; els.guidedModeBtn.classList.add("is-active"); els.freeModeBtn.classList.remove("is-active"); updateUi(); });
+      els.freeModeBtn.addEventListener("click", () => { state.freeMode = true; els.freeModeBtn.classList.add("is-active"); els.guidedModeBtn.classList.remove("is-active"); updateUi(); });
+      window.addEventListener("resize", resizeCanvas);
+      els.coachCanvas.addEventListener("pointermove", event => {
+        if (state.stream) return;
+        const rect = els.coachCanvas.getBoundingClientRect();
+        state.handPoint = { x: (event.clientX - rect.left) / rect.width * els.coachCanvas.width, y: (event.clientY - rect.top) / rect.height * els.coachCanvas.height };
+        state.motionHistory.push({ x: state.handPoint.x, y: state.handPoint.y, t: performance.now() });
+        state.motionHistory = state.motionHistory.filter(p => performance.now() - p.t < 1400);
+        if (state.running) updateRecognitionProgress(0.08);
+        draw(); updateUi();
+      });
+    }
+    function init() {
+      resizeCanvas();
+      initEvents();
+      updateUi();
+      draw();
+    }
+    init();
+  </script>
+</body>
+</html>
