@@ -34,14 +34,16 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 07 - Retail Catalog - Disponible - v2.6
 - 08 - Interactive Gesture Catalog / Retail Catalog - Disponible - v2.7
 - 09 - Interactive Retail Window - Disponible - v2.8
+- 10 - Fashion Lookbook - Disponible - v2.9
+- 11 - Dynamic Motion Banners - Disponible - v0.3.9 stable / v0.4 gesture experimental
 
 ### Dynamic Motion Banners v0.4 — Gesture Interactive Edition
 
-Estrategia aprobada para preparar una version gestual separada de Dynamic Motion Banners.
+Dynamic Motion Banners existe como linea de trabajo dentro de Gesture Lab. La version v0.3.9 es la base estable de editor/exportacion; la version v0.4 gestual se mantiene separada para experimentar con Gesture Mode antes de publicarla como dependencia de otros modulos.
 
 - Se amplia el motor gestual validado; no se sustituye el pipeline actual.
-- No se toca la version estable v0.3.
-- Se creara una version separada v0.4 para experimentar con Gesture Mode.
+- No se toca la version estable v0.3/v0.3.9.
+- La version separada v0.4 ya existe como laboratorio experimental para Gesture Mode.
 - `quiet-node/gesture-lab` y `Prachi142/gesture-cube` se usan como referencias tecnicas, no como dependencias.
 - Documento estrategico: [DYNAMIC_MOTION_BANNERS_V0_4_GESTURE_INTERACTIVE_STRATEGY.md](docs/DYNAMIC_MOTION_BANNERS_V0_4_GESTURE_INTERACTIVE_STRATEGY.md)
 
@@ -56,6 +58,8 @@ Estrategia aprobada para preparar una version gestual separada de Dynamic Motion
 - Retail Catalog v2.6
 - Interactive Gesture Catalog / Retail Catalog v2.7
 - Interactive Retail Window v2.8
+- Fashion Lookbook v2.9
+- Dynamic Motion Banners v0.3.9 stable / v0.4 gesture experimental
 
 **Archivos:**
 
@@ -68,6 +72,9 @@ Estrategia aprobada para preparar una version gestual separada de Dynamic Motion
 - `gesture-lab/retail-catalog/rubik-sota-retail-catalog-v2-6.html`
 - `gesture-lab/interactive-gesture-catalog/rubik-sota-interactive-gesture-catalog-v2-7.html`
 - `gesture-lab/interactive-retail-window/rubik-sota-interactive-retail-window-v2-8.html`
+- `gesture-lab/fashion-lookbook/rubik-sota-fashion-lookbook-v2-9.html`
+- `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-3.html`
+- `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-4-gesture.html`
 
 **Funciones actuales:**
 
@@ -86,9 +93,9 @@ La grabación WebM puede no funcionar en algunos navegadores móviles, especialm
 
 ---
 
-## Hub v2.0.1
+## Hub v2.0.2
 
-El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicaciones/módulos.
+El Hub v2.0.2 organiza Gesture Lab como plataforma multisectorial con 34 aplicaciones/modulos.
 
 **Archivo:**
 
@@ -108,7 +115,7 @@ El Hub v2.0.1 organiza Gesture Lab como plataforma multisectorial con 33 aplicac
 
 **Meta:**
 
-- `v2.0.1 - 9 modulos activos - 24 en planificacion`
+- `v2.0.2 - 11 modulos activos - 23 en planificacion`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -279,32 +286,33 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 07 | Retail Catalog | Disponible - v2.6 |
 | 08 | Interactive Gesture Catalog / Retail Catalog | Disponible - v2.7 |
 | 09 | Interactive Retail Window | Disponible - v2.8 |
-| 10 | Fashion Lookbook | Próximamente - v2.9 |
-| 11 | Selfie Style / Outfit Visualizer | Próximamente - v2.10 |
-| 12 | Dental Kids | Próximamente - v2.11 |
-| 13 | Retail Window Pro | Próximamente - v2.12 |
-| 14 | Food Assembly General | Próximamente - v2.13 |
-| 15 | Sushi Roll Interactive | Próximamente - v2.14 |
-| 16 | Burger Layers Interactive | Próximamente - v2.15 |
-| 17 | Pizza / Cheese Pull Visualizer | Próximamente - v2.16 |
-| 18 | Museo / Patrimonio | Próximamente - v2.17 |
-| 19 | Educación Visual | Próximamente - v2.18 |
-| 20 | Higiene de Manos | Próximamente - v2.19 |
-| 21 | Fisioterapia Guiada | Próximamente - v2.20 |
-| 22 | Salud / Clínicas | Próximamente - v2.21 |
-| 23 | Automoción | Próximamente - v2.22 |
-| 24 | Industria / Cocinas / B2B | Próximamente - v2.23 |
-| 25 | Instituciones / Urbanismo | Próximamente - v2.24 |
-| 26 | Eventos / Activaciones | Próximamente - v2.25 |
-| 27 | Nutrición Infantil | Próximamente - v2.26 |
-| 28 | Seguridad Laboral | Próximamente - v2.27 |
-| 29 | Educación Ambiental | Próximamente - v2.28 |
-| 30 | Pádel Tactical Lab | Próximamente - v2.29 |
-| 31 | Tennis Gesture Court | Próximamente - v2.30 |
-| 32 | Nautical Visualizer | Próximamente - v2.31 |
-| 33 | Golf Course Visualizer | Próximamente - v2.32 |
+| 10 | Fashion Lookbook | Disponible - v2.9 |
+| 11 | Dynamic Motion Banners | Disponible - v0.3.9 stable / v0.4 gesture experimental |
+| 12 | Selfie Style / Outfit Visualizer | Próximamente - v2.10 |
+| 13 | Dental Kids | Próximamente - v2.11 |
+| 14 | Retail Window Pro | Próximamente - v2.12 |
+| 15 | Food Assembly General | Próximamente - v2.13 |
+| 16 | Sushi Roll Interactive | Próximamente - v2.14 |
+| 17 | Burger Layers Interactive | Próximamente - v2.15 |
+| 18 | Pizza / Cheese Pull Visualizer | Próximamente - v2.16 |
+| 19 | Museo / Patrimonio | Próximamente - v2.17 |
+| 20 | Educación Visual | Próximamente - v2.18 |
+| 21 | Higiene de Manos | Próximamente - v2.19 |
+| 22 | Fisioterapia Guiada | Próximamente - v2.20 |
+| 23 | Salud / Clínicas | Próximamente - v2.21 |
+| 24 | Automoción | Próximamente - v2.22 |
+| 25 | Industria / Cocinas / B2B | Próximamente - v2.23 |
+| 26 | Instituciones / Urbanismo | Próximamente - v2.24 |
+| 27 | Eventos / Activaciones | Próximamente - v2.25 |
+| 28 | Nutrición Infantil | Próximamente - v2.26 |
+| 29 | Seguridad Laboral | Próximamente - v2.27 |
+| 30 | Educación Ambiental | Próximamente - v2.28 |
+| 31 | Pádel Tactical Lab | Próximamente - v2.29 |
+| 32 | Tennis Gesture Court | Próximamente - v2.30 |
+| 33 | Nautical Visualizer | Próximamente - v2.31 |
+| 34 | Golf Course Visualizer | Próximamente - v2.32 |
 
-### Notas de módulos nuevos (v2.0.1)
+### Notas de módulos nuevos (v2.0.2)
 
 - **05 — Real Estate Capture Tour**: el agente hace fotos del salón, cocina, baño, terraza o fachada desde la plataforma y genera una experiencia visual rápida. Acelera captaciones inmobiliarias y crea material comercial en minutos.
 - **06 — Golf Experience / Home Practice**: combina imagen del jugador y campo de golf. El usuario se hace una foto o graba postura de swing, elige hoyo/campo y ve trayectoria, dirección, zona de impacto y objetivo. Practicar en casa, clases, academias, membresías y resorts.
@@ -323,23 +331,23 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 El siguiente módulo recomendado es:
 
-**v2.9 - Fashion Lookbook**
+**v2.10 - Selfie Style / Outfit Visualizer**
 
 **Motivo:**
 
-Tras validar catalogo, gestos y escaparate retail, el siguiente paso es llevar el sistema a moda: looks, colores, accesorios, modo editorial y contenido social. Esto permite convertir Gesture Lab en una herramienta de presentacion de colecciones y campanas visuales.
+Tras activar Fashion Lookbook, el siguiente paso recomendado es llevar el sistema a selfie, estilo, outfits y accesorios sobre imagen del usuario. Esto permite convertir Gesture Lab en una herramienta de personalizacion visual para moda, belleza, retail, eventos y campanas.
 
 **Flujo previsto:**
 
-1. Seleccionar coleccion o look.
-2. Cambiar color o variante.
-3. Activar accesorios.
-4. Entrar en modo editorial.
+1. Capturar o subir selfie/foto base.
+2. Seleccionar estilo, outfit o accesorio.
+3. Comparar look base vs look completo.
+4. Entrar en modo editorial/campana.
 5. Exportar PNG, clip o pieza social.
 
 **Frase clave:**
 
-> Del escaparate retail al lookbook editorial con la misma arquitectura.
+> Del lookbook editorial al visualizador personal con la misma arquitectura.
 
 ---
 
@@ -402,7 +410,7 @@ Cada módulo debe incluir, cuando aplique:
 ## Convención de versiones
 
 - `v1.x` corresponde a Bola de Imagen.
-- `v2.0` / `v2.0.1` corresponde al Hub multisectorial.
+- `v2.0` / `v2.0.1` / `v2.0.2` corresponde al Hub multisectorial.
 - `v2.1` en adelante corresponde a módulos sectoriales.
 - Cada fase debe implementarse paso a paso.
 - No construir todos los módulos a la vez.
@@ -413,6 +421,7 @@ Cada módulo debe incluir, cuando aplique:
 
 - v2.0 — Hub multisectorial
 - v2.0.1 — Roadmap ampliado 33 módulos
+- v2.0.2 — Hub actualizado a 34 módulos y 11 activos
 - v2.1 — Before / After Reforma — validado
 - v2.1.1 — Capture Input System — sustituido por v2.1.2
 - v2.1.2 - In-app Camera Capture - estable
@@ -424,8 +433,10 @@ Cada módulo debe incluir, cuando aplique:
 - v2.5 - Golf Experience / Home Practice - estable
 - v2.6 - Retail Catalog - estable
 - v2.7 - Interactive Gesture Catalog / Retail Catalog - estable
-- v2.8 - Interactive Retail Window - estable actual
-- v2.9 - Fashion Lookbook - siguiente
+- v2.8 - Interactive Retail Window - estable
+- v2.9 - Fashion Lookbook - estable actual
+- Dynamic Motion Banners v0.3.9 - estable editor/exportacion
+- Dynamic Motion Banners v0.4 - laboratorio gestual experimental
 - v2.10 - Selfie Style / Outfit Visualizer
 - v2.11 - Dental Kids
 - v2.12 - Retail Window Pro
@@ -466,7 +477,7 @@ Cada módulo debe incluir, cuando aplique:
 
 **Actual:**
 
-- Hub v2.0.1 con 33 módulos documentados.
+- Hub v2.0.2 con 34 módulos documentados.
 - Capture Input System validado in-app (v2.1.2).
 - Bola de Imagen v1.3 publicada y funcional.
 - Before / After Reforma v2.1.2 publicada y funcional.
@@ -477,4 +488,6 @@ Cada módulo debe incluir, cuando aplique:
 - Retail Catalog v2.6 publicada y funcional.
 - Interactive Gesture Catalog / Retail Catalog v2.7 publicada y funcional.
 - Interactive Retail Window v2.8 publicada y funcional.
-- Siguiente fase: v2.9 - Fashion Lookbook.
+- Fashion Lookbook v2.9 publicada y funcional.
+- Dynamic Motion Banners v0.3.9 disponible como editor/exportador; v0.4 gesture se mantiene experimental.
+- Siguiente fase: v2.10 - Selfie Style / Outfit Visualizer.
