@@ -36,7 +36,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 09 - Interactive Retail Window - Disponible - v2.8
 - 10 - Fashion Lookbook - Disponible - v2.9
 - 11 - Dynamic Motion Banners - Disponible - v0.3.9 stable / v0.4 gesture experimental
-- 12 - Selfie Style / Outfit Visualizer - Disponible - v2.10
+- 12 - Selfie Style / Outfit Visualizer - Disponible - v2.10.1
 
 ### Dynamic Motion Banners v0.4 — Gesture Interactive Edition
 
@@ -61,7 +61,7 @@ Dynamic Motion Banners existe como linea de trabajo dentro de Gesture Lab. La ve
 - Interactive Retail Window v2.8
 - Fashion Lookbook v2.9
 - Dynamic Motion Banners v0.3.9 stable / v0.4 gesture experimental
-- Selfie Style / Outfit Visualizer v2.10
+- Selfie Style / Outfit Visualizer v2.10.1
 
 **Archivos:**
 
@@ -77,7 +77,7 @@ Dynamic Motion Banners existe como linea de trabajo dentro de Gesture Lab. La ve
 - `gesture-lab/fashion-lookbook/rubik-sota-fashion-lookbook-v2-9.html`
 - `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-3.html`
 - `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-4-gesture.html`
-- `gesture-lab/selfie-style-outfit-visualizer/rubik-sota-selfie-style-outfit-visualizer-v2-10.html`
+- `gesture-lab/selfie-style-outfit-visualizer/rubik-sota-selfie-style-outfit-visualizer-v2-10-1.html`
 
 **Funciones actuales:**
 
@@ -96,9 +96,9 @@ La grabación WebM puede no funcionar en algunos navegadores móviles, especialm
 
 ---
 
-## Hub v2.0.3
+## Hub v2.0.4
 
-El Hub v2.0.3 organiza Gesture Lab como plataforma multisectorial con 34 aplicaciones/modulos.
+El Hub v2.0.4 organiza Gesture Lab como plataforma multisectorial con 34 aplicaciones/modulos.
 
 **Archivo:**
 
@@ -118,7 +118,7 @@ El Hub v2.0.3 organiza Gesture Lab como plataforma multisectorial con 34 aplicac
 
 **Meta:**
 
-- `v2.0.3 - 12 modulos activos - 22 en planificacion`
+- `v2.0.4 - 12 modulos activos - 22 en planificacion`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -291,7 +291,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 09 | Interactive Retail Window | Disponible - v2.8 |
 | 10 | Fashion Lookbook | Disponible - v2.9 |
 | 11 | Dynamic Motion Banners | Disponible - v0.3.9 stable / v0.4 gesture experimental |
-| 12 | Selfie Style / Outfit Visualizer | Disponible - v2.10 |
+| 12 | Selfie Style / Outfit Visualizer | Disponible - v2.10.1 |
 | 13 | Dental Kids | Próximamente - v2.11 |
 | 14 | Retail Window Pro | Próximamente - v2.12 |
 | 15 | Food Assembly General | Próximamente - v2.13 |
@@ -315,12 +315,12 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 33 | Nautical Visualizer | Próximamente - v2.31 |
 | 34 | Golf Course Visualizer | Próximamente - v2.32 |
 
-### Notas de módulos nuevos (v2.0.3)
+### Notas de módulos nuevos (v2.0.4)
 
 - **05 — Real Estate Capture Tour**: el agente hace fotos del salón, cocina, baño, terraza o fachada desde la plataforma y genera una experiencia visual rápida. Acelera captaciones inmobiliarias y crea material comercial en minutos.
 - **06 — Golf Experience / Home Practice**: combina imagen del jugador y campo de golf. El usuario se hace una foto o graba postura de swing, elige hoyo/campo y ve trayectoria, dirección, zona de impacto y objetivo. Practicar en casa, clases, academias, membresías y resorts.
 - **07 — Retail Catalog**: catálogo comercial interactivo con categorías, favoritos, carrito local, código de continuación y share layer. Sirve para tiendas, marcas, showrooms, franquicias y ferias.
-- **12 — Selfie Style / Outfit Visualizer**: selfie convertida en base para estilos, outfits, accesorios o comparación outfit base vs completo. Personaliza moda, belleza, retail, peluquería, eventos y campañas.
+- **12 — Selfie Style / Outfit Visualizer**: selfie convertida en base para estilos, outfits, accesorios o comparación outfit base vs completo. v2.10.1 añade MediaPipe Pose Auto Fit para hombros, torso y rostro, cámara reforzada, prendas SVG/canvas internas y fallback manual permanente. Personaliza moda, belleza, retail, peluquería, eventos y campañas.
 - **15 — Food Assembly General**: platos, menús o productos montados por capas. Vende producto gastronómico de forma visual y apetecible.
 - **16 — Sushi Roll Interactive**: sushi que se enrolla, se corta o revela ingredientes (alga, arroz, pescado, toppings y salsa). Restaurantes japoneses, delivery y campañas virales.
 - **17 — Burger Layers Interactive**: hamburguesa construida por capas (pan, carne, queso, bacon, salsa, lechuga, tomate y packaging). Ingredientes premium y clips apetecibles para redes.
@@ -413,7 +413,7 @@ Cada módulo debe incluir, cuando aplique:
 ## Convención de versiones
 
 - `v1.x` corresponde a Bola de Imagen.
-- `v2.0` / `v2.0.1` / `v2.0.2` / `v2.0.3` corresponde al Hub multisectorial.
+- `v2.0` / `v2.0.1` / `v2.0.2` / `v2.0.3` / `v2.0.4` corresponde al Hub multisectorial.
 - `v2.1` en adelante corresponde a módulos sectoriales.
 - Cada fase debe implementarse paso a paso.
 - No construir todos los módulos a la vez.
@@ -425,7 +425,7 @@ Cada módulo debe incluir, cuando aplique:
 - v2.0 — Hub multisectorial
 - v2.0.1 — Roadmap ampliado 33 módulos
 - v2.0.2 — Hub actualizado a 34 módulos y 11 activos
-- v2.0.3 — Selfie Style v2.10 activo; 12 módulos activos
+- v2.0.4 — Selfie Style v2.10.1 activo con MediaPipe Pose Auto Fit; 12 módulos activos
 - v2.1 — Before / After Reforma — validado
 - v2.1.1 — Capture Input System — sustituido por v2.1.2
 - v2.1.2 - In-app Camera Capture - estable
@@ -441,7 +441,7 @@ Cada módulo debe incluir, cuando aplique:
 - v2.9 - Fashion Lookbook - estable
 - Dynamic Motion Banners v0.3.9 - estable editor/exportacion
 - Dynamic Motion Banners v0.4 - laboratorio gestual experimental
-- v2.10 - Selfie Style / Outfit Visualizer - estable actual
+- v2.10.1 - Selfie Style / Outfit Visualizer - estable actual
 - v2.11 - Dental Kids
 - v2.12 - Retail Window Pro
 - v2.13 - Food Assembly: Sushi + Burger + Pizza
@@ -481,7 +481,7 @@ Cada módulo debe incluir, cuando aplique:
 
 **Actual:**
 
-- Hub v2.0.3 con 34 módulos documentados.
+- Hub v2.0.4 con 34 módulos documentados.
 - Capture Input System validado in-app (v2.1.2).
 - Bola de Imagen v1.3 publicada y funcional.
 - Before / After Reforma v2.1.2 publicada y funcional.
@@ -494,5 +494,5 @@ Cada módulo debe incluir, cuando aplique:
 - Interactive Retail Window v2.8 publicada y funcional.
 - Fashion Lookbook v2.9 publicada y funcional.
 - Dynamic Motion Banners v0.3.9 disponible como editor/exportador; v0.4 gesture se mantiene experimental.
-- Selfie Style / Outfit Visualizer v2.10 publicada y funcional.
+- Selfie Style / Outfit Visualizer v2.10.1 publicada con Pose Auto Fit, cámara reforzada, prendas internas y fallback manual.
 - Siguiente fase: v2.11 - Dental Kids.
