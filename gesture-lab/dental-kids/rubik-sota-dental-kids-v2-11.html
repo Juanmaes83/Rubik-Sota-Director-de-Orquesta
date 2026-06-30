@@ -266,6 +266,8 @@
       running: false,
       paused: false,
       freeMode: false,
+      inputMode: "mouse",
+      loopActive: false,
       startedAt: 0,
       pausedAt: 0,
       elapsedPause: 0,
@@ -432,25 +434,56 @@
         }
         els.cameraStatus.textContent = "Cámara: activa";
         await initAi();
-        requestAnimationFrame(loop);
+        ensureLoop();
         showToast("Cámara activa. Coloca rostro y mano cerca de la boca.");
       } catch (error) {
         els.cameraStatus.textContent = "Cámara: fallback manual";
         showToast("La cámara requiere HTTPS y permisos. Puedes usar fallback manual.");
       }
     }
-    function startChallenge() {
+    function resetSession(freeMode = false) {
       state.running = true;
       state.paused = false;
+      state.freeMode = !!freeMode;
       state.startedAt = performance.now();
+      state.pausedAt = 0;
       state.elapsedPause = 0;
       state.activeZone = 0;
       state.zoneProgress = ZONES.map(() => 0);
       state.motionHistory = [];
+      state.lastFrameTs = 0;
+      els.pauseBtn.textContent = "Pausar";
+      els.guidedModeBtn.classList.toggle("is-active", !state.freeMode);
+      els.freeModeBtn.classList.toggle("is-active", state.freeMode);
+    }
+    function ensureLoop() {
+      if (state.loopActive) return;
+      state.loopActive = true;
+      requestAnimationFrame(loop);
+    }
+    function advanceZone(nextIndex, reason = "manual") {
+      const target = clamp(Math.floor(nextIndex), 0, ZONES.length - 1);
+      if (target === state.activeZone) return;
+      if (target < state.activeZone && reason !== "reset") return;
+      state.activeZone = target;
+      state.motionHistory = [];
+      speakCue("Cambio de zona. Ahora " + ZONES[state.activeZone].name);
+      showToast("Cambio de zona: " + ZONES[state.activeZone].name);
+      updateUi();
+      draw();
+    }
+    function completeCurrentZone(reason = "completed") {
+      const idx = state.activeZone;
+      state.zoneProgress[idx] = 100;
+      if (idx < ZONES.length - 1) advanceZone(idx + 1, reason);
+      else finishSession();
+    }
+    function startChallenge() {
+      resetSession(false);
       els.coachMessage.textContent = "Empieza por superior izquierda. Mantén el cepillo en la zona y mueve suave.";
       speakCue("Empieza zona superior izquierda");
       updateUi();
-      requestAnimationFrame(loop);
+      ensureLoop();
     }
     function pauseChallenge() {
       if (!state.running) return;
@@ -462,7 +495,7 @@
         state.paused = false;
         state.elapsedPause += performance.now() - state.pausedAt;
         els.pauseBtn.textContent = "Pausar";
-        requestAnimationFrame(loop);
+        ensureLoop();
       }
       updateUi();
     }
@@ -511,14 +544,13 @@
       showToast("Día reiniciado.");
     }
     function manualBrush() {
+      state.inputMode = "mouse";
       const idx = state.activeZone;
       state.zoneProgress[idx] = clamp(state.zoneProgress[idx] + 12, 0, 100);
-      if (state.zoneProgress[idx] >= 100 && idx < ZONES.length - 1) {
-        state.activeZone += 1;
-        speakCue("Cambio de zona. Ahora " + ZONES[state.activeZone].name);
-      }
+      if (state.zoneProgress[idx] >= 100) completeCurrentZone("manual");
       updateUi();
       draw();
+      ensureLoop();
     }
     function mirroredPoint(lm, w, h) { return { x: (1 - lm.x) * w, y: lm.y * h, z: lm.z || 0 }; }
     function detect(video, now) {
@@ -551,7 +583,11 @@
       });
     }
     function computeHand(w, h) {
-      if (!state.hand) { state.handPoint = null; return; }
+      if (!state.hand) {
+        if (state.inputMode !== "mouse") state.handPoint = null;
+        return;
+      }
+      state.inputMode = "camera";
       const tip = state.hand[8] || state.hand[0];
       state.handPoint = mirroredPoint(tip, w, h);
       state.motionHistory.push({ x: state.handPoint.x, y: state.handPoint.y, t: performance.now() });
@@ -568,11 +604,7 @@
       if (!state.running || state.paused) return;
       if (!state.freeMode) {
         const nextZone = Math.min(ZONES.length - 1, Math.floor(sessionElapsedSeconds() / ZONE_SECONDS));
-        if (nextZone !== state.activeZone) {
-          state.activeZone = nextZone;
-          speakCue("Cambio de zona. Ahora " + ZONES[state.activeZone].name);
-          showToast("Cambio de zona: " + ZONES[state.activeZone].name);
-        }
+        if (nextZone > state.activeZone) advanceZone(nextZone, "timer");
       }
       const idx = state.activeZone;
       const activeRect = state.zoneRects[idx];
@@ -583,7 +615,10 @@
       if (zoneOk && motion > 0.22) gain = dt * 10.5;
       else if (zoneOk) gain = dt * 5.2;
       else if (mouthOk && motion > 0.22) gain = dt * 2.2;
-      if (gain > 0) state.zoneProgress[idx] = clamp(state.zoneProgress[idx] + gain, 0, 100);
+      if (gain > 0) {
+        state.zoneProgress[idx] = clamp(state.zoneProgress[idx] + gain, 0, 100);
+        if (state.zoneProgress[idx] >= 100) completeCurrentZone("recognized");
+      }
       els.motionStatus.textContent = "Movimiento: " + (zoneOk && motion > 0.22 ? "correcto" : mouthOk ? "cerca de boca" : "buscando zona");
       els.coachMessage.textContent = zoneOk ? "Bien. Sigue cepillando " + ZONES[idx].name + "." : "Acerca el cepillo a " + ZONES[idx].name + ".";
       if (sessionElapsedSeconds() >= TOTAL_SECONDS) finishSession();
@@ -670,8 +705,8 @@
       draw();
       updateRecognitionProgress(dt);
       updateUi();
-      if (state.running && !state.paused) requestAnimationFrame(loop);
-      else if (state.stream) requestAnimationFrame(loop);
+      if ((state.running && !state.paused) || state.stream) requestAnimationFrame(loop);
+      else state.loopActive = false;
     }
     function downloadDiploma() {
       const c = document.createElement("canvas");
@@ -705,7 +740,7 @@
       els.heroCameraBtn.addEventListener("click", startCamera);
       els.startBtn.addEventListener("click", startChallenge);
       els.startChallengeBtn.addEventListener("click", startChallenge);
-      els.practiceBtn.addEventListener("click", () => { state.freeMode = true; state.running = true; state.startedAt = performance.now(); updateUi(); requestAnimationFrame(loop); showToast("Práctica libre activa."); });
+      els.practiceBtn.addEventListener("click", () => { resetSession(true); updateUi(); ensureLoop(); showToast("Práctica libre activa."); });
       els.pauseBtn.addEventListener("click", pauseChallenge);
       els.manualBrushBtn.addEventListener("click", manualBrush);
       els.finishBtn.addEventListener("click", finishSession);
@@ -715,13 +750,13 @@
       els.freeModeBtn.addEventListener("click", () => { state.freeMode = true; els.freeModeBtn.classList.add("is-active"); els.guidedModeBtn.classList.remove("is-active"); updateUi(); });
       window.addEventListener("resize", resizeCanvas);
       els.coachCanvas.addEventListener("pointermove", event => {
-        if (state.stream) return;
+        state.inputMode = "mouse";
         const rect = els.coachCanvas.getBoundingClientRect();
         state.handPoint = { x: (event.clientX - rect.left) / rect.width * els.coachCanvas.width, y: (event.clientY - rect.top) / rect.height * els.coachCanvas.height };
         state.motionHistory.push({ x: state.handPoint.x, y: state.handPoint.y, t: performance.now() });
         state.motionHistory = state.motionHistory.filter(p => performance.now() - p.t < 1400);
         if (state.running) updateRecognitionProgress(0.08);
-        draw(); updateUi();
+        draw(); updateUi(); ensureLoop();
       });
     }
     function init() {
