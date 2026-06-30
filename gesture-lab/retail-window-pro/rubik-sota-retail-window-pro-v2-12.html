@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota Gesture Lab 14 - Retail Window Pro v2.12. Escaparate avanzado basado en Interactive Retail Window v2.8 con carrito, wishlist, codigo/QR, resumen comercial, modo kiosk y continuidad movil." />
+  <title>Rubik Sota Gesture Lab 14 - Retail Window Pro v2.12</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030303;
+      --fg: #ffffff;
+      --muted: rgba(255,255,255,0.68);
+      --muted-2: rgba(255,255,255,0.44);
+      --line: rgba(255,255,255,0.14);
+      --line-strong: rgba(255,255,255,0.32);
+      --panel: rgba(255,255,255,0.06);
+      --accent: #00ffcc;
+      --acid: #d8ff3e;
+      --pink: #ff3366;
+      --gold: #e8d8a8;
+      --shadow: 0 30px 90px rgba(0,0,0,0.58);
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--fg);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(0,255,204,0.16), transparent 32%),
+        radial-gradient(circle at 84% 9%, rgba(216,255,62,0.10), transparent 28%),
+        radial-gradient(circle at 78% 86%, rgba(255,51,102,0.12), transparent 32%),
+        #030303;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: radial-gradient(circle at 50% 30%, black, transparent 76%);
+      opacity: 0.4;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { position: relative; z-index: 1; width: min(1480px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 28px; display: grid; gap: 14px; }
+    .topbar, .hero, .panel, .stage-shell, .drawer, .modal-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.026));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .topbar { border-radius: var(--radius-xl); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-mark { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; border: 1px solid var(--line-strong); background: linear-gradient(135deg, rgba(0,255,204,0.24), rgba(216,255,62,0.14)); font-weight: 900; letter-spacing: -0.08em; }
+    .brand-name { display: block; font-weight: 900; letter-spacing: -0.045em; }
+    .brand-sub { display: block; margin-top: 2px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.72rem; font-weight: 900; }
+    .top-actions, .action-row, .share-row, .chip-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.06);
+      color: var(--fg);
+      padding: 10px 13px;
+      font-size: 0.83rem;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, opacity 0.16s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255,255,255,0.12); }
+    .btn-primary { background: var(--fg); color: #050505; border-color: var(--fg); }
+    .btn-accent { color: #00231d; background: var(--accent); border-color: var(--accent); }
+    .btn-acid { color: #1d2100; background: var(--acid); border-color: var(--acid); }
+    .btn-pink { color: #2b0011; background: var(--pink); border-color: var(--pink); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .hero { border-radius: var(--radius-xl); padding: clamp(18px, 3vw, 30px); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr); gap: clamp(16px, 3vw, 28px); align-items: stretch; overflow: hidden; }
+    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.74rem; font-weight: 900; }
+    h1 { margin: 10px 0 12px; font-size: clamp(2.25rem, 5.8vw, 5.2rem); line-height: 0.92; letter-spacing: -0.07em; max-width: 10ch; }
+    .serif { font-family: "Playfair Display", Georgia, serif; font-weight: 400; font-style: italic; letter-spacing: -0.045em; }
+    .hero p, .panel p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .hero-card { border: 1px solid var(--line); border-radius: var(--radius-lg); min-height: 270px; background: radial-gradient(circle at 34% 26%, rgba(0,255,204,0.2), transparent 44%), linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); padding: 18px; display: grid; align-content: end; position: relative; overflow: hidden; }
+    .hero-card::before { content: ""; position: absolute; inset: 34px 22% 52px; border: 1px solid rgba(255,255,255,0.22); border-radius: 18px; background: linear-gradient(135deg, rgba(0,255,204,0.16), rgba(216,255,62,0.08)); }
+    .hero-card::after { content: ""; position: absolute; width: 240px; height: 74px; right: 42px; top: 56px; border-radius: 18px; background: linear-gradient(90deg, var(--accent), var(--acid)); box-shadow: 0 20px 60px rgba(0,0,0,0.42); transform: rotate(-4deg); }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+    .metric { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px; background: rgba(255,255,255,0.045); }
+    .metric strong { display: block; font-size: 1.18rem; }
+    .metric span { display: block; color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
+    .workspace { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr) minmax(320px, 390px); gap: 14px; align-items: start; }
+    .panel { border-radius: var(--radius-xl); padding: 14px; display: grid; gap: 12px; min-width: 0; }
+    .panel h2 { margin: 0; font-size: 1.05rem; letter-spacing: -0.025em; }
+    .label { display: block; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.68rem; font-weight: 900; }
+    .product-grid, .selection-list, .scene-list { display: grid; gap: 8px; }
+    .product-card, .selection-card, .scene-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.045);
+      color: var(--fg);
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+      text-align: left;
+    }
+    .product-card.is-active, .scene-card.is-active { border-color: var(--accent); background: rgba(0,255,204,0.12); }
+    .product-card strong, .selection-card strong, .scene-card strong { font-weight: 900; }
+    .product-card small, .selection-card small, .scene-card small { color: var(--muted); line-height: 1.35; }
+    .product-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .mini-btn { border: 1px solid var(--line); border-radius: var(--radius-pill); background: rgba(255,255,255,0.06); color: var(--fg); padding: 8px 10px; font-size: 0.72rem; font-weight: 900; }
+    .mini-btn.is-on { border-color: var(--acid); color: #f2ffad; background: rgba(216,255,62,0.12); }
+    .stage-shell { border-radius: var(--radius-xl); overflow: hidden; min-height: 760px; display: grid; grid-template-rows: auto minmax(520px, 1fr) auto; }
+    .stage-head, .stage-foot { padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+    .stage-foot { border-top: 1px solid var(--line); border-bottom: 0; }
+    .canvas-wrap { position: relative; min-height: 560px; background: #050505; overflow: hidden; display: grid; place-items: center; }
+    #stageCanvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: pointer; }
+    .attract-strip { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; pointer-events: none; }
+    .strip-pill, .hud-pill { border: 1px solid rgba(255,255,255,0.18); background: rgba(0,0,0,0.56); color: rgba(255,255,255,0.86); border-radius: var(--radius-pill); padding: 7px 10px; font-size: 0.75rem; font-weight: 850; backdrop-filter: blur(12px); }
+    .hud { position: absolute; left: 12px; bottom: 12px; display: grid; gap: 7px; pointer-events: none; }
+    .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .summary-card { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px; background: rgba(255,255,255,0.045); min-height: 70px; }
+    .summary-card strong { display: block; font-size: 1.12rem; }
+    .summary-card span { color: var(--muted); font-size: 0.75rem; line-height: 1.35; }
+    .code-box { border: 1px dashed rgba(0,255,204,0.45); border-radius: var(--radius-md); padding: 11px; text-align: center; font-family: "Playfair Display", Georgia, serif; color: var(--accent); font-size: 1.35rem; letter-spacing: 0.08em; user-select: all; background: rgba(0,255,204,0.05); }
+    .qr-demo { width: min(180px, 100%); aspect-ratio: 1; margin: 0 auto; display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; padding: 12px; border-radius: 14px; background: #fff; }
+    .qr-demo span { background: #fff; border-radius: 2px; }
+    .qr-demo span.on { background: #001f1a; }
+    .field { display: grid; gap: 5px; }
+    .field span { color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.66rem; font-weight: 900; }
+    input, textarea, select { width: 100%; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(0,0,0,0.34); color: var(--fg); padding: 10px; outline: none; }
+    textarea { min-height: 70px; resize: vertical; }
+    .modal { position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,0.84); backdrop-filter: blur(10px); }
+    .modal.is-open { display: flex; }
+    .modal-card { border-radius: var(--radius-xl); width: min(680px, 100%); padding: 18px; display: grid; gap: 14px; }
+    .toast { position: fixed; right: 16px; bottom: 16px; z-index: 12000; max-width: 360px; border: 1px solid rgba(0,255,204,0.36); background: rgba(0,0,0,0.82); border-radius: var(--radius-md); padding: 12px 14px; opacity: 0; transform: translateY(18px); transition: 0.18s ease; pointer-events: none; box-shadow: var(--shadow); }
+    .toast.is-visible { opacity: 1; transform: translateY(0); }
+    .stage-shell.is-kiosk { position: fixed; inset: 0; z-index: 9000; border-radius: 0; grid-template-rows: auto 1fr auto; }
+    .stage-shell.is-kiosk .canvas-wrap { min-height: calc(100vh - 132px); }
+    @media (max-width: 1160px) { .workspace, .hero { grid-template-columns: 1fr; } .stage-shell { min-height: 680px; } }
+    @media (max-width: 680px) { .shell { width: min(100% - 18px, 1480px); } .metrics, .summary-grid { grid-template-columns: 1fr 1fr; } .btn { width: 100%; } .top-actions, .action-row, .share-row { width: 100%; } .canvas-wrap { min-height: 520px; } }
+    @media (max-width: 440px) { .metrics, .summary-grid, .product-actions { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="../index.html" aria-label="Volver al hub Gesture Lab">
+        <span class="brand-mark">RW</span>
+        <span><span class="brand-name">Rubik Sota Gesture Lab</span><span class="brand-sub">14 - Retail Window Pro - v2.12</span></span>
+      </a>
+      <div class="top-actions">
+        <button class="btn btn-accent" id="kioskBtn" type="button">Modo kiosk</button>
+        <button class="btn" id="gestureQaBtn" type="button">Simular gesto</button>
+        <button class="btn btn-primary" id="mobileBtn" type="button">Continuar móvil</button>
+        <a class="btn" href="../index.html">Hub</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Basado en módulo 09 · Attract loop · Kiosk · Conversión móvil</div>
+        <h1>Retail Window <span class="serif">Pro.</span></h1>
+        <p>Escaparate avanzado con carrito, wishlist, código/QR y resumen comercial. Parte del Interactive Retail Window v2.8 y añade una capa de conversión para retail, franquicias, ferias y mupis.</p>
+        <div class="action-row" style="margin-top:14px;">
+          <button class="btn btn-primary" id="addActiveBtn" type="button">Añadir producto</button>
+          <button class="btn btn-acid" id="wishActiveBtn" type="button">Guardar wishlist</button>
+          <button class="btn" id="summaryBtn" type="button">Resumen comercial</button>
+        </div>
+        <div class="metrics">
+          <div class="metric"><strong>Loop</strong><span>escaparate</span></div>
+          <div class="metric"><strong>Cart</strong><span>selección</span></div>
+          <div class="metric"><strong>QR</strong><span>continuidad</span></div>
+          <div class="metric"><strong>Kiosk</strong><span>auto reset</span></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div style="position:relative; z-index:1;">
+          <div class="eyebrow">Diferencia Pro</div>
+          <p style="color:var(--fg); font-weight:800;">El cliente no sólo mira: selecciona, guarda, escanea y continúa en móvil con un código comercial.</p>
+        </div>
+      </div>
+    </section>
+
+    <main class="workspace">
+      <aside class="panel">
+        <div>
+          <span class="label">Productos escaparate</span>
+          <h2>Selecciona y convierte</h2>
+          <p>Producto destacado, promoción y acciones comerciales sobre el escaparate.</p>
+        </div>
+        <div class="product-grid" id="productGrid"></div>
+        <div>
+          <span class="label">Escenas heredadas del 09</span>
+          <div class="scene-list" id="sceneList"></div>
+        </div>
+      </aside>
+
+      <section class="stage-shell" id="stageShell" aria-label="Escaparate Retail Window Pro">
+        <div class="stage-head">
+          <div>
+            <span class="label" id="stageKicker">Interactive Retail Window Pro</span>
+            <h2 id="sceneTitle" style="margin:2px 0 0;">Attract loop</h2>
+          </div>
+          <div class="action-row">
+            <button class="btn" id="prevSceneBtn" type="button">Escena anterior</button>
+            <button class="btn btn-accent" id="nextSceneBtn" type="button">Siguiente escena</button>
+            <button class="btn btn-pink" id="resetKioskBtn" type="button">Reset kiosk</button>
+          </div>
+        </div>
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="stageCanvas" width="1280" height="900"></canvas>
+          <div class="attract-strip">
+            <span class="strip-pill" id="presencePill">Attract loop activo</span>
+            <span class="strip-pill" id="mobilePill">Código: RW-0000</span>
+          </div>
+          <div class="hud">
+            <span class="hud-pill" id="productHud">Producto: -</span>
+            <span class="hud-pill" id="cartHud">Carrito: 0</span>
+            <span class="hud-pill" id="wishHud">Wishlist: 0</span>
+          </div>
+        </div>
+        <div class="stage-foot">
+          <div class="share-row">
+            <button class="btn btn-accent" id="codeBtn" type="button">Abrir QR/código</button>
+            <button class="btn" id="downloadSummaryBtn" type="button">Descargar resumen PNG</button>
+            <button class="btn" id="copyCodeBtn" type="button">Copiar código</button>
+          </div>
+          <div class="share-row">
+            <button class="btn btn-acid" id="whatsappBtn" type="button">WhatsApp</button>
+            <button class="btn" id="emailBtn" type="button">Email</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div>
+          <span class="label">Resumen comercial</span>
+          <h2>Continuidad móvil</h2>
+          <p>Selección y wishlist se guardan localmente. El código permite continuar la demo en móvil o en mostrador.</p>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-card"><strong id="totalText">0 EUR</strong><span>Total selección</span></div>
+          <div class="summary-card"><strong id="itemsText">0</strong><span>Productos en carrito</span></div>
+          <div class="summary-card"><strong id="wishText">0</strong><span>Wishlist</span></div>
+          <div class="summary-card"><strong id="modeText">Kiosk off</strong><span>Modo pantalla</span></div>
+        </div>
+        <div class="code-box" id="codeBox">RW-0000</div>
+        <div class="qr-demo" id="qrDemo"></div>
+        <div>
+          <span class="label">Carrito</span>
+          <div class="selection-list" id="cartList"></div>
+        </div>
+        <div>
+          <span class="label">Wishlist</span>
+          <div class="selection-list" id="wishList"></div>
+        </div>
+        <div class="field">
+          <span>CTA comercial</span>
+          <textarea id="ctaText">Escanea el código y continúa la selección en tu móvil. Oferta válida en tienda, feria o franquicia.</textarea>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="modal" id="codeModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div>
+        <span class="label">Continuar en móvil</span>
+        <h2 id="modalTitle" style="margin:4px 0 0;">Código / QR comercial</h2>
+      </div>
+      <div class="code-box" id="modalCodeBox">RW-0000</div>
+      <div class="qr-demo" id="modalQrDemo"></div>
+      <p id="modalSummary" style="color:var(--muted); line-height:1.5; margin:0;"></p>
+      <div class="share-row">
+        <button class="btn btn-accent" id="modalCopyBtn" type="button">Copiar código</button>
+        <button class="btn" id="modalCloseBtn" type="button">Cerrar</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = "rubik-sota-retail-window-pro-v2-12";
+    const PRODUCTS = [
+      { id: "p01", name: "Bolso Sienna", category: "Accesorios", price: 129, promo: "-20%", claim: "Edición otoño", benefit: "Piel italiana certificada", stock: 12, color: "#d8ff3e", sku: "RS-AC-001" },
+      { id: "p02", name: "Abrigo Lana Premium", category: "Moda", price: 289, promo: "-15%", claim: "Lana europea", benefit: "Corte atemporal", stock: 7, color: "#a8c4ff", sku: "RS-MO-014" },
+      { id: "p03", name: "Botín Sintonía", category: "Calzado", price: 159, promo: "2x1 piel", claim: "Suela técnica", benefit: "Cómodo de oficina a calle", stock: 9, color: "#00ffcc", sku: "RS-CZ-021" },
+      { id: "p04", name: "Bufanda Stamp", category: "Accesorios", price: 59, promo: "Regalo pack", claim: "Estampado exclusivo", benefit: "Cálida y ligera", stock: 22, color: "#ffb347", sku: "RS-AC-007" },
+      { id: "p05", name: "Vela Aroma Casa", category: "Hogar", price: 39, promo: "-10%", claim: "Aroma firmado", benefit: "60 horas de luz", stock: 30, color: "#ff9db5", sku: "RS-HG-003" },
+      { id: "p06", name: "Cinturón Línea", category: "Complementos", price: 79, promo: "Edición local", claim: "Hebilla artesanal", benefit: "Cierre patentado", stock: 14, color: "#e8d8a8", sku: "RS-CP-009" }
+    ];
+    const SCENES = [
+      { id: "bienvenida", title: "Bienvenida", claim: "La calle entra en tienda.", desc: "Attract loop para atraer al transeúnte y despertar el escaparate.", type: "attract", duration: 6, palette: ["#071817","#0e3a32","#00ffcc"] },
+      { id: "producto", title: "Producto estrella", claim: "Toca, guarda o escanea.", desc: "Producto destacado con promo y beneficio comercial claro.", type: "product", duration: 7, palette: ["#180716","#3a1430","#d8ff3e"] },
+      { id: "promo", title: "Promoción activa", claim: "Oferta disponible ahora.", desc: "Escaparate preparado para campaña, feria o franquicia.", type: "promo", duration: 6, palette: ["#190606","#3a1414","#ff3366"] },
+      { id: "story", title: "Historia de marca", claim: "Una razón para entrar.", desc: "Storytelling visual para conectar marca, producto y tienda.", type: "story", duration: 8, palette: ["#070818","#161d3a","#a8c4ff"] },
+      { id: "mobile", title: "Continuar en móvil", claim: "Escanea y sigue.", desc: "Código/QR con carrito, wishlist y CTA comercial.", type: "mobile", duration: 7, palette: ["#071619","#143a3a","#00ffcc"] }
+    ];
+    const els = {};
+    ["kioskBtn","gestureQaBtn","mobileBtn","addActiveBtn","wishActiveBtn","summaryBtn","productGrid","sceneList","stageShell","stageKicker","sceneTitle","prevSceneBtn","nextSceneBtn","resetKioskBtn","stageCanvas","canvasWrap","presencePill","mobilePill","productHud","cartHud","wishHud","codeBtn","downloadSummaryBtn","copyCodeBtn","whatsappBtn","emailBtn","totalText","itemsText","wishText","modeText","codeBox","qrDemo","cartList","wishList","ctaText","codeModal","modalCodeBox","modalQrDemo","modalSummary","modalCopyBtn","modalCloseBtn","toast"].forEach(id => els[id] = document.getElementById(id));
+    const ctx = els.stageCanvas.getContext("2d");
+    const state = {
+      sceneIndex: 0,
+      productIndex: 0,
+      loopActive: true,
+      sceneStartedAt: performance.now(),
+      kiosk: false,
+      cart: {},
+      wishlist: {},
+      code: "",
+      lastInteraction: performance.now()
+    };
+    function money(value) { return Math.round(value) + " EUR"; }
+    function currentProduct() { return PRODUCTS[state.productIndex] || PRODUCTS[0]; }
+    function currentScene() { return SCENES[state.sceneIndex] || SCENES[0]; }
+    function hexToRgba(hex, a) {
+      const clean = String(hex || "#00ffcc").replace("#", "");
+      const n = parseInt(clean.length === 3 ? clean.split("").map(c => c + c).join("") : clean, 16);
+      return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
+    }
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("is-visible");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => els.toast.classList.remove("is-visible"), 2400);
+    }
+    function touchInteraction() { state.lastInteraction = performance.now(); }
+    function generateCode() {
+      const payload = Object.keys(state.cart).join("") + Object.keys(state.wishlist).join("") + Date.now().toString(36).slice(-4);
+      let hash = 0;
+      for (let i = 0; i < payload.length; i++) hash = ((hash << 5) - hash + payload.charCodeAt(i)) | 0;
+      state.code = "RW-" + Math.abs(hash).toString(36).toUpperCase().slice(0, 4).padStart(4, "0");
+      return state.code;
+    }
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ cart: state.cart, wishlist: state.wishlist, code: state.code })); } catch {}
+    }
+    function loadState() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        state.cart = data.cart || {};
+        state.wishlist = data.wishlist || {};
+        state.code = data.code || "";
+      } catch {}
+      if (!state.code) generateCode();
+    }
+    function cartItems() { return Object.entries(state.cart).map(([id, qty]) => ({ product: PRODUCTS.find(p => p.id === id), qty })).filter(x => x.product); }
+    function wishItems() { return Object.keys(state.wishlist).map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean); }
+    function cartTotal() { return cartItems().reduce((sum, item) => sum + item.product.price * item.qty, 0); }
+    function renderProducts() {
+      els.productGrid.innerHTML = "";
+      PRODUCTS.forEach((p, index) => {
+        const card = document.createElement("div");
+        card.className = "product-card" + (index === state.productIndex ? " is-active" : "");
+        card.innerHTML = '<strong>' + p.name + '</strong><small>' + p.category + ' · ' + p.claim + '</small><div><b>' + money(p.price) + '</b> <small style="color:var(--acid);font-weight:900;">' + p.promo + '</small></div><div class="product-actions"><button class="mini-btn" data-action="cart" data-id="' + p.id + '">Añadir</button><button class="mini-btn ' + (state.wishlist[p.id] ? 'is-on' : '') + '" data-action="wish" data-id="' + p.id + '">Wishlist</button></div>';
+        card.addEventListener("click", e => {
+          if (e.target.closest("button")) return;
+          state.productIndex = index;
+          state.sceneIndex = Math.max(state.sceneIndex, 1);
+          touchInteraction(); renderAll(); draw();
+        });
+        els.productGrid.appendChild(card);
+      });
+      els.productGrid.querySelectorAll("button").forEach(btn => btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        if (btn.dataset.action === "cart") addToCart(id);
+        else toggleWish(id);
+      }));
+    }
+    function renderScenes() {
+      els.sceneList.innerHTML = "";
+      SCENES.forEach((scene, index) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "scene-card" + (index === state.sceneIndex ? " is-active" : "");
+        card.innerHTML = '<strong>' + scene.title + '</strong><small>' + scene.desc + '</small>';
+        card.addEventListener("click", () => { state.sceneIndex = index; state.sceneStartedAt = performance.now(); touchInteraction(); renderAll(); draw(); });
+        els.sceneList.appendChild(card);
+      });
+    }
+    function renderSelection() {
+      els.cartList.innerHTML = "";
+      const items = cartItems();
+      if (!items.length) els.cartList.innerHTML = '<div class="selection-card"><small>Sin productos todavía.</small></div>';
+      items.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "selection-card";
+        row.innerHTML = '<strong>' + item.product.name + '</strong><small>' + item.qty + ' uds · ' + money(item.product.price * item.qty) + '</small><div class="product-actions"><button class="mini-btn" data-dec="' + item.product.id + '">-1</button><button class="mini-btn" data-remove="' + item.product.id + '">Quitar</button></div>';
+        els.cartList.appendChild(row);
+      });
+      els.cartList.querySelectorAll("[data-dec]").forEach(btn => btn.addEventListener("click", () => decrementCart(btn.dataset.dec)));
+      els.cartList.querySelectorAll("[data-remove]").forEach(btn => btn.addEventListener("click", () => removeCart(btn.dataset.remove)));
+      els.wishList.innerHTML = "";
+      const wishes = wishItems();
+      if (!wishes.length) els.wishList.innerHTML = '<div class="selection-card"><small>Wishlist vacía.</small></div>';
+      wishes.forEach(p => {
+        const row = document.createElement("div");
+        row.className = "selection-card";
+        row.innerHTML = '<strong>' + p.name + '</strong><small>' + p.category + ' · ' + p.promo + '</small><button class="mini-btn is-on" data-wish-remove="' + p.id + '">Quitar wishlist</button>';
+        els.wishList.appendChild(row);
+      });
+      els.wishList.querySelectorAll("[data-wish-remove]").forEach(btn => btn.addEventListener("click", () => toggleWish(btn.dataset.wishRemove)));
+    }
+    function renderQr(target) {
+      target.innerHTML = "";
+      const seed = state.code + JSON.stringify(state.cart) + JSON.stringify(state.wishlist);
+      for (let i = 0; i < 81; i++) {
+        const sp = document.createElement("span");
+        const on = i < 9 || i % 8 === 0 || ((seed.charCodeAt(i % seed.length) + i * 7) % 4 === 0);
+        if (on) sp.className = "on";
+        target.appendChild(sp);
+      }
+    }
+    function renderSummary() {
+      els.totalText.textContent = money(cartTotal());
+      els.itemsText.textContent = String(cartItems().reduce((sum, item) => sum + item.qty, 0));
+      els.wishText.textContent = String(wishItems().length);
+      els.modeText.textContent = state.kiosk ? "Kiosk on" : "Kiosk off";
+      els.codeBox.textContent = state.code;
+      els.mobilePill.textContent = "Código: " + state.code;
+      els.cartHud.textContent = "Carrito: " + els.itemsText.textContent;
+      els.wishHud.textContent = "Wishlist: " + els.wishText.textContent;
+      els.productHud.textContent = "Producto: " + currentProduct().name;
+      els.presencePill.textContent = state.loopActive ? "Attract loop activo" : "Interacción activa";
+      renderQr(els.qrDemo);
+    }
+    function renderAll() {
+      const scene = currentScene();
+      els.sceneTitle.textContent = scene.title;
+      els.stageKicker.textContent = scene.type === "mobile" ? "Continuidad móvil" : "Escaparate pro / kiosk";
+      els.stageShell.classList.toggle("is-kiosk", state.kiosk);
+      els.kioskBtn.textContent = state.kiosk ? "Salir kiosk" : "Modo kiosk";
+      renderProducts();
+      renderScenes();
+      renderSelection();
+      renderSummary();
+      saveState();
+    }
+    function addToCart(id = currentProduct().id) {
+      state.cart[id] = (state.cart[id] || 0) + 1;
+      generateCode();
+      touchInteraction();
+      renderAll(); draw();
+      showToast("Producto añadido a selección.");
+    }
+    function decrementCart(id) {
+      if (!state.cart[id]) return;
+      state.cart[id] -= 1;
+      if (state.cart[id] <= 0) delete state.cart[id];
+      generateCode(); touchInteraction(); renderAll(); draw();
+    }
+    function removeCart(id) { delete state.cart[id]; generateCode(); touchInteraction(); renderAll(); draw(); }
+    function toggleWish(id = currentProduct().id) {
+      if (state.wishlist[id]) delete state.wishlist[id];
+      else state.wishlist[id] = true;
+      generateCode(); touchInteraction(); renderAll(); draw();
+      showToast(state.wishlist[id] ? "Guardado en wishlist." : "Eliminado de wishlist.");
+    }
+    function nextScene() { state.sceneIndex = (state.sceneIndex + 1) % SCENES.length; state.sceneStartedAt = performance.now(); touchInteraction(); renderAll(); draw(); }
+    function prevScene() { state.sceneIndex = (state.sceneIndex - 1 + SCENES.length) % SCENES.length; state.sceneStartedAt = performance.now(); touchInteraction(); renderAll(); draw(); }
+    function resetKiosk() {
+      state.sceneIndex = 0;
+      state.productIndex = 0;
+      state.loopActive = true;
+      state.sceneStartedAt = performance.now();
+      touchInteraction();
+      renderAll(); draw();
+      showToast("Kiosk reiniciado al attract loop.");
+    }
+    function toggleKiosk() { state.kiosk = !state.kiosk; touchInteraction(); renderAll(); resizeCanvas(); draw(); }
+    function simulateGesture() {
+      const actions = [
+        () => { state.loopActive = false; state.sceneIndex = 1; return "Mano abierta: escaparate despierto"; },
+        () => { nextScene(); return "Swipe: escena siguiente"; },
+        () => { toggleWish(); return "Pulgar arriba: wishlist"; },
+        () => { addToCart(); return "Dos dedos: añadido a selección"; },
+        () => { openCodeModal(); return "Pinza: QR/código abierto"; }
+      ];
+      const action = actions[Math.floor(Math.random() * actions.length)];
+      showToast(action());
+      renderAll(); draw();
+    }
+    function resizeCanvas() {
+      const rect = els.canvasWrap.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      els.stageCanvas.width = Math.max(900, Math.floor(rect.width * dpr));
+      els.stageCanvas.height = Math.max(650, Math.floor(rect.height * dpr));
+    }
+    function roundRect(x,y,w,h,r) {
+      r = Math.min(r, w/2, h/2);
+      ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+    }
+    function draw() {
+      const w = els.stageCanvas.width, h = els.stageCanvas.height;
+      const scene = currentScene(), product = currentProduct();
+      const pal = scene.palette;
+      const grad = ctx.createLinearGradient(0,0,w,h);
+      grad.addColorStop(0, pal[0]); grad.addColorStop(0.58, pal[1]); grad.addColorStop(1, "#050505");
+      ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+      const glow = ctx.createRadialGradient(w*0.68,h*0.32,20,w*0.68,h*0.32,w*0.48);
+      glow.addColorStop(0, hexToRgba(product.color,0.26)); glow.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle = glow; ctx.fillRect(0,0,w,h);
+      ctx.save();
+      ctx.translate(w*0.08,h*0.16);
+      ctx.fillStyle = "rgba(255,255,255,0.08)";
+      roundRect(0,0,w*0.38,h*0.58,36); ctx.fill();
+      ctx.strokeStyle = hexToRgba(product.color,0.72); ctx.lineWidth = Math.max(3,w*0.004); ctx.stroke();
+      ctx.fillStyle = hexToRgba(product.color,0.22);
+      roundRect(w*0.055,h*0.09,w*0.27,h*0.28,26); ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "900 " + Math.floor(w*0.03) + "px Inter, sans-serif";
+      ctx.fillText(product.name, w*0.04, h*0.44);
+      ctx.fillStyle = "rgba(255,255,255,0.74)";
+      ctx.font = "700 " + Math.floor(w*0.016) + "px Inter, sans-serif";
+      ctx.fillText(product.category + " · " + product.claim, w*0.04, h*0.49);
+      ctx.fillStyle = product.color;
+      ctx.font = "900 " + Math.floor(w*0.038) + "px Inter, sans-serif";
+      ctx.fillText(money(product.price), w*0.04, h*0.56);
+      ctx.fillStyle = "#fff";
+      ctx.font = "900 " + Math.floor(w*0.018) + "px Inter, sans-serif";
+      ctx.fillText(product.promo, w*0.25, h*0.56);
+      ctx.restore();
+      ctx.fillStyle = "#fff";
+      ctx.font = "900 " + Math.floor(w*0.055) + "px Inter, sans-serif";
+      wrapText(scene.claim, w*0.52, h*0.25, w*0.4, Math.floor(w*0.058), 2);
+      ctx.fillStyle = "rgba(255,255,255,0.76)";
+      ctx.font = "700 " + Math.floor(w*0.019) + "px Inter, sans-serif";
+      wrapText(scene.desc, w*0.525, h*0.43, w*0.38, Math.floor(w*0.028), 3);
+      ctx.fillStyle = "rgba(0,0,0,0.58)";
+      roundRect(w*0.52,h*0.68,w*0.4,h*0.14,30); ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "900 " + Math.floor(w*0.022) + "px Inter, sans-serif";
+      ctx.fillText("Carrito " + els.itemsText.textContent + " · Wishlist " + els.wishText.textContent, w*0.545, h*0.735);
+      ctx.fillStyle = product.color;
+      ctx.font = "900 " + Math.floor(w*0.024) + "px Inter, sans-serif";
+      ctx.fillText(state.code, w*0.545, h*0.78);
+      if (scene.type === "mobile") {
+        ctx.fillStyle = "#fff";
+        roundRect(w*0.79,h*0.62,w*0.08,w*0.08,10); ctx.fill();
+        ctx.fillStyle = "#001f1a";
+        for (let i=0;i<7;i++) for (let j=0;j<7;j++) if ((i*j + j + state.code.length) % 3 === 0) ctx.fillRect(w*0.798+i*w*0.009,h*0.628+j*w*0.009,w*0.006,w*0.006);
+      }
+    }
+    function wrapText(text, x, y, maxWidth, lineHeight, maxLines) {
+      const words = String(text || "").split(/\s+/);
+      let line = "", lines = 0;
+      for (let i=0;i<words.length;i++) {
+        const test = line ? line + " " + words[i] : words[i];
+        if (ctx.measureText(test).width > maxWidth && line) {
+          ctx.fillText(line, x, y); y += lineHeight; lines++; line = words[i];
+          if (lines >= maxLines) return;
+        } else line = test;
+      }
+      if (line && lines < maxLines) ctx.fillText(line, x, y);
+    }
+    function loop() {
+      if (state.loopActive && performance.now() - state.sceneStartedAt > currentScene().duration * 1000) {
+        state.sceneIndex = (state.sceneIndex + 1) % SCENES.length;
+        state.sceneStartedAt = performance.now();
+        if (currentScene().type === "product" || currentScene().type === "promo") state.productIndex = (state.productIndex + 1) % PRODUCTS.length;
+        renderAll();
+      }
+      if (state.kiosk && performance.now() - state.lastInteraction > 45000) resetKiosk();
+      draw();
+      requestAnimationFrame(loop);
+    }
+    function openCodeModal() {
+      els.modalCodeBox.textContent = state.code;
+      els.modalSummary.textContent = "Selección: " + els.itemsText.textContent + " productos · Total " + els.totalText.textContent + " · Wishlist " + els.wishText.textContent + ". " + (els.ctaText.value || "");
+      renderQr(els.modalQrDemo);
+      els.codeModal.classList.add("is-open");
+      touchInteraction();
+    }
+    async function copyCode() {
+      try { await navigator.clipboard.writeText(state.code); showToast("Código copiado: " + state.code); }
+      catch { showToast("No se pudo copiar. Código: " + state.code); }
+    }
+    function shareText() {
+      return "Retail Window Pro v2.12 · Código " + state.code + " · Carrito " + els.itemsText.textContent + " · Total " + els.totalText.textContent + " · " + (els.ctaText.value || "");
+    }
+    function shareWhatsApp() { window.open("https://wa.me/?text=" + encodeURIComponent(shareText() + " " + location.href), "_blank", "noopener"); }
+    function shareEmail() { location.href = "mailto:?subject=" + encodeURIComponent("Retail Window Pro") + "&body=" + encodeURIComponent(shareText() + "\n" + location.href); }
+    function downloadSummary() {
+      const c = document.createElement("canvas");
+      c.width = 1400; c.height = 900;
+      const g = c.getContext("2d");
+      const grad = g.createLinearGradient(0,0,c.width,c.height);
+      grad.addColorStop(0,"#030303"); grad.addColorStop(1,"#123a34");
+      g.fillStyle = grad; g.fillRect(0,0,c.width,c.height);
+      g.fillStyle = "#00ffcc"; g.font = "900 52px Inter, sans-serif"; g.fillText("Retail Window Pro v2.12", 80, 110);
+      g.fillStyle = "#fff"; g.font = "900 86px Inter, sans-serif"; g.fillText(state.code, 80, 220);
+      g.font = "900 50px Inter, sans-serif"; g.fillText("Total " + els.totalText.textContent, 80, 320);
+      g.fillStyle = "rgba(255,255,255,0.74)"; g.font = "700 28px Inter, sans-serif";
+      g.fillText("Carrito: " + els.itemsText.textContent + " · Wishlist: " + els.wishText.textContent, 80, 375);
+      let y = 460;
+      cartItems().forEach(item => { g.fillStyle = "#fff"; g.fillText(item.qty + " x " + item.product.name + " · " + money(item.product.price * item.qty), 80, y); y += 48; });
+      if (!cartItems().length) g.fillText("Sin productos seleccionados.", 80, y);
+      const a = document.createElement("a");
+      a.href = c.toDataURL("image/png");
+      a.download = "rubik-sota-retail-window-pro-v2-12-summary.png";
+      a.click();
+      showToast("Resumen PNG generado.");
+    }
+    function initEvents() {
+      els.addActiveBtn.addEventListener("click", () => addToCart());
+      els.wishActiveBtn.addEventListener("click", () => toggleWish());
+      els.summaryBtn.addEventListener("click", openCodeModal);
+      els.mobileBtn.addEventListener("click", openCodeModal);
+      els.codeBtn.addEventListener("click", openCodeModal);
+      els.copyCodeBtn.addEventListener("click", copyCode);
+      els.modalCopyBtn.addEventListener("click", copyCode);
+      els.modalCloseBtn.addEventListener("click", () => els.codeModal.classList.remove("is-open"));
+      els.downloadSummaryBtn.addEventListener("click", downloadSummary);
+      els.whatsappBtn.addEventListener("click", shareWhatsApp);
+      els.emailBtn.addEventListener("click", shareEmail);
+      els.nextSceneBtn.addEventListener("click", nextScene);
+      els.prevSceneBtn.addEventListener("click", prevScene);
+      els.resetKioskBtn.addEventListener("click", resetKiosk);
+      els.kioskBtn.addEventListener("click", toggleKiosk);
+      els.gestureQaBtn.addEventListener("click", simulateGesture);
+      els.stageCanvas.addEventListener("click", () => { state.loopActive = false; addToCart(); });
+      els.ctaText.addEventListener("input", () => { touchInteraction(); saveState(); });
+      window.addEventListener("resize", () => { resizeCanvas(); draw(); });
+      window.addEventListener("keydown", e => {
+        if (e.key === "Escape") { els.codeModal.classList.remove("is-open"); if (state.kiosk) toggleKiosk(); }
+        if (e.key === "ArrowRight") nextScene();
+        if (e.key === "ArrowLeft") prevScene();
+      });
+    }
+    function init() {
+      loadState();
+      resizeCanvas();
+      initEvents();
+      renderAll();
+      draw();
+      requestAnimationFrame(loop);
+      showToast("Retail Window Pro v2.12 listo. Basado en Interactive Retail Window v2.8.");
+    }
+    init();
+  </script>
+</body>
+</html>
