@@ -115,9 +115,9 @@ La grabación WebM puede no funcionar en algunos navegadores móviles, especialm
 
 ---
 
-## Hub v2.0.6
+## Hub v2.0.7
 
-El Hub v2.0.6 organiza Gesture Lab como plataforma multisectorial con 34 aplicaciones/modulos.
+El Hub v2.0.7 organiza Gesture Lab como plataforma multisectorial con 35 aplicaciones/modulos, mas la linea Camera FX Cum Laude conectada como laboratorio independiente.
 
 **Archivo:**
 
@@ -137,7 +137,7 @@ El Hub v2.0.6 organiza Gesture Lab como plataforma multisectorial con 34 aplicac
 
 **Meta:**
 
-- `v2.0.6 - 14 modulos activos - 20 en planificacion`
+- `v2.0.7 - 14 modulos activos - Camera FX Cum Laude conectado - modulo 35 definido`
 
 ### Nota Before / After Reforma v2.1.2
 
@@ -333,8 +333,9 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 32 | Tennis Gesture Court | Próximamente - v2.30 |
 | 33 | Nautical Visualizer | Próximamente - v2.31 |
 | 34 | Golf Course Visualizer | Próximamente - v2.32 |
+| 35 | Magic Card Mentalism Retail PRO | Próximamente - v2.33 |
 
-### Notas de módulos nuevos (v2.0.6)
+### Notas de módulos nuevos (v2.0.7)
 
 - **05 — Real Estate Capture Tour**: el agente hace fotos del salón, cocina, baño, terraza o fachada desde la plataforma y genera una experiencia visual rápida. Acelera captaciones inmobiliarias y crea material comercial en minutos.
 - **06 — Golf Experience / Home Practice**: combina imagen del jugador y campo de golf. El usuario se hace una foto o graba postura de swing, elige hoyo/campo y ve trayectoria, dirección, zona de impacto y objetivo. Practicar en casa, clases, academias, membresías y resorts.
@@ -342,6 +343,8 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 - **12 — Selfie Style / Outfit Visualizer**: selfie convertida en base para estilos, outfits, accesorios o comparación outfit base vs completo. v2.10.1 añade MediaPipe Pose Auto Fit para hombros, torso y rostro, cámara reforzada, prendas SVG/canvas internas y fallback manual permanente. Personaliza moda, belleza, retail, peluquería, eventos y campañas.
 - **13 — Dental Kids**: coach educativo de cepillado real con cámara, MediaPipe Face/Hand Landmarker, seis zonas, avisos de cambio cada 20 segundos, reto de 2 minutos, fallback manual, recompensas, misiones 3 veces al día y racha local. No es diagnóstico clínico; es entrenamiento de hábito.
 - **14 — Retail Window Pro**: evolución directa de Interactive Retail Window v2.8. Añade carrito, wishlist, código/QR, resumen comercial, continuidad móvil y modo kiosk pro para retail, franquicias, ferias, campañas y mupis.
+- **Camera FX Cum Laude**: linea conectada desde Escaparates Pro y ya subida a `gesture-lab/camera-fx-cum-laude/`. Incluye Webcam Pixelation PRO, Motion Detection Camera PRO, Red Light Green Light Camera PRO, Glitch Camera PRO, Air Guitar Camera PRO, Air Guitar Camera PRO Festival y Air Guitar Camera PRO V2. Cada modulo corre aislado por pagina para prueba movil HTTPS.
+- **35 — Magic Card Mentalism Retail PRO**: proxima implementacion recomendada. Adaptacion de `Card Mentalism Media PRO` de Escaparates Pro a Gesture Lab. Mantiene el truco matematico, permite cartas personalizadas por imagen/video sin repetir assets, respuesta Si/No por gesto o fallback tactil, revelacion final, QR/cupon/carrito y recuerdo descargable. Es candidato prioritario para escaparates, ferias, moda, retail y lead capture.
 - **15 — Food Assembly General**: platos, menús o productos montados por capas. Vende producto gastronómico de forma visual y apetecible.
 - **16 — Sushi Roll Interactive**: sushi que se enrolla, se corta o revela ingredientes (alga, arroz, pescado, toppings y salsa). Restaurantes japoneses, delivery y campañas virales.
 - **17 — Burger Layers Interactive**: hamburguesa construida por capas (pan, carne, queso, bacon, salsa, lechuga, tomate y packaging). Ingredientes premium y clips apetecibles para redes.
@@ -353,25 +356,26 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 ## Prioridad estratégica
 
-El siguiente módulo recomendado es:
+El siguiente módulo recomendado para explotar conversion y efecto wow es:
 
-**v2.13 - Food Assembly General**
+**v2.33 - Magic Card Mentalism Retail PRO**
 
 **Motivo:**
 
-Tras activar Retail Window Pro, el siguiente paso recomendado es Food Assembly General: platos, menús o productos montados visualmente por capas.
+Tras conectar Camera FX Cum Laude y tener Retail Window Pro, Fashion Lookbook, Selfie Style y el catalogo gestual, el salto mas rentable es convertir Card Mentalism Media PRO en un juego de escaparate con producto real, QR, cupon, carrito y continuidad movil.
 
 **Flujo previsto:**
 
-1. Elegir reto educativo.
-2. Guiar limpieza por zonas.
-3. Mostrar progreso visual.
-4. Recompensar constancia.
-5. Exportar resumen o pieza social.
+1. Mostrar 9/12/16 cartas con imagenes o videos de producto, look, promocion o contenido de marca.
+2. El usuario piensa una carta/media sin tocar la pantalla.
+3. El sistema pregunta por rondas si su carta aparece en cada grupo.
+4. El usuario responde Si/No con gesto claro o botones tactiles grandes.
+5. El sistema revela la carta, producto o look pensado.
+6. Se genera salida comercial: QR, cupon, carrito, WhatsApp o recuerdo descargable.
 
 **Frase clave:**
 
-> Del visualizador personal a la educacion visual gamificada.
+> Del escaparate pasivo al juego mentalista que convierte atencion en producto.
 
 ---
 
@@ -502,7 +506,7 @@ Cada módulo debe incluir, cuando aplique:
 
 **Actual:**
 
-- Hub v2.0.6 con 34 módulos documentados.
+- Hub v2.0.7 con 35 modulos documentados.
 - Capture Input System validado in-app (v2.1.2).
 - Bola de Imagen v1.3 publicada y funcional.
 - Before / After Reforma v2.1.2 publicada y funcional.
@@ -518,4 +522,5 @@ Cada módulo debe incluir, cuando aplique:
 - Selfie Style / Outfit Visualizer v2.10.1 publicada con Pose Auto Fit, cámara reforzada, prendas internas y fallback manual.
 - Dental Kids v2.11 publicado como coach educativo de cepillado real.
 - Retail Window Pro v2.12 publicado y funcional.
-- Siguiente fase: v2.13 - Food Assembly General.
+- Camera FX Cum Laude conectado como laboratorio independiente con 7 modulos webcam ya subidos.
+- Siguiente fase recomendada: v2.33 - Magic Card Mentalism Retail PRO.
