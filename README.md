@@ -38,6 +38,17 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - 11 - Dynamic Motion Banners - Disponible - v0.3.9 stable / v0.4 gesture experimental
 - 12 - Selfie Style / Outfit Visualizer - Disponible - v2.10.1
 
+**Linea conectada desde Escaparates Pro / Camera FX:**
+
+- Camera FX Cum Laude - Disponible como laboratorio independiente en `gesture-lab/camera-fx-cum-laude/`
+- Webcam Pixelation PRO
+- Motion Detection Camera PRO
+- Red Light Green Light Camera PRO
+- Glitch Camera PRO
+- Air Guitar Camera PRO
+- Air Guitar Camera PRO Festival
+- Air Guitar Camera PRO V2
+
 ### Dynamic Motion Banners v0.4 — Gesture Interactive Edition
 
 Dynamic Motion Banners existe como linea de trabajo dentro de Gesture Lab. La version v0.3.9 es la base estable de editor/exportacion; la version v0.4 gestual se mantiene separada para experimentar con Gesture Mode antes de publicarla como dependencia de otros modulos.
@@ -78,6 +89,14 @@ Dynamic Motion Banners existe como linea de trabajo dentro de Gesture Lab. La ve
 - `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-3.html`
 - `gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-4-gesture.html`
 - `gesture-lab/selfie-style-outfit-visualizer/rubik-sota-selfie-style-outfit-visualizer-v2-10-1.html`
+- `gesture-lab/camera-fx-cum-laude/index.html`
+- `gesture-lab/camera-fx-cum-laude/webcam-pixelation-pro/index.html`
+- `gesture-lab/camera-fx-cum-laude/motion-detection-camera-pro/index.html`
+- `gesture-lab/camera-fx-cum-laude/red-light-green-light-camera-pro/index.html`
+- `gesture-lab/camera-fx-cum-laude/glitch-camera-pro/index.html`
+- `gesture-lab/camera-fx-cum-laude/air-guitar-camera-pro/index.html`
+- `gesture-lab/camera-fx-cum-laude/air-guitar-camera-pro-festival/index.html`
+- `gesture-lab/camera-fx-cum-laude/air-guitar-camera-pro-v2/index.html`
 
 **Funciones actuales:**
 
