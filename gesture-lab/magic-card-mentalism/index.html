@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rubik Sota Gesture Lab 35 - Magic Card Mentalism Retail PRO. Juego matematico de mentalismo visual con cartas, imagenes, videos, logo de marca, respuesta por gesto o tactil y revelacion final." />
+  <title>Rubik Sota Gesture Lab 35 - Magic Card Mentalism Retail PRO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <a class="gesture-lab-home-link" href="../index.html" aria-label="Volver al hub Gesture Lab">&larr; Gesture Lab</a>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="../index.html" aria-label="Volver al hub Gesture Lab">
+        <span class="brand-mark">MC</span>
+        <span>
+          <span class="brand-name">Rubik Sota Gesture Lab</span>
+          <span class="brand-sub">35 - Magic Card Mentalism Retail PRO - v2.33</span>
+        </span>
+      </a>
+      <div class="top-actions">
+        <a class="btn" id="homeBtn" href="../index.html">Volver al Hub</a>
+        <button class="btn btn-accent" id="cameraBtn" type="button">Activar gestos</button>
+        <button class="btn" id="fullscreenBtn" type="button">Vista completa</button>
+        <button class="btn btn-primary" id="downloadBtn" type="button">Descargar recuerdo</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Mentalismo matematico - Retail - Ferias - Escaparates</div>
+        <h1>Magic Card <span class="serif">Mentalism.</span></h1>
+        <p>El usuario piensa una carta, imagen, producto o video. La herramienta pregunta por rondas: "Esta aqui?". Al final revela el elemento elegido sin repetir assets y con salida comercial para marca.</p>
+        <div class="badges">
+          <span class="badge badge-accent">Modulo 35</span>
+          <span class="badge">Imagen / video</span>
+          <span class="badge">Logo de marca</span>
+          <span class="badge">Gesto o tactil</span>
+          <span class="badge">Sin backend</span>
+        </div>
+      </div>
+      <div class="hero-card">
+        <strong>Regla critica</strong>
+        <span>El numero de medios personalizados debe coincidir con el numero de cartas. Si faltan, el sistema bloquea o usa placeholders visibles si lo activas.</span>
+      </div>
+    </section>
+
+    <main class="workspace">
+      <aside class="panel">
+        <section class="panel-section">
+          <span class="label">Personalizacion</span>
+          <h2>Medios del truco</h2>
+          <label class="field">
+            <span>Imagenes o videos de cartas</span>
+            <input id="cardFiles" type="file" accept="image/*,video/*" multiple />
+          </label>
+          <label class="field">
+            <span>Logo de marca</span>
+            <input id="logoFile" type="file" accept="image/*" />
+          </label>
+          <label class="field">
+            <span>Fondo opcional</span>
+            <input id="backgroundFile" type="file" accept="image/*,video/*" />
+          </label>
+          <div class="field">
+            <span>Cartas del truco</span>
+            <input id="cardCount" type="range" min="8" max="20" value="20" />
+            <output id="cardCountLabel">20 cartas</output>
+          </div>
+          <label class="check-row">
+            <input id="allowPlaceholders" type="checkbox" />
+            <span>Completar faltantes con placeholders visibles</span>
+          </label>
+          <div class="status-box" id="mediaStatus">Listo con cartas demo por defecto.</div>
+        </section>
+
+        <section class="panel-section">
+          <span class="label">Marca / campana</span>
+          <label class="field">
+            <span>Nombre de campana</span>
+            <input id="campaignName" type="text" value="Escaparate Mentalista" />
+          </label>
+          <label class="field">
+            <span>Claim final</span>
+            <input id="campaignClaim" type="text" value="Has desbloqueado tu seleccion secreta" />
+          </label>
+          <label class="field">
+            <span>CTA / recompensa</span>
+            <input id="campaignCta" type="text" value="Escanea y consigue tu ventaja exclusiva" />
+          </label>
+          <label class="field">
+            <span>Color de marca</span>
+            <input id="brandColor" type="color" value="#00ffcc" />
+          </label>
+        </section>
+      </aside>
+
+      <section class="stage-shell" id="stageShell">
+        <div class="stage-head">
+          <div>
+            <span class="label">Ronda</span>
+            <strong id="roundLabel">Elige una carta en tu mente</strong>
+          </div>
+          <div class="phase-pills">
+            <span class="pill" id="phasePill">Preparacion</span>
+            <span class="pill" id="gesturePill">Gestos off</span>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <video id="cameraVideo" playsinline muted></video>
+          <canvas id="stageCanvas" width="1280" height="820"></canvas>
+          <div class="gesture-zones" id="gestureZones" aria-hidden="true">
+            <div>Mano izquierda = NO</div>
+            <div>Mano derecha = SI</div>
+          </div>
+        </div>
+        <div class="answer-bar">
+          <button class="answer-btn no" id="noBtn" type="button">No, no esta aqui</button>
+          <button class="answer-btn start" id="startBtn" type="button">Empezar juego</button>
+          <button class="answer-btn yes" id="yesBtn" type="button">Si, esta aqui</button>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="panel-section">
+          <span class="label">Instrucciones</span>
+          <h2>Como juega el usuario</h2>
+          <ol class="steps">
+            <li>Piensa una carta o producto de la pantalla inicial.</li>
+            <li>En cada ronda responde si aparece en el grupo.</li>
+            <li>Usa botones grandes o gesto: izquierda NO, derecha SI.</li>
+            <li>El sistema revela exactamente el media pensado.</li>
+          </ol>
+        </section>
+        <section class="panel-section">
+          <span class="label">Resultado</span>
+          <div class="result-card" id="resultCard">
+            <strong>Aun sin revelar</strong>
+            <span>El recuerdo descargable se genera cuando termina el truco.</span>
+          </div>
+          <button class="btn btn-accent full" id="resetBtn" type="button">Reiniciar truco</button>
+        </section>
+        <section class="panel-section">
+          <span class="label">QA comercial</span>
+          <div class="qa-list">
+            <span id="qaDeck">Deck: demo valido</span>
+            <span id="qaNoRepeats">Assets: sin repeticion</span>
+            <span id="qaOutput">Salida: PNG recuerdo</span>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="./app.js"></script>
+</body>
+</html>

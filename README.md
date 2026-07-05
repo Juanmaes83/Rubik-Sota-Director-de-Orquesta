@@ -333,7 +333,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 32 | Tennis Gesture Court | Próximamente - v2.30 |
 | 33 | Nautical Visualizer | Próximamente - v2.31 |
 | 34 | Golf Course Visualizer | Próximamente - v2.32 |
-| 35 | Magic Card Mentalism Retail PRO | Próximamente - v2.33 |
+| 35 | Magic Card Mentalism Retail PRO | Publicada - v2.33 |
 
 ### Notas de módulos nuevos (v2.0.7)
 
@@ -344,7 +344,7 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 - **13 — Dental Kids**: coach educativo de cepillado real con cámara, MediaPipe Face/Hand Landmarker, seis zonas, avisos de cambio cada 20 segundos, reto de 2 minutos, fallback manual, recompensas, misiones 3 veces al día y racha local. No es diagnóstico clínico; es entrenamiento de hábito.
 - **14 — Retail Window Pro**: evolución directa de Interactive Retail Window v2.8. Añade carrito, wishlist, código/QR, resumen comercial, continuidad móvil y modo kiosk pro para retail, franquicias, ferias, campañas y mupis.
 - **Camera FX Cum Laude**: linea conectada desde Escaparates Pro y ya subida a `gesture-lab/camera-fx-cum-laude/`. Incluye Webcam Pixelation PRO, Motion Detection Camera PRO, Red Light Green Light Camera PRO, Glitch Camera PRO, Air Guitar Camera PRO, Air Guitar Camera PRO Festival y Air Guitar Camera PRO V2. Cada modulo corre aislado por pagina para prueba movil HTTPS.
-- **35 — Magic Card Mentalism Retail PRO**: proxima implementacion recomendada. Adaptacion de `Card Mentalism Media PRO` de Escaparates Pro a Gesture Lab. Mantiene el truco matematico, permite cartas personalizadas por imagen/video sin repetir assets, respuesta Si/No por gesto o fallback tactil, revelacion final, QR/cupon/carrito y recuerdo descargable. Es candidato prioritario para escaparates, ferias, moda, retail y lead capture.
+- **35 - Magic Card Mentalism Retail PRO**: publicada en `gesture-lab/magic-card-mentalism/`. Adaptacion de `Card Mentalism Media PRO` de Escaparates Pro a Gesture Lab. Mantiene el truco matematico por bits, permite cartas personalizadas por imagen/video sin repetir assets, exige que el numero de medios coincida con el numero de cartas o usa placeholders visibles si se autoriza, acepta logo y fondo, respuesta Si/No por gesto de movimiento izquierda/derecha o fallback tactil, revelacion final y recuerdo PNG descargable. Candidato prioritario para escaparates, ferias, moda, retail y lead capture.
 - **15 — Food Assembly General**: platos, menús o productos montados por capas. Vende producto gastronómico de forma visual y apetecible.
 - **16 — Sushi Roll Interactive**: sushi que se enrolla, se corta o revela ingredientes (alga, arroz, pescado, toppings y salsa). Restaurantes japoneses, delivery y campañas virales.
 - **17 — Burger Layers Interactive**: hamburguesa construida por capas (pan, carne, queso, bacon, salsa, lechuga, tomate y packaging). Ingredientes premium y clips apetecibles para redes.
@@ -356,13 +356,13 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 ## Prioridad estratégica
 
-El siguiente módulo recomendado para explotar conversion y efecto wow es:
+El modulo 35 ya esta publicado como primera version funcional para explotar conversion y efecto wow:
 
 **v2.33 - Magic Card Mentalism Retail PRO**
 
 **Motivo:**
 
-Tras conectar Camera FX Cum Laude y tener Retail Window Pro, Fashion Lookbook, Selfie Style y el catalogo gestual, el salto mas rentable es convertir Card Mentalism Media PRO en un juego de escaparate con producto real, QR, cupon, carrito y continuidad movil.
+Tras conectar Camera FX Cum Laude y tener Retail Window Pro, Fashion Lookbook, Selfie Style y el catalogo gestual, el salto mas rentable era convertir Card Mentalism Media PRO en un juego de escaparate con producto real. La v2.33 ya implementa la base jugable, personalizacion de medios/logo/fondo y recuerdo descargable. Quedan como evoluciones QR real, cupon, carrito y continuidad movil.
 
 **Flujo previsto:**
 
@@ -523,4 +523,4 @@ Cada módulo debe incluir, cuando aplique:
 - Dental Kids v2.11 publicado como coach educativo de cepillado real.
 - Retail Window Pro v2.12 publicado y funcional.
 - Camera FX Cum Laude conectado como laboratorio independiente con 7 modulos webcam ya subidos.
-- Siguiente fase recomendada: v2.33 - Magic Card Mentalism Retail PRO.
+- Magic Card Mentalism Retail PRO v2.33 publicado como primera version funcional en `gesture-lab/magic-card-mentalism/`.
