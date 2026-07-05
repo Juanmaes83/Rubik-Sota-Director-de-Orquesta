@@ -35,7 +35,7 @@
   const ctx = els.canvas.getContext('2d');
   const state = {
     phase: 'pick',
-    cardCount: 20,
+    cardCount: 16,
     currentBit: 0,
     answerBits: 0,
     maxBits: 0,
@@ -46,6 +46,7 @@
     background: null,
     cameraActive: false,
     lastGestureAt: 0,
+    phaseStartedAt: performance.now(),
     gestureCanvas: document.createElement('canvas'),
     lastFrame: null,
     reveal: null,
@@ -57,6 +58,22 @@
 
   function clamp(v, min, max) {
     return Math.max(min, Math.min(max, v));
+  }
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+  }
+
+  function easeInOutSine(t) {
+    return -(Math.cos(Math.PI * clamp(t, 0, 1)) - 1) / 2;
+  }
+
+  function phaseProgress(duration) {
+    return clamp((performance.now() - state.phaseStartedAt) / duration, 0, 1);
+  }
+
+  function markPhase() {
+    state.phaseStartedAt = performance.now();
   }
 
   function toast(message) {
@@ -197,6 +214,7 @@
     state.answerBits = 0;
     state.reveal = null;
     state.questionCards = [];
+    markPhase();
     buildDeck();
     updateUi();
     draw();
@@ -211,6 +229,7 @@
     state.currentBit = 0;
     state.answerBits = 0;
     state.questionCards = questionGroup();
+    markPhase();
     updateUi();
   }
 
@@ -222,6 +241,7 @@
       reveal();
     } else {
       state.questionCards = questionGroup();
+      markPhase();
       updateUi();
     }
   }
@@ -230,6 +250,7 @@
     state.phase = 'reveal';
     const index = clamp(state.answerBits - 1, 0, state.deck.length - 1);
     state.reveal = { index, card: state.deck[index] };
+    markPhase();
     els.resultCard.innerHTML = `<strong>${escapeHtml(state.reveal.card.asset.name)}</strong><span>Revelado como carta #${index + 1}. Resultado listo para recuerdo y accion comercial.</span>`;
     updateUi();
     toast('Revelacion completada.');
@@ -279,6 +300,28 @@
     }
   }
 
+  function coverDrawTo(targetCtx, image, x, y, w, h, fallbackLabel) {
+    if (!image) return;
+    const iw = image.videoWidth || image.naturalWidth || image.width || 1;
+    const ih = image.videoHeight || image.naturalHeight || image.height || 1;
+    const scale = Math.max(w / iw, h / ih);
+    const sw = w / scale;
+    const sh = h / scale;
+    const sx = (iw - sw) / 2;
+    const sy = (ih - sh) / 2;
+    try {
+      targetCtx.drawImage(image, sx, sy, sw, sh, x, y, w, h);
+    } catch (err) {
+      targetCtx.fillStyle = '#151515';
+      targetCtx.fillRect(x, y, w, h);
+      targetCtx.fillStyle = '#fff';
+      targetCtx.font = '900 54px Inter, Arial';
+      targetCtx.textAlign = 'center';
+      targetCtx.textBaseline = 'middle';
+      targetCtx.fillText(fallbackLabel || 'MEDIA', x + w / 2, y + h / 2);
+    }
+  }
+
   function roundedRect(x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
@@ -287,6 +330,109 @@
     ctx.arcTo(x, y + h, x, y, r);
     ctx.arcTo(x, y, x + w, y, r);
     ctx.closePath();
+  }
+
+  function hexToRgb(hex) {
+    const clean = String(hex || '#00ffcc').replace('#', '').trim();
+    const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean;
+    const value = parseInt(full, 16);
+    return {
+      r: (value >> 16) & 255,
+      g: (value >> 8) & 255,
+      b: value & 255
+    };
+  }
+
+  function rgba(hex, alpha) {
+    const rgb = hexToRgb(hex);
+    return `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+  }
+
+  function drawPremiumBack(x, y, w, h, label, accent) {
+    ctx.save();
+    roundedRect(x, y, w, h, Math.max(18, w * 0.12));
+    const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+    grad.addColorStop(0, '#0a1026');
+    grad.addColorStop(0.48, '#140a22');
+    grad.addColorStop(1, '#03040b');
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.72)';
+    ctx.lineWidth = Math.max(2, w * 0.018);
+    roundedRect(x + w * 0.07, y + h * 0.055, w * 0.86, h * 0.89, Math.max(14, w * 0.09));
+    ctx.stroke();
+    ctx.strokeStyle = rgba(accent, 0.86);
+    ctx.lineWidth = Math.max(2, w * 0.012);
+    roundedRect(x + w * 0.13, y + h * 0.11, w * 0.74, h * 0.78, Math.max(12, w * 0.075));
+    ctx.stroke();
+    ctx.globalAlpha = 0.92;
+    ctx.strokeStyle = 'rgba(232,216,168,0.78)';
+    ctx.lineWidth = Math.max(1, w * 0.008);
+    ctx.beginPath();
+    ctx.ellipse(x + w / 2, y + h / 2, w * 0.23, h * 0.32, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(x + w / 2, y + h / 2, w * 0.34, h * 0.18, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = `900 ${Math.max(20, w * 0.24)}px Inter, Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = rgba(accent, 0.75);
+    ctx.shadowBlur = 22;
+    ctx.fillText(label || 'Z', x + w / 2, y + h / 2);
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  function drawCardShell(x, y, w, h, accent, active) {
+    ctx.save();
+    ctx.shadowColor = active ? rgba(accent, 0.5) : 'rgba(0,0,0,0.58)';
+    ctx.shadowBlur = active ? 34 : 22;
+    ctx.shadowOffsetY = active ? 12 : 18;
+    roundedRect(x, y, w, h, Math.max(18, w * 0.12));
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = active ? rgba(accent, 0.86) : 'rgba(255,255,255,0.56)';
+    ctx.lineWidth = active ? 4 : 2;
+    roundedRect(x, y, w, h, Math.max(18, w * 0.12));
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(232,216,168,0.54)';
+    ctx.lineWidth = 1.5;
+    roundedRect(x + 8, y + 8, w - 16, h - 16, Math.max(14, w * 0.09));
+    ctx.stroke();
+  }
+
+  function drawRitualRings(cx, cy, radius, accent, intensity) {
+    const t = performance.now() * 0.001;
+    ctx.save();
+    ctx.translate(cx, cy);
+    for (let i = 0; i < 4; i++) {
+      const r = radius + i * 30 + Math.sin(t * 1.2 + i) * 8;
+      ctx.rotate(0.18 + i * 0.07);
+      ctx.strokeStyle = i % 2 ? 'rgba(232,216,168,0.55)' : rgba(accent, 0.55);
+      ctx.lineWidth = 2 + i * 0.7;
+      ctx.globalAlpha = intensity * (0.65 - i * 0.09);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 1.1, r * 0.64, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = intensity * 0.72;
+    ctx.strokeStyle = rgba(accent, 0.95);
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 16; i++) {
+      const a = (Math.PI * 2 * i) / 16 + t * 0.24;
+      const x1 = Math.cos(a) * (radius + 34);
+      const y1 = Math.sin(a) * (radius * 0.62 + 20);
+      const x2 = Math.cos(a) * (radius + 58);
+      const y2 = Math.sin(a) * (radius * 0.62 + 34);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 
   function drawFallback(x, y, w, h, bg, accent, label) {
@@ -301,33 +447,38 @@
     roundedRect(x + 10, y + 10, w - 20, h - 20, 14);
     ctx.stroke();
     ctx.fillStyle = '#fff';
-    ctx.font = `900 ${Math.max(18, w * 0.17)}px Inter, Arial`;
+    ctx.font = `900 ${Math.max(18, w * 0.22)}px Inter, Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, x + w / 2, y + h / 2);
   }
 
   function drawAsset(asset, x, y, w, h) {
+    const accent = els.brandColor.value;
+    drawCardShell(x, y, w, h, accent, state.phase === 'reveal');
     ctx.save();
-    roundedRect(x, y, w, h, 20);
+    roundedRect(x + 9, y + 9, w - 18, h - 18, Math.max(14, w * 0.09));
     ctx.clip();
     if (asset.type === 'image' || asset.type === 'video') {
-      coverDraw(asset.el, x, y, w, h);
+      coverDraw(asset.el, x + 9, y + 9, w - 18, h - 18);
     } else {
       const p = asset.palette || ['#111', '#fff'];
-      drawFallback(x, y, w, h, p[0], p[1], asset.placeholder ? 'FALTA' : String((parseInt(asset.id.split('-')[1], 10) || 0) + 1).padStart(2, '0'));
+      drawFallback(x + 9, y + 9, w - 18, h - 18, p[0], p[1], asset.placeholder ? 'FALTA' : String((parseInt(asset.id.split('-')[1], 10) || 0) + 1).padStart(2, '0'));
     }
     ctx.restore();
-    ctx.strokeStyle = asset.placeholder ? '#ffb000' : 'rgba(255,255,255,0.72)';
-    ctx.lineWidth = asset.placeholder ? 4 : 2;
-    roundedRect(x, y, w, h, 20);
-    ctx.stroke();
+    if (asset.placeholder) {
+      ctx.strokeStyle = '#ffb000';
+      ctx.lineWidth = 4;
+      roundedRect(x + 4, y + 4, w - 8, h - 8, Math.max(16, w * 0.1));
+      ctx.stroke();
+    }
   }
 
   function drawBackground() {
     const w = els.canvas.width;
     const h = els.canvas.height;
     const bg = state.background;
+    const accent = els.brandColor.value;
     ctx.fillStyle = '#050505';
     ctx.fillRect(0, 0, w, h);
     if (bg && bg.el) {
@@ -335,12 +486,23 @@
       ctx.fillStyle = 'rgba(0,0,0,0.54)';
       ctx.fillRect(0, 0, w, h);
     }
-    const accent = els.brandColor.value;
     const grad = ctx.createRadialGradient(w * 0.48, h * 0.3, 20, w * 0.48, h * 0.3, w * 0.8);
-    grad.addColorStop(0, accent + '33');
+    grad.addColorStop(0, rgba(accent, 0.28));
     grad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
+    ctx.save();
+    ctx.globalAlpha = 0.24;
+    ctx.strokeStyle = 'rgba(232,216,168,0.2)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 12; i++) {
+      const cx = w * (0.08 + i * 0.083);
+      ctx.beginPath();
+      ctx.moveTo(cx, 0);
+      ctx.lineTo(cx + Math.sin(i) * 60, h);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 
   function drawHeader() {
@@ -373,48 +535,106 @@
     ctx.restore();
   }
 
+  function drawNumberBadge(card, x, y, cardW, cardH, accent) {
+    ctx.fillStyle = 'rgba(0,0,0,0.68)';
+    roundedRect(x + 12, y + cardH - 35, cardW - 24, 25, 12);
+    ctx.fill();
+    ctx.strokeStyle = rgba(accent, 0.36);
+    ctx.lineWidth = 1;
+    roundedRect(x + 12, y + cardH - 35, cardW - 24, 25, 12);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 13px Inter, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(card.binaryValue).padStart(2, '0'), x + cardW / 2, y + cardH - 22);
+  }
+
   function drawCards(cards, mode) {
     const w = els.canvas.width;
     const h = els.canvas.height;
     const count = cards.length;
-    const cardW = mode === 'reveal' ? 270 : clamp(118 - count * 1.4, 84, 118);
-    const cardH = cardW * 1.42;
+    const accent = els.brandColor.value;
+    const phase = easeOutCubic(phaseProgress(mode === 'reveal' ? 1250 : 850));
     if (mode === 'reveal') {
+      const cardW = 330;
+      const cardH = cardW * 1.42;
       const x = w / 2 - cardW / 2;
-      const y = h / 2 - cardH / 2 + 28;
+      const y = h / 2 - cardH / 2 + 40 - (1 - phase) * 34;
+      drawRitualRings(w / 2, h / 2 + 36, 236, accent, phase);
+      ctx.save();
+      ctx.globalAlpha = 0.26 * phase;
+      drawPremiumBack(x - 82, y + 26, cardW * 0.92, cardH * 0.92, 'Z', accent);
+      drawPremiumBack(x + 112, y + 38, cardW * 0.86, cardH * 0.86, '35', accent);
+      ctx.restore();
+      ctx.save();
+      ctx.globalAlpha = phase;
+      ctx.translate(w / 2, y + cardH / 2);
+      ctx.rotate((1 - phase) * -0.12);
+      ctx.translate(-w / 2, -(y + cardH / 2));
       drawAsset(cards[0].asset, x, y, cardW, cardH);
+      ctx.restore();
       ctx.fillStyle = 'rgba(255,255,255,0.94)';
-      ctx.font = '900 38px Inter, Arial';
+      ctx.font = '900 42px Inter, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('ESTABAS PENSANDO EN', w / 2, y - 52);
-      ctx.fillStyle = els.brandColor.value;
-      ctx.font = '900 28px Inter, Arial';
-      ctx.fillText(cards[0].asset.name, w / 2, y + cardH + 48);
+      ctx.shadowColor = rgba(accent, 0.8);
+      ctx.shadowBlur = 28;
+      ctx.fillText('ZOLTAN LO HA VISTO', w / 2, y - 58);
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = accent;
+      ctx.font = '900 30px Inter, Arial';
+      ctx.fillText(cards[0].asset.name, w / 2, y + cardH + 50);
+      ctx.fillStyle = 'rgba(232,216,168,0.9)';
+      ctx.font = '800 15px Inter, Arial';
+      ctx.fillText('REVELACION FINAL · GESTURE LAB 35', w / 2, y + cardH + 78);
       return;
     }
 
-    const cols = count > 14 ? 5 : 4;
+    const cols = mode === 'question' ? Math.min(4, Math.max(2, Math.ceil(Math.sqrt(count)))) : 4;
     const rows = Math.ceil(count / cols);
-    const gapX = 26;
-    const gapY = 24;
+    const availableH = h - (mode === 'pick' ? 250 : 285);
+    const baseW = mode === 'question' ? (count <= 4 ? 178 : count <= 8 ? 154 : 134) : (count <= 12 ? 130 : 116);
+    const gapX = mode === 'question' ? 34 : 30;
+    const gapY = mode === 'question' ? 30 : 20;
+    const maxCardH = (availableH - (rows - 1) * gapY) / rows;
+    const cardW = clamp(Math.min(baseW, maxCardH / 1.42), 86, baseW);
+    const cardH = cardW * 1.42;
     const totalW = cols * cardW + (cols - 1) * gapX;
-    const totalH = rows * cardH + (rows - 1) * gapY;
     const startX = w / 2 - totalW / 2;
-    const startY = mode === 'pick' ? 150 : 142;
+    const startY = mode === 'pick' ? 130 : 164;
+    if (mode === 'question') {
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      roundedRect(w / 2 - 340, 112, 680, 56, 18);
+      ctx.fill();
+      ctx.strokeStyle = rgba(accent, 0.32);
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = '900 20px Inter, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`RONDA ${state.currentBit + 1}: mira bien este grupo`, w / 2, 140);
+      ctx.restore();
+    }
     cards.forEach((card, index) => {
       const col = index % cols;
       const row = Math.floor(index / cols);
-      const float = Math.sin(performance.now() * 0.0015 + index) * 4;
-      const x = startX + col * (cardW + gapX);
-      const y = startY + row * (cardH + gapY) + float;
+      const delay = clamp(index * 0.055, 0, 0.55);
+      const local = easeOutCubic((phase - delay) / Math.max(0.15, 1 - delay));
+      const float = Math.sin(performance.now() * 0.0015 + index) * (mode === 'question' ? 5 : 3);
+      const spread = mode === 'question' ? 11 : 5;
+      const x = startX + col * (cardW + gapX) + (col - (cols - 1) / 2) * spread;
+      const y = startY + row * (cardH + gapY) + float + (1 - local) * 46;
+      const rotation = (mode === 'pick' ? (col - 1.5) * 0.018 : (col - (cols - 1) / 2) * 0.026) * local;
+      ctx.save();
+      ctx.globalAlpha = local;
+      ctx.translate(x + cardW / 2, y + cardH / 2);
+      ctx.rotate(rotation);
+      ctx.translate(-(x + cardW / 2), -(y + cardH / 2));
+      drawPremiumBack(x + 9, y + 10, cardW, cardH, 'Z', accent);
       drawAsset(card.asset, x, y, cardW, cardH);
-      ctx.fillStyle = 'rgba(0,0,0,0.58)';
-      roundedRect(x + 8, y + cardH - 30, cardW - 16, 22, 10);
-      ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.font = '800 12px Inter, Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(String(card.binaryValue).padStart(2, '0'), x + cardW / 2, y + cardH - 18);
+      drawNumberBadge(card, x, y, cardW, cardH, accent);
+      ctx.restore();
     });
   }
 
@@ -424,17 +644,17 @@
     ctx.fillStyle = 'rgba(255,255,255,0.92)';
     ctx.font = '900 24px Inter, Arial';
     if (state.phase === 'pick') {
-      ctx.fillText('Piensa una carta. No la pulses. Solo recuerdala.', els.canvas.width / 2, h - 70);
+      ctx.fillText('Piensa una carta. No la pulses. ZOLTAN solo necesita tus respuestas.', els.canvas.width / 2, h - 70);
     } else if (state.phase === 'question') {
       ctx.fillText('Esta aqui tu imagen?', els.canvas.width / 2, h - 78);
       ctx.fillStyle = 'rgba(255,255,255,0.68)';
       ctx.font = '800 16px Inter, Arial';
-      ctx.fillText('Mano izquierda o boton NO. Mano derecha o boton SI.', els.canvas.width / 2, h - 48);
+      ctx.fillText('Izquierda = NO · Derecha = SI · Si dudas, usa los botones grandes.', els.canvas.width / 2, h - 48);
     } else {
       ctx.fillText(els.campaignClaim.value || 'Has desbloqueado tu seleccion secreta', els.canvas.width / 2, h - 74);
       ctx.fillStyle = els.brandColor.value;
       ctx.font = '900 18px Inter, Arial';
-      ctx.fillText(els.campaignCta.value || 'Escanea y consigue tu ventaja exclusiva', els.canvas.width / 2, h - 44);
+      ctx.fillText(els.campaignCta.value || 'Descarga tu recuerdo y desbloquea la recompensa', els.canvas.width / 2, h - 44);
     }
   }
 
@@ -567,12 +787,140 @@
     }
   }
 
+  function drawPosterFallback(pctx, asset, x, y, w, h) {
+    const p = asset.palette || ['#111', '#fff'];
+    const grad = pctx.createLinearGradient(x, y, x + w, y + h);
+    grad.addColorStop(0, p[0]);
+    grad.addColorStop(1, '#050505');
+    pctx.fillStyle = grad;
+    pctx.fillRect(x, y, w, h);
+    pctx.strokeStyle = p[1] || '#fff';
+    pctx.lineWidth = 12;
+    pctx.strokeRect(x + 28, y + 28, w - 56, h - 56);
+    pctx.fillStyle = '#fff';
+    pctx.font = '900 150px Inter, Arial';
+    pctx.textAlign = 'center';
+    pctx.textBaseline = 'middle';
+    pctx.fillText(asset.placeholder ? 'FALTA' : 'Z', x + w / 2, y + h / 2);
+  }
+
+  function drawPosterAsset(pctx, asset, x, y, w, h) {
+    pctx.save();
+    pctx.beginPath();
+    const r = 54;
+    pctx.moveTo(x + r, y);
+    pctx.arcTo(x + w, y, x + w, y + h, r);
+    pctx.arcTo(x + w, y + h, x, y + h, r);
+    pctx.arcTo(x, y + h, x, y, r);
+    pctx.arcTo(x, y, x + w, y, r);
+    pctx.closePath();
+    pctx.clip();
+    if ((asset.type === 'image' || asset.type === 'video') && asset.el) {
+      coverDrawTo(pctx, asset.el, x, y, w, h, asset.name);
+    } else {
+      drawPosterFallback(pctx, asset, x, y, w, h);
+    }
+    pctx.restore();
+  }
+
   function downloadPoster() {
+    const poster = document.createElement('canvas');
+    poster.width = 1400;
+    poster.height = 2000;
+    const pctx = poster.getContext('2d');
+    const accent = els.brandColor.value;
+    const rgb = hexToRgb(accent);
+    const revealCard = state.reveal ? state.reveal.card : state.deck[0];
+    const revealAsset = revealCard ? revealCard.asset : makeDefaultAsset(0);
+
+    const bgGrad = pctx.createLinearGradient(0, 0, poster.width, poster.height);
+    bgGrad.addColorStop(0, '#070811');
+    bgGrad.addColorStop(0.45, '#120816');
+    bgGrad.addColorStop(1, '#020207');
+    pctx.fillStyle = bgGrad;
+    pctx.fillRect(0, 0, poster.width, poster.height);
+
+    if (state.background && state.background.el) {
+      coverDrawTo(pctx, state.background.el, 0, 0, poster.width, poster.height, 'FONDO');
+      pctx.fillStyle = 'rgba(0,0,0,0.68)';
+      pctx.fillRect(0, 0, poster.width, poster.height);
+    }
+
+    pctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.18)`;
+    pctx.beginPath();
+    pctx.arc(700, 580, 620, 0, Math.PI * 2);
+    pctx.fill();
+    pctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.55)`;
+    pctx.lineWidth = 6;
+    pctx.strokeRect(70, 70, 1260, 1860);
+    pctx.strokeStyle = 'rgba(232,216,168,0.55)';
+    pctx.lineWidth = 2;
+    pctx.strokeRect(98, 98, 1204, 1804);
+
+    pctx.fillStyle = '#ffffff';
+    pctx.font = '900 74px Inter, Arial';
+    pctx.textAlign = 'left';
+    pctx.textBaseline = 'alphabetic';
+    pctx.fillText('ZOLTAN', 140, 190);
+    pctx.fillStyle = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+    pctx.font = '900 34px Inter, Arial';
+    pctx.fillText('MAGIC CARD MENTALISM RETAIL PRO', 140, 238);
+
+    if (state.logo && state.logo.el && state.logo.ready) {
+      coverDrawTo(pctx, state.logo.el, 1070, 126, 170, 88, 'LOGO');
+    } else {
+      pctx.fillStyle = 'rgba(255,255,255,0.1)';
+      pctx.fillRect(1070, 126, 170, 88);
+      pctx.fillStyle = '#fff';
+      pctx.font = '900 28px Inter, Arial';
+      pctx.textAlign = 'center';
+      pctx.fillText('LOGO', 1155, 182);
+      pctx.textAlign = 'left';
+    }
+
+    pctx.save();
+    pctx.translate(700, 820);
+    for (let i = 0; i < 5; i++) {
+      pctx.strokeStyle = i % 2 ? 'rgba(232,216,168,0.45)' : `rgba(${rgb.r},${rgb.g},${rgb.b},0.46)`;
+      pctx.lineWidth = 4 - i * 0.35;
+      pctx.beginPath();
+      pctx.ellipse(0, 0, 440 + i * 42, 250 + i * 26, i * 0.2, 0, Math.PI * 2);
+      pctx.stroke();
+    }
+    pctx.restore();
+
+    drawPosterAsset(pctx, revealAsset, 420, 430, 560, 800);
+    pctx.strokeStyle = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+    pctx.lineWidth = 10;
+    pctx.strokeRect(420, 430, 560, 800);
+    pctx.strokeStyle = 'rgba(255,255,255,0.72)';
+    pctx.lineWidth = 4;
+    pctx.strokeRect(444, 454, 512, 752);
+
+    pctx.textAlign = 'center';
+    pctx.fillStyle = '#ffffff';
+    pctx.font = '900 62px Inter, Arial';
+    pctx.fillText(els.campaignName.value || 'Escaparate Mentalista', 700, 1348);
+    pctx.fillStyle = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+    pctx.font = '900 48px Inter, Arial';
+    pctx.fillText(revealAsset.name || 'Seleccion revelada', 700, 1420);
+    pctx.fillStyle = 'rgba(255,255,255,0.84)';
+    pctx.font = '800 34px Inter, Arial';
+    pctx.fillText(els.campaignClaim.value || 'Has desbloqueado tu seleccion secreta', 700, 1512);
+    pctx.fillStyle = '#0a0a0a';
+    pctx.fillRect(220, 1628, 960, 118);
+    pctx.fillStyle = '#ffffff';
+    pctx.font = '900 38px Inter, Arial';
+    pctx.fillText(els.campaignCta.value || 'Descarga tu recuerdo y desbloquea la recompensa', 700, 1700);
+    pctx.fillStyle = 'rgba(232,216,168,0.9)';
+    pctx.font = '800 24px Inter, Arial';
+    pctx.fillText('Gesture Lab 35 · Resultado final cerrado · No incluye editor', 700, 1842);
+
     const link = document.createElement('a');
-    link.download = `magic-card-mentalism-${Date.now()}.png`;
-    link.href = els.canvas.toDataURL('image/png');
+    link.download = `zoltan-magic-card-premium-${Date.now()}.png`;
+    link.href = poster.toDataURL('image/png');
     link.click();
-    els.qaOutput.textContent = 'Salida: PNG recuerdo descargado';
+    els.qaOutput.textContent = 'Salida: PNG poster premium descargado';
   }
 
   function loadSingle(file, assign) {

@@ -48,6 +48,18 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - Air Guitar Camera PRO
 - Air Guitar Camera PRO Festival
 - Air Guitar Camera PRO V2
+- Magic Card Mentalism Retail PRO - Disponible como modulo 35 en `gesture-lab/magic-card-mentalism/` - v2.33.1 Visual Premium ZOLTAN
+
+### Magic Card Mentalism Retail PRO v2.33.1 - Guia de apoyo ZOLTAN
+
+Magic Card Mentalism Retail PRO queda como modulo 35 publicado dentro de Gesture Lab.
+
+- Logica: mantiene el truco matematico por bits; el usuario responde Si/No y el sistema reconstruye la carta, imagen, video o producto pensado.
+- Medios: si se suben imagenes/videos personalizados, el numero de medios debe coincidir con el numero de cartas. No se repiten assets de forma oculta.
+- Interaccion: fallback tactil con botones grandes y gesto ligero por camara izquierda/derecha.
+- Mejora v2.33.1: cartas mas grandes, dorso premium ZOLTAN, dispersion mas clara, animaciones de entrada/salida, pregunta cinematografica y reveal ritual.
+- Salida: descarga PNG en formato poster premium, con campana, logo, claim, CTA y media revelado. La salida es resultado final cerrado, no editor.
+- Documento de apoyo: `docs/ZOLTAN_GESTURE_LAB_DEEP_RESEARCH_REPORT.md`.
 
 ### Dynamic Motion Banners v0.4 — Gesture Interactive Edition
 
