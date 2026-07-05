@@ -230,7 +230,7 @@ h1 {
 .panel h2 { margin: 0; font-size: 1.08rem; letter-spacing: -0.03em; }
 .field { display: grid; gap: 6px; }
 .field span { color: var(--muted); text-transform: uppercase; letter-spacing: 0.11em; font-size: 0.66rem; font-weight: 900; }
-input {
+input, select {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -323,6 +323,7 @@ output { color: var(--gold); font-weight: 900; }
   grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
 }
+.stage-shell.is-classic .answer-bar { grid-template-columns: 1fr 1fr 1fr; }
 
 .answer-btn {
   min-height: 58px;
@@ -337,6 +338,11 @@ output { color: var(--gold); font-weight: 900; }
 .answer-btn.yes { background: linear-gradient(135deg, rgba(0,255,204,0.22), rgba(0,255,204,0.06)); }
 .answer-btn.start { color: #050505; background: var(--fg); }
 .answer-btn.start:not(:disabled) { background: linear-gradient(135deg, #fff, var(--gold)); }
+.answer-btn.column { display: none; background: linear-gradient(135deg, rgba(232,216,168,0.24), rgba(232,216,168,0.06)); }
+.stage-shell.is-classic .answer-btn.no,
+.stage-shell.is-classic .answer-btn.yes,
+.stage-shell.is-classic .answer-btn.start { display: none; }
+.stage-shell.is-classic .answer-btn.column { display: inline-flex; align-items: center; justify-content: center; }
 .answer-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .steps { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.45; }

@@ -48,16 +48,28 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - Air Guitar Camera PRO
 - Air Guitar Camera PRO Festival
 - Air Guitar Camera PRO V2
-- Magic Card Mentalism Retail PRO - Disponible como modulo 35 en `gesture-lab/magic-card-mentalism/` - v2.33.1 Visual Premium ZOLTAN
+- Magic Card Mentalism Retail PRO - Disponible como modulo 35 en `gesture-lab/magic-card-mentalism/` - v2.34 Visual Premium ZOLTAN + modo clasico 21 cartas
+- ZOLTAN Oracle / Oraculo de Carta - Disponible como modulo 36 en `gesture-lab/zoltan/oracle-card/` - ZOLTAN v1
 
-### Magic Card Mentalism Retail PRO v2.33.1 - Guia de apoyo ZOLTAN
+### Linea ZOLTAN v1 - Guia de apoyo
 
-Magic Card Mentalism Retail PRO queda como modulo 35 publicado dentro de Gesture Lab.
+ZOLTAN queda iniciada como una linea propia dentro de Gesture Lab: motor de asombro gestual para retail, marcas, eventos, escaparates, ferias y experiencias web.
+
+**Modulo 36 - ZOLTAN Oracle / Oraculo de Carta**
+
+- Ruta: `gesture-lab/zoltan/oracle-card/`.
+- Flujo: attract loop, invocacion, seleccion por touch/mouse/camara opcional, dwell, reveal, CTA y descarga PNG.
+- Nucleo compartido: `gesture-lab/zoltan/shared/`.
+- Privacidad: camara opcional, procesamiento local, sin grabar video, sin backend.
+- Analytics local: eventos en memoria/localStorage, sin cookies.
+
+**Modulo 35 - Magic Card Mentalism Retail PRO**
 
 - Logica: mantiene el truco matematico por bits; el usuario responde Si/No y el sistema reconstruye la carta, imagen, video o producto pensado.
+- Modo nuevo v2.34: clasico 21 cartas, 3 columnas, 3 rondas y revelacion en posicion 11.
 - Medios: si se suben imagenes/videos personalizados, el numero de medios debe coincidir con el numero de cartas. No se repiten assets de forma oculta.
 - Interaccion: fallback tactil con botones grandes y gesto ligero por camara izquierda/derecha.
-- Mejora v2.33.1: cartas mas grandes, dorso premium ZOLTAN, dispersion mas clara, animaciones de entrada/salida, pregunta cinematografica y reveal ritual.
+- Mejora visual: cartas mas grandes, dorso premium ZOLTAN, dispersion mas clara, animaciones de entrada/salida, pregunta cinematografica y reveal ritual.
 - Salida: descarga PNG en formato poster premium, con campana, logo, claim, CTA y media revelado. La salida es resultado final cerrado, no editor.
 - Documento de apoyo: `docs/ZOLTAN_GESTURE_LAB_DEEP_RESEARCH_REPORT.md`.
 

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Rubik Sota Gesture Lab 35 - Magic Card Mentalism Retail PRO. Juego matematico de mentalismo visual con cartas, imagenes, videos, logo de marca, respuesta por gesto o tactil y revelacion final." />
-  <title>Rubik Sota Gesture Lab 35 - Magic Card Mentalism Retail PRO</title>
+  <meta name="description" content="Rubik Sota Gesture Lab 35 - Magic Card Mentalism Retail PRO ZOLTAN Line. Juego matematico de mentalismo visual con modo binario y modo clasico 21 cartas." />
+  <title>Magic Card Mentalism Retail PRO · ZOLTAN Line</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
         <span class="brand-mark">MC</span>
         <span>
           <span class="brand-name">Rubik Sota Gesture Lab</span>
-          <span class="brand-sub">35 - Magic Card Mentalism Retail PRO - v2.33.1</span>
+          <span class="brand-sub">35 - Magic Card Mentalism Retail PRO - ZOLTAN Line - v2.34</span>
         </span>
       </a>
       <div class="top-actions">
@@ -40,6 +40,7 @@
           <span class="badge">Logo de marca</span>
           <span class="badge">Gesto o tactil</span>
           <span class="badge">Sin backend</span>
+          <span class="badge badge-accent">Powered by ZOLTAN</span>
         </div>
       </div>
       <div class="hero-card">
@@ -66,8 +67,15 @@
             <input id="backgroundFile" type="file" accept="image/*,video/*" />
           </label>
           <div class="field">
+            <span>Modo del truco</span>
+            <select id="trickMode" aria-label="Modo del truco">
+              <option value="binary">Modo binario compatible</option>
+              <option value="classic21">Modo clásico 21 cartas</option>
+            </select>
+          </div>
+          <div class="field">
             <span>Cartas del truco</span>
-            <input id="cardCount" type="range" min="8" max="20" value="16" />
+            <input id="cardCount" type="range" min="8" max="21" value="16" />
             <output id="cardCountLabel">16 cartas</output>
           </div>
           <label class="check-row">
@@ -121,6 +129,9 @@
           <button class="answer-btn no" id="noBtn" type="button">No, no esta aqui</button>
           <button class="answer-btn start" id="startBtn" type="button">Empezar juego</button>
           <button class="answer-btn yes" id="yesBtn" type="button">Si, esta aqui</button>
+          <button class="answer-btn column" id="col1Btn" type="button">Columna 1</button>
+          <button class="answer-btn column" id="col2Btn" type="button">Columna 2</button>
+          <button class="answer-btn column" id="col3Btn" type="button">Columna 3</button>
         </div>
       </section>
 
@@ -156,6 +167,9 @@
   </div>
 
   <div class="toast" id="toast"></div>
+  <script src="../zoltan/shared/zoltan-core.js"></script>
+  <script src="../zoltan/shared/zoltan-analytics.js"></script>
+  <script src="../zoltan/shared/zoltan-utils.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

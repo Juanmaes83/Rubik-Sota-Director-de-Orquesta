@@ -5,6 +5,7 @@
     cardFiles: document.getElementById('cardFiles'),
     logoFile: document.getElementById('logoFile'),
     backgroundFile: document.getElementById('backgroundFile'),
+    trickMode: document.getElementById('trickMode'),
     cardCount: document.getElementById('cardCount'),
     cardCountLabel: document.getElementById('cardCountLabel'),
     allowPlaceholders: document.getElementById('allowPlaceholders'),
@@ -23,6 +24,9 @@
     startBtn: document.getElementById('startBtn'),
     yesBtn: document.getElementById('yesBtn'),
     noBtn: document.getElementById('noBtn'),
+    col1Btn: document.getElementById('col1Btn'),
+    col2Btn: document.getElementById('col2Btn'),
+    col3Btn: document.getElementById('col3Btn'),
     resetBtn: document.getElementById('resetBtn'),
     resultCard: document.getElementById('resultCard'),
     qaDeck: document.getElementById('qaDeck'),
@@ -35,12 +39,14 @@
   const ctx = els.canvas.getContext('2d');
   const state = {
     phase: 'pick',
+    trickMode: 'binary',
     cardCount: 16,
     currentBit: 0,
     answerBits: 0,
     maxBits: 0,
     deck: [],
     questionCards: [],
+    classicState: null,
     cardAssets: [],
     logo: null,
     background: null,
@@ -81,6 +87,15 @@
     els.toast.classList.add('is-visible');
     clearTimeout(toast._timer);
     toast._timer = setTimeout(() => els.toast.classList.remove('is-visible'), 2600);
+  }
+
+  function track(eventName, payload) {
+    if (window.ZoltanAnalytics) {
+      window.ZoltanAnalytics.track(eventName, Object.assign({
+        module: 'magic-card-mentalism',
+        trickMode: state.trickMode
+      }, payload || {}));
+    }
   }
 
   function assetKey(file) {
@@ -160,7 +175,14 @@
   }
 
   function buildDeck() {
-    const requested = clamp(parseInt(els.cardCount.value, 10) || 20, 8, 20);
+    state.trickMode = els.trickMode ? els.trickMode.value : 'binary';
+    if (state.trickMode === 'classic21') {
+      els.cardCount.value = 21;
+      els.cardCount.disabled = true;
+    } else {
+      els.cardCount.disabled = false;
+    }
+    const requested = state.trickMode === 'classic21' ? 21 : clamp(parseInt(els.cardCount.value, 10) || 16, 8, 20);
     state.cardCount = requested;
     const custom = state.cardAssets;
     const allowPlaceholders = els.allowPlaceholders.checked;
@@ -174,6 +196,9 @@
     } else if (custom.length === requested) {
       assets = custom.slice(0, requested);
       message = `Set personalizado valido: ${requested} medios sin repetir.`;
+    } else if (custom.length > requested) {
+      assets = custom.slice(0, requested);
+      message = `Set personalizado valido: se usan los primeros ${requested} medios y se omiten ${custom.length - requested}.`;
     } else if (custom.length < requested && allowPlaceholders) {
       assets = custom.slice();
       while (assets.length < requested) assets.push(makePlaceholderAsset(assets.length));
@@ -183,7 +208,7 @@
       assets = custom.slice(0, requested);
       message = custom.length < requested
         ? `Faltan ${requested - custom.length} medios. Sube exactamente ${requested} imagenes/videos o activa placeholders.`
-        : `Sobran ${custom.length - requested} medios. Ajusta cartas a ${custom.length} o deja exactamente ${requested} archivos.`;
+        : `Sobran ${custom.length - requested} medios. Ajusta cartas o se usaran los primeros ${requested} al activar el modo.`;
     }
 
     state.deck = assets.map((asset, index) => ({
@@ -198,6 +223,7 @@
     els.startBtn.disabled = !valid;
     els.qaDeck.textContent = valid ? `Deck: ${requested} cartas valido` : 'Deck: bloqueado por contrato de medios';
     els.qaNoRepeats.textContent = `Assets: ${custom.length ? custom.length + ' personalizados sin repetir' : 'demo sin repeticion'}`;
+    if (els.stageShell) els.stageShell.classList.toggle('is-classic', state.trickMode === 'classic21');
     return valid;
   }
 
@@ -208,12 +234,68 @@
       .sort((a, b) => ((a.binaryValue * 7 + bit) % 23) - ((b.binaryValue * 7 + bit) % 23));
   }
 
+  function dealIntoThreeColumns(deck) {
+    const columns = [[], [], []];
+    deck.forEach((card, index) => {
+      columns[index % 3].push(card);
+    });
+    return columns;
+  }
+
+  function collectWithSelectedColumnInMiddle(columns, selectedColumnIndex) {
+    const safeIndex = clamp(selectedColumnIndex, 0, 2);
+    const otherIndexes = [0, 1, 2].filter((index) => index !== safeIndex);
+    return [
+      ...columns[otherIndexes[0]],
+      ...columns[safeIndex],
+      ...columns[otherIndexes[1]]
+    ];
+  }
+
+  function createClassic21State(deck) {
+    if (!Array.isArray(deck) || deck.length !== 21) {
+      throw new Error('Classic 21 mode requires exactly 21 cards.');
+    }
+    return {
+      round: 0,
+      maxRounds: 3,
+      deck: deck.slice(),
+      columns: dealIntoThreeColumns(deck),
+      selectedColumnHistory: [],
+      phase: 'classic-question',
+      revealCard: null,
+      revealIndex: -1
+    };
+  }
+
+  function answerClassic21(classicState, selectedColumnIndex) {
+    const safeIndex = clamp(selectedColumnIndex, 0, 2);
+    const nextDeck = collectWithSelectedColumnInMiddle(classicState.columns, safeIndex);
+    const nextRound = classicState.round + 1;
+    const next = {
+      ...classicState,
+      round: nextRound,
+      deck: nextDeck,
+      columns: dealIntoThreeColumns(nextDeck),
+      selectedColumnHistory: [...classicState.selectedColumnHistory, safeIndex]
+    };
+    if (nextRound >= classicState.maxRounds) {
+      next.phase = 'classic-reveal';
+      next.revealCard = nextDeck[10];
+      next.revealIndex = 10;
+    } else {
+      next.phase = 'classic-question';
+    }
+    return next;
+  }
+
   function resetTrick() {
     state.phase = 'pick';
     state.currentBit = 0;
     state.answerBits = 0;
     state.reveal = null;
     state.questionCards = [];
+    state.classicState = null;
     markPhase();
     buildDeck();
     updateUi();
@@ -225,22 +307,42 @@
       toast('No se puede empezar: el numero de medios debe coincidir con el numero de cartas.');
       return;
     }
-    state.phase = 'question';
+    state.phase = state.trickMode === 'classic21' ? 'classic-question' : 'question';
     state.currentBit = 0;
     state.answerBits = 0;
-    state.questionCards = questionGroup();
+    if (state.trickMode === 'classic21') {
+      state.classicState = createClassic21State(state.deck);
+      state.questionCards = [];
+    } else {
+      state.questionCards = questionGroup();
+    }
     markPhase();
+    track('magic_card_started', { cardCount: state.cardCount });
+    track('magic_card_mode_selected', { mode: state.trickMode });
     updateUi();
   }
 
   function answer(yes) {
     if (state.phase !== 'question') return;
     if (yes) state.answerBits += 1 << state.currentBit;
+    track('magic_card_answered', { round: state.currentBit + 1, answer: yes ? 'yes' : 'no' });
     state.currentBit += 1;
     if (state.currentBit >= state.maxBits) {
       reveal();
     } else {
       state.questionCards = questionGroup();
+      markPhase();
+      updateUi();
+    }
+  }
+
+  function answerColumn(columnIndex) {
+    if (state.phase !== 'classic-question' || !state.classicState) return;
+    state.classicState = answerClassic21(state.classicState, columnIndex);
+    track('magic_card_column_selected', { round: state.classicState.round, column: columnIndex + 1 });
+    if (state.classicState.phase === 'classic-reveal') {
+      revealClassic21();
+    } else {
       markPhase();
       updateUi();
     }
@@ -253,14 +355,29 @@
     markPhase();
     els.resultCard.innerHTML = `<strong>${escapeHtml(state.reveal.card.asset.name)}</strong><span>Revelado como carta #${index + 1}. Resultado listo para recuerdo y accion comercial.</span>`;
     updateUi();
+    track('magic_card_revealed', { mode: 'binary', index });
     toast('Revelacion completada.');
+  }
+
+  function revealClassic21() {
+    state.phase = 'reveal';
+    const card = state.classicState.revealCard;
+    const index = state.deck.findIndex((item) => item === card);
+    state.reveal = { index: index >= 0 ? index : 10, card };
+    markPhase();
+    els.resultCard.innerHTML = `<strong>${escapeHtml(card.asset.name)}</strong><span>Modo clasico 21: la carta converge a la posicion 11 tras 3 rondas.</span>`;
+    updateUi();
+    track('magic_card_revealed', { mode: 'classic21', index: 10 });
+    toast('ZOLTAN ya lo sabia: posicion 11.');
   }
 
   function updateUi() {
     els.cardCountLabel.textContent = `${els.cardCount.value} cartas`;
+    const isClassicQuestion = state.phase === 'classic-question';
     els.startBtn.disabled = state.phase !== 'pick' || els.startBtn.disabled;
     els.yesBtn.disabled = state.phase !== 'question';
     els.noBtn.disabled = state.phase !== 'question';
+    [els.col1Btn, els.col2Btn, els.col3Btn].forEach((btn) => { btn.disabled = !isClassicQuestion; });
     els.startBtn.textContent = state.phase === 'reveal' ? 'Truco completado' : 'Empezar juego';
 
     if (state.phase === 'pick') {
@@ -270,6 +387,10 @@
     } else if (state.phase === 'question') {
       els.roundLabel.textContent = `Pregunta ${state.currentBit + 1} de ${state.maxBits}: esta aqui?`;
       els.phasePill.textContent = 'Ronda activa';
+      els.phasePill.className = 'pill is-ok';
+    } else if (state.phase === 'classic-question') {
+      els.roundLabel.textContent = `Modo 21 - ronda ${state.classicState.round + 1} de 3: en que columna esta?`;
+      els.phasePill.textContent = 'Clasico 21';
       els.phasePill.className = 'pill is-ok';
     } else {
       els.roundLabel.textContent = 'Revelacion final';
@@ -597,7 +718,7 @@
     const gapX = mode === 'question' ? 34 : 30;
     const gapY = mode === 'question' ? 30 : 20;
     const maxCardH = (availableH - (rows - 1) * gapY) / rows;
-    const cardW = clamp(Math.min(baseW, maxCardH / 1.42), 86, baseW);
+    const cardW = clamp(Math.min(baseW, maxCardH / 1.42), 70, baseW);
     const cardH = cardW * 1.42;
     const totalW = cols * cardW + (cols - 1) * gapX;
     const startX = w / 2 - totalW / 2;
@@ -638,6 +759,67 @@
     });
   }
 
+  function drawClassicColumns(classicState) {
+    if (!classicState) return;
+    const w = els.canvas.width;
+    const h = els.canvas.height;
+    const accent = els.brandColor.value;
+    const phase = easeOutCubic(phaseProgress(850));
+    const columns = classicState.columns;
+    const colW = 300;
+    const cardW = 96;
+    const cardH = cardW * 1.42;
+    const gapY = 18;
+    const startX = w / 2 - (colW * 3 + 24 * 2) / 2;
+    const startY = 174;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.36)';
+    roundedRect(w / 2 - 390, 112, 780, 54, 18);
+    ctx.fill();
+    ctx.strokeStyle = rgba(accent, 0.34);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 20px Inter, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`RONDA ${classicState.round + 1}/3: ¿EN QUÉ COLUMNA ESTÁ TU CARTA?`, w / 2, 140);
+    ctx.restore();
+
+    columns.forEach((column, columnIndex) => {
+      const panelX = startX + columnIndex * (colW + 24);
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,255,255,0.045)';
+      roundedRect(panelX, startY - 34, colW, h - startY - 104, 24);
+      ctx.fill();
+      ctx.strokeStyle = columnIndex === 1 ? rgba(accent, 0.42) : 'rgba(255,255,255,0.14)';
+      ctx.lineWidth = 2;
+      roundedRect(panelX, startY - 34, colW, h - startY - 104, 24);
+      ctx.stroke();
+      ctx.fillStyle = columnIndex === 1 ? accent : 'rgba(255,255,255,0.82)';
+      ctx.font = '900 16px Inter, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(`COLUMNA ${columnIndex + 1}`, panelX + colW / 2, startY - 12);
+      ctx.restore();
+
+      column.forEach((card, rowIndex) => {
+        const delay = clamp((columnIndex * 7 + rowIndex) * 0.025, 0, 0.5);
+        const local = easeOutCubic((phase - delay) / Math.max(0.15, 1 - delay));
+        const x = panelX + 18 + (rowIndex % 2) * (cardW + 16);
+        const y = startY + Math.floor(rowIndex / 2) * (cardH + gapY) + (1 - local) * 34;
+        ctx.save();
+        ctx.globalAlpha = local;
+        ctx.translate(x + cardW / 2, y + cardH / 2);
+        ctx.rotate(((rowIndex % 2) ? 0.025 : -0.025) * local);
+        ctx.translate(-(x + cardW / 2), -(y + cardH / 2));
+        drawPremiumBack(x + 8, y + 8, cardW, cardH, '21', accent);
+        drawAsset(card.asset, x, y, cardW, cardH);
+        drawNumberBadge(card, x, y, cardW, cardH, accent);
+        ctx.restore();
+      });
+    });
+  }
+
   function drawFooterText() {
     const h = els.canvas.height;
     ctx.textAlign = 'center';
@@ -650,6 +832,11 @@
       ctx.fillStyle = 'rgba(255,255,255,0.68)';
       ctx.font = '800 16px Inter, Arial';
       ctx.fillText('Izquierda = NO · Derecha = SI · Si dudas, usa los botones grandes.', els.canvas.width / 2, h - 48);
+    } else if (state.phase === 'classic-question') {
+      ctx.fillText('En que columna esta tu carta?', els.canvas.width / 2, h - 78);
+      ctx.fillStyle = 'rgba(255,255,255,0.68)';
+      ctx.font = '800 16px Inter, Arial';
+      ctx.fillText('Pulsa Columna 1, 2 o 3. Con camara, mueve la mano en una de las tres zonas.', els.canvas.width / 2, h - 48);
     } else {
       ctx.fillText(els.campaignClaim.value || 'Has desbloqueado tu seleccion secreta', els.canvas.width / 2, h - 74);
       ctx.fillStyle = els.brandColor.value;
@@ -659,15 +846,24 @@
   }
 
   function drawGestureOverlay() {
-    if (!state.cameraActive || state.phase !== 'question') return;
+    if (!state.cameraActive || (state.phase !== 'question' && state.phase !== 'classic-question')) return;
     const w = els.canvas.width;
     const h = els.canvas.height;
     ctx.save();
     ctx.globalAlpha = 0.13;
-    ctx.fillStyle = '#ff4d6d';
-    ctx.fillRect(0, 0, w / 2, h);
-    ctx.fillStyle = '#00ffcc';
-    ctx.fillRect(w / 2, 0, w / 2, h);
+    if (state.phase === 'classic-question') {
+      ctx.fillStyle = '#ff4d6d';
+      ctx.fillRect(0, 0, w / 3, h);
+      ctx.fillStyle = '#e8d8a8';
+      ctx.fillRect(w / 3, 0, w / 3, h);
+      ctx.fillStyle = '#00ffcc';
+      ctx.fillRect((w / 3) * 2, 0, w / 3, h);
+    } else {
+      ctx.fillStyle = '#ff4d6d';
+      ctx.fillRect(0, 0, w / 2, h);
+      ctx.fillStyle = '#00ffcc';
+      ctx.fillRect(w / 2, 0, w / 2, h);
+    }
     ctx.restore();
   }
 
@@ -675,6 +871,12 @@
     drawBackground();
     drawGestureOverlay();
     drawHeader();
+    if (state.phase === 'classic-question') {
+      drawClassicColumns(state.classicState);
+      drawFooterText();
+      requestAnimationFrame(draw);
+      return;
+    }
     const cards = state.phase === 'pick'
       ? state.deck
       : state.phase === 'question'
@@ -705,6 +907,7 @@
       els.gesturePill.textContent = 'Gestos on';
       els.gesturePill.className = 'pill is-ok';
       els.gestureZones.classList.add('is-on');
+      track('camera_started');
       toast('Camara activa: mueve la mano a la izquierda para NO o a la derecha para SI.');
       requestAnimationFrame(analyzeGestureMotion);
     } catch (err) {
@@ -712,6 +915,7 @@
       els.cameraBtn.textContent = 'Activar gestos';
       els.gesturePill.textContent = 'Gestos error';
       els.gesturePill.className = 'pill is-warn';
+      track('camera_denied', { message: err.message });
       toast('No se pudo activar camara. Usa botones grandes.');
     }
   }
@@ -728,20 +932,24 @@
   }
 
   function handleCanvasPointer(event) {
-    if (state.phase !== 'question') return;
+    if (state.phase !== 'question' && state.phase !== 'classic-question') return;
     const now = performance.now();
     if (now - state.lastGestureAt < 700) return;
     const rect = els.canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
-    const yes = x > rect.width / 2;
     state.lastGestureAt = now;
-    answer(yes);
+    track('fallback_used', { source: event.pointerType || 'pointer' });
+    if (state.phase === 'classic-question') {
+      answerColumn(clamp(Math.floor((x / rect.width) * 3), 0, 2));
+    } else {
+      answer(x > rect.width / 2);
+    }
   }
 
   function analyzeGestureMotion() {
     if (!state.cameraActive) return;
     requestAnimationFrame(analyzeGestureMotion);
-    if (state.phase !== 'question') return;
+    if (state.phase !== 'question' && state.phase !== 'classic-question') return;
     if (!els.video.videoWidth || !els.video.videoHeight) return;
 
     const now = performance.now();
@@ -760,6 +968,7 @@
     }
 
     let left = 0;
+    let center = 0;
     let right = 0;
     const data = frame.data;
     const prev = state.lastFrame.data;
@@ -768,7 +977,11 @@
         const i = (y * gw + x) * 4;
         const diff = Math.abs(data[i] - prev[i]) + Math.abs(data[i + 1] - prev[i + 1]) + Math.abs(data[i + 2] - prev[i + 2]);
         if (diff < 42) continue;
-        if (x < gw / 2) left += diff;
+        if (state.phase === 'classic-question') {
+          if (x < gw / 3) left += diff;
+          else if (x < (gw / 3) * 2) center += diff;
+          else right += diff;
+        } else if (x < gw / 2) left += diff;
         else right += diff;
       }
     }
@@ -776,7 +989,13 @@
 
     const total = left + right;
     if (total < 22000) return;
-    if (left > right * 1.28) {
+    if (state.phase === 'classic-question') {
+      const max = Math.max(left, center, right);
+      const column = max === left ? 0 : max === center ? 1 : 2;
+      state.lastGestureAt = now;
+      toast(`Gesto detectado: columna ${column + 1}`);
+      answerColumn(column);
+    } else if (left > right * 1.28) {
       state.lastGestureAt = now;
       toast('Gesto detectado: NO');
       answer(false);
@@ -921,6 +1140,7 @@
     link.href = poster.toDataURL('image/png');
     link.click();
     els.qaOutput.textContent = 'Salida: PNG poster premium descargado';
+    track('magic_card_exported', { phase: state.phase, hasReveal: !!state.reveal });
   }
 
   function loadSingle(file, assign) {
@@ -931,18 +1151,27 @@
     assign(createAssetFromFile(file));
   }
 
+  function replaceSingle(currentAsset, file, assign) {
+    if (currentAsset && currentAsset.url) URL.revokeObjectURL(currentAsset.url);
+    loadSingle(file, assign);
+  }
+
   els.cardFiles.addEventListener('change', () => {
     state.cardAssets.forEach((asset) => asset.url && URL.revokeObjectURL(asset.url));
     state.cardAssets = uniqueAssets(els.cardFiles.files);
     resetTrick();
   });
-  els.logoFile.addEventListener('change', () => loadSingle(els.logoFile.files[0], (asset) => { state.logo = asset; }));
-  els.backgroundFile.addEventListener('change', () => loadSingle(els.backgroundFile.files[0], (asset) => { state.background = asset; }));
+  els.logoFile.addEventListener('change', () => replaceSingle(state.logo, els.logoFile.files[0], (asset) => { state.logo = asset; }));
+  els.backgroundFile.addEventListener('change', () => replaceSingle(state.background, els.backgroundFile.files[0], (asset) => { state.background = asset; }));
+  if (els.trickMode) els.trickMode.addEventListener('change', resetTrick);
   els.cardCount.addEventListener('input', resetTrick);
   els.allowPlaceholders.addEventListener('change', resetTrick);
   els.startBtn.addEventListener('click', startTrick);
   els.yesBtn.addEventListener('click', () => answer(true));
   els.noBtn.addEventListener('click', () => answer(false));
+  els.col1Btn.addEventListener('click', () => answerColumn(0));
+  els.col2Btn.addEventListener('click', () => answerColumn(1));
+  els.col3Btn.addEventListener('click', () => answerColumn(2));
   els.resetBtn.addEventListener('click', resetTrick);
   els.downloadBtn.addEventListener('click', downloadPoster);
   els.cameraBtn.addEventListener('click', toggleCamera);
@@ -950,6 +1179,12 @@
   els.fullscreenBtn.addEventListener('click', () => els.stageShell.classList.toggle('is-fullscreen'));
   ['campaignName', 'campaignClaim', 'campaignCta', 'brandColor'].forEach((id) => {
     els[id].addEventListener('input', () => {});
+  });
+  window.addEventListener('beforeunload', () => {
+    stopCamera();
+    state.cardAssets.forEach((asset) => asset.url && URL.revokeObjectURL(asset.url));
+    if (state.logo && state.logo.url) URL.revokeObjectURL(state.logo.url);
+    if (state.background && state.background.url) URL.revokeObjectURL(state.background.url);
   });
 
   resetTrick();

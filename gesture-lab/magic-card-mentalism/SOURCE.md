@@ -4,7 +4,7 @@ Modulo independiente creado para `Rubik-Sota-Director-de-Orquesta/gesture-lab`.
 
 ## Version actual
 
-- `v2.33.1` - Visual Premium ZOLTAN.
+- `v2.34` - Visual Premium ZOLTAN + modo clasico 21 cartas.
 - Fecha de actualizacion: 2026-07-06.
 - Documento de apoyo guardado en repo: `docs/ZOLTAN_GESTURE_LAB_DEEP_RESEARCH_REPORT.md`.
 
@@ -33,6 +33,18 @@ Modulo independiente creado para `Rubik-Sota-Director-de-Orquesta/gesture-lab`.
 - Composicion cinematografica para la pregunta "Esta aqui tu imagen?".
 - Reveal final tipo ritual ZOLTAN con anillos, luz de marca y jerarquia editorial.
 - Branding integrado en cabecera, canvas y salida final.
+
+## Modo clasico 21 cartas v2.34
+
+- Selector de modo: binario compatible o clasico 21.
+- En modo clasico se fuerza `cardCount = 21`.
+- Reparte 21 cartas en 3 columnas durante 3 rondas.
+- El usuario responde en que columna esta su carta.
+- La columna elegida se recoloca en el centro.
+- Tras 3 rondas, la carta converge a la posicion 11.
+- Botones tactiles: Columna 1, Columna 2 y Columna 3.
+- Camara opcional: el canvas se divide en tres zonas para responder por movimiento.
+- El motor binario anterior se mantiene intacto.
 
 ## Interaccion
 
