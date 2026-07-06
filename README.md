@@ -50,6 +50,7 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - Air Guitar Camera PRO V2
 - Magic Card Mentalism Retail PRO - Disponible como modulo 35 en `gesture-lab/magic-card-mentalism/` - v2.34 Visual Premium ZOLTAN + modo clasico 21 cartas
 - ZOLTAN Oracle / Oraculo de Carta - Disponible como modulo 36 en `gesture-lab/zoltan/oracle-card/` - ZOLTAN v1
+- ZOLTAN Brand Magic Square / Cuadrado Magico de Marca - Disponible como modulo 37 en `gesture-lab/zoltan/brand-magic-square/` - ZOLTAN 03
 
 ### Linea ZOLTAN v1 - Guia de apoyo
 
@@ -72,6 +73,16 @@ ZOLTAN queda iniciada como una linea propia dentro de Gesture Lab: motor de asom
 - Mejora visual: cartas mas grandes, dorso premium ZOLTAN, dispersion mas clara, animaciones de entrada/salida, pregunta cinematografica y reveal ritual.
 - Salida: descarga PNG en formato poster premium, con campana, logo, claim, CTA y media revelado. La salida es resultado final cerrado, no editor.
 - Documento de apoyo: `docs/ZOLTAN_GESTURE_LAB_DEEP_RESEARCH_REPORT.md`.
+
+**Modulo 37 - ZOLTAN Brand Magic Square / Cuadrado Magico de Marca**
+
+- Ruta: `gesture-lab/zoltan/brand-magic-square/`.
+- Logica: plantilla matematica 4x4 donde filas, columnas y diagonales principales suman el numero objetivo.
+- Personalizacion: numero, marca, claim, CTA, color, sector, logo opcional y fondo opcional.
+- Presets: 34, 49, 99, 108, 360, 777, 911 y 2026, mas presets por sector.
+- Validacion: checks visibles para 4 filas, 4 columnas y 2 diagonales.
+- Privacidad: camara opcional, sin backend, sin cookies y sin envio de datos.
+- Salida: PNG vertical con marca, numero, cuadrado, claim, CTA y sello ZOLTAN.
 
 ### Dynamic Motion Banners v0.4 — Gesture Interactive Edition
 
@@ -357,7 +368,9 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 32 | Tennis Gesture Court | Próximamente - v2.30 |
 | 33 | Nautical Visualizer | Próximamente - v2.31 |
 | 34 | Golf Course Visualizer | Próximamente - v2.32 |
-| 35 | Magic Card Mentalism Retail PRO | Publicada - v2.33 |
+| 35 | Magic Card Mentalism Retail PRO | Publicada - v2.34 |
+| 36 | ZOLTAN Oracle / Oraculo de Carta | Publicada - ZOLTAN v1 |
+| 37 | ZOLTAN Brand Magic Square | Publicada - ZOLTAN 03 |
 
 ### Notas de módulos nuevos (v2.0.7)
 
@@ -368,7 +381,9 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 - **13 — Dental Kids**: coach educativo de cepillado real con cámara, MediaPipe Face/Hand Landmarker, seis zonas, avisos de cambio cada 20 segundos, reto de 2 minutos, fallback manual, recompensas, misiones 3 veces al día y racha local. No es diagnóstico clínico; es entrenamiento de hábito.
 - **14 — Retail Window Pro**: evolución directa de Interactive Retail Window v2.8. Añade carrito, wishlist, código/QR, resumen comercial, continuidad móvil y modo kiosk pro para retail, franquicias, ferias, campañas y mupis.
 - **Camera FX Cum Laude**: linea conectada desde Escaparates Pro y ya subida a `gesture-lab/camera-fx-cum-laude/`. Incluye Webcam Pixelation PRO, Motion Detection Camera PRO, Red Light Green Light Camera PRO, Glitch Camera PRO, Air Guitar Camera PRO, Air Guitar Camera PRO Festival y Air Guitar Camera PRO V2. Cada modulo corre aislado por pagina para prueba movil HTTPS.
-- **35 - Magic Card Mentalism Retail PRO**: publicada en `gesture-lab/magic-card-mentalism/`. Adaptacion de `Card Mentalism Media PRO` de Escaparates Pro a Gesture Lab. Mantiene el truco matematico por bits, permite cartas personalizadas por imagen/video sin repetir assets, exige que el numero de medios coincida con el numero de cartas o usa placeholders visibles si se autoriza, acepta logo y fondo, respuesta Si/No por gesto de movimiento izquierda/derecha o fallback tactil, revelacion final y recuerdo PNG descargable. Candidato prioritario para escaparates, ferias, moda, retail y lead capture.
+- **35 - Magic Card Mentalism Retail PRO**: publicada en `gesture-lab/magic-card-mentalism/`. Adaptacion de `Card Mentalism Media PRO` de Escaparates Pro a Gesture Lab. Mantiene el truco matematico por bits, suma modo clasico 21 cartas, permite cartas personalizadas por imagen/video sin repetir assets, acepta logo y fondo, respuesta por gesto o fallback tactil, revelacion final y recuerdo PNG descargable.
+- **36 - ZOLTAN Oracle / Oraculo de Carta**: publicado en `gesture-lab/zoltan/oracle-card/`. Primer producto independiente ZOLTAN: oraculo premium de marca con cartas, dwell, reveal, CTA y recuerdo PNG.
+- **37 - ZOLTAN Brand Magic Square**: publicado en `gesture-lab/zoltan/brand-magic-square/`. Experiencia de magia matematica aplicada a branding: numero objetivo, cuadrado magico 4x4 verificable, reveal comercial y salida PNG.
 - **15 — Food Assembly General**: platos, menús o productos montados por capas. Vende producto gastronómico de forma visual y apetecible.
 - **16 — Sushi Roll Interactive**: sushi que se enrolla, se corta o revela ingredientes (alga, arroz, pescado, toppings y salsa). Restaurantes japoneses, delivery y campañas virales.
 - **17 — Burger Layers Interactive**: hamburguesa construida por capas (pan, carne, queso, bacon, salsa, lechuga, tomate y packaging). Ingredientes premium y clips apetecibles para redes.
@@ -382,11 +397,11 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 El modulo 35 ya esta publicado como primera version funcional para explotar conversion y efecto wow:
 
-**v2.33 - Magic Card Mentalism Retail PRO**
+**v2.34 - Magic Card Mentalism Retail PRO / v2.35-v2.36 Linea ZOLTAN**
 
 **Motivo:**
 
-Tras conectar Camera FX Cum Laude y tener Retail Window Pro, Fashion Lookbook, Selfie Style y el catalogo gestual, el salto mas rentable era convertir Card Mentalism Media PRO en un juego de escaparate con producto real. La v2.33 ya implementa la base jugable, personalizacion de medios/logo/fondo y recuerdo descargable. Quedan como evoluciones QR real, cupon, carrito y continuidad movil.
+Tras conectar Camera FX Cum Laude y tener Retail Window Pro, Fashion Lookbook, Selfie Style y el catalogo gestual, el salto mas rentable era abrir una familia ZOLTAN de experiencias comerciales de asombro. Magic Card v2.34 implementa mentalismo matematico por bits y clasico 21 cartas. ZOLTAN Oracle y Brand Magic Square convierten la linea en producto reutilizable: cartas, oraculo, magia matematica, branding, CTA y recuerdo descargable.
 
 **Flujo previsto:**
 
@@ -547,4 +562,6 @@ Cada módulo debe incluir, cuando aplique:
 - Dental Kids v2.11 publicado como coach educativo de cepillado real.
 - Retail Window Pro v2.12 publicado y funcional.
 - Camera FX Cum Laude conectado como laboratorio independiente con 7 modulos webcam ya subidos.
-- Magic Card Mentalism Retail PRO v2.33 publicado como primera version funcional en `gesture-lab/magic-card-mentalism/`.
+- Magic Card Mentalism Retail PRO v2.34 publicado en `gesture-lab/magic-card-mentalism/`.
+- ZOLTAN Oracle v1 publicado en `gesture-lab/zoltan/oracle-card/`.
+- ZOLTAN Brand Magic Square publicado en `gesture-lab/zoltan/brand-magic-square/`.
