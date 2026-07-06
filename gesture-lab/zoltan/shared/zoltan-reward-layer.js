@@ -108,39 +108,98 @@
     canvas.height = 1600;
     const ctx = canvas.getContext('2d');
     const accent = normalized.accentColor;
-    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    grad.addColorStop(0, '#050505');
-    grad.addColorStop(0.55, accent);
-    grad.addColorStop(1, '#020202');
-    ctx.fillStyle = grad;
+
+    // Background
+    const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    bg.addColorStop(0, '#080808');
+    bg.addColorStop(0.6, accent);
+    bg.addColorStop(1, '#020202');
+    ctx.fillStyle = bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(0,0,0,0.62)';
+    ctx.fillStyle = 'rgba(0,0,0,0.72)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = accent;
-    ctx.lineWidth = 10;
-    ctx.strokeRect(60, 60, 1080, 1480);
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-    ctx.font = '900 64px Inter, Arial';
-    ctx.fillText('ZOLTAN REWARD', 600, 170);
-    ctx.font = '900 54px Inter, Arial';
-    wrap(ctx, normalized.title, 600, 430, 940, 64, 3);
+
+    // Accent top bar
     ctx.fillStyle = accent;
-    ctx.font = '900 42px Inter, Arial';
-    wrap(ctx, normalized.subtitle, 600, 660, 880, 52, 3);
-    if (normalized.code) {
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(230, 850, 740, 140);
-      ctx.fillStyle = '#050505';
-      ctx.font = '900 54px Inter, Arial';
-      ctx.fillText(normalized.code, 600, 938);
-    }
+    ctx.fillRect(60, 60, 1080, 8);
+
+    // Border
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(60, 60, 1080, 1480);
+
+    // Brand
+    ctx.textAlign = 'left';
     ctx.fillStyle = '#fff';
-    ctx.font = '800 30px Inter, Arial';
-    wrap(ctx, normalized.description, 600, 1130, 900, 42, 4);
-    ctx.fillStyle = 'rgba(255,255,255,0.64)';
-    ctx.font = '800 24px Inter, Arial';
-    ctx.fillText(new Date().toLocaleString(), 600, 1450);
+    ctx.font = '900 26px Inter, Arial';
+    ctx.fillText('ZOLTAN', 100, 140);
+    ctx.fillStyle = accent;
+    ctx.font = '900 18px Inter, Arial';
+    ctx.fillText('REWARD', 100, 170);
+
+    // Type badge
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(820, 120, 280, 44);
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 18px Inter, Arial';
+    ctx.fillText(String(normalized.type).toUpperCase().replace(/_/g, ' '), 1080, 150);
+
+    // Title
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 58px Inter, Arial';
+    wrap(ctx, normalized.title, 100, 340, 1000, 72, 3);
+
+    // Subtitle
+    ctx.fillStyle = accent;
+    ctx.font = '900 36px Inter, Arial';
+    wrap(ctx, normalized.subtitle, 100, 600, 1000, 50, 3);
+
+    let lowerContentY = normalized.code ? 960 : 820;
+    if (normalized.image) {
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillRect(100, 720, 1000, 360);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(100, 720, 1000, 360);
+      if (!drawRewardImage(ctx, normalized.image, 100, 720, 1000, 360)) {
+        ctx.fillStyle = accent;
+        ctx.textAlign = 'center';
+        ctx.font = '900 54px Inter, Arial';
+        ctx.fillText((normalized.image.name || normalized.image.title || 'MEDIA').slice(0, 18), 600, 920);
+      }
+      lowerContentY = normalized.code ? 1220 : 1150;
+    }
+
+    // Code box
+    if (normalized.code) {
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillRect(100, normalized.image ? 1110 : 760, 1000, 120);
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 6]);
+      ctx.strokeRect(100, normalized.image ? 1110 : 760, 1000, 120);
+      ctx.setLineDash([]);
+      ctx.fillStyle = accent;
+      ctx.textAlign = 'center';
+      ctx.font = '900 48px Inter, Arial';
+      ctx.fillText(normalized.code, 600, normalized.image ? 1190 : 840);
+    }
+
+    // Description
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.86)';
+    ctx.font = '800 28px Inter, Arial';
+    wrap(ctx, normalized.description, 100, lowerContentY, 1000, 42, normalized.image ? 3 : 4);
+
+    // Footer
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '800 22px Inter, Arial';
+    ctx.fillText('Acción local · sin backend · sin QR falso', 600, 1430);
+    ctx.fillText(new Date().toLocaleString(), 600, 1480);
+
     const link = document.createElement('a');
     link.download = (options && options.filename) || `zoltan-reward-${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');
@@ -166,6 +225,24 @@
     if (line && lineIndex < maxLines) ctx.fillText(line, x, y + lineIndex * lineHeight);
   }
 
+  function drawRewardImage(ctx, image, x, y, w, h) {
+    const source = typeof image === 'string' ? null : image && image.el;
+    if (!source) return false;
+    const iw = source.videoWidth || source.naturalWidth || source.width || 1;
+    const ih = source.videoHeight || source.naturalHeight || source.height || 1;
+    const scale = Math.max(w / iw, h / ih);
+    const sw = w / scale;
+    const sh = h / scale;
+    const sx = (iw - sw) / 2;
+    const sy = (ih - sh) / 2;
+    try {
+      ctx.drawImage(source, sx, sy, sw, sh, x, y, w, h);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   function handleRewardAction(reward, action, context) {
     const normalized = normalizeReward(reward);
     const act = action || normalized.primaryAction;
@@ -188,24 +265,58 @@
     return { ok: false, error: 'Unknown reward action.' };
   }
 
+  function actionIcon(type) {
+    const map = {
+      save: '★',
+      copy: '📋',
+      link: '→',
+      mobile_send: '✉',
+      download_png: '⬇',
+      default: '•'
+    };
+    return map[type] || map.default;
+  }
+
   function renderRewardActions(container, reward, options) {
     if (!container) return;
     const normalized = normalizeReward(reward);
     const actions = [normalized.primaryAction].concat(normalized.secondaryActions || []);
-    container.innerHTML = actions.map((action, index) => `<button type="button" class="${index === 0 ? 'is-primary' : ''}" data-zoltan-action-index="${index}">${action.label || 'Accion'}</button>`).join('');
+    container.innerHTML = actions.map((action, index) => {
+      const icon = actionIcon(action.type);
+      return `<button type="button" class="${index === 0 ? 'is-primary' : ''}" data-zoltan-action-index="${index}"><span aria-hidden="true">${icon}</span> ${escapeHtml(action.label || 'Accion')}</button>`;
+    }).join('');
     container.querySelectorAll('[data-zoltan-action-index]').forEach((button) => {
       button.addEventListener('click', () => handleRewardAction(normalized, actions[Number(button.dataset.zoltanActionIndex)], options));
     });
   }
 
+  function renderRewardMedia(image) {
+    if (!image) return '';
+    if (typeof image === 'string') {
+      return `<div class="zoltan-reward-media"><img src="${escapeHtml(image)}" alt="" /></div>`;
+    }
+    if (image.el) {
+      const src = image.url || image.el.src || '';
+      if (image.type === 'video') {
+        return `<div class="zoltan-reward-media"><video src="${escapeHtml(src)}" muted autoplay loop playsinline></video></div>`;
+      }
+      return `<div class="zoltan-reward-media"><img src="${escapeHtml(src)}" alt="${escapeHtml(image.name || '')}" /></div>`;
+    }
+    const initial = (image.name || image.title || 'Z').trim().charAt(0).toUpperCase();
+    return `<div class="zoltan-reward-media"><span class="zoltan-reward-media-initial">${escapeHtml(initial)}</span></div>`;
+  }
+
   function renderRewardCard(container, reward, options) {
     if (!container) return null;
     const normalized = normalizeReward(reward);
+    const context = options || {};
+    const item = context.item || {};
     container.style.setProperty('--accent', normalized.accentColor);
     container.classList.add('zoltan-reward-card');
     container.innerHTML = `
       <h3>${escapeHtml(normalized.title)}</h3>
       <p>${escapeHtml(normalized.subtitle)}</p>
+      ${renderRewardMedia(normalized.image)}
       ${normalized.code ? `<div class="zoltan-reward-code">${escapeHtml(normalized.code)}</div>` : ''}
       <p>${escapeHtml(normalized.description)}</p>
       <div class="zoltan-reward-actions"></div>

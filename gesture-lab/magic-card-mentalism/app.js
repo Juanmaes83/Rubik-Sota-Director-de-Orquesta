@@ -177,9 +177,12 @@
   function buildDeck() {
     state.trickMode = els.trickMode ? els.trickMode.value : 'binary';
     if (state.trickMode === 'classic21') {
+      els.cardCount.max = 21;
       els.cardCount.value = 21;
       els.cardCount.disabled = true;
     } else {
+      els.cardCount.max = 20;
+      if (parseInt(els.cardCount.value, 10) > 20) els.cardCount.value = 20;
       els.cardCount.disabled = false;
     }
     const requested = state.trickMode === 'classic21' ? 21 : clamp(parseInt(els.cardCount.value, 10) || 16, 8, 20);
@@ -191,8 +194,14 @@
     let valid = true;
     let message = 'Listo con cartas demo por defecto.';
 
-    if (!usingCustom) {
+    if (window.ZoltanAssetIntake && usingCustom) {
+      const normalized = window.ZoltanAssetIntake.normalizeAssetsForDeck(custom, requested, allowPlaceholders);
+      assets = normalized.deckAssets;
+      valid = normalized.contract.ok;
+      message = normalized.contract.message;
+    } else if (!usingCustom) {
       assets = Array.from({ length: requested }, (_, i) => makeDefaultAsset(i));
+      message = `Medios cargados: 0/${requested}. Usando cartas demo internas. Deck listo.`;
     } else if (custom.length === requested) {
       assets = custom.slice(0, requested);
       message = `Set personalizado valido: ${requested} medios sin repetir.`;
@@ -372,7 +381,7 @@
   }
 
   function updateUi() {
-    els.cardCountLabel.textContent = `${els.cardCount.value} cartas`;
+    els.cardCountLabel.textContent = `${state.cardCount} cartas`;
     const isClassicQuestion = state.phase === 'classic-question';
     els.startBtn.disabled = state.phase !== 'pick' || els.startBtn.disabled;
     els.yesBtn.disabled = state.phase !== 'question';

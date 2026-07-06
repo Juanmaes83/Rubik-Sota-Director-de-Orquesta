@@ -36,6 +36,41 @@
         <div id="grid" class="grid"></div>
       </section>
       <aside class="panel">
+        <section class="brand-panel" aria-label="Control de marca y medios">
+          <label>Marca
+            <input id="brandName" type="text" value="ZOLTAN Drops" />
+          </label>
+          <label>Claim
+            <input id="campaignClaim" type="text" value="Tu hype acaba de convertirse en pase." />
+          </label>
+          <label>CTA
+            <input id="campaignCta" type="text" value="Entrar al drop" />
+          </label>
+          <label>Nombre del drop
+            <input id="dropName" type="text" value="Sneaker Drop Oracle" />
+          </label>
+          <label>Color de marca
+            <input id="brandColor" type="color" value="#d8ff3e" />
+          </label>
+          <label>Medios del drop
+            <input id="assetFiles" type="file" accept="image/*,video/*" multiple />
+          </label>
+          <label>Logo
+            <input id="logoFile" type="file" accept="image/*,video/*" />
+          </label>
+          <label>Fondo
+            <input id="backgroundFile" type="file" accept="image/*,video/*" />
+          </label>
+          <label>Numero de sneakers
+            <input id="itemCount" type="range" min="8" max="20" value="16" />
+            <span id="itemCountLabel">16 sneakers</span>
+          </label>
+          <label class="check-row">
+            <input id="allowPlaceholders" type="checkbox" checked />
+            Placeholders visibles si faltan medios
+          </label>
+          <div id="assetStatus" class="asset-status is-ok">Medios cargados: 0/16. Usando demo interna. Deck listo.</div>
+        </section>
         <div class="readout">
           <span id="progress">Lectura sin iniciar</span>
           <strong id="question">Piensa una sneaker. No la pulses.</strong>
@@ -58,6 +93,7 @@
   <script src="../shared/zoltan-analytics.js"></script>
   <script src="../shared/zoltan-selection-engine.js"></script>
   <script src="../shared/zoltan-reward-layer.js"></script>
+  <script src="../shared/zoltan-asset-intake.js"></script>
   <script src="../shared/zoltan-experience-schema.js"></script>
   <script src="../shared/zoltan-telemetry.js"></script>
   <script src="./app.js"></script>
