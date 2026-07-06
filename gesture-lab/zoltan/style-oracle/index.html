@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ZOLTAN Style Oracle: personal shopper mentalista para moda y retail con gestos, touch, productos personalizables y recuerdo PNG." />
+  <title>ZOLTAN Style Oracle · El Oraculo de tu Outfit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <video id="cameraVideo" playsinline muted aria-hidden="true"></video>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="back-link" href="../../index.html">← Gesture Lab</a>
+      <div class="brand-lockup">
+        <span class="brand-mark">Z</span>
+        <div>
+          <strong>ZOLTAN Style Oracle</strong>
+          <span>El Oraculo de tu Outfit · modulo 39</span>
+        </div>
+      </div>
+      <button id="cameraBtn" class="ghost-btn" type="button">Activar camara</button>
+    </header>
+
+    <section class="hero-panel" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        <span id="phasePill" class="pill">ATTRACT</span>
+        <h1 id="heroTitle">El Oraculo de tu Outfit</h1>
+        <p id="hostLine">Piensa una prenda. No la señales. ZOLTAN leera tu estilo.</p>
+        <p id="privacyLine" class="privacy">La camara solo detecta gestos en este dispositivo. No se graba video ni se envian imagenes.</p>
+      </div>
+      <div class="phase-card" aria-live="polite">
+        <span id="progressLabel">Lectura sin iniciar</span>
+        <strong id="questionText">Piensa una prenda. La encontraremos sin que la toques.</strong>
+        <p id="microcopy">Marca, gesto y ritual. El truco queda invisible.</p>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="control-panel" aria-label="Panel de personalizacion">
+        <h2>Personalizacion</h2>
+        <label>Marca
+          <input id="brandName" type="text" value="ZOLTAN Atelier" />
+        </label>
+        <label>Claim
+          <input id="campaignClaim" type="text" value="Tu armario acaba de hablar." />
+        </label>
+        <label>CTA final
+          <input id="campaignCta" type="text" value="Crear look completo" />
+        </label>
+        <label>Color de marca
+          <input id="brandColor" type="color" value="#d8ff3e" />
+        </label>
+        <label>Tono del anfitrion
+          <select id="hostTone">
+            <option value="premium">Premium</option>
+            <option value="provocador">Provocador</option>
+            <option value="divertido">Divertido</option>
+          </select>
+        </label>
+        <label>Sector / preset
+          <select id="sectorPreset">
+            <option value="fashion">Moda retail</option>
+            <option value="sneakers">Sneaker drop</option>
+            <option value="beauty">Beauty selection</option>
+            <option value="luxury">Lujo editorial</option>
+          </select>
+        </label>
+        <label>Numero de productos
+          <input id="productCount" type="range" min="8" max="20" step="1" value="16" />
+          <span id="productCountLabel">16 productos</span>
+        </label>
+        <label class="file-field">Imagenes o videos de prendas
+          <input id="productFiles" type="file" accept="image/*,video/*" multiple />
+        </label>
+        <label class="file-field">Logo de marca
+          <input id="logoFile" type="file" accept="image/*" />
+        </label>
+        <label class="file-field">Fondo opcional
+          <input id="backgroundFile" type="file" accept="image/*,video/*" />
+        </label>
+        <label class="check-field">
+          <input id="allowPlaceholders" type="checkbox" checked />
+          Permitir placeholders visibles si faltan medios
+        </label>
+        <div id="mediaStatus" class="media-status">Deck demo listo.</div>
+      </aside>
+
+      <section id="stage" class="stage" aria-label="Experiencia Style Oracle">
+        <div class="gesture-zones" aria-hidden="true">
+          <span>NO · izquierda</span>
+          <span>SI · derecha</span>
+        </div>
+        <div id="productGrid" class="product-grid"></div>
+      </section>
+
+      <aside class="action-panel" aria-label="Acciones de juego">
+        <h2>Ritual</h2>
+        <div id="resultCard" class="result-card">
+          <span>Sin lectura</span>
+          <strong>Elige una prenda en tu mente.</strong>
+        </div>
+        <div class="primary-actions">
+          <button id="startBtn" class="main-btn" type="button">Empezar lectura de estilo</button>
+          <button id="secretBtn" class="main-btn is-hidden" type="button">Ya la tengo</button>
+        </div>
+        <div class="answer-actions">
+          <button id="noBtn" type="button" disabled>NO</button>
+          <button id="yesBtn" type="button" disabled>SI</button>
+        </div>
+        <div class="cta-actions">
+          <button id="viewProductBtn" type="button">Ver producto</button>
+          <button id="lookBtn" type="button">Crear look completo</button>
+          <button id="wishBtn" type="button">Guardar wishlist</button>
+          <button id="sendBtn" type="button">Enviar a mi movil</button>
+          <button id="downloadBtn" type="button">Descargar resultado PNG</button>
+          <button id="resetBtn" type="button">Reiniciar</button>
+        </div>
+        <div id="qaPanel" class="qa-panel">QA: motor binario listo · touch activo · camara opcional</div>
+      </aside>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="../shared/zoltan-core.js"></script>
+  <script src="../shared/zoltan-analytics.js"></script>
+  <script src="../shared/zoltan-utils.js"></script>
+  <script src="../shared/zoltan-gestures.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
