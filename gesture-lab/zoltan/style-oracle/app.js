@@ -115,6 +115,8 @@
     answerBits: 0,
     questionProducts: [],
     reveal: null,
+    engineSession: null,
+    reward: null,
     cameraController: null,
     cameraActive: false,
     lastGestureAt: 0
@@ -205,6 +207,30 @@
     };
   }
 
+  function engineItems() {
+    return state.products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      title: product.name,
+      subtitle: product.stylePersona,
+      category: product.category,
+      color: product.color,
+      tags: product.tags,
+      price: product.price,
+      cta: { label: product.cta, href: product.productUrl || '#' },
+      rewardType: product.category === 'Look completo' ? 'outfit' : 'product'
+    }));
+  }
+
+  function rebuildEngineSession() {
+    if (!window.ZoltanSelectionEngine || !state.products.length) return;
+    const created = window.ZoltanSelectionEngine.createDeck(engineItems(), { minItems: 8, maxItems: 20 });
+    if (created.ok) {
+      state.engineSession = window.ZoltanSelectionEngine.createSession(created.deck);
+      state.maxBits = state.engineSession.maxBits;
+    }
+  }
+
   function buildDeck() {
     const requested = clamp(parseInt(els.productCount.value, 10) || 16, 8, 20);
     state.productCount = requested;
@@ -248,11 +274,17 @@
     els.mediaStatus.classList.toggle('is-error', !valid);
     els.startBtn.disabled = !valid;
     track('zoltan_style_oracle_product_set_loaded', { count: requested, customAssets: custom.length, valid });
+    if (valid) rebuildEngineSession();
     render();
     return valid;
   }
 
   function questionGroup() {
+    if (window.ZoltanSelectionEngine && state.engineSession) {
+      return window.ZoltanSelectionEngine.getQuestionGroup(state.engineSession)
+        .map((item) => state.products[item.index])
+        .filter(Boolean);
+    }
     const bit = 1 << state.currentBit;
     return state.products
       .filter((product) => (product.binaryValue & bit) !== 0)
@@ -347,6 +379,9 @@
     els.resultCard.innerHTML = state.reveal
       ? `<span>Outfit desbloqueado</span><strong>${escapeHtml(state.reveal.name)}</strong><p>${escapeHtml(state.reveal.stylePersona)} · ${escapeHtml(state.reveal.cta)}</p>`
       : '<span>Sin lectura</span><strong>Elige una prenda en tu mente.</strong>';
+    if (state.reveal && state.reward && window.ZoltanRewardLayer) {
+      window.ZoltanRewardLayer.renderRewardCard(els.resultCard, state.reward, { item: state.reveal });
+    }
     document.documentElement.style.setProperty('--accent', els.brandColor.value);
   }
 
@@ -358,6 +393,9 @@
     state.answerBits = 0;
     state.currentBit = 0;
     state.reveal = null;
+    state.reward = null;
+    rebuildEngineSession();
+    if (window.ZoltanTelemetry) window.ZoltanTelemetry.startSession('zoltan-style-oracle', { count: state.products.length });
     track('zoltan_style_oracle_started', { count: state.products.length, tone: els.hostTone.value });
     setPhase(PHASES.PICK_SECRET);
   }
@@ -365,15 +403,28 @@
   function beginQuestions() {
     state.currentBit = 0;
     state.answerBits = 0;
+    if (state.engineSession && window.ZoltanSelectionEngine) {
+      state.engineSession = window.ZoltanSelectionEngine.resetSession(state.engineSession);
+      state.maxBits = state.engineSession.maxBits;
+    }
     state.questionProducts = questionGroup();
     setPhase(PHASES.QUESTION);
   }
 
   function answer(yes, source) {
     if (state.phase !== PHASES.QUESTION) return;
-    if (yes) state.answerBits += 1 << state.currentBit;
+    if (window.ZoltanTelemetry) window.ZoltanTelemetry.recordInteraction('answer', { answer: yes ? 'yes' : 'no', source: source || 'button', mode: source || 'button' });
+    if (state.engineSession && window.ZoltanSelectionEngine) {
+      state.engineSession = window.ZoltanSelectionEngine.answerCurrentQuestion(state.engineSession, yes);
+      state.answerBits = state.engineSession.answerBits;
+      state.currentBit = state.engineSession.currentBit;
+    } else if (yes) {
+      state.answerBits += 1 << state.currentBit;
+      state.currentBit += 1;
+    } else {
+      state.currentBit += 1;
+    }
     track('zoltan_style_oracle_answered', { round: state.currentBit + 1, answer: yes ? 'yes' : 'no', source: source || 'button' });
-    state.currentBit += 1;
     if (state.currentBit >= state.maxBits) {
       setPhase(PHASES.TENSION);
       setTimeout(reveal, 850);
@@ -385,8 +436,30 @@
   }
 
   function reveal() {
-    const index = clamp(state.answerBits - 1, 0, state.products.length - 1);
+    const engineReveal = state.engineSession && window.ZoltanSelectionEngine ? window.ZoltanSelectionEngine.getReveal(state.engineSession) : null;
+    const index = engineReveal && engineReveal.ok ? engineReveal.index : clamp(state.answerBits - 1, 0, state.products.length - 1);
     state.reveal = state.products[index];
+    if (window.ZoltanRewardLayer) {
+      state.reward = window.ZoltanRewardLayer.createReward({
+        id: state.reveal.id,
+        name: state.reveal.name,
+        title: state.reveal.name,
+        subtitle: state.reveal.stylePersona,
+        category: state.reveal.category,
+        color: state.reveal.color,
+        price: state.reveal.price,
+        cta: { label: els.campaignCta.value || state.reveal.cta, href: state.reveal.productUrl || '#' },
+        rewardType: state.reveal.category === 'Look completo' ? 'outfit' : 'product'
+      }, {
+        type: state.reveal.category === 'Look completo' ? 'outfit' : 'product',
+        title: `Has desbloqueado: ${state.reveal.name}`,
+        subtitle: els.campaignClaim.value || state.reveal.stylePersona,
+        description: 'Guarda este resultado, copia la seleccion o continua con la accion de marca.',
+        accentColor: els.brandColor.value,
+        metadata: { module: 'zoltan-style-oracle', sector: 'fashion', campaign: els.brandName.value, selectedItemId: state.reveal.id }
+      });
+    }
+    if (window.ZoltanTelemetry) window.ZoltanTelemetry.endSession({ revealed: true });
     track('zoltan_style_oracle_revealed', { index, product: state.reveal.name });
     setPhase(PHASES.REVEAL);
     toast(`ZOLTAN ha revelado: ${state.reveal.name}`);
@@ -399,6 +472,7 @@
     const rect = els.stage.getBoundingClientRect();
     state.lastGestureAt = now;
     track('fallback_used', { source: event.pointerType || 'pointer' });
+    if (window.ZoltanTelemetry) window.ZoltanTelemetry.recordFallback(event.pointerType || 'pointer-zone');
     answer(event.clientX - rect.left > rect.width / 2, 'zone');
   }
 
@@ -417,6 +491,11 @@
       mode: 'style-oracle',
       onStatus(status) {
         if (status === 'camera-started') {
+          if (window.ZoltanTelemetry) {
+            const session = window.ZoltanTelemetry.startSession('zoltan-style-oracle-camera');
+            session.cameraRequested = true;
+            session.cameraGranted = true;
+          }
           state.cameraActive = true;
           els.cameraBtn.textContent = 'Camara activa';
           els.cameraBtn.className = 'ghost-btn is-active';
@@ -424,6 +503,12 @@
           toast('Camara activa: izquierda NO, derecha SI.');
         }
         if (status === 'camera-denied' || status === 'camera-unavailable') {
+          if (window.ZoltanTelemetry) {
+            const session = window.ZoltanTelemetry.startSession('zoltan-style-oracle-camera');
+            session.cameraRequested = true;
+            session.cameraDenied = true;
+            window.ZoltanTelemetry.recordFallback(status);
+          }
           state.cameraActive = false;
           els.cameraBtn.textContent = 'Modo tactil activo';
           els.cameraBtn.className = 'ghost-btn';
@@ -434,6 +519,7 @@
       },
       onGesture(gesture) {
         if (state.phase !== PHASES.QUESTION) return;
+        if (window.ZoltanTelemetry) window.ZoltanTelemetry.recordGestureAttempt({ x: gesture.x, confidence: gesture.confidence });
         const now = performance.now();
         if (now - state.lastGestureAt < 1100 || gesture.confidence < 0.28) return;
         state.lastGestureAt = now;
@@ -562,6 +648,7 @@
     state.answerBits = 0;
     state.currentBit = 0;
     state.reveal = null;
+    state.reward = null;
     state.questionProducts = [];
     setPhase(PHASES.ATTRACT);
   }
@@ -617,6 +704,7 @@
   };
 
   track('zoltan_style_oracle_loaded');
+  if (window.ZoltanTelemetry) window.ZoltanTelemetry.recordEnvironment({ module: 'zoltan-style-oracle' });
   buildDeck();
   updateCopy();
   updateButtons();

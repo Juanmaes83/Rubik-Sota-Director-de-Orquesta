@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ZOLTAN Travel Destiny Oracle: piensa una ruta y descubre tu destino accionable." />
+  <title>ZOLTAN Travel Destiny Oracle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/zoltan-reward-layer.css" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a href="../../index.html">← Gesture Lab</a>
+      <strong>ZOLTAN Travel Destiny Oracle</strong>
+      <span>Modulo 41 · Travel · Route</span>
+    </header>
+    <section class="hero">
+      <div>
+        <span id="phasePill">ATTRACT</span>
+        <h1>No eliges destino.</h1>
+        <p id="hostLine">El destino te elige a ti. Piensa una ruta, plan o experiencia. No la digas.</p>
+      </div>
+      <aside id="rewardPanel" class="reward-panel">
+        <span>Itinerario</span>
+        <strong>Aun no hay ruta.</strong>
+        <p>Completa la lectura para guardar una tarjeta accionable.</p>
+      </aside>
+    </section>
+    <section class="workspace">
+      <section id="stage" class="stage">
+        <div class="zones"><span>NO</span><span>SI</span></div>
+        <div id="grid" class="grid"></div>
+      </section>
+      <aside class="panel">
+        <div class="readout">
+          <span id="progress">Lectura sin iniciar</span>
+          <strong id="question">Piensa una ruta. No la pulses.</strong>
+          <p id="microcopy">La brujula debe sentirse como una revelacion.</p>
+        </div>
+        <button id="startBtn" class="primary">Empezar destino</button>
+        <button id="secretBtn" class="primary hidden">Ya tengo mi ruta</button>
+        <div class="answers">
+          <button id="noBtn" disabled>NO</button>
+          <button id="yesBtn" disabled>SI</button>
+        </div>
+        <button id="downloadBtn" disabled>Descargar tarjeta PNG</button>
+        <button id="resetBtn">Reiniciar</button>
+        <small>Sin camara obligatoria. Sin backend. Enlace/codigo listo para copiar.</small>
+      </aside>
+    </section>
+  </main>
+  <div id="toast" class="toast"></div>
+  <script src="../shared/zoltan-core.js"></script>
+  <script src="../shared/zoltan-analytics.js"></script>
+  <script src="../shared/zoltan-selection-engine.js"></script>
+  <script src="../shared/zoltan-reward-layer.js"></script>
+  <script src="../shared/zoltan-experience-schema.js"></script>
+  <script src="../shared/zoltan-telemetry.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -53,10 +53,20 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 - ZOLTAN Brand Magic Square / Cuadrado Magico de Marca - Disponible como modulo 37 en `gesture-lab/zoltan/brand-magic-square/` - ZOLTAN 03
 - ZOLTAN Portal 1089 / El Numero Imposible - Disponible como modulo 38 en `gesture-lab/zoltan/portal-1089/` - ZOLTAN 04
 - ZOLTAN Style Oracle / El Oraculo de tu Outfit - Disponible como modulo 39 en `gesture-lab/zoltan/style-oracle/` - Experience Skin 01
+- ZOLTAN Sneaker Drop Oracle - Disponible como modulo 40 en `gesture-lab/zoltan/sneaker-drop-oracle/` - Experience Skin 02
+- ZOLTAN Travel Destiny Oracle - Disponible como modulo 41 en `gesture-lab/zoltan/travel-destiny-oracle/` - Experience Skin 03
 
 ### Linea ZOLTAN v1 - Guia de apoyo
 
 ZOLTAN queda iniciada como una linea propia dentro de Gesture Lab: motor de asombro gestual para retail, marcas, eventos, escaparates, ferias y experiencias web.
+
+**ZOLTAN Platform Core v1**
+
+- Selection Engine: `gesture-lab/zoltan/shared/zoltan-selection-engine.js`.
+- Reward Layer: `gesture-lab/zoltan/shared/zoltan-reward-layer.js` y `zoltan-reward-layer.css`.
+- Experience Schema: `gesture-lab/zoltan/shared/zoltan-experience-schema.js`.
+- Telemetry local/QA: `gesture-lab/zoltan/shared/zoltan-telemetry.js`.
+- Documentacion: `docs/ZOLTAN_PLATFORM_LAYER.md`, `docs/ZOLTAN_EXPERIENCE_AUTHORING_SCHEMA.md` y `docs/ZOLTAN_PHYSICAL_QA_PROTOCOL.md`.
 
 **Modulo 36 - ZOLTAN Oracle / Oraculo de Carta**
 
@@ -106,6 +116,25 @@ ZOLTAN queda iniciada como una linea propia dentro de Gesture Lab: motor de asom
 - Regla de medios: no se repiten assets ocultamente. Si faltan medios, se bloquea o se muestran placeholders visibles.
 - Privacidad: camara opcional, procesamiento local, sin backend, sin cookies y sin envio de imagenes.
 - Salida: PNG editorial con marca, prenda revelada, persona de estilo, claim, CTA y fecha local.
+- Integracion nueva: usa Selection Engine para el reveal, Reward Layer para acciones locales y Telemetry para QA privado.
+
+**Modulo 40 - ZOLTAN Sneaker Drop Oracle**
+
+- Ruta: `gesture-lab/zoltan/sneaker-drop-oracle/`.
+- Concepto: el usuario piensa una sneaker y ZOLTAN abre un drop, pase, wishlist o recompensa local.
+- Logica: `ZoltanSelectionEngine`.
+- Reward: `drop_access`, `product`, `coupon` u `outfit` segun rareza/categoria.
+- Interaccion: touch/mouse por zonas izquierda/derecha y botones SI/NO. Camara no obligatoria.
+- Salida: pase PNG local. No hay QR falso ni backend.
+
+**Modulo 41 - ZOLTAN Travel Destiny Oracle**
+
+- Ruta: `gesture-lab/zoltan/travel-destiny-oracle/`.
+- Concepto: el usuario piensa una ruta o experiencia y ZOLTAN revela el destino.
+- Logica: `ZoltanSelectionEngine`.
+- Reward: `route` o `generic_cta`.
+- Interaccion: touch/mouse por zonas izquierda/derecha y botones SI/NO. Camara no obligatoria.
+- Salida: tarjeta PNG local con ruta/itinerario. No hay QR falso ni backend.
 
 ### Dynamic Motion Banners v0.4 — Gesture Interactive Edition
 
@@ -396,6 +425,8 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 | 37 | ZOLTAN Brand Magic Square | Publicada - ZOLTAN 03 |
 | 38 | ZOLTAN Portal 1089 | Publicada - ZOLTAN 04 |
 | 39 | ZOLTAN Style Oracle / El Oraculo de tu Outfit | Publicada - Experience Skin 01 |
+| 40 | ZOLTAN Sneaker Drop Oracle | Publicada - Experience Skin 02 |
+| 41 | ZOLTAN Travel Destiny Oracle | Publicada - Experience Skin 03 |
 
 ### Notas de módulos nuevos (v2.0.7)
 
@@ -411,6 +442,8 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 - **37 - ZOLTAN Brand Magic Square**: publicado en `gesture-lab/zoltan/brand-magic-square/`. Experiencia de magia matematica aplicada a branding: numero objetivo, cuadrado magico 4x4 verificable, reveal comercial y salida PNG.
 - **38 - ZOLTAN Portal 1089**: publicado en `gesture-lab/zoltan/portal-1089/`. Ritual matematico de 3 cifras que converge en 1089, con pasos editoriales, CTA, camara opcional, auto ritual y recuerdo PNG.
 - **39 - ZOLTAN Style Oracle / El Oraculo de tu Outfit**: publicado en `gesture-lab/zoltan/style-oracle/`. Primera skin sectorial de ZOLTAN para moda y retail: personal shopper mentalista, productos personalizables por imagen/video, gesto SI/NO, reveal comercial y poster PNG.
+- **40 - ZOLTAN Sneaker Drop Oracle**: publicado en `gesture-lab/zoltan/sneaker-drop-oracle/`. Skin de retail hype basada en Selection Engine + Reward Layer: sneaker pensada, drop abierto, pase/reward y PNG.
+- **41 - ZOLTAN Travel Destiny Oracle**: publicado en `gesture-lab/zoltan/travel-destiny-oracle/`. Skin turismo basada en Selection Engine + Reward Layer: ruta pensada, destino revelado, tarjeta accionable y PNG.
 - **15 — Food Assembly General**: platos, menús o productos montados por capas. Vende producto gastronómico de forma visual y apetecible.
 - **16 — Sushi Roll Interactive**: sushi que se enrolla, se corta o revela ingredientes (alga, arroz, pescado, toppings y salsa). Restaurantes japoneses, delivery y campañas virales.
 - **17 — Burger Layers Interactive**: hamburguesa construida por capas (pan, carne, queso, bacon, salsa, lechuga, tomate y packaging). Ingredientes premium y clips apetecibles para redes.
@@ -424,11 +457,11 @@ Capacidad transversal para subir imagen desde galería, hacer foto con cámara t
 
 El modulo 35 ya esta publicado como primera version funcional para explotar conversion y efecto wow:
 
-**v2.34 - Magic Card Mentalism Retail PRO / v2.35-v2.38 Linea ZOLTAN**
+**v2.34 - Magic Card Mentalism Retail PRO / v2.35-v2.40 Linea ZOLTAN**
 
 **Motivo:**
 
-Tras conectar Camera FX Cum Laude y tener Retail Window Pro, Fashion Lookbook, Selfie Style y el catalogo gestual, el salto mas rentable era abrir una familia ZOLTAN de experiencias comerciales de asombro. Magic Card v2.34 implementa mentalismo matematico por bits y clasico 21 cartas. ZOLTAN Oracle, Brand Magic Square, Portal 1089 y Style Oracle convierten la linea en producto reutilizable: cartas, oraculo, magia matematica, moda/retail, branding, CTA y recuerdo descargable.
+Tras conectar Camera FX Cum Laude y tener Retail Window Pro, Fashion Lookbook, Selfie Style y el catalogo gestual, el salto mas rentable era abrir una familia ZOLTAN de experiencias comerciales de asombro. Magic Card v2.34 implementa mentalismo matematico por bits y clasico 21 cartas. ZOLTAN Oracle, Brand Magic Square, Portal 1089, Style Oracle, Sneaker Drop y Travel Destiny convierten la linea en plataforma reutilizable: hidden engine, experience skin, reward layer, host voice, telemetria local, branding, CTA y recuerdo descargable.
 
 **Flujo previsto:**
 
@@ -594,3 +627,5 @@ Cada módulo debe incluir, cuando aplique:
 - ZOLTAN Brand Magic Square publicado en `gesture-lab/zoltan/brand-magic-square/`.
 - ZOLTAN Portal 1089 publicado en `gesture-lab/zoltan/portal-1089/`.
 - ZOLTAN Style Oracle publicado en `gesture-lab/zoltan/style-oracle/`.
+- ZOLTAN Sneaker Drop Oracle publicado en `gesture-lab/zoltan/sneaker-drop-oracle/`.
+- ZOLTAN Travel Destiny Oracle publicado en `gesture-lab/zoltan/travel-destiny-oracle/`.
