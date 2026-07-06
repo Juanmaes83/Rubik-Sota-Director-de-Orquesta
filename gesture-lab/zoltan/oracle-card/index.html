@@ -43,6 +43,38 @@
           <span id="cameraLabel">Cámara: off</span>
           <span id="hoverLabel">Selección: esperando</span>
         </div>
+        <div class="brand-panel" aria-label="Control de marca y medios">
+          <label>Marca
+            <input id="brandName" type="text" value="ZOLTAN" />
+          </label>
+          <label>Claim
+            <input id="campaignClaim" type="text" value="Elige una carta y desbloquea tu destino de marca." />
+          </label>
+          <label>CTA
+            <input id="campaignCta" type="text" value="Reclamar resultado" />
+          </label>
+          <label>Color de marca
+            <input id="brandColor" type="color" value="#e8d8a8" />
+          </label>
+          <label>Cartas / productos
+            <input id="assetFiles" type="file" accept="image/*,video/*" multiple />
+          </label>
+          <label>Logo
+            <input id="logoFile" type="file" accept="image/*,video/*" />
+          </label>
+          <label>Fondo
+            <input id="backgroundFile" type="file" accept="image/*,video/*" />
+          </label>
+          <label>Número de cartas
+            <input id="cardCount" type="range" min="4" max="12" value="8" />
+            <span id="cardCountLabel">8 cartas</span>
+          </label>
+          <label class="check-row">
+            <input id="allowPlaceholders" type="checkbox" checked />
+            Placeholders visibles si faltan medios
+          </label>
+          <div id="assetStatus" class="asset-status is-ok">Medios cargados: 0/8. Usando demo interna. Ritual listo.</div>
+        </div>
         <button class="btn btn-accent full" id="resetBtn" type="button">Reset ritual</button>
       </aside>
 
@@ -88,6 +120,7 @@
   <script src="../shared/zoltan-analytics.js"></script>
   <script src="../shared/zoltan-utils.js"></script>
   <script src="../shared/zoltan-gestures.js"></script>
+  <script src="../shared/zoltan-asset-intake.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

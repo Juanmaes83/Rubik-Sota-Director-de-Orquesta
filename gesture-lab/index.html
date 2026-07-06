@@ -92,6 +92,21 @@
     .module-card.is-soon { cursor: default; }
     .module-card .open-link { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--accent); color: #001f1a; background: var(--accent); padding: 0.55rem 0.9rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.78rem; }
     .module-card .open-link:hover { background: rgba(0,255,204,0.85); }
+    .zoltan-platform { border: 1px solid rgba(232,216,168,0.35); border-radius: var(--radius-xl); padding: clamp(1.4rem, 3vw, 2.4rem); background: radial-gradient(circle at 18% 20%, rgba(232,216,168,0.12), transparent 55%), linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015)); display: grid; gap: 1.1rem; }
+    .zoltan-platform .platform-head { display: grid; gap: 0.6rem; }
+    .zoltan-platform .platform-head span { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(232,216,168,0.5); color: var(--gold); padding: 0.42rem 0.78rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; width: fit-content; }
+    .zoltan-platform h2 { font-size: clamp(1.7rem, 3vw, 2.6rem); line-height: 1.04; letter-spacing: -0.05em; font-weight: 800; }
+    .zoltan-platform>p { color: var(--muted); line-height: 1.6; font-size: clamp(0.98rem, 1.3vw, 1.08rem); max-width: 72ch; }
+    .zoltan-grid { display: grid; gap: clamp(0.8rem, 1.4vw, 1.1rem); grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+    .zoltan-card { position: relative; border: 1px solid rgba(232,216,168,0.22); border-radius: var(--radius-lg); background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015)); padding: 1.15rem; display: flex; flex-direction: column; gap: 0.7rem; overflow: hidden; transition: transform 0.2s ease, border-color 0.2s ease; }
+    .zoltan-card:hover { transform: translateY(-3px); border-color: var(--gold); }
+    .zoltan-card .top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
+    .zoltan-card .badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 800; color: var(--gold); border: 1px solid rgba(232,216,168,0.35); padding: 0.32rem 0.6rem; border-radius: var(--radius-pill); }
+    .zoltan-card h3 { font-size: 1.06rem; line-height: 1.16; letter-spacing: -0.025em; font-weight: 800; }
+    .zoltan-card p { color: var(--muted); font-size: 0.85rem; line-height: 1.45; margin: 0; }
+    .zoltan-card .open-link { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--gold); color: #050505; background: var(--gold); padding: 0.55rem 0.9rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.78rem; margin-top: auto; width: fit-content; }
+    .zoltan-card .open-link:hover { background: rgba(232,216,168,0.85); }
+
 
     .capture-block { border: 1px solid rgba(0,255,204,0.36); border-radius: var(--radius-xl); padding: clamp(1.4rem, 3vw, 2.4rem); background: radial-gradient(circle at 18% 80%, rgba(0,255,204,0.12), transparent 55%), linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); display: grid; gap: 0.95rem; }
     .capture-block h2 { font-size: clamp(1.55rem, 2.8vw, 2.3rem); letter-spacing: -0.05em; font-weight: 800; }
@@ -682,6 +697,41 @@
     </section>
 
     
+
+
+    <section id="zoltan-platform" class="zoltan-platform" aria-label="Plataforma ZOLTAN">
+      <div class="platform-head">
+        <span>ZOLTAN · Motor de asombro gestual</span>
+        <h2>Piensa un producto, look, sneaker o destino. ZOLTAN lo revela.</h2>
+      </div>
+      <p>Plataforma de activaciones inmersivas sin backend: el usuario piensa una opción, responde SÍ/NO por touch o gesto, y recibe un reveal accionable con recompensa descargable. Sin datos personales obligatorios, sin QR falso y con fallback táctil siempre activo.</p>
+      <div class="zoltan-grid">
+        <a class="zoltan-card" href="./zoltan/style-oracle/" aria-label="Abrir ZOLTAN Style Oracle">
+          <div class="top"><span class="badge">Fashion</span><span class="badge">Skin 01</span></div>
+          <h3>Style Oracle / El Oráculo de tu Outfit</h3>
+          <p>Piensa una prenda. Madame Outfit la revela y entrega un look accionable.</p>
+          <span class="open-link">Abrir Style Oracle →</span>
+        </a>
+        <a class="zoltan-card" href="./zoltan/sneaker-drop-oracle/" aria-label="Abrir ZOLTAN Sneaker Drop Oracle">
+          <div class="top"><span class="badge">Sneaker</span><span class="badge">Skin 02</span></div>
+          <h3>Sneaker Drop Oracle</h3>
+          <p>Piensa una sneaker. Drop Oracle abre un pase, drop o wishlist local.</p>
+          <span class="open-link">Abrir Sneaker Drop →</span>
+        </a>
+        <a class="zoltan-card" href="./zoltan/travel-destiny-oracle/" aria-label="Abrir ZOLTAN Travel Destiny Oracle">
+          <div class="top"><span class="badge">Travel</span><span class="badge">Skin 03</span></div>
+          <h3>Travel Destiny Oracle</h3>
+          <p>Piensa una ruta. Route Oracle revela el destino con itinerario descargable.</p>
+          <span class="open-link">Abrir Travel Destiny →</span>
+        </a>
+        <a class="zoltan-card" href="./zoltan/oracle-card/" aria-label="Abrir ZOLTAN Oracle de Carta">
+          <div class="top"><span class="badge">Oráculo</span><span class="badge">Skin 00</span></div>
+          <h3>ZOLTAN Oracle / Oráculo de Carta</h3>
+          <p>El oráculo gestual original: elige una carta y recibe reveal de marca.</p>
+          <span class="open-link">Abrir Oracle de Carta →</span>
+        </a>
+      </div>
+    </section>
 
     <section class="capture-block" aria-label="Magic Card Mentalism Retail PRO">
       <span class="pill">Nuevo modulo 35</span>

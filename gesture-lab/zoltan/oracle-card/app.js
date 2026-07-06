@@ -29,6 +29,7 @@
       { id: 'ritual', title: 'The Ritual', subtitle: 'La decisión se convierte en recuerdo.', productTitle: 'Recuerdo desbloqueado', productName: 'Poster ZOLTAN personalizado', ctaLabel: 'Descargar poster', ctaUrl: '#', color: '#ffffff', sigil: '✧' }
     ]
   };
+  let oracleCards = ORACLE_CONFIG.cards.slice();
 
   const els = {
     stage: document.getElementById('stage'),
@@ -51,7 +52,18 @@
     gestureCursor: document.getElementById('gestureCursor'),
     stageShell: document.getElementById('stageShell'),
     toast: document.getElementById('toast'),
-    posterCanvas: document.getElementById('posterCanvas')
+    posterCanvas: document.getElementById('posterCanvas'),
+    brandName: document.getElementById('brandName'),
+    campaignClaim: document.getElementById('campaignClaim'),
+    campaignCta: document.getElementById('campaignCta'),
+    brandColor: document.getElementById('brandColor'),
+    assetFiles: document.getElementById('assetFiles'),
+    logoFile: document.getElementById('logoFile'),
+    backgroundFile: document.getElementById('backgroundFile'),
+    cardCount: document.getElementById('cardCount'),
+    cardCountLabel: document.getElementById('cardCountLabel'),
+    allowPlaceholders: document.getElementById('allowPlaceholders'),
+    assetStatus: document.getElementById('assetStatus')
   };
 
   const core = window.ZoltanCore;
@@ -61,6 +73,9 @@
   let hoveredCard = null;
   let cameraOn = false;
   let lastGestureConfirm = 0;
+  let uploadedAssets = [];
+  let logoAsset = null;
+  let backgroundAsset = null;
 
   function track(eventName, payload) {
     if (window.ZoltanAnalytics) window.ZoltanAnalytics.track(eventName, Object.assign({ experienceId: ORACLE_CONFIG.experienceId }, payload || {}));
@@ -73,12 +88,16 @@
     toast._timer = setTimeout(() => els.toast.classList.remove('is-visible'), 2400);
   }
 
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+  }
+
   function setState(next) {
     state = next;
     els.stateLabel.textContent = `Estado: ${next}`;
     if (next === STATES.ATTRACT) {
       els.stageTitle.textContent = 'Levanta la mano o toca para invocar.';
-      els.stageSubtitle.textContent = ORACLE_CONFIG.subtitle;
+      els.stageSubtitle.textContent = els.campaignClaim.value || ORACLE_CONFIG.subtitle;
       els.ritualHint.textContent = 'Touch/mouse listo. Cámara opcional.';
     }
     if (next === STATES.SUMMON) {
@@ -103,9 +122,10 @@
     els.cards.innerHTML = '';
     const positions = [
       [10, 12, -9], [30, 4, 5], [51, 10, -4], [72, 16, 8],
-      [16, 48, 7], [38, 42, -6], [60, 46, 4], [78, 50, -7]
+      [16, 48, 7], [38, 42, -6], [60, 46, 4], [78, 50, -7],
+      [7, 34, -4], [88, 34, 4], [28, 65, -8], [66, 66, 8]
     ];
-    ORACLE_CONFIG.cards.forEach((card, index) => {
+    oracleCards.forEach((card, index) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'oracle-card';
@@ -115,6 +135,7 @@
       btn.style.transform = `rotate(${positions[index][2]}deg)`;
       btn.style.color = card.color;
       btn.setAttribute('aria-label', `Elegir ${card.title}`);
+      const media = renderCardMedia(card);
       btn.innerHTML = `
         <span class="card-face card-back">
           <span class="roman">${roman(index)}</span>
@@ -123,7 +144,7 @@
         </span>
         <span class="card-face card-front">
           <span class="roman">${roman(index)}</span>
-          <span class="sigil">${card.sigil}</span>
+          ${media || `<span class="sigil">${card.sigil}</span>`}
           <span>
             <strong class="card-title">${card.title}</strong>
             <span class="card-sub">${card.subtitle}</span>
@@ -134,6 +155,14 @@
       btn.addEventListener('pointerdown', () => chooseCard(card.id, 'pointer'));
       els.cards.appendChild(btn);
     });
+  }
+
+  function renderCardMedia(card) {
+    if (!card.asset) return '';
+    if (card.asset.type === 'image') return `<span class="oracle-media"><img src="${escapeHtml(card.asset.url)}" alt="${escapeHtml(card.title)}" /></span>`;
+    if (card.asset.type === 'video') return `<span class="oracle-media"><video src="${escapeHtml(card.asset.url)}" muted autoplay loop playsinline></video></span>`;
+    if (card.asset.placeholder) return `<span class="oracle-media oracle-placeholder">P${card.index + 1}</span>`;
+    return '';
   }
 
   function hoverCard(cardId) {
@@ -153,7 +182,7 @@
 
   function chooseCard(cardId, source) {
     if (state !== STATES.SELECT && state !== STATES.SUMMON) invoke();
-    const card = ORACLE_CONFIG.cards.find((item) => item.id === cardId);
+    const card = oracleCards.find((item) => item.id === cardId);
     if (!card) return;
     selectedCard = card;
     track('zoltan_oracle_card_selected', { cardId, source });
@@ -187,6 +216,48 @@
     renderCards();
     setState(STATES.ATTRACT);
     track('zoltan_oracle_reset');
+  }
+
+  function buildOracleDeck() {
+    const intake = window.ZoltanAssetIntake;
+    const requested = Math.max(4, Math.min(12, parseInt(els.cardCount.value, 10) || 8));
+    els.cardCount.value = requested;
+    els.cardCountLabel.textContent = `${requested} cartas`;
+    const normalized = intake ? intake.normalizeAssetsForDeck(uploadedAssets, requested, els.allowPlaceholders.checked) : null;
+    const contract = normalized ? normalized.contract : { ok: true, message: `Medios cargados: ${uploadedAssets.length}/${requested}.` };
+    const deckAssets = normalized ? normalized.deckAssets : uploadedAssets.slice(0, requested);
+    oracleCards = Array.from({ length: requested }, (_, index) => {
+      const base = ORACLE_CONFIG.cards[index % ORACLE_CONFIG.cards.length];
+      const asset = deckAssets[index] || null;
+      const title = asset && !asset.placeholder ? asset.name : asset && asset.placeholder ? asset.name : base.title;
+      return Object.assign({}, base, {
+        id: asset && !asset.placeholder ? `media_${asset.id}` : `${base.id}_${index}`,
+        index,
+        title,
+        productName: title,
+        productTitle: els.brandName.value || base.productTitle,
+        subtitle: els.campaignClaim.value || base.subtitle,
+        ctaLabel: els.campaignCta.value || base.ctaLabel,
+        color: els.brandColor.value || base.color,
+        asset
+      });
+    });
+    els.assetStatus.textContent = contract.message;
+    els.assetStatus.classList.toggle('is-ok', contract.ok);
+    els.assetStatus.classList.toggle('is-error', !contract.ok);
+    els.invokeBtn.disabled = !contract.ok;
+    document.documentElement.style.setProperty('--accent', els.brandColor.value);
+    if (backgroundAsset && backgroundAsset.url) {
+      els.stage.style.backgroundImage = `linear-gradient(rgba(3,3,5,.58), rgba(3,3,5,.78)), url("${backgroundAsset.url}")`;
+      els.stage.style.backgroundSize = 'cover';
+      els.stage.style.backgroundPosition = 'center';
+    } else {
+      els.stage.style.backgroundImage = '';
+    }
+    selectedCard = null;
+    renderCards();
+    setState(STATES.ATTRACT);
+    return contract.ok;
   }
 
   const gestureController = window.ZoltanGestures.createController({
@@ -245,7 +316,7 @@
   function downloadPoster() {
     const canvas = els.posterCanvas;
     const ctx = canvas.getContext('2d');
-    const card = selectedCard || ORACLE_CONFIG.cards[0];
+    const card = selectedCard || oracleCards[0];
     const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     grad.addColorStop(0, '#050506');
     grad.addColorStop(0.5, '#150a14');
@@ -261,13 +332,17 @@
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
     ctx.font = '900 88px Inter, Arial';
-    ctx.fillText('ZOLTAN', canvas.width / 2, 240);
+    ctx.fillText(els.brandName.value || 'ZOLTAN', canvas.width / 2, 240);
     ctx.fillStyle = card.color;
     ctx.font = '900 42px Inter, Arial';
     ctx.fillText('ORACLE CARD REVEAL', canvas.width / 2, 304);
     ctx.fillStyle = card.color;
     ctx.font = '900 180px Inter, Arial';
-    ctx.fillText(card.sigil, canvas.width / 2, 610);
+    if (card.asset && card.asset.el) {
+      drawCover(ctx, card.asset.el, 330, 390, 540, 540);
+    } else {
+      ctx.fillText(card.sigil, canvas.width / 2, 610);
+    }
     ctx.fillStyle = '#fff';
     ctx.font = '900 74px Playfair Display, serif';
     ctx.fillText(card.title, canvas.width / 2, 770);
@@ -281,11 +356,35 @@
     ctx.fillRect(190, 1170, canvas.width - 380, 120);
     ctx.fillStyle = '#fff';
     ctx.font = '900 38px Inter, Arial';
-    ctx.fillText(card.ctaLabel, canvas.width / 2, 1244);
+    ctx.fillText(els.campaignCta.value || card.ctaLabel, canvas.width / 2, 1244);
     ctx.fillStyle = 'rgba(232,216,168,0.9)';
     ctx.font = '800 28px Inter, Arial';
     ctx.fillText('Resultado final cerrado · Gesture Lab · ZOLTAN Line', canvas.width / 2, 1432);
     core.downloadElementAsPng(canvas, `zoltan-oracle-${card.id}-${Date.now()}.png`);
+  }
+
+  function drawCover(ctx, image, x, y, w, h) {
+    const iw = image.videoWidth || image.naturalWidth || image.width || 1;
+    const ih = image.videoHeight || image.naturalHeight || image.height || 1;
+    const scale = Math.max(w / iw, h / ih);
+    const sw = w / scale;
+    const sh = h / scale;
+    const sx = (iw - sw) / 2;
+    const sy = (ih - sh) / 2;
+    try {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 44);
+      ctx.clip();
+      ctx.drawImage(image, sx, sy, sw, sh, x, y, w, h);
+      ctx.restore();
+    } catch (err) {
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = '#fff';
+      ctx.font = '900 84px Inter, Arial';
+      ctx.fillText('MEDIA', x + w / 2, y + h / 2);
+    }
   }
 
   els.invokeBtn.addEventListener('click', invoke);
@@ -293,6 +392,24 @@
   els.cameraBtn.addEventListener('click', toggleCamera);
   els.downloadBtn.addEventListener('click', downloadPoster);
   els.fullscreenBtn.addEventListener('click', () => els.stageShell.classList.toggle('is-fullscreen'));
+  els.assetFiles.addEventListener('change', () => {
+    if (window.ZoltanAssetIntake) window.ZoltanAssetIntake.revokeAssets(uploadedAssets);
+    uploadedAssets = Array.from(els.assetFiles.files || []).map((file, index) => window.ZoltanAssetIntake.createAssetFromFile(file, index));
+    buildOracleDeck();
+  });
+  els.logoFile.addEventListener('change', () => {
+    if (logoAsset && window.ZoltanAssetIntake) window.ZoltanAssetIntake.revokeAsset(logoAsset);
+    logoAsset = els.logoFile.files[0] && window.ZoltanAssetIntake ? window.ZoltanAssetIntake.createAssetFromFile(els.logoFile.files[0]) : null;
+  });
+  els.backgroundFile.addEventListener('change', () => {
+    if (backgroundAsset && window.ZoltanAssetIntake) window.ZoltanAssetIntake.revokeAsset(backgroundAsset);
+    backgroundAsset = els.backgroundFile.files[0] && window.ZoltanAssetIntake ? window.ZoltanAssetIntake.createAssetFromFile(els.backgroundFile.files[0]) : null;
+    buildOracleDeck();
+  });
+  [els.brandName, els.campaignClaim, els.campaignCta, els.brandColor, els.cardCount, els.allowPlaceholders].forEach((el) => {
+    el.addEventListener('input', buildOracleDeck);
+    el.addEventListener('change', buildOracleDeck);
+  });
   els.stage.addEventListener('pointermove', (event) => {
     if (state !== STATES.SELECT) return;
     const payload = gestureController.handlePointer(event);
@@ -305,7 +422,13 @@
     if (dwellState.complete) chooseCard(cardEl.dataset.cardId, payload.source);
   });
 
-  window.addEventListener('beforeunload', () => gestureController.stop());
-  renderCards();
-  setState(STATES.ATTRACT);
+  window.addEventListener('beforeunload', () => {
+    gestureController.stop();
+    if (window.ZoltanAssetIntake) {
+      window.ZoltanAssetIntake.revokeAssets(uploadedAssets);
+      window.ZoltanAssetIntake.revokeAsset(logoAsset);
+      window.ZoltanAssetIntake.revokeAsset(backgroundAsset);
+    }
+  });
+  buildOracleDeck();
 })();

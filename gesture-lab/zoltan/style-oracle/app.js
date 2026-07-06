@@ -47,26 +47,41 @@
     toast: document.getElementById('toast')
   };
 
+  const HOSTS = {
+    premium: { name: 'Madame Outfit', voice: 'elegante, intima, segura' },
+    provocador: { name: 'Madame Outfit', voice: 'provocadora, complice, memorable' },
+    divertido: { name: 'Madame Outfit', voice: 'divertida, energica, cercana' }
+  };
+
   const toneCopies = {
     premium: {
-      attract: 'Piensa una prenda. No la señales. ZOLTAN leera tu estilo.',
-      pick: 'Elige una en tu mente. No la pulses. La moda tambien deja huellas.',
-      tension: 'Tu estilo apunta a una pieza con intencion.',
-      reveal: 'Tu estilo apunta a una pieza con intencion.'
+      attract: ['Piensa una prenda. No la señales. ZOLTAN leera tu estilo.', 'Hay una pieza en este escaparate que ya te ha elegido.', 'Cierra los ojos un segundo. Tu armario sabe la respuesta.'],
+      pick: ['Elige una en tu mente. No la pulses. La moda tambien deja huellas.', 'Mira cada prenda. Una de ellas te respondera.', 'Toma tu tiempo. La elegancia no se apura.'],
+      tension: ['Tu estilo apunta a una pieza con intencion.', 'Estoy leyendo siluetas, texturas... y una decision.', 'La ultima pista acaba de caer.'],
+      reveal: ['Tu estilo apunta a una pieza con intencion.', 'Era demasiado tu como para pasar desapercibida.', 'La moda no miente. Esta prenda te pertenece.'],
+      reward: ['Ahora no lo niegues. Guardalo antes de que cambie de opinion.', 'Tu armario tiene un nuevo protagonista.', 'Esto es tuyo. El escaparate lo confirma.']
     },
     provocador: {
-      attract: 'Piensa una prenda. Si la acierto, tu armario me debe una explicacion.',
-      pick: 'No hagas trampas. Esa chaqueta ya te esta mirando.',
-      tension: 'Estoy viendo textura, color... y un poco de drama.',
-      reveal: 'Lo sabia. Era demasiado tu como para esconderse.'
+      attract: ['Piensa una prenda. Si la acierto, tu armario me debe una explicacion.', 'No me mires asi. Tu outfit ya ha confesado todo.', 'Hay una pieza aqui que te esta haciendo ojitos.'],
+      pick: ['No hagas trampas. Esa chaqueta ya te esta mirando.', 'Elige en silencio. Las prendas tambien tienen memoria.', 'Si la piensas muy fuerte, la oigo.'],
+      tension: ['Estoy viendo textura, color... y un poco de drama.', 'Alguien va a quedar mal con este reveal.', 'La sospecha ya tiene nombre.'],
+      reveal: ['Lo sabia. Era demasiado tu como para esconderse.', 'Te pillé. Esta prenda llevaba tu nombre.', 'No hay secretos entre tu y este armario.'],
+      reward: ['Ahora no lo niegues. Guardalo antes de que cambie de opinion.', 'Toma. Antes de que lo pienses dos veces.', 'La moda te ha elegido. No discutas.']
     },
     divertido: {
-      attract: 'No la digas. No la pulses. Tu outfit ya esta gritando.',
-      pick: 'Elige una prenda mentalmente. Tu armario acaba de ponerse nervioso.',
-      tension: 'ZOLTAN esta reduciendo sospechosos con estilo.',
-      reveal: 'Tu armario acaba de confesar.'
+      attract: ['No la digas. No la pulses. Tu outfit ya esta gritando.', 'Piensa una prenda sin reirte. Apuesta que no puedes.', 'Tu armario tiene favorita. Vamos a pillarla.'],
+      pick: ['Elige una prenda mentalmente. Tu armario acaba de ponerse nervioso.', 'Senala con la mente. Yo vigilo por aqui.', 'Una, dos, tres... ¿ya la tienes?'],
+      tension: ['ZOLTAN esta reduciendo sospechosos con estilo.', 'Casi lo tengo. Tu look no puede mentir.', 'La cuenta atras ha empezado.'],
+      reveal: ['Tu armario acaba de confesar.', '¡Ahi esta! Lo sabia desde el primer vistazo.', 'Esa prenda estaba rogando por salir.'],
+      reward: ['Guárdala, compártela o presume. Tu outfit manda.', 'Mision cumplida. Tu armario aplaude.', 'Esto es puro estilo con tu nombre.']
     }
   };
+
+  function hostLine(phase, index) {
+    const tone = toneCopies[els.hostTone.value] || toneCopies.premium;
+    const lines = tone[phase] || tone.attract;
+    return lines[(index || 0) % lines.length];
+  }
 
   const demoProducts = [
     ['Chaqueta cropped negra', 'Outerwear', '129 EUR', 'Noir estrategico', '#111827'],
@@ -139,6 +154,18 @@
     return Math.max(min, Math.min(max, value));
   }
 
+
+  function flashStage(type) {
+    const flash = document.createElement('div');
+    flash.className = `stage-flash stage-flash--${type}`;
+    flash.setAttribute('aria-hidden', 'true');
+    els.stage.appendChild(flash);
+    requestAnimationFrame(() => flash.classList.add('is-active'));
+    setTimeout(() => {
+      flash.classList.remove('is-active');
+      setTimeout(() => flash.remove(), 350);
+    }, 180);
+  }
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, (char) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -242,7 +269,12 @@
     let status = 'Deck demo listo: productos CSS editoriales sin imagen externa.';
     let assets = [];
 
-    if (!custom.length) {
+    if (window.ZoltanAssetIntake) {
+      const normalized = window.ZoltanAssetIntake.normalizeAssetsForDeck(custom, requested, allowPlaceholders);
+      valid = normalized.contract.ok;
+      status = normalized.contract.message;
+      assets = normalized.deckAssets;
+    } else if (!custom.length) {
       assets = [];
     } else if (custom.length === requested) {
       assets = custom.slice(0, requested);
@@ -293,23 +325,26 @@
 
   function setPhase(phase) {
     state.phase = phase;
+    document.body.dataset.phase = phase;
     els.stage.classList.toggle('is-question', phase === PHASES.QUESTION);
+    els.stage.classList.toggle('is-tension', phase === PHASES.TENSION);
+    els.stage.classList.toggle('is-reveal', phase === PHASES.REVEAL);
     updateCopy();
     updateButtons();
     render();
   }
 
   function updateCopy() {
-    const tone = toneCopies[els.hostTone.value] || toneCopies.premium;
+    const host = HOSTS[els.hostTone.value] || HOSTS.premium;
     const label = state.phase.toUpperCase();
     els.phasePill.textContent = label;
     if (state.phase === PHASES.ATTRACT) {
-      els.hostLine.textContent = tone.attract;
+      els.hostLine.textContent = hostLine('attract', 0);
       els.progressLabel.textContent = 'Lectura sin iniciar';
       els.questionText.textContent = 'Piensa una prenda. La encontraremos sin que la toques.';
-      els.microcopy.textContent = 'Un escaparate vivo que convierte producto en ritual.';
+      els.microcopy.textContent = `${host.name} lee tu estilo. Sin cámara obligatoria. Sin datos.`;
     } else if (state.phase === PHASES.PICK_SECRET) {
-      els.hostLine.textContent = tone.pick;
+      els.hostLine.textContent = hostLine('pick', 0);
       els.progressLabel.textContent = 'Paso 1 · elige en silencio';
       els.questionText.textContent = 'Mira todas las prendas y piensa una. No la pulses.';
       els.microcopy.textContent = 'Cuando la tengas, pulsa "Ya la tengo".';
@@ -317,14 +352,18 @@
       els.hostLine.textContent = 'Responde con mano izquierda para NO o derecha para SI. Tambien puedes tocar la zona.';
       els.progressLabel.textContent = `Lectura ${state.currentBit + 1} de ${state.maxBits}`;
       els.questionText.textContent = '¿Tu prenda aparece aqui?';
-      els.microcopy.textContent = ['ZOLTAN reduce sospechosos.', 'La textura deja huellas.', 'Tu eleccion empieza a hablar.'][state.currentBit % 3];
+      els.microcopy.textContent = [
+        'ZOLTAN reduce sospechosos.',
+        'La textura deja huellas.',
+        'Tu elección empieza a hablar.'
+      ][state.currentBit % 3];
     } else if (state.phase === PHASES.TENSION) {
-      els.hostLine.textContent = tone.tension;
-      els.progressLabel.textContent = 'Reveal en preparacion';
-      els.questionText.textContent = 'Ya casi esta. Tu eleccion ha dejado huellas.';
+      els.hostLine.textContent = hostLine('tension', state.currentBit);
+      els.progressLabel.textContent = 'Reveal en preparación';
+      els.questionText.textContent = 'Ya casi está. Tu elección ha dejado huellas.';
       els.microcopy.textContent = 'No es una calculadora. Es una lectura de marca.';
     } else if (state.phase === PHASES.REVEAL) {
-      els.hostLine.textContent = tone.reveal;
+      els.hostLine.textContent = hostLine('reveal', 0);
       els.progressLabel.textContent = 'Producto revelado';
       els.questionText.textContent = state.reveal ? `Estabas pensando en: ${state.reveal.name}` : 'Reveal listo';
       els.microcopy.textContent = els.campaignClaim.value || 'Tu armario acaba de hablar.';
@@ -425,9 +464,10 @@
       state.currentBit += 1;
     }
     track('zoltan_style_oracle_answered', { round: state.currentBit + 1, answer: yes ? 'yes' : 'no', source: source || 'button' });
+    flashStage(yes ? 'ok' : 'danger');
     if (state.currentBit >= state.maxBits) {
       setPhase(PHASES.TENSION);
-      setTimeout(reveal, 850);
+      setTimeout(reveal, 1650);
       return;
     }
     state.questionProducts = questionGroup();
@@ -449,12 +489,14 @@
         color: state.reveal.color,
         price: state.reveal.price,
         cta: { label: els.campaignCta.value || state.reveal.cta, href: state.reveal.productUrl || '#' },
-        rewardType: state.reveal.category === 'Look completo' ? 'outfit' : 'product'
+        rewardType: state.reveal.category === 'Look completo' ? 'outfit' : 'product',
+        asset: state.reveal.asset || null
       }, {
         type: state.reveal.category === 'Look completo' ? 'outfit' : 'product',
         title: `Has desbloqueado: ${state.reveal.name}`,
         subtitle: els.campaignClaim.value || state.reveal.stylePersona,
-        description: 'Guarda este resultado, copia la seleccion o continua con la accion de marca.',
+        description: hostLine('reward', 0),
+        image: state.reveal.asset || null,
         accentColor: els.brandColor.value,
         metadata: { module: 'zoltan-style-oracle', sector: 'fashion', campaign: els.brandName.value, selectedItemId: state.reveal.id }
       });
