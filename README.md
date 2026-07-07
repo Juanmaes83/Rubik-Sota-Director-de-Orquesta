@@ -4,6 +4,25 @@ Rubik Sota Director de Orquesta es una plataforma experimental para crear experi
 
 ---
 
+## Plataforma y metodología (Experience Loops)
+
+Rubik no es una colección de demos: es una **plataforma modular de experiencias inmersivas personalizables** para sectores, empresas y marcas. Cada módulo se evalúa por su adaptabilidad comercial y debe poder convertirse en experiencia sectorial o de marca.
+
+Principios de arquitectura:
+
+- los módulos ligeros (HTML standalone) viven dentro de Rubik, en `gesture-lab/`;
+- los motores pesados viven como repos externos: [human](https://github.com/Juanmaes83/human) (Human Vision Engine / MIRRORA Engine) y [Hand-Gesture-Gaming](https://github.com/Juanmaes83/Hand-Gesture-Gaming) (Gesture Gaming / Arena Control);
+- Rubik orquesta, lanza, documenta y conecta.
+
+Documentos clave:
+
+- [EXPERIENCE_LOOPS_SYSTEM.md](docs/EXPERIENCE_LOOPS_SYSTEM.md) — metodología de trabajo y reglas para futuras IAs
+- [PERSONALIZATION_CORE_SCHEMA.md](docs/PERSONALIZATION_CORE_SCHEMA.md) — contrato común de personalización de experiencias
+- [WOW_PREMIUM_MODULES_BACKLOG.md](docs/WOW_PREMIUM_MODULES_BACKLOG.md) — backlog de módulos WOW/premium con evaluación comercial
+- [Rubik-Sota-Director-de-Orquesta_STRATEGY.md](docs/Rubik-Sota-Director-de-Orquesta_STRATEGY.md) — visión estratégica del motor madre
+
+---
+
 ## Gesture Lab
 
 Gesture Lab es el laboratorio modular de experiencias visuales controladas por gestos dentro de Rubik Sota.
