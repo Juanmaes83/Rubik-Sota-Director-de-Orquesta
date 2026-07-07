@@ -39,6 +39,22 @@ Documentacion:
 
 ---
 
+## Sword Gesture Modules
+
+Sword Rain y Sword Control son nuevos modulos R&D independientes dentro de Gesture Lab. En esta fase estan anadidos como launchers externos: no copian codigo de las demos, no integran GordenSun/SwordArt y no forman parte todavia del runtime interno.
+
+Sword Rain es la demo WOW inmediata: una experiencia gestual publica con lluvia de espadas, webcam local, MediaPipe, Three.js y WebGL.
+
+Sword Control es la base tecnica futura: una experiencia publica con React, Vite, React Three Fiber, Zustand, MediaPipe y Three.js pensada para evolucionar hacia un motor gestual mas mantenible.
+
+Documentacion y launchers:
+
+- `docs/SWORD_GESTURE_MODULES.md`
+- `gesture-lab/sword-rain/`
+- `gesture-lab/sword-control/`
+
+---
+
 ## Estado actual
 
 **Módulos activos:**
