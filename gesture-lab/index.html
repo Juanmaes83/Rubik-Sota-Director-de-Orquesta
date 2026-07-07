@@ -108,6 +108,13 @@
     .zoltan-card .open-link:hover { background: rgba(232,216,168,0.85); }
 
 
+    .mirrora-platform { border: 1px solid rgba(125,211,252,0.36); border-radius: var(--radius-xl); padding: clamp(1.4rem, 3vw, 2.4rem); background: radial-gradient(circle at 18% 20%, rgba(125,211,252,0.12), transparent 55%), linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015)); display: grid; gap: 0.95rem; }
+    .mirrora-platform .pill { display: inline-flex; align-items: center; gap: 0.46rem; border: 1px solid rgba(125,211,252,0.42); color: #7dd3fc; padding: 0.4rem 0.78rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; width: fit-content; }
+    .mirrora-platform h2 { font-size: clamp(1.7rem, 3vw, 2.6rem); line-height: 1.04; letter-spacing: -0.05em; font-weight: 800; }
+    .mirrora-platform p { color: var(--muted); line-height: 1.6; font-size: clamp(0.98rem, 1.3vw, 1.08rem); max-width: 76ch; }
+    .mirrora-platform .open-link { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #7dd3fc; color: #041018; background: #7dd3fc; padding: 0.62rem 0.95rem; border-radius: var(--radius-pill); font-weight: 800; font-size: 0.8rem; width: fit-content; }
+    .mirrora-platform .note { color: var(--fg); font-weight: 800; }
+
     .capture-block { border: 1px solid rgba(0,255,204,0.36); border-radius: var(--radius-xl); padding: clamp(1.4rem, 3vw, 2.4rem); background: radial-gradient(circle at 18% 80%, rgba(0,255,204,0.12), transparent 55%), linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); display: grid; gap: 0.95rem; }
     .capture-block h2 { font-size: clamp(1.55rem, 2.8vw, 2.3rem); letter-spacing: -0.05em; font-weight: 800; }
     .capture-block p { color: var(--muted); line-height: 1.6; font-size: clamp(0.98rem, 1.3vw, 1.06rem); max-width: 72ch; }
@@ -178,6 +185,14 @@
       <h2>Capture Input System</h2>
       <p>Capacidad transversal para subir imagen desde galería, hacer foto con cámara trasera, hacer selfie con cámara frontal y usar esa imagen dentro del módulo. Primero se aplicará a Before / After Reforma y después al resto de módulos.</p>
       <p style="color: var(--fg); font-weight: 700;">No es un módulo aislado: es una función base reutilizable por todos los módulos de Gesture Lab.</p>
+    </section>
+
+    <section id="mirrora-platform" class="mirrora-platform" aria-label="Bloque MIRRORA">
+      <span class="pill">MIRRORA · R&D foundation</span>
+      <h2>MIRRORA. Your face becomes the experience.</h2>
+      <p>MIRRORA es un bloque nuevo e independiente para identidad facial visual: try-on, avatar, souvenir, rostro 3D/4D, narracion y experiencias personalizadas. No pertenece a ZOLTAN y no implementa Face Anything todavia.</p>
+      <p class="note">Tu rostro se convierte en la experiencia. Estado actual: documentacion, privacidad, mapa de aplicaciones y roadmap R&D.</p>
+      <a class="open-link" href="./mirrora/README.md">Ver foundation MIRRORA →</a>
     </section>
 
     <section id="modules" aria-label="Mapa de módulos multisectoriales">

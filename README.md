@@ -21,6 +21,24 @@ No es una demo aislada. Es una arquitectura modular donde cada experiencia compa
 
 ---
 
+## MIRRORA - Face identity experience platform
+
+MIRRORA es un nuevo bloque independiente de Gesture Lab dedicado a experiencias de identidad facial visual: captura o subida del rostro, try-on, avatar, souvenir, narracion visual y modulos de conversion basados en la imagen real del usuario.
+
+MIRRORA no pertenece a ZOLTAN. ZOLTAN trabaja magia, mentalismo, oraculos, revelacion y reward; MIRRORA trabaja identidad visual, rostro, avatar, try-on y recuerdo personalizado.
+
+Estado actual: R&D foundation. No hay implementacion funcional, no se ha integrado Face Anything, no se han anadido dependencias, modelos ni backend.
+
+Documentacion:
+
+- `docs/MIRRORA_PLATFORM_BRIEF.md`
+- `docs/MIRRORA_TECH_STACK_AND_RND.md`
+- `docs/MIRRORA_APPLICATION_MAP.md`
+- `docs/MIRRORA_PRIVACY_AND_SAFETY.md`
+- `gesture-lab/mirrora/README.md`
+
+---
+
 ## Estado actual
 
 **Módulos activos:**
