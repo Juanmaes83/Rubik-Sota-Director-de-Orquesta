@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gesture Gaming / Arena Control - Rubik Sota</title>
+  <style>
+    :root { color-scheme: dark; --bg:#07090d; --fg:#f5f7fb; --muted:#aeb7c7; --line:rgba(255,255,255,.14); --accent:#00ffcc; --gold:#e8d8a8; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at 20% 10%, rgba(0,255,204,.14), transparent 34%), linear-gradient(135deg, #07090d, #10131d); color:var(--fg); }
+    main { width:min(1120px, calc(100% - 32px)); margin:0 auto; padding:42px 0 56px; display:grid; gap:22px; }
+    .back { color:var(--accent); text-decoration:none; font-weight:800; }
+    .hero { border:1px solid var(--line); border-radius:24px; padding:clamp(22px,4vw,44px); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025)); display:grid; gap:18px; }
+    .kicker { color:var(--accent); text-transform:uppercase; letter-spacing:.14em; font-size:.76rem; font-weight:900; }
+    h1 { margin:0; font-size:clamp(2rem,5vw,4.4rem); line-height:.95; letter-spacing:-.06em; }
+    p { color:var(--muted); line-height:1.6; margin:0; max-width:76ch; }
+    .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+    .card { border:1px solid var(--line); border-radius:18px; padding:18px; background:rgba(255,255,255,.045); }
+    .card h2 { margin:0 0 10px; font-size:1rem; }
+    .badge { display:inline-flex; border:1px solid rgba(0,255,204,.45); color:var(--accent); border-radius:999px; padding:7px 10px; font-size:.72rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 16px; border-radius:999px; border:1px solid var(--accent); background:var(--accent); color:#001f1a; text-decoration:none; font-weight:900; }
+    .btn.secondary { background:transparent; color:var(--fg); border-color:var(--line); }
+    ul { margin:0; padding-left:18px; color:var(--muted); line-height:1.55; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Volver a Gesture Lab</a>
+    <section class="hero">
+      <span class="kicker">Gesture Gaming Pack · External live module</span>
+      <h1>Gesture Gaming / Arena Control</h1>
+      <p>Launcher seguro hacia la demo publica Hand-Gesture-Gaming. Rubik no copia el codigo pesado de la demo: la registra como experiencia externa live para evaluar gameplay gestual, impacto visual y adaptacion comercial.</p>
+      <div class="actions">
+        <a class="btn" href="https://juanmaes83.github.io/Hand-Gesture-Gaming/" target="_blank" rel="noopener">Abrir demo publica</a>
+        <a class="btn secondary" href="https://github.com/Juanmaes83/Hand-Gesture-Gaming" target="_blank" rel="noopener">Ver repo</a>
+        <a class="btn secondary" href="../../docs/GESTURE_GAMING_PACK.md">Leer pack</a>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Estado del modulo">
+      <article class="card">
+        <span class="badge">LIVE</span>
+        <h2>Estado real</h2>
+        <p>Demo externa publicada en GitHub Pages. No esta integrada como runtime interno de Rubik.</p>
+      </article>
+      <article class="card">
+        <span class="badge">Camara</span>
+        <h2>Privacidad</h2>
+        <p>La experiencia externa puede pedir camara. Rubik solo enlaza: esta pagina no activa webcam ni carga scripts externos.</p>
+      </article>
+      <article class="card">
+        <span class="badge">Producto</span>
+        <h2>Adaptacion posible</h2>
+        <p>Eventos, retail deportivo, ferias, centros comerciales, gaming de marca, ranking local y retos con recompensa.</p>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>Antes de convertirlo en modulo oficial</h2>
+      <ul>
+        <li>Definir objetivo comercial y skin de marca.</li>
+        <li>Validar permisos de camara, rendimiento movil y fallback sin camara.</li>
+        <li>Separar demo tecnica de experiencia final con CTA, ranking o souvenir.</li>
+        <li>Documentar si los datos de camara se procesan localmente y que no se almacenan por defecto.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
