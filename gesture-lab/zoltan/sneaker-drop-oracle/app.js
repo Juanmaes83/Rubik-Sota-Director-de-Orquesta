@@ -39,7 +39,7 @@
     'stage', 'grid', 'phasePill', 'hostLine', 'rewardPanel', 'progress', 'question', 'microcopy',
     'brandName', 'campaignClaim', 'campaignCta', 'dropName', 'brandColor', 'assetFiles',
     'logoFile', 'backgroundFile', 'itemCount', 'itemCountLabel', 'allowPlaceholders', 'assetStatus',
-    'startBtn', 'secretBtn', 'noBtn', 'yesBtn', 'downloadBtn', 'resetBtn', 'toast'
+    'startBtn', 'secretBtn', 'noBtn', 'yesBtn', 'downloadBtn', 'resetBtn', 'cameraBtn', 'cameraVideo', 'toast'
   ].reduce((acc, id) => {
     acc[id] = document.getElementById(id);
     return acc;
@@ -56,6 +56,34 @@
     reward: null,
     lastPointer: 0
   };
+
+  const runtime = window.ZoltanGestureRuntime;
+  runtime.init({
+    videoEl: els.cameraVideo,
+    stageEl: els.stage,
+    mode: 'yesno',
+    enableKeyboard: true,
+    enablePointer: false,
+    privacyMessage: 'La cámara se usa solo para detectar gestos en este dispositivo. No se graba vídeo ni se envían imágenes.',
+    gestureCooldownMs: 900,
+    minConfidence: 0.28
+  });
+
+  runtime.onGesture((event, detail) => {
+    if (event === 'CAMERA_READY') {
+      toast('Camara activa: izquierda NO, derecha SI.');
+      els.cameraBtn.textContent = 'Cámara activa';
+      els.cameraBtn.classList.add('is-active');
+    } else if (event === 'CAMERA_ERROR') {
+      toast('Camara no disponible. Sigue con touch o botones.');
+      els.cameraBtn.textContent = 'Cámara no disponible';
+      els.cameraBtn.classList.remove('is-active');
+    } else if (event === 'YES') {
+      answer(true, detail.source || 'camera');
+    } else if (event === 'NO') {
+      answer(false, detail.source || 'camera');
+    }
+  });
 
   const HOST = {
     attract: ['Piensa una sneaker. No la digas. Si el oraculo acierta, el drop se abre.', 'Hay un par en este muro que ya lleva tu nombre.', 'Elige mentalmente. El drop detecta senales.'],
@@ -289,7 +317,26 @@
     state.session = null;
     state.revealItem = null;
     state.reward = null;
+    runtime.stopCamera();
+    els.cameraBtn.textContent = 'Activar cámara opcional';
+    els.cameraBtn.classList.remove('is-active');
     setPhase('attract');
+  }
+
+  async function toggleCamera() {
+    const runtimeState = runtime.getState();
+    if (runtimeState.cameraActive) {
+      runtime.stopCamera();
+      els.cameraBtn.textContent = 'Activar cámara opcional';
+      els.cameraBtn.classList.remove('is-active');
+      return;
+    }
+    els.cameraBtn.textContent = 'Activando...';
+    const ok = await runtime.startCamera();
+    if (!ok) {
+      els.cameraBtn.textContent = 'Cámara no disponible';
+      els.cameraBtn.classList.remove('is-active');
+    }
   }
 
   function loadSingle(file, key) {
@@ -314,18 +361,20 @@
   });
   els.startBtn.addEventListener('click', start);
   els.secretBtn.addEventListener('click', begin);
-  els.yesBtn.addEventListener('click', () => answer(true, 'button'));
-  els.noBtn.addEventListener('click', () => answer(false, 'button'));
+  els.yesBtn.addEventListener('click', () => runtime.emitChoice(true, { source: 'button' }));
+  els.noBtn.addEventListener('click', () => runtime.emitChoice(false, { source: 'button' }));
   els.downloadBtn.addEventListener('click', download);
   els.resetBtn.addEventListener('click', reset);
+  els.cameraBtn.addEventListener('click', toggleCamera);
   els.stage.addEventListener('pointerdown', (event) => {
     if (state.phase !== 'question' || Date.now() - state.lastPointer < 650) return;
     state.lastPointer = Date.now();
     const rect = els.stage.getBoundingClientRect();
     if (window.ZoltanTelemetry) window.ZoltanTelemetry.recordFallback(event.pointerType || 'pointer-zone');
-    answer(event.clientX - rect.left > rect.width / 2, 'zone');
+    runtime.emitChoice(event.clientX - rect.left > rect.width / 2, { source: event.pointerType || 'pointer-zone' });
   });
   window.addEventListener('beforeunload', () => {
+    runtime.destroy();
     if (window.ZoltanAssetIntake) {
       window.ZoltanAssetIntake.revokeAssets(state.assets);
       window.ZoltanAssetIntake.revokeAsset(state.logo);

@@ -132,10 +132,52 @@
     reveal: null,
     engineSession: null,
     reward: null,
-    cameraController: null,
-    cameraActive: false,
     lastGestureAt: 0
   };
+
+  const runtime = window.ZoltanGestureRuntime;
+  runtime.init({
+    videoEl: els.video,
+    stageEl: els.stage,
+    mode: 'yesno',
+    enableKeyboard: true,
+    enablePointer: false,
+    privacyMessage: 'La camara solo detecta gestos en este dispositivo. No se graba video ni se envian imagenes.',
+    gestureCooldownMs: 1100,
+    minConfidence: 0.28
+  });
+
+  runtime.onGesture((event, detail) => {
+    if (event === 'CAMERA_READY') {
+      if (window.ZoltanTelemetry) {
+        const session = window.ZoltanTelemetry.startSession('zoltan-style-oracle-camera');
+        session.cameraRequested = true;
+        session.cameraGranted = true;
+      }
+      track('camera_started');
+      toast('Camara activa: izquierda NO, derecha SI.');
+      els.cameraBtn.textContent = 'Camara activa';
+      els.cameraBtn.className = 'ghost-btn is-active';
+    } else if (event === 'CAMERA_ERROR') {
+      if (window.ZoltanTelemetry) {
+        const session = window.ZoltanTelemetry.startSession('zoltan-style-oracle-camera');
+        session.cameraRequested = true;
+        session.cameraDenied = true;
+        window.ZoltanTelemetry.recordFallback(detail.status || 'camera-error');
+      }
+      track('camera_denied', { status: detail.status });
+      track('fallback_used', { source: 'camera-fail' });
+      toast('Modo tactil activo: usa botones o zonas izquierda/derecha.');
+      els.cameraBtn.textContent = 'Modo tactil activo';
+      els.cameraBtn.className = 'ghost-btn';
+    } else if (event === 'YES') {
+      answer(true, detail.source || 'camera');
+    } else if (event === 'NO') {
+      answer(false, detail.source || 'camera');
+    } else if (event === 'FALLBACK_USED') {
+      track('fallback_used', { source: detail.source });
+    }
+  });
 
   function track(eventName, payload) {
     if (window.ZoltanAnalytics && window.ZoltanAnalytics.track) {
@@ -513,62 +555,21 @@
     if (now - state.lastGestureAt < 600) return;
     const rect = els.stage.getBoundingClientRect();
     state.lastGestureAt = now;
-    track('fallback_used', { source: event.pointerType || 'pointer' });
     if (window.ZoltanTelemetry) window.ZoltanTelemetry.recordFallback(event.pointerType || 'pointer-zone');
-    answer(event.clientX - rect.left > rect.width / 2, 'zone');
+    runtime.emitChoice(event.clientX - rect.left > rect.width / 2, { source: event.pointerType || 'pointer-zone' });
   }
 
   async function toggleCamera() {
-    if (state.cameraActive && state.cameraController) {
-      state.cameraController.stop();
-      state.cameraActive = false;
+    const runtimeState = runtime.getState();
+    if (runtimeState.cameraActive) {
+      runtime.stopCamera();
       els.cameraBtn.textContent = 'Activar camara';
       els.cameraBtn.className = 'ghost-btn';
       return;
     }
     els.cameraBtn.textContent = 'Activando...';
     els.cameraBtn.className = 'ghost-btn is-starting';
-    state.cameraController = window.ZoltanGestures.createController({
-      videoEl: els.video,
-      mode: 'style-oracle',
-      onStatus(status) {
-        if (status === 'camera-started') {
-          if (window.ZoltanTelemetry) {
-            const session = window.ZoltanTelemetry.startSession('zoltan-style-oracle-camera');
-            session.cameraRequested = true;
-            session.cameraGranted = true;
-          }
-          state.cameraActive = true;
-          els.cameraBtn.textContent = 'Camara activa';
-          els.cameraBtn.className = 'ghost-btn is-active';
-          track('camera_started');
-          toast('Camara activa: izquierda NO, derecha SI.');
-        }
-        if (status === 'camera-denied' || status === 'camera-unavailable') {
-          if (window.ZoltanTelemetry) {
-            const session = window.ZoltanTelemetry.startSession('zoltan-style-oracle-camera');
-            session.cameraRequested = true;
-            session.cameraDenied = true;
-            window.ZoltanTelemetry.recordFallback(status);
-          }
-          state.cameraActive = false;
-          els.cameraBtn.textContent = 'Modo tactil activo';
-          els.cameraBtn.className = 'ghost-btn';
-          track('camera_denied', { status });
-          track('fallback_used', { source: 'camera-fail' });
-          toast('Modo tactil activo: usa botones o zonas izquierda/derecha.');
-        }
-      },
-      onGesture(gesture) {
-        if (state.phase !== PHASES.QUESTION) return;
-        if (window.ZoltanTelemetry) window.ZoltanTelemetry.recordGestureAttempt({ x: gesture.x, confidence: gesture.confidence });
-        const now = performance.now();
-        if (now - state.lastGestureAt < 1100 || gesture.confidence < 0.28) return;
-        state.lastGestureAt = now;
-        answer(gesture.x >= 0.5, 'camera');
-      }
-    });
-    const ok = await state.cameraController.start();
+    const ok = await runtime.startCamera();
     if (!ok) {
       els.cameraBtn.textContent = 'Modo tactil activo';
       els.cameraBtn.className = 'ghost-btn';
@@ -718,8 +719,8 @@
   });
   els.startBtn.addEventListener('click', start);
   els.secretBtn.addEventListener('click', beginQuestions);
-  els.yesBtn.addEventListener('click', () => answer(true, 'button'));
-  els.noBtn.addEventListener('click', () => answer(false, 'button'));
+  els.yesBtn.addEventListener('click', () => runtime.emitChoice(true, { source: 'button' }));
+  els.noBtn.addEventListener('click', () => runtime.emitChoice(false, { source: 'button' }));
   els.stage.addEventListener('pointerdown', handlePointer);
   els.cameraBtn.addEventListener('click', toggleCamera);
   els.downloadBtn.addEventListener('click', downloadPoster);
@@ -729,7 +730,7 @@
   els.sendBtn.addEventListener('click', () => action('Enviar a mi movil'));
   els.resetBtn.addEventListener('click', reset);
   window.addEventListener('beforeunload', () => {
-    if (state.cameraController) state.cameraController.stop();
+    runtime.destroy();
     state.productAssets.forEach(revokeAsset);
     revokeAsset(state.logo);
     revokeAsset(state.background);
