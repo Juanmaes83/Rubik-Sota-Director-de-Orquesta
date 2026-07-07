@@ -55,6 +55,42 @@ Documentacion y launchers:
 
 ---
 
+## Gesture Gaming Pack
+
+Gesture Gaming Pack abre una linea independiente de experiencias de juego, dibujo y reconocimiento gestual para marcas, eventos, retail, ferias e instalaciones.
+
+El pack no pertenece a ZOLTAN, no pertenece a MIRRORA y no modifica Sword. Se organiza con arquitectura modular: modulos externos live, server apps documentadas, engines tecnicos y launchers seguros dentro de Rubik.
+
+Estado real:
+
+- Gesture Gaming / Arena Control: modulo externo LIVE en GitHub Pages.
+- Air Draw: R&D con backend requerido; no esta publicado como GitHub Pages.
+- Hand Gesture Recognition / MediaPipe Core: engine R&D local; no es demo final.
+
+Documentacion y launchers:
+
+- `docs/GESTURE_GAMING_PACK.md`
+- `gesture-lab/gesture-gaming/`
+- `gesture-lab/air-draw/`
+- `gesture-lab/hand-gesture-recognition-mediapipe/`
+
+---
+
+## Experience Adaptation Strategy
+
+Rubik Sota Director de Orquesta no es una colección de demos. Es una plataforma modular para convertir prototipos visuales, gestuales, IA y hardware en experiencias inmersivas personalizables para sectores, empresas y marcas.
+
+Cada módulo se evalúa por su capacidad de adaptación comercial: marca, sector, assets, narrativa, CTA, privacidad, despliegue y posibilidad de convertirse en producto.
+
+Documentacion estratégica:
+
+- `docs/EXPERIENCE_ADAPTATION_STRATEGY.md`
+- `docs/NEXT_MODULE_PACKS_ROADMAP.md`
+- `docs/AI_IMPLEMENTATION_RULES.md`
+- `docs/GESTURE_GAMING_PACK.md`
+
+---
+
 ## Estado actual
 
 **Módulos activos:**
