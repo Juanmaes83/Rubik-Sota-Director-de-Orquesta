@@ -375,26 +375,33 @@
     if (asset && asset.url) URL.revokeObjectURL(asset.url);
   }
 
-  const gestureController = window.ZoltanGestures.createController({
+  const runtime = window.ZoltanGestureRuntime;
+  runtime.init({
     videoEl: els.cameraVideo,
-    onStatus(status) {
-      if (status === 'camera-started') {
-        cameraOn = true;
-        els.cameraStatus.textContent = 'Cámara: activa';
-        els.cameraBtn.textContent = 'Desactivar cámara';
-      } else if (status === 'camera-denied') {
-        cameraOn = false;
-        els.cameraStatus.textContent = 'Cámara: denegada';
-        els.status.textContent = 'Modo táctil activo.';
-      } else if (status === 'camera-stopped') {
-        cameraOn = false;
-        els.cameraStatus.textContent = 'Cámara: off';
-        els.cameraBtn.textContent = 'Activar cámara';
-      } else if (status === 'tracking') {
-        els.cameraStatus.textContent = 'Cámara: tracking';
-      }
-    },
-    onGesture(payload) {
+    mode: 'raw',
+    enableKeyboard: true,
+    enablePointer: false,
+    privacyMessage: 'La cámara se usa solo para detectar gestos en este dispositivo. No se graba vídeo ni se envían imágenes.',
+    gestureCooldownMs: 1200,
+    minConfidence: 0.2
+  });
+
+  runtime.onGesture((event, detail) => {
+    if (event === 'CAMERA_READY') {
+      cameraOn = true;
+      els.cameraStatus.textContent = 'Cámara: activa';
+      els.cameraBtn.textContent = 'Desactivar cámara';
+    } else if (event === 'CAMERA_ERROR') {
+      cameraOn = false;
+      els.cameraStatus.textContent = 'Cámara: denegada';
+      els.status.textContent = 'Modo táctil activo.';
+      track('fallback_used', { source: 'camera-denied' });
+    } else if (event === 'camera-stopped') {
+      cameraOn = false;
+      els.cameraStatus.textContent = 'Cámara: off';
+      els.cameraBtn.textContent = 'Activar cámara';
+    } else if (event === 'GESTURE') {
+      const payload = detail;
       if (performance.now() - gestureCooldown < 1200) return;
       gestureCooldown = performance.now();
       if (payload.gesture === 'Open_Palm' || payload.x > 0.34 && payload.x < 0.66) generate();
@@ -405,10 +412,10 @@
 
   async function toggleCamera() {
     if (cameraOn) {
-      gestureController.stop();
+      runtime.stopCamera();
       return;
     }
-    const ok = await gestureController.start();
+    const ok = await runtime.startCamera();
     if (!ok) {
       els.status.textContent = 'Modo táctil activo.';
       track('fallback_used', { source: 'camera-denied' });
@@ -455,7 +462,7 @@
       if (event.key === 'ArrowRight') selectNumberPreset(Math.min(NUMBER_PRESETS.length - 1, currentPresetIndex + 1));
     });
     window.addEventListener('beforeunload', () => {
-      gestureController.stop();
+      runtime.destroy();
       revoke(logoAsset);
       revoke(backgroundAsset);
     });

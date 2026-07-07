@@ -53,14 +53,9 @@
     cameraActive: false,
     lastGestureAt: 0,
     phaseStartedAt: performance.now(),
-    gestureCanvas: document.createElement('canvas'),
-    lastFrame: null,
     reveal: null,
     particleTick: 0
   };
-  state.gestureCanvas.width = 160;
-  state.gestureCanvas.height = 110;
-  state.gestureCtx = state.gestureCanvas.getContext('2d', { willReadFrequently: true });
 
   function clamp(v, min, max) {
     return Math.max(min, Math.min(max, v));
@@ -97,6 +92,74 @@
       }, payload || {}));
     }
   }
+
+  const runtime = window.ZoltanGestureRuntime;
+  runtime.init({
+    videoEl: els.video,
+    stageEl: els.canvas,
+    mode: 'raw',
+    enableKeyboard: true,
+    enablePointer: false,
+    privacyMessage: 'La cámara se usa solo para detectar gestos en este dispositivo. No se graba vídeo ni se envían imágenes.',
+    gestureCooldownMs: 950,
+    minConfidence: 0.17
+  });
+
+  runtime.onGesture((event, detail) => {
+    if (event === 'CAMERA_READY') {
+      state.cameraActive = true;
+      els.cameraBtn.textContent = 'Gestos activos';
+      els.cameraBtn.classList.add('btn-accent');
+      els.gesturePill.textContent = 'Gestos on';
+      els.gesturePill.className = 'pill is-ok';
+      els.gestureZones.classList.add('is-on');
+      track('camera_started');
+      toast('Camara activa: mueve la mano a la izquierda para NO o a la derecha para SI.');
+    } else if (event === 'CAMERA_ERROR') {
+      state.cameraActive = false;
+      els.cameraBtn.textContent = 'Activar gestos';
+      els.gesturePill.textContent = 'Gestos error';
+      els.gesturePill.className = 'pill is-warn';
+      track('camera_denied', { status: detail.status });
+      toast('No se pudo activar camara. Usa botones grandes.');
+    } else if (event === 'GESTURE') {
+      handleGesture(detail);
+    }
+  });
+
+  function handleGesture(gesture) {
+    if (state.phase !== 'question' && state.phase !== 'classic-question') return;
+    const now = performance.now();
+    if (now - state.lastGestureAt < 950) return;
+    if ((gesture.confidence || 0) < 0.17) return;
+
+    if (state.phase === 'classic-question') {
+      const column = gesture.x < 0.34 ? 0 : gesture.x < 0.66 ? 1 : 2;
+      state.lastGestureAt = now;
+      toast(`Gesto detectado: columna ${column + 1}`);
+      answerColumn(column);
+    } else if (gesture.x < 0.5) {
+      state.lastGestureAt = now;
+      toast('Gesto detectado: NO');
+      answer(false);
+    } else {
+      state.lastGestureAt = now;
+      toast('Gesto detectado: SI');
+      answer(true);
+    }
+  }
+
+  function handleKeyDown(e) {
+    if (state.phase === 'question') {
+      if (e.key === 'y' || e.key === 'Y' || e.key === 'ArrowRight') answer(true);
+      else if (e.key === 'n' || e.key === 'N' || e.key === 'ArrowLeft') answer(false);
+    } else if (state.phase === 'classic-question') {
+      if (e.key === '1') answerColumn(0);
+      else if (e.key === '2') answerColumn(1);
+      else if (e.key === '3') answerColumn(2);
+    }
+  }
+  document.addEventListener('keydown', handleKeyDown);
 
   function assetKey(file) {
     return [file.name, file.size, file.type, file.lastModified].join('|');
@@ -898,46 +961,23 @@
 
   async function toggleCamera() {
     if (state.cameraActive) {
-      stopCamera();
+      runtime.stopCamera();
+      state.cameraActive = false;
+      els.cameraBtn.textContent = 'Activar gestos';
+      els.gesturePill.textContent = 'Gestos off';
+      els.gesturePill.className = 'pill';
+      els.gestureZones.classList.remove('is-on');
       return;
     }
-    try {
-      els.cameraBtn.textContent = 'Activando...';
-      els.cameraBtn.classList.remove('btn-accent');
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-        audio: false
-      });
-      els.video.srcObject = stream;
-      await els.video.play();
-      state.cameraActive = true;
-      els.cameraBtn.textContent = 'Gestos activos';
-      els.cameraBtn.classList.add('btn-accent');
-      els.gesturePill.textContent = 'Gestos on';
-      els.gesturePill.className = 'pill is-ok';
-      els.gestureZones.classList.add('is-on');
-      track('camera_started');
-      toast('Camara activa: mueve la mano a la izquierda para NO o a la derecha para SI.');
-      requestAnimationFrame(analyzeGestureMotion);
-    } catch (err) {
+    els.cameraBtn.textContent = 'Activando...';
+    els.cameraBtn.classList.remove('btn-accent');
+    const ok = await runtime.startCamera();
+    if (!ok) {
       state.cameraActive = false;
       els.cameraBtn.textContent = 'Activar gestos';
       els.gesturePill.textContent = 'Gestos error';
       els.gesturePill.className = 'pill is-warn';
-      track('camera_denied', { message: err.message });
-      toast('No se pudo activar camara. Usa botones grandes.');
     }
-  }
-
-  function stopCamera() {
-    const stream = els.video.srcObject;
-    if (stream) stream.getTracks().forEach((track) => track.stop());
-    els.video.srcObject = null;
-    state.cameraActive = false;
-    els.cameraBtn.textContent = 'Activar gestos';
-    els.gesturePill.textContent = 'Gestos off';
-    els.gesturePill.className = 'pill';
-    els.gestureZones.classList.remove('is-on');
   }
 
   function handleCanvasPointer(event) {
@@ -952,66 +992,6 @@
       answerColumn(clamp(Math.floor((x / rect.width) * 3), 0, 2));
     } else {
       answer(x > rect.width / 2);
-    }
-  }
-
-  function analyzeGestureMotion() {
-    if (!state.cameraActive) return;
-    requestAnimationFrame(analyzeGestureMotion);
-    if (state.phase !== 'question' && state.phase !== 'classic-question') return;
-    if (!els.video.videoWidth || !els.video.videoHeight) return;
-
-    const now = performance.now();
-    if (now - state.lastGestureAt < 950) return;
-
-    const gw = state.gestureCanvas.width;
-    const gh = state.gestureCanvas.height;
-    state.gestureCtx.save();
-    state.gestureCtx.scale(-1, 1);
-    state.gestureCtx.drawImage(els.video, -gw, 0, gw, gh);
-    state.gestureCtx.restore();
-    const frame = state.gestureCtx.getImageData(0, 0, gw, gh);
-    if (!state.lastFrame) {
-      state.lastFrame = frame;
-      return;
-    }
-
-    let left = 0;
-    let center = 0;
-    let right = 0;
-    const data = frame.data;
-    const prev = state.lastFrame.data;
-    for (let y = 0; y < gh; y += 3) {
-      for (let x = 0; x < gw; x += 3) {
-        const i = (y * gw + x) * 4;
-        const diff = Math.abs(data[i] - prev[i]) + Math.abs(data[i + 1] - prev[i + 1]) + Math.abs(data[i + 2] - prev[i + 2]);
-        if (diff < 42) continue;
-        if (state.phase === 'classic-question') {
-          if (x < gw / 3) left += diff;
-          else if (x < (gw / 3) * 2) center += diff;
-          else right += diff;
-        } else if (x < gw / 2) left += diff;
-        else right += diff;
-      }
-    }
-    state.lastFrame = frame;
-
-    const total = left + right;
-    if (total < 22000) return;
-    if (state.phase === 'classic-question') {
-      const max = Math.max(left, center, right);
-      const column = max === left ? 0 : max === center ? 1 : 2;
-      state.lastGestureAt = now;
-      toast(`Gesto detectado: columna ${column + 1}`);
-      answerColumn(column);
-    } else if (left > right * 1.28) {
-      state.lastGestureAt = now;
-      toast('Gesto detectado: NO');
-      answer(false);
-    } else if (right > left * 1.28) {
-      state.lastGestureAt = now;
-      toast('Gesto detectado: SI');
-      answer(true);
     }
   }
 
@@ -1190,7 +1170,7 @@
     els[id].addEventListener('input', () => {});
   });
   window.addEventListener('beforeunload', () => {
-    stopCamera();
+    runtime.destroy();
     state.cardAssets.forEach((asset) => asset.url && URL.revokeObjectURL(asset.url));
     if (state.logo && state.logo.url) URL.revokeObjectURL(state.logo.url);
     if (state.background && state.background.url) URL.revokeObjectURL(state.background.url);

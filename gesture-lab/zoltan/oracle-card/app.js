@@ -260,27 +260,33 @@
     return contract.ok;
   }
 
-  const gestureController = window.ZoltanGestures.createController({
+  const runtime = window.ZoltanGestureRuntime;
+  runtime.init({
     videoEl: els.cameraVideo,
-    onStatus(status) {
-      if (status === 'camera-started') {
-        cameraOn = true;
-        els.cameraLabel.textContent = 'Cámara: activa';
-        els.cameraBtn.textContent = 'Desactivar cámara';
-      } else if (status === 'camera-denied') {
-        cameraOn = false;
-        els.cameraLabel.textContent = 'Cámara: denegada · modo táctil';
-        toast('Cámara no disponible. El ritual sigue con touch.');
-      } else if (status === 'camera-stopped') {
-        cameraOn = false;
-        els.cameraLabel.textContent = 'Cámara: off';
-        els.cameraBtn.textContent = 'Activar cámara';
-        els.gestureCursor.classList.remove('is-on');
-      } else if (status === 'tracking') {
-        els.cameraLabel.textContent = 'Cámara: tracking';
-      }
-    },
-    onGesture(payload) {
+    mode: 'raw',
+    enableKeyboard: true,
+    enablePointer: false,
+    privacyMessage: ORACLE_CONFIG.privacyCopy,
+    gestureCooldownMs: 1200,
+    minConfidence: 0.2
+  });
+
+  runtime.onGesture((event, detail) => {
+    if (event === 'CAMERA_READY') {
+      cameraOn = true;
+      els.cameraLabel.textContent = 'Cámara: activa';
+      els.cameraBtn.textContent = 'Desactivar cámara';
+    } else if (event === 'CAMERA_ERROR') {
+      cameraOn = false;
+      els.cameraLabel.textContent = 'Cámara: denegada · modo táctil';
+      toast('Cámara no disponible. El ritual sigue con touch.');
+    } else if (event === 'camera-stopped') {
+      cameraOn = false;
+      els.cameraLabel.textContent = 'Cámara: off';
+      els.cameraBtn.textContent = 'Activar cámara';
+      els.gestureCursor.classList.remove('is-on');
+    } else if (event === 'GESTURE') {
+      const payload = detail;
       els.gestureCursor.classList.add('is-on');
       els.gestureCursor.style.left = `${payload.x * 100}%`;
       els.gestureCursor.style.top = `${payload.y * 100}%`;
@@ -305,11 +311,11 @@
 
   async function toggleCamera() {
     if (cameraOn) {
-      gestureController.stop();
+      runtime.stopCamera();
       return;
     }
     setState(STATES.CONSENT);
-    const ok = await gestureController.start();
+    const ok = await runtime.startCamera();
     if (!ok) setState(STATES.ATTRACT);
   }
 
@@ -412,18 +418,17 @@
   });
   els.stage.addEventListener('pointermove', (event) => {
     if (state !== STATES.SELECT) return;
-    const payload = gestureController.handlePointer(event);
     const el = document.elementFromPoint(event.clientX, event.clientY);
     const cardEl = el && el.closest ? el.closest('.oracle-card') : null;
     hoverCard(cardEl ? cardEl.dataset.cardId : null);
     const dwellState = dwell.update(cardEl ? cardEl.dataset.cardId : null);
     document.querySelectorAll('.oracle-card .dwell-ring span').forEach((bar) => { bar.style.width = '0%'; });
     if (cardEl) cardEl.querySelector('.dwell-ring span').style.width = `${dwellState.progress * 100}%`;
-    if (dwellState.complete) chooseCard(cardEl.dataset.cardId, payload.source);
+    if (dwellState.complete) chooseCard(cardEl.dataset.cardId, event.pointerType || 'pointer');
   });
 
   window.addEventListener('beforeunload', () => {
-    gestureController.stop();
+    runtime.destroy();
     if (window.ZoltanAssetIntake) {
       window.ZoltanAssetIntake.revokeAssets(uploadedAssets);
       window.ZoltanAssetIntake.revokeAsset(logoAsset);

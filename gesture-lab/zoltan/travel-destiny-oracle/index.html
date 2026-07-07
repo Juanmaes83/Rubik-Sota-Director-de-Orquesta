@@ -84,13 +84,18 @@
         </div>
         <button id="downloadBtn" disabled>Descargar tarjeta PNG</button>
         <button id="resetBtn">Reiniciar</button>
+        <button id="cameraBtn" type="button" class="secondary">Activar cámara opcional</button>
+        <p class="privacy">La cámara se usa solo para detectar gestos en este dispositivo. No se graba vídeo ni se envían imágenes.</p>
         <small>Sin camara obligatoria. Sin backend. Enlace/codigo listo para copiar.</small>
       </aside>
     </section>
   </main>
+  <video id="cameraVideo" playsinline muted aria-hidden="true" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;"></video>
   <div id="toast" class="toast"></div>
   <script src="../shared/zoltan-core.js"></script>
   <script src="../shared/zoltan-analytics.js"></script>
+  <script src="../shared/zoltan-gestures.js"></script>
+  <script src="../shared/zoltan-gesture-runtime.js"></script>
   <script src="../shared/zoltan-selection-engine.js"></script>
   <script src="../shared/zoltan-reward-layer.js"></script>
   <script src="../shared/zoltan-asset-intake.js"></script>
