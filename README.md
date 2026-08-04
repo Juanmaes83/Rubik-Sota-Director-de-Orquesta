@@ -69,6 +69,17 @@ Estado actual: turismo como primer vertical. La familia debe quedar preparada pa
 
 Documento local de familia: `gesture-lab/living-maps-3d/README.md`.
 
+## Nuevas familias de ecosistema gestual
+
+Estas familias ordenan repos, forks y referencias sin convertirlos todavia en modulos finales. La regla es la misma que en MIRRORA y Living Maps 3D: primero documentar, despues elegir una experiencia v1 pequena, estable y personalizable.
+
+- **Gesture Retail Commerce** - proxima prioridad. Une Retail Window Pro, Interactive Gesture Catalog y Virtual Shopping Cart para escaparates, MUPIs, wishlist, carrito, QR, CTA y continuidad movil. Documento: `gesture-lab/gesture-retail-commerce/README.md`.
+- **Gesture FX / Visual Shows** - siguiente fase visual. Une Camera FX, particulas, audio visualizer y SwordArt para efectos de marca con webcam. Documento: `gesture-lab/gesture-fx-visual-shows/README.md`.
+- **Gesture Gaming Arena** - fase posterior. Ordena racing, cubo, personaje 3D, scoring, ranking, premios y QA fisica. Documento: `gesture-lab/gesture-gaming-arena/README.md`.
+- **Gesture Interface Core** - capa transversal, no producto publico. Define vocabulario gestual, privacidad, calibracion, fallback y motor comun. Documento: `gesture-lab/gesture-interface-core/README.md`.
+
+Auditoria global de repos y referencias: `docs/RUBIK_REPO_ECOSYSTEM_AUDIT.md`.
+
 ---
 
 ## Gesture Lab
@@ -158,6 +169,7 @@ Documentacion estratégica:
 - `docs/NEXT_MODULE_PACKS_ROADMAP.md`
 - `docs/AI_IMPLEMENTATION_RULES.md`
 - `docs/GESTURE_GAMING_PACK.md`
+- `docs/RUBIK_REPO_ECOSYSTEM_AUDIT.md`
 
 ---
 
@@ -183,6 +195,10 @@ Documentacion estratégica:
 - LM1 - La Batuta de Torrevieja - Living Maps 3D - candidato estrella territorial
 - LM2 - Maqueta Viva 3D Torrevieja - Living Maps 3D - candidato estrella 3D / gesture-ready
 - LM3 - Living Map Experience - Living Maps 3D - mapa configurable turismo/sectores
+- GRC - Gesture Retail Commerce - Familia documentada - siguiente modulo recomendado
+- GFX - Gesture FX / Visual Shows - Familia documentada - segunda prioridad
+- GGA - Gesture Gaming Arena - Familia documentada - tercera prioridad / requiere QA
+- GIC - Gesture Interface Core - Capa transversal documentada - no modulo comercial
 
 **Linea conectada desde Escaparates Pro / Camera FX:**
 
@@ -714,6 +730,12 @@ Cada módulo debe incluir, cuando aplique:
 - v2.10.1 - Selfie Style / Outfit Visualizer - estable actual
 - v2.11 - Dental Kids - estable actual
 - v2.12 - Retail Window Pro - estable actual
+- Living Maps 3D - familia conectada: La Batuta, Maqueta Viva 3D y Living Map
+- Ecosystem Audit - documentado en `docs/RUBIK_REPO_ECOSYSTEM_AUDIT.md`
+- Gesture Retail Commerce - familia documentada / siguiente modulo recomendado
+- Gesture FX / Visual Shows - familia documentada / segunda prioridad
+- Gesture Gaming Arena - familia documentada / tercera prioridad
+- Gesture Interface Core - capa transversal documentada
 - v2.13 - Food Assembly: Sushi + Burger + Pizza - siguiente
 - v2.14 - Museo / Patrimonio
 - v2.15 - Educación Visual
@@ -767,6 +789,12 @@ Cada módulo debe incluir, cuando aplique:
 - Selfie Style / Outfit Visualizer v2.10.1 publicada con Pose Auto Fit, cámara reforzada, prendas internas y fallback manual.
 - Dental Kids v2.11 publicado como coach educativo de cepillado real.
 - Retail Window Pro v2.12 publicado y funcional.
+- Living Maps 3D publicado como familia de catalogo con LM1 La Batuta, LM2 Maqueta Viva 3D y LM3 Living Map.
+- Gesture Retail Commerce documentado como siguiente familia a desarrollar.
+- Gesture FX / Visual Shows documentado como segunda prioridad.
+- Gesture Gaming Arena documentado como tercera prioridad.
+- Gesture Interface Core documentado como capa transversal.
+- Auditoria de repos del ecosistema creada en `docs/RUBIK_REPO_ECOSYSTEM_AUDIT.md`.
 - Camera FX Cum Laude conectado como laboratorio independiente con 7 modulos webcam ya subidos.
 - Magic Card Mentalism Retail PRO v2.34 publicado en `gesture-lab/magic-card-mentalism/`.
 - ZOLTAN Oracle v1 publicado en `gesture-lab/zoltan/oracle-card/`.

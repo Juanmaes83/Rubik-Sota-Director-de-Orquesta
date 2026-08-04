@@ -34,6 +34,10 @@ It should be the public source of truth for:
 - MIRRORA;
 - Fashion / Moda Platform;
 - Living Maps 3D;
+- Gesture Retail Commerce;
+- Gesture FX / Visual Shows;
+- Gesture Gaming Arena;
+- Gesture Interface Core;
 - ZOLTAN;
 - Camera FX Cum Laude;
 - Gesture Gaming;
@@ -47,6 +51,10 @@ Examples:
 - `/gesture-lab/#mirrora-platform`
 - `/gesture-lab/#fashion-platform`
 - `/gesture-lab/#living-maps-3d`
+- `/gesture-lab/#gesture-retail-commerce`
+- `/gesture-lab/#gesture-fx-visual-shows`
+- `/gesture-lab/#gesture-gaming-arena`
+- `/gesture-lab/#gesture-interface-core`
 - `/gesture-lab/#zoltan-platform`
 - `/gesture-lab/camera-fx-cum-laude/`
 
@@ -71,10 +79,14 @@ They should point back to Gesture Lab when the user needs the complete catalog.
 3. MIRRORA: identity/portal/live display family.
 4. Fashion / Moda: fashion access family inside Director de Orquesta.
 5. Living Maps 3D: territorial, map, webcam and 3D city family.
-6. ZOLTAN: commercial reveal/reward family.
-7. Camera FX: webcam activation family with 7 submodules.
-8. Gesture Gaming and Sword: R&D/gameplay family.
-9. README: project memory and technical documentation, not the main public catalog.
+6. Gesture Retail Commerce: next commercial family for storefronts, MUPIs, carts, QR and conversion.
+7. Gesture FX / Visual Shows: visual attention family for webcam effects and branded screens.
+8. Gesture Gaming Arena: challenge/gameplay family, visible but later implementation.
+9. Gesture Interface Core: internal/transversal gesture vocabulary and UX layer.
+10. ZOLTAN: commercial reveal/reward family.
+11. Camera FX: webcam activation family with 7 submodules.
+12. Gesture Gaming and Sword: R&D/gameplay family.
+13. README: project memory and technical documentation, not the main public catalog.
 
 ## Fashion / Moda Rule
 
@@ -117,3 +129,21 @@ Public links:
 - `https://juanmaes83.github.io/map-gesture-controls/demo/living-map.html`
 
 Do not copy those external repos into Rubik for now. Rubik should link, explain status and preserve the separation between orchestrator, engines and product demos.
+
+## New Gesture Ecosystem Families
+
+Rubik should expose only the family layer in the public UX:
+
+- Gesture Retail Commerce: first implementation priority after this documentation pass. It should build on Retail Window Pro, Interactive Gesture Catalog and Virtual Shopping Cart ideas.
+- Gesture FX / Visual Shows: second implementation priority. It should build on Camera FX, particle effects, audio visualizer and SwordArt references.
+- Gesture Gaming Arena: third implementation priority. It should organize racing, cube, character/game challenges and scoring, but needs more QA.
+- Gesture Interface Core: not a standalone product. It is the shared gesture UX/engine contract for privacy, calibration, fallback, confidence and gestures.
+
+Detailed audit: `docs/RUBIK_REPO_ECOSYSTEM_AUDIT.md`.
+
+Family READMEs:
+
+- `gesture-lab/gesture-retail-commerce/README.md`
+- `gesture-lab/gesture-fx-visual-shows/README.md`
+- `gesture-lab/gesture-gaming-arena/README.md`
+- `gesture-lab/gesture-interface-core/README.md`
