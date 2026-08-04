@@ -195,7 +195,7 @@ Documentacion estratégica:
 - LM1 - La Batuta de Torrevieja - Living Maps 3D - candidato estrella territorial
 - LM2 - Maqueta Viva 3D Torrevieja - Living Maps 3D - candidato estrella 3D / gesture-ready
 - LM3 - Living Map Experience - Living Maps 3D - mapa configurable turismo/sectores
-- GRC - Gesture Retail Commerce - Modulo v1 QA comercial - escaparate/MUPI con QR y CTA
+- GRC - Gesture Retail Commerce - Modulo v1.2 QA comercial - escaparate/MUPI con guia gestual, QR, CTA y seleccion descargable
 - GFX - Gesture FX / Visual Shows - Familia documentada - segunda prioridad
 - GGA - Gesture Gaming Arena - Familia documentada - tercera prioridad / requiere QA
 - GIC - Gesture Interface Core - Capa transversal documentada - no modulo comercial
@@ -732,7 +732,7 @@ Cada módulo debe incluir, cuando aplique:
 - v2.12 - Retail Window Pro - estable actual
 - Living Maps 3D - familia conectada: La Batuta, Maqueta Viva 3D y Living Map
 - Ecosystem Audit - documentado en `docs/RUBIK_REPO_ECOSYSTEM_AUDIT.md`
-- Gesture Retail Commerce v1.1 - modulo creado / Studio cliente + Display escaparate para QA comercial movil y MUPI
+- Gesture Retail Commerce v1.2 - modulo creado / Studio cliente + Display escaparate con guia gestual, cierre de seleccion, QR grande y QA comercial movil/MUPI
 - Gesture FX / Visual Shows - familia documentada / segunda prioridad
 - Gesture Gaming Arena - familia documentada / tercera prioridad
 - Gesture Interface Core - capa transversal documentada
@@ -790,7 +790,7 @@ Cada módulo debe incluir, cuando aplique:
 - Dental Kids v2.11 publicado como coach educativo de cepillado real.
 - Retail Window Pro v2.12 publicado y funcional.
 - Living Maps 3D publicado como familia de catalogo con LM1 La Batuta, LM2 Maqueta Viva 3D y LM3 Living Map.
-- Gesture Retail Commerce v1.1 creado como primer modulo comercial nuevo: catalogo, carrito, wishlist, QR, CTA, branding, 16:9/9:16, Studio para cliente, Display escaparate para usuario final, enlace de campana compartible, camara opcional y export PNG.
+- Gesture Retail Commerce v1.2 creado como primer modulo comercial nuevo: catalogo, carrito, wishlist, QR, CTA, branding, 16:9/9:16, Studio para cliente, Display escaparate para usuario final, guia por estados, cursor de mano, confirmaciones, cierre de seleccion, enlace de campana compartible, camara opcional y export PNG.
 - Gesture FX / Visual Shows documentado como segunda prioridad.
 - Gesture Gaming Arena documentado como tercera prioridad.
 - Gesture Interface Core documentado como capa transversal.
