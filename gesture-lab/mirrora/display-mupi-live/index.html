@@ -293,7 +293,7 @@
     </select>
     <button id="btn-config">Configurar campana</button>
     <button id="btn-shot" disabled>Captura PNG</button>
-    <button id="btn-record" disabled>Grabar 6s</button>
+    <button id="btn-record" disabled>Grabar 15s</button>
   </div>
 
   <aside class="config-panel" id="config-panel" hidden aria-label="Panel de personalizacion">
@@ -315,6 +315,10 @@
       <input id="brand-input" value="MIRRORA Destination Portal" maxlength="42" />
     </div>
     <div class="field">
+      <label for="campaign-input">Nombre de campana</label>
+      <input id="campaign-input" value="destination-portal" maxlength="44" />
+    </div>
+    <div class="field">
       <label for="kicker-input">Etiqueta</label>
       <input id="kicker-input" value="MIRRORA Live Display" maxlength="42" />
     </div>
@@ -329,6 +333,16 @@
     <div class="field">
       <label for="landing-input">Landing / QR</label>
       <input id="landing-input" type="url" value="https://example.com/mirrora" />
+    </div>
+    <div class="field">
+      <label for="duration-select">Duracion clip</label>
+      <select id="duration-select">
+        <option value="15">15 segundos</option>
+        <option value="10">10 segundos</option>
+        <option value="20">20 segundos</option>
+        <option value="30">30 segundos</option>
+        <option value="6">6 segundos QA rapido</option>
+      </select>
     </div>
     <div class="field">
       <label for="portal-file">Contenido del portal</label>

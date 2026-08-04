@@ -18,6 +18,7 @@ const RESET_AFTER_MS = 4200;
 const PRESETS = {
   tourism: {
     brand: "MIRRORA Destination Portal",
+    campaign: "destination-portal",
     kicker: "MIRRORA Live Display",
     headline: "Tu escapada empieza aqui",
     cta: "Reserva ahora",
@@ -25,6 +26,7 @@ const PRESETS = {
   },
   retail: {
     brand: "MIRRORA Retail Window",
+    campaign: "retail-window",
     kicker: "Oferta interactiva",
     headline: "Descubre la coleccion dentro del marco",
     cta: "Ver catalogo",
@@ -32,6 +34,7 @@ const PRESETS = {
   },
   event: {
     brand: "MIRRORA Event Portal",
+    campaign: "event-portal",
     kicker: "Experiencia en directo",
     headline: "Llevate tu recuerdo al movil",
     cta: "Participa ahora",
@@ -39,6 +42,7 @@ const PRESETS = {
   },
   museum: {
     brand: "MIRRORA Culture Window",
+    campaign: "culture-window",
     kicker: "Ruta inmersiva",
     headline: "Abre la pieza y continua la visita",
     cta: "Explorar ruta",
@@ -68,9 +72,11 @@ const formatSelect = document.getElementById("format-select");
 const presetSelect = document.getElementById("preset-select");
 const landingInput = document.getElementById("landing-input");
 const brandInput = document.getElementById("brand-input");
+const campaignInput = document.getElementById("campaign-input");
 const kickerInput = document.getElementById("kicker-input");
 const headlineInput = document.getElementById("headline-input");
 const ctaInput = document.getElementById("cta-input");
+const durationSelect = document.getElementById("duration-select");
 const portalFile = document.getElementById("portal-file");
 const logoFile = document.getElementById("logo-file");
 const brandLabel = document.getElementById("brand-label");
@@ -125,10 +131,12 @@ function getSettings() {
     format: formatSelect.value === "vertical" ? "vertical" : "landscape",
     preset: presetSelect.value,
     brand: textValue(brandInput, PRESETS.tourism.brand),
+    campaign: textValue(campaignInput, PRESETS.tourism.campaign),
     kicker: textValue(kickerInput, PRESETS.tourism.kicker),
     headline: textValue(headlineInput, PRESETS.tourism.headline),
     cta: textValue(ctaInput, PRESETS.tourism.cta),
     landing: textValue(landingInput, PRESETS.tourism.landing),
+    duration: clamp(Number(durationSelect.value) || 15, 6, 30),
     frameExpand: Number(document.getElementById("frame-expand").value) / 100,
     portalScale: Number(document.getElementById("portal-scale").value) / 100,
     portalOffsetX: Number(document.getElementById("portal-offset-x").value) / 100,
@@ -151,10 +159,12 @@ function loadSettings() {
     formatSelect.value = settings.format || "landscape";
     presetSelect.value = settings.preset || "tourism";
     brandInput.value = settings.brand || PRESETS.tourism.brand;
+    campaignInput.value = settings.campaign || PRESETS.tourism.campaign;
     kickerInput.value = settings.kicker || PRESETS.tourism.kicker;
     headlineInput.value = settings.headline || PRESETS.tourism.headline;
     ctaInput.value = settings.cta || PRESETS.tourism.cta;
     landingInput.value = settings.landing || PRESETS.tourism.landing;
+    durationSelect.value = String(settings.duration || 15);
     setRange("frameExpand", Math.round((settings.frameExpand ?? 0.22) * 100));
     setRange("portalScale", Math.round((settings.portalScale ?? 1.15) * 100));
     setRange("portalOffsetX", Math.round((settings.portalOffsetX ?? 0) * 100));
@@ -186,6 +196,7 @@ function applySettings({ persist = true, redraw = true } = {}) {
   kickerLabel.textContent = settings.kicker;
   headlineLabel.textContent = settings.headline;
   ctaLabel.textContent = settings.cta;
+  btnRecord.textContent = `Grabar ${settings.duration}s`;
   updateRangeLabels();
   refreshQr();
   configureCanvas();
@@ -593,6 +604,35 @@ function refreshQr() {
   );
 }
 
+function slugify(value) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 64) || "campana";
+}
+
+function timestampSlug(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    "-",
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds()),
+  ].join("");
+}
+
+function exportName(ext) {
+  const settings = getSettings();
+  const campaign = slugify(settings.campaign || settings.brand);
+  return `mirrora-${campaign}-${timestampSlug()}.${ext}`;
+}
+
 function downloadBlob(blob, name) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -604,15 +644,17 @@ function downloadBlob(blob, name) {
 
 function capturePng() {
   canvas.toBlob((blob) => {
-    if (blob) downloadBlob(blob, "mirrora-display-mupi-live.png");
+    if (blob) downloadBlob(blob, exportName("png"));
   }, "image/png");
 }
 
 function recordClip() {
   if (recording) return;
+  const settings = getSettings();
+  const durationMs = settings.duration * 1000;
   recording = true;
   btnRecord.disabled = true;
-  status("Grabando clip comercial de 6 segundos...");
+  status(`Grabando clip comercial de ${settings.duration} segundos...`);
   const streamOut = canvas.captureStream(30);
   const mime = ["video/mp4", "video/webm;codecs=vp9", "video/webm"].find((m) => MediaRecorder.isTypeSupported(m)) || "video/webm";
   const chunks = [];
@@ -621,13 +663,13 @@ function recordClip() {
   recorder.onstop = () => {
     streamOut.getTracks().forEach((track) => track.stop());
     const ext = mime.startsWith("video/mp4") ? "mp4" : "webm";
-    downloadBlob(new Blob(chunks, { type: mime }), `mirrora-display-mupi-live.${ext}`);
+    downloadBlob(new Blob(chunks, { type: mime }), exportName(ext));
     recording = false;
     btnRecord.disabled = false;
-    status("Clip descargado con portal, marca, QR y CTA.");
+    status(`Clip de ${settings.duration} segundos descargado con portal, marca, QR y CTA.`);
   };
   recorder.start();
-  setTimeout(() => recorder.state === "recording" && recorder.stop(), 6200);
+  setTimeout(() => recorder.state === "recording" && recorder.stop(), durationMs + 200);
 }
 
 function revokeAssetUrls() {
@@ -679,6 +721,7 @@ function loadLogoFile(file) {
 function applyPreset(name) {
   const preset = PRESETS[name] || PRESETS.tourism;
   brandInput.value = preset.brand;
+  campaignInput.value = preset.campaign;
   kickerInput.value = preset.kicker;
   headlineInput.value = preset.headline;
   ctaInput.value = preset.cta;
@@ -731,9 +774,10 @@ presetSelect.addEventListener("change", () => applyPreset(presetSelect.value));
 for (const [, input] of rangeInputs) {
   input.addEventListener("input", () => applySettings());
 }
-for (const input of [brandInput, kickerInput, headlineInput, ctaInput, landingInput]) {
+for (const input of [brandInput, campaignInput, kickerInput, headlineInput, ctaInput, landingInput]) {
   input.addEventListener("input", () => applySettings());
 }
+durationSelect.addEventListener("change", () => applySettings());
 formatSelect.addEventListener("change", () => applySettings());
 window.addEventListener("resize", () => {
   configureCanvas();
