@@ -1,6 +1,6 @@
 # MIRRORA Finger Frame Portal
 
-Status: v1.1 functional lightweight prototype inside Gesture Lab.
+Status: v1.1.1 functional lightweight prototype inside Gesture Lab.
 
 ## What It Is
 
@@ -22,12 +22,13 @@ Rubik Sota should not absorb heavy GPU engines into the core. Therefore this mod
 3. User optionally uploads portal content: destination video, hotel image, product, campaign asset or other commercial visual.
 4. User optionally uploads a logo and edits headline, brand, CTA and landing URL.
 5. User adjusts frame expansion, portal scale and portal X/Y offset.
-6. User chooses:
+6. User adjusts portal emphasis: glow/edge visibility and exterior dimming.
+7. User chooses:
    - local demo mode: custom portal content or hue-shift placeholder, no key, no remote upload;
    - Gemini mode: BYOK video-to-video restyle, remote generation by the provider.
-7. MediaPipe tracks the finger frame.
-8. The portal content appears only inside the tracked frame.
-9. User previews and exports a local MP4/WebM when the browser supports recording.
+8. MediaPipe tracks the finger frame.
+9. The portal content appears only inside the tracked frame.
+10. User previews and exports a local MP4/WebM when the browser supports recording.
 
 ## v1.1 Portal Composer
 
@@ -37,8 +38,17 @@ The module now acts as a commercial composer, not only a technical tracking demo
 - Portal content input: image/video that appears inside the frame.
 - Logo input: brand or destination logo rendered on the final canvas.
 - Controls: frame expansion, content scale, content X/Y offset.
+- Portal emphasis: adjustable glow and exterior dimming so the commercial window reads clearly in the final video.
 - Editable text: headline, brand/destination, CTA and landing URL.
 - Export: final composed video with portal content and commercial overlay.
+
+## v1.1.1 Export And Value Fix
+
+This patch addresses the first commercial QA result:
+
+- Export now resets playback and tracking before recording, so the downloaded file starts at the beginning instead of capturing only the remaining seconds of a preview.
+- The portal has stronger adjustable visual hierarchy through `Realce del portal` and `Oscurecer exterior`.
+- The default experience is now clearer for campaign use: the gesture is not just detected, it becomes a branded media placement.
 
 ## Usage Guide
 

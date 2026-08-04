@@ -64,10 +64,14 @@ const frameExpandInput = document.getElementById("frame-expand");
 const portalScaleInput = document.getElementById("portal-scale");
 const portalOffsetXInput = document.getElementById("portal-offset-x");
 const portalOffsetYInput = document.getElementById("portal-offset-y");
+const portalGlowInput = document.getElementById("portal-glow");
+const outsideDimInput = document.getElementById("outside-dim");
 const frameExpandValue = document.getElementById("frame-expand-value");
 const portalScaleValue = document.getElementById("portal-scale-value");
 const portalOffsetXValue = document.getElementById("portal-offset-x-value");
 const portalOffsetYValue = document.getElementById("portal-offset-y-value");
+const portalGlowValue = document.getElementById("portal-glow-value");
+const outsideDimValue = document.getElementById("outside-dim-value");
 
 let landmarker = null;
 let videoFile = null;
@@ -110,6 +114,8 @@ function syncRangeLabels() {
   portalScaleValue.textContent = `${portalScaleInput.value}%`;
   portalOffsetXValue.textContent = portalOffsetXInput.value;
   portalOffsetYValue.textContent = portalOffsetYInput.value;
+  portalGlowValue.textContent = `${portalGlowInput.value}%`;
+  outsideDimValue.textContent = `${outsideDimInput.value}%`;
 }
 
 function readComposer() {
@@ -122,6 +128,8 @@ function readComposer() {
     portalScale: Number(portalScaleInput.value) / 100,
     portalOffsetX: Number(portalOffsetXInput.value) / 100,
     portalOffsetY: Number(portalOffsetYInput.value) / 100,
+    portalGlow: Number(portalGlowInput.value) / 100,
+    outsideDim: Number(outsideDimInput.value) / 100,
   };
 }
 
@@ -185,7 +193,14 @@ clearPortalBtn.addEventListener("click", () => {
   logoFileInput.value = "";
   status("Portal personalizado limpiado. Se usara el modo demo local.");
 });
-[frameExpandInput, portalScaleInput, portalOffsetXInput, portalOffsetYInput].forEach((input) => {
+[
+  frameExpandInput,
+  portalScaleInput,
+  portalOffsetXInput,
+  portalOffsetYInput,
+  portalGlowInput,
+  outsideDimInput,
+].forEach((input) => {
   input.addEventListener("input", syncRangeLabels);
 });
 syncRangeLabels();
@@ -534,6 +549,15 @@ function quadPath(q) {
   ctx.closePath();
 }
 
+function resetTrackingState() {
+  corners = null;
+  presence = 0;
+  frameActive = false;
+  lostFrames = 0;
+  jumpFrames = 0;
+  lastVideoTime = -1;
+}
+
 function expandQuad(q, amount) {
   const cx = q.reduce((sum, p) => sum + p.x, 0) / q.length;
   const cy = q.reduce((sum, p) => sum + p.y, 0) / q.length;
@@ -554,6 +578,20 @@ function quadBounds(q) {
   return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
 }
 
+function drawOutsideDim(q, alpha) {
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalAlpha = presence * alpha;
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.rect(0, 0, canvas.width, canvas.height);
+  ctx.moveTo(q[0].x, q[0].y);
+  for (let i = 3; i >= 0; i--) ctx.lineTo(q[i].x, q[i].y);
+  ctx.closePath();
+  ctx.fill("evenodd");
+  ctx.restore();
+}
+
 function drawCoverSource(source, bounds, scale = 1, offsetX = 0, offsetY = 0) {
   const sourceWidth = source.videoWidth || source.naturalWidth || source.width;
   const sourceHeight = source.videoHeight || source.naturalHeight || source.height;
@@ -571,6 +609,7 @@ function drawWindow(q) {
   const composer = readComposer();
   const expanded = expandQuad(q, composer.frameExpand);
   const bounds = quadBounds(expanded);
+  drawOutsideDim(expanded, composer.outsideDim);
   ctx.save();
   quadPath(expanded);
   ctx.clip();
@@ -589,13 +628,22 @@ function drawWindow(q) {
   return expanded;
 }
 
-function drawOutline(q, t) {
+function drawOutline(q, t, glow = 0.55) {
   ctx.save();
   ctx.globalAlpha = presence;
+  if (glow > 0) {
+    quadPath(q);
+    ctx.setLineDash([]);
+    ctx.lineWidth = Math.max(6, canvas.width * 0.006) * glow;
+    ctx.strokeStyle = "rgba(255, 194, 75, 0.8)";
+    ctx.shadowColor = "rgba(255, 107, 94, 0.75)";
+    ctx.shadowBlur = Math.max(16, canvas.width * 0.018) * glow;
+    ctx.stroke();
+  }
   quadPath(q);
   ctx.setLineDash([10, 8]);
   ctx.lineDashOffset = -t * 40;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = Math.max(2, canvas.width * 0.002);
   ctx.strokeStyle = "rgba(255,255,255,0.95)";
   ctx.shadowColor = "rgba(0,0,0,0.5)";
   ctx.shadowBlur = 6;
@@ -717,26 +765,44 @@ function loop() {
   }
 
   if (corners && presence > 0.01) {
+    const composer = readComposer();
     const visibleQuad = drawWindow(corners);
-    drawOutline(visibleQuad || corners, orig.currentTime);
+    drawOutline(visibleQuad || corners, orig.currentTime, composer.portalGlow);
   }
   drawCommercialOverlay();
 }
 
+function seekVideo(video, time) {
+  return new Promise((resolve) => {
+    if (!Number.isFinite(video.duration) || Math.abs(video.currentTime - time) < 0.02) {
+      resolve();
+      return;
+    }
+    const done = () => resolve();
+    video.addEventListener("seeked", done, { once: true });
+    video.currentTime = time;
+  });
+}
+
+async function resetPlayback() {
+  orig.pause();
+  sty.pause();
+  if (portalType === "video" && portalElement) portalElement.pause();
+  resetTrackingState();
+  await seekVideo(orig, 0);
+  if (haveAI) await seekVideo(sty, 0);
+  if (portalType === "video" && portalElement) await seekVideo(portalElement, 0);
+  ctx.drawImage(orig, 0, 0, canvas.width, canvas.height);
+  drawCommercialOverlay();
+}
+
 async function playThrough() {
-  corners = null;
-  presence = 0;
-  frameActive = false;
-  lostFrames = 0;
-  jumpFrames = 0;
-  orig.currentTime = 0;
+  await resetPlayback();
   if (haveAI) {
-    sty.currentTime = 0;
-    sty.play();
+    await sty.play();
   }
   if (portalType === "video" && portalElement) {
-    portalElement.currentTime = 0;
-    portalElement.play().catch(() => {});
+    await portalElement.play().catch(() => {});
   }
   await orig.play();
   requestAnimationFrame(loop);
@@ -756,6 +822,7 @@ btnExport.addEventListener("click", async () => {
   btnPlay.disabled = true;
   status("Exporting — playing the video through once…");
 
+  await resetPlayback();
   const stream = canvas.captureStream(30);
   // Prefer MP4 where the browser can record it (Safari, newer Chrome);
   // fall back to WebM elsewhere.
@@ -772,7 +839,18 @@ btnExport.addEventListener("click", async () => {
   });
   const chunks = [];
   recorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  let exportTimer = null;
+  const stopRecorder = () => {
+    if (exportTimer) clearTimeout(exportTimer);
+    orig.removeEventListener("ended", stopRecorder);
+    if (recorder?.state === "recording") {
+      recorder.requestData?.();
+      recorder.stop();
+    }
+  };
   recorder.onstop = () => {
+    stream.getTracks().forEach((track) => track.stop());
+    if (portalType === "video" && portalElement) portalElement.pause();
     const ext = isMp4 ? "mp4" : "webm";
     const blob = new Blob(chunks, { type: isMp4 ? "video/mp4" : "video/webm" });
     const a = document.createElement("a");
@@ -790,12 +868,14 @@ btnExport.addEventListener("click", async () => {
     btnPlay.disabled = false;
   };
 
-  orig.onended = () => {
-    orig.onended = null;
-    recorder.stop();
-  };
+  orig.addEventListener("ended", stopRecorder, { once: true });
+  const durationMs = Number.isFinite(orig.duration) ? (orig.duration + 0.75) * 1000 : 30000;
+  exportTimer = setTimeout(stopRecorder, durationMs);
   recorder.start();
-  await playThrough();
+  if (haveAI) await sty.play();
+  if (portalType === "video" && portalElement) await portalElement.play().catch(() => {});
+  await orig.play();
+  requestAnimationFrame(loop);
 });
 
 window.addEventListener("beforeunload", () => {

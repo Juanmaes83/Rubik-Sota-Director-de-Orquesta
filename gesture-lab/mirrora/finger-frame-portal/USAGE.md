@@ -50,10 +50,12 @@ Use this first.
 4. Optional: upload a logo.
 5. Edit headline, brand, CTA and landing URL.
 6. Adjust frame expansion, content scale and X/Y offset.
-7. Click `Probar modo demo local`.
-8. Click `Previsualizar`.
-9. If the hand frame is detected, the app reveals the uploaded portal content inside the finger frame.
-10. Click `Exportar` to download the result if the browser supports recording.
+7. Adjust `Realce del portal` if the window needs to stand out more.
+8. Adjust `Oscurecer exterior` if the content inside the frame needs more contrast.
+9. Click `Probar modo demo local`.
+10. Click `Previsualizar`.
+11. If the hand frame is detected, the app reveals the uploaded portal content inside the finger frame.
+12. Click `Exportar` to download the result if the browser supports recording.
 
 This mode does not need an API key and does not upload the videos, images or logo to an AI provider.
 
@@ -82,6 +84,26 @@ For real estate:
 - before/after proposal.
 
 The portal content is what creates commercial value. Without it, the fallback only shows a colored version of the original video for technical QA.
+
+## How To Make The Portal Valuable
+
+Use the frame as a campaign placement, not only as an effect:
+
+- Put the offer, destination, room, menu, product or experience inside `contenido del portal`.
+- Use `Expandir marco` to make the tracked hand frame a bit larger if the detected rectangle is too tight.
+- Use `Escala contenido` and X/Y offset to place the most important part of the image/video inside the opening.
+- Use `Realce del portal` to separate the portal from the original footage.
+- Use `Oscurecer exterior` when the background competes with the commercial content.
+- Add logo, headline, CTA and landing before export so the final video can be tested as an ad, MUPI asset, retail window clip or mobile story.
+
+## Export QA
+
+Before sharing an export:
+
+- Preview once and check that the portal appears for several seconds.
+- Export after the current v1.1.1 flow; it resets playback to the beginning before recording.
+- Check the downloaded file duration. It should match the uploaded base video duration, not only the final seconds of the preview.
+- If the browser downloads WebM instead of MP4, the composition is still valid; convert later if the media plan requires MP4.
 
 ## Gemini AI Mode
 
