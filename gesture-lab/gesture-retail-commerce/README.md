@@ -1,6 +1,6 @@
 # Gesture Retail Commerce
 
-Status: family index + first browser-first commercial module.
+Status: family index + first browser-first commercial module, v1.1 with Studio/Display split.
 
 Goal: turn webcam gestures, storefront screens, MUPIs and product cards into conversion flows: select, wishlist, cart, QR, mobile continuation and campaign export.
 
@@ -38,9 +38,28 @@ Gesture Retail Commerce v1 includes:
 - CTA;
 - logo/campaign controls;
 - product image upload for the active product;
+- public product image URL for GitHub Pages/mobile QA without backend;
 - 16:9 and 9:16 display modes;
-- clean storefront/kiosk mode;
+- clean storefront/kiosk mode for the final user;
+- Studio/Admin mode for the store owner;
+- shareable Display URL with embedded campaign configuration;
 - unique PNG export.
+
+## How to use
+
+Studio/Admin URL:
+
+`gesture-lab/gesture-retail-commerce/rubik-sota-gesture-retail-commerce-v1.html?mode=studio`
+
+Use this mode for the store owner, agency or Rubik operator. It exposes personalization controls: preset, brand, campaign, headline, CTA, landing/WhatsApp, colors, logo, selected product image, product image URL, name, price, promo, cart/wishlist test actions and export.
+
+Display/MUPI URL:
+
+`gesture-lab/gesture-retail-commerce/rubik-sota-gesture-retail-commerce-v1.html?mode=display`
+
+Use this mode for the final user in a storefront, MUPI, mobile test or public activation. It hides the personalization panel and keeps only the commercial interaction: camera consent, gesture/demo interaction, product selection, add, QR, CTA and export/capture.
+
+Important: this is still browser-first and does not include a backend. Uploaded files are local to the current browser. For phone testing from GitHub Pages, use public image URLs or assets committed to the repo, then copy/open the generated `Vista escaparate` link.
 
 ## Target sectors
 
@@ -67,4 +86,4 @@ Gesture Retail Commerce v1 includes:
 - Validate mobile layout.
 - Validate QR scan with a real phone.
 - Validate camera gesture fallback on a device with webcam.
-- Confirm if v1 is stable enough to promote as a closed module.
+- Confirm if v1.1 is stable enough to promote as a closed module.

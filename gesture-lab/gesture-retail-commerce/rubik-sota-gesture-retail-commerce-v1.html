@@ -39,7 +39,8 @@
         #060608;
       overflow-x: hidden;
     }
-    body[data-kiosk="true"] { overflow: hidden; }
+    body[data-kiosk="true"],
+    body[data-mode="display"] { overflow: hidden; }
     button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
     a { color: inherit; text-decoration: none; }
@@ -301,6 +302,17 @@
       font-size: 13px;
       line-height: 1.5;
     }
+    .mode-note {
+      border: 1px solid rgba(255,194,75,0.28);
+      border-radius: 16px;
+      padding: 11px;
+      background: rgba(255,194,75,0.08);
+      color: rgba(255,255,255,0.78);
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 760;
+    }
+    .display-only { display: none; }
     .toast {
       position: fixed;
       z-index: 2000;
@@ -329,6 +341,35 @@
     body[data-kiosk="true"] .stage-wrap { min-height: 100vh; border: 0; border-radius: 0; }
     body[data-kiosk="true"] .stage-aspect { width: 100vw; height: 100vh; max-height: none; aspect-ratio: auto; }
     body[data-kiosk="true"][data-format="vertical"] .stage-aspect { width: min(100vw, calc(100vh * 0.5625)); height: 100vh; }
+    body[data-mode="display"] .shell { width: 100%; padding: 0; min-height: 100vh; }
+    body[data-mode="display"] .back-link,
+    body[data-mode="display"] .config,
+    body[data-mode="display"] .commerce-grid,
+    body[data-mode="display"] .readme-note,
+    body[data-mode="display"] .owner-only { display: none; }
+    body[data-mode="display"] .display-only { display: inline-flex; }
+    body[data-mode="display"] .layout { display: block; }
+    body[data-mode="display"] .topbar {
+      position: fixed;
+      left: 18px;
+      right: 18px;
+      top: 18px;
+      z-index: 8;
+      background: rgba(0,0,0,0.42);
+      box-shadow: 0 14px 45px rgba(0,0,0,0.36);
+    }
+    body[data-mode="display"] .stage-card { border: 0; border-radius: 0; padding: 0; min-height: 100vh; }
+    body[data-mode="display"] .stage-top {
+      position: fixed;
+      left: 28px;
+      right: 28px;
+      bottom: 20px;
+      z-index: 7;
+      pointer-events: none;
+    }
+    body[data-mode="display"] .stage-wrap { min-height: 100vh; border: 0; border-radius: 0; }
+    body[data-mode="display"] .stage-aspect { width: 100vw; height: 100vh; max-height: none; aspect-ratio: auto; }
+    body[data-mode="display"][data-format="vertical"] .stage-aspect { width: min(100vw, calc(100vh * 0.5625)); height: 100vh; }
     @media (max-width: 1120px) {
       .layout, .commerce-grid { grid-template-columns: 1fr; }
       .stage-wrap { min-height: 560px; }
@@ -348,19 +389,23 @@
     }
   </style>
 </head>
-<body data-format="landscape" data-kiosk="false">
+<body data-format="landscape" data-kiosk="false" data-mode="studio">
   <a class="back-link" href="../index.html">← Gesture Lab</a>
   <video id="camera" playsinline muted></video>
   <div class="shell">
     <header class="topbar">
       <a class="brand" href="../index.html">
         <span class="brand-mark">RC</span>
-        <span><span class="brand-title">Gesture Retail Commerce</span><span class="brand-sub">Rubik Sota · v1 comercial</span></span>
+        <span><span class="brand-title">Gesture Retail Commerce</span><span class="brand-sub">Rubik Sota · v1.1 comercial</span></span>
       </a>
       <div class="actions">
-        <button class="btn primary" id="btn-camera" type="button">Activar camara</button>
+        <button class="btn primary" id="btn-camera" type="button">Activar cámara</button>
         <button class="btn" id="btn-demo" type="button">Simular gesto</button>
-        <button class="btn" id="btn-kiosk" type="button">Modo escaparate</button>
+        <button class="btn owner-only" id="btn-display-copy" type="button">Copiar enlace escaparate</button>
+        <a class="btn owner-only" id="displayLink">Vista escaparate</a>
+        <button class="btn owner-only" id="btn-kiosk" type="button">Preview limpio</button>
+        <button class="btn display-only" id="btn-user-add" type="button">Añadir</button>
+        <button class="btn display-only" id="btn-user-next" type="button">Siguiente</button>
         <button class="btn accent" id="btn-export" type="button">Exportar PNG</button>
       </div>
     </header>
@@ -368,8 +413,11 @@
     <main class="layout">
       <section class="config" aria-label="Configuracion comercial">
         <div>
-          <p class="hint">1 · Marca, campaña y conversion</p>
-          <h2>Personalizacion comercial</h2>
+          <p class="hint">1 · Marca, campaña y conversión</p>
+          <h2>Personalización comercial</h2>
+        </div>
+        <div class="mode-note">
+          Modo Studio para el dueño de tienda: aquí se personaliza marca, campaña, productos, QR y CTA. El usuario final debe abrir la Vista escaparate, donde no verá estos controles. Demo sin backend: los archivos subidos viven en este navegador; para móvil/GitHub Pages usa URLs públicas de imagen o assets subidos al repo.
         </div>
         <div class="two">
           <div class="field">
@@ -377,10 +425,10 @@
             <select id="preset">
               <option value="fashion">Moda</option>
               <option value="beauty">Belleza</option>
-              <option value="electronics">Electronica</option>
+              <option value="electronics">Electrónica</option>
               <option value="tourism">Turismo retail</option>
               <option value="gourmet">Food gourmet</option>
-              <option value="auto">Automocion</option>
+              <option value="auto">Automoción</option>
             </select>
           </div>
           <div class="field">
@@ -396,7 +444,7 @@
           <input id="brand" value="Rubik Retail Window" maxlength="48" />
         </div>
         <div class="field">
-          <label for="campaign">Nombre de campana</label>
+          <label for="campaign">Nombre de campaña</label>
           <input id="campaign" value="retail-commerce-v1" maxlength="48" />
         </div>
         <div class="field">
@@ -405,7 +453,7 @@
         </div>
         <div class="field">
           <label for="subline">Subtitulo</label>
-          <input id="subline" value="Explora, guarda y continua en tu movil con QR" maxlength="92" />
+          <input id="subline" value="Explora, guarda y continúa en tu móvil con QR" maxlength="92" />
         </div>
         <div class="two">
           <div class="field">
@@ -445,6 +493,10 @@
           <label for="productFile">Imagen producto seleccionado</label>
           <input id="productFile" type="file" accept="image/*" />
         </div>
+        <div class="field">
+          <label for="productImageUrl">Imagen por URL publica</label>
+          <input id="productImageUrl" placeholder="https://..." />
+        </div>
         <div class="two">
           <div class="field">
             <label for="productName">Editar nombre</label>
@@ -473,7 +525,7 @@
             <p class="hint">2 · Preview / MUPI / escaparate</p>
             <h2 id="stageTitle" style="margin:0;">Retail Commerce Live</h2>
           </div>
-          <div class="status" id="status">Demo lista. Usa botones, teclado o camara.</div>
+          <div class="status" id="status">Demo lista. Usa botones, teclado o cámara.</div>
         </div>
         <div class="stage-wrap">
           <div class="stage-aspect" id="stageAspect">
@@ -490,14 +542,14 @@
     <section class="commerce-grid">
       <div class="commerce-panel">
         <div>
-          <p class="hint">3 · Catalogo accionable</p>
+          <p class="hint">3 · Catálogo accionable</p>
           <h2>Productos</h2>
         </div>
         <div class="products" id="products"></div>
       </div>
       <aside class="commerce-panel">
         <div>
-          <p class="hint">4 · Conversion</p>
+          <p class="hint">4 · Conversión</p>
           <h2>Seleccion del usuario</h2>
         </div>
         <div class="metrics">
@@ -515,7 +567,7 @@
     </section>
 
     <div class="readme-note">
-      Gesture Retail Commerce v1 es un modulo browser-first: no usa checkout real ni backend. La conversion se resuelve por QR/CTA hacia landing, WhatsApp, ecommerce o formulario. Camara opcional, fallback tactil y teclado siempre disponibles.
+      Gesture Retail Commerce v1.1 es un módulo browser-first: no usa checkout real ni backend. La conversión se resuelve por QR/CTA hacia landing, WhatsApp, ecommerce o formulario. Cámara opcional, fallback táctil y teclado siempre disponibles.
     </div>
   </div>
   <div class="toast" id="toast">Listo</div>
@@ -524,13 +576,22 @@
     const CONFIG_KEY = "rubik-gesture-retail-commerce-v1";
     const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
     const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm";
+    const params = new URLSearchParams(window.location.search);
+    const appMode = params.get("mode") === "display" ? "display" : "studio";
+    document.body.dataset.mode = appMode;
+    if (appMode === "display") {
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("btn-demo").textContent = "Explorar demo";
+        document.getElementById("btn-export").textContent = "Capturar PNG";
+      });
+    }
 
     const presets = {
       fashion: {
         brand: "SOL Fashion Window",
         campaign: "sol-fashion-drop",
         headline: "Elige tu look con la mano",
-        subline: "Guarda tus favoritos y continua en el movil",
+        subline: "Guarda tus favoritos y continúa en el móvil",
         cta: "Ver tallas",
         landing: "https://example.com/fashion",
         accentA: "#ff4f87",
@@ -541,7 +602,7 @@
           ["Bolso arena premium", "Accesorios", "74€", "Solo hoy"],
           ["Sneaker blanca SOL", "Calzado", "99€", "Wishlist drop"],
           ["Camisa fluida", "Moda", "59€", "Nueva coleccion"],
-          ["Set joyeria dorada", "Accesorios", "49€", "Completa el look"],
+          ["Set joyería dorada", "Accesorios", "49€", "Completa el look"],
         ],
       },
       beauty: {
@@ -566,7 +627,7 @@
         brand: "Tech Retail Wall",
         campaign: "tech-demo-wall",
         headline: "Compara tecnologia sin tocar",
-        subline: "Elige, guarda y recibe la ficha en tu movil",
+        subline: "Elige, guarda y recibe la ficha en tu móvil",
         cta: "Ver ficha",
         landing: "https://example.com/tech",
         accentA: "#00ffcc",
@@ -574,7 +635,7 @@
         products: [
           ["Auriculares Pro", "Audio", "149€", "Demo sonido"],
           ["Smartwatch Active", "Wearable", "199€", "Comparar modelos"],
-          ["Camara Action", "Video", "249€", "Pack aventura"],
+          ["Cámara Action", "Video", "249€", "Pack aventura"],
           ["Tablet Studio", "Productividad", "399€", "Oferta MUPI"],
           ["Altavoz 360", "Audio", "89€", "Prueba en tienda"],
           ["Cargador rapido", "Accesorio", "29€", "Añadir al pack"],
@@ -583,7 +644,7 @@
       tourism: {
         brand: "Destination Shop",
         campaign: "tourism-retail",
-        headline: "Llevate la experiencia a tu movil",
+        headline: "Llévate la experiencia a tu móvil",
         subline: "Souvenirs, rutas y reservas desde el escaparate",
         cta: "Reservar experiencia",
         landing: "https://example.com/tourism",
@@ -592,9 +653,9 @@
         products: [
           ["Ruta sunset", "Experiencia", "35€", "QR reserva"],
           ["Pack souvenir local", "Souvenir", "24€", "Recogida tienda"],
-          ["Pase museo", "Cultura", "12€", "Entrada movil"],
+          ["Pase museo", "Cultura", "12€", "Entrada móvil"],
           ["Tour gastronomico", "Food", "49€", "Plazas limitadas"],
-          ["Actividad nautica", "Aventura", "69€", "Reserva rapida"],
+          ["Actividad náutica", "Aventura", "69€", "Reserva rápida"],
           ["Postal mapa vivo", "Recuerdo", "8€", "Descarga digital"],
         ],
       },
@@ -602,7 +663,7 @@
         brand: "Gourmet Commerce Wall",
         campaign: "food-gourmet",
         headline: "Monta tu pack gourmet",
-        subline: "Selecciona productos y pide desde el movil",
+        subline: "Selecciona productos y pide desde el móvil",
         cta: "Pedir ahora",
         landing: "https://example.com/gourmet",
         accentA: "#d8ff3e",
@@ -610,9 +671,9 @@
         products: [
           ["Pack sushi premium", "Food", "32€", "Cena para dos"],
           ["Burger chef box", "Food", "18€", "Menu especial"],
-          ["Pizza artesana", "Food", "16€", "Recogida rapida"],
+          ["Pizza artesana", "Food", "16€", "Recogida rápida"],
           ["Aceite local", "Gourmet", "14€", "Producto estrella"],
-          ["Vino seleccion", "Bebida", "21€", "Maridaje"],
+          ["Vino selección", "Bebida", "21€", "Maridaje"],
           ["Postre firma", "Dulce", "7€", "Añadir al pedido"],
         ],
       },
@@ -626,12 +687,12 @@
         accentA: "#7dd3fc",
         accentB: "#ffc24b",
         products: [
-          ["Pack viaje", "Accesorios", "249€", "Instalacion incluida"],
+          ["Pack viaje", "Accesorios", "249€", "Instalación incluida"],
           ["Cargador EV", "Electrico", "499€", "Consulta oferta"],
           ["Cofre techo", "Outdoor", "329€", "Pack vacaciones"],
           ["Kit limpieza pro", "Detalle", "39€", "Añadir ahora"],
-          ["Camara parking", "Seguridad", "199€", "Pedir demo"],
-          ["Llantas sport", "Estilo", "699€", "Financiacion"],
+          ["Cámara parking", "Seguridad", "199€", "Pedir demo"],
+          ["Llantas sport", "Estilo", "699€", "Financiación"],
         ],
       },
     };
@@ -639,8 +700,8 @@
     const els = {};
     [
       "preset","format","brand","campaign","headline","subline","cta","landing","accentA","accentB","resetTime",
-      "logoFile","productFile","productName","productPrice","productPromo","btn-camera","btn-demo","btn-kiosk",
-      "btn-export","btn-add","btn-wish","btn-next","btn-reset","stage","camera","stageTitle","status","products",
+      "logoFile","productFile","productImageUrl","productName","productPrice","productPromo","btn-camera","btn-demo","btn-kiosk",
+      "btn-display-copy","displayLink","btn-user-add","btn-user-next","btn-export","btn-add","btn-wish","btn-next","btn-reset","stage","camera","stageTitle","status","products",
       "cartList","metricItems","metricWish","metricTotal","metricScans","qr","qrLabel","ctaLink","btn-copy","toast"
     ].forEach((id) => els[id] = document.getElementById(id));
 
@@ -662,6 +723,7 @@
       handClosed: false,
       visionModule: null,
       productImages: new Map(),
+      cameraConsent: false,
     };
 
     function moneyNumber(text) {
@@ -699,13 +761,41 @@
         brand: els.brand.value.trim() || "Rubik Retail Window",
         campaign: els.campaign.value.trim() || "retail-commerce-v1",
         headline: els.headline.value.trim() || "Elige tu producto con la mano",
-        subline: els.subline.value.trim() || "Explora, guarda y continua en tu movil con QR",
+        subline: els.subline.value.trim() || "Explora, guarda y continúa en tu móvil con QR",
         cta: els.cta.value.trim() || "Continuar compra",
         landing: els.landing.value.trim() || "https://example.com/retail",
         accentA: els.accentA.value,
         accentB: els.accentB.value,
         resetTime: Number(els.resetTime.value) || 35,
       };
+    }
+
+    function applySettingsValues(settings = {}) {
+      for (const [key, value] of Object.entries(settings)) {
+        if (els[key]) els[key].value = value;
+      }
+    }
+
+    function campaignConfig() {
+      return {
+        settings: currentSettings(),
+        products: state.products,
+        active: state.active,
+      };
+    }
+
+    function encodeConfig(config) {
+      const bytes = new TextEncoder().encode(JSON.stringify(config));
+      let binary = "";
+      bytes.forEach((byte) => binary += String.fromCharCode(byte));
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    }
+
+    function decodeConfig(value) {
+      const padded = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
+      const binary = atob(padded);
+      const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
     }
 
     function makeProducts(presetKey) {
@@ -752,12 +842,24 @@
     }
 
     function load() {
+      const configParam = params.get("config");
+      if (configParam) {
+        try {
+          const shared = decodeConfig(configParam);
+          applySettingsValues(shared.settings || {});
+          state.products = Array.isArray(shared.products) && shared.products.length ? shared.products : makeProducts(els.preset.value);
+          state.cart = {};
+          state.wishlist = {};
+          state.active = Math.min(shared.active || 0, state.products.length - 1);
+          return;
+        } catch (error) {
+          console.warn("Campaign config could not be loaded", error);
+        }
+      }
       try {
         const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}");
         if (saved.settings) {
-          for (const [key, value] of Object.entries(saved.settings)) {
-            if (els[key]) els[key].value = value;
-          }
+          applySettingsValues(saved.settings);
         }
         state.products = Array.isArray(saved.products) && saved.products.length ? saved.products : makeProducts(els.preset.value);
         state.cart = saved.cart || {};
@@ -796,6 +898,24 @@
       return url.toString();
     }
 
+    function displayUrl() {
+      const url = new URL(window.location.href);
+      if (!url.pathname.endsWith(".html")) {
+        url.pathname = `${url.pathname.replace(/\/$/, "")}.html`;
+      }
+      url.search = "";
+      url.searchParams.set("mode", "display");
+      url.searchParams.set("config", encodeConfig(campaignConfig()));
+      return url.toString();
+    }
+
+    function updateDisplayLink() {
+      if (!els.displayLink) return;
+      els.displayLink.href = displayUrl();
+      els.displayLink.target = "_blank";
+      els.displayLink.rel = "noopener noreferrer";
+    }
+
     function refreshQr() {
       els.qr.innerHTML = "";
       const url = conversionUrl();
@@ -816,6 +936,7 @@
       els.productName.value = p.name;
       els.productPrice.value = p.price;
       els.productPromo.value = p.promo;
+      els.productImageUrl.value = p.image && !p.image.startsWith("data:") ? p.image : "";
     }
 
     function touch(message) {
@@ -834,7 +955,7 @@
     function addToCart() {
       const p = activeProduct();
       state.cart[p.id] = (state.cart[p.id] || 0) + 1;
-      touch(`${p.name} anadido al carrito.`);
+      touch(`${p.name} añadido al carrito.`);
       persist();
       render();
     }
@@ -883,7 +1004,7 @@
       els.cartList.innerHTML = "";
       const entries = cartEntries();
       if (!entries.length && !wishlistCount()) {
-        els.cartList.innerHTML = `<div class="cart-item"><div><strong>Sin seleccion todavia</strong><span>Elige un producto y anadelo al carrito o wishlist.</span></div></div>`;
+        els.cartList.innerHTML = `<div class="cart-item"><div><strong>Sin selección todavía</strong><span>Elige un producto y añádelo al carrito o wishlist.</span></div></div>`;
       }
       entries.forEach(({ product, qty }) => {
         const row = document.createElement("div");
@@ -968,6 +1089,7 @@
         let image = state.productImages.get(p.id);
         if (!image) {
           image = new Image();
+          image.crossOrigin = "anonymous";
           image.onload = () => drawStage();
           image.src = p.image;
           state.productImages.set(p.id, image);
@@ -1053,7 +1175,7 @@
       g.stroke();
       g.fillStyle = s.accentB;
       g.font = "950 25px Inter, system-ui";
-      g.fillText("Tu seleccion", sideX + 24, sideY + 44);
+      g.fillText("Tu selección", sideX + 24, sideY + 44);
       g.fillStyle = "#fff";
       g.font = "950 36px Inter, system-ui";
       g.fillText(active.name, sideX + 24, sideY + 92);
@@ -1091,8 +1213,10 @@
       document.documentElement.style.setProperty("--accent-a", settings.accentA);
       document.documentElement.style.setProperty("--accent-b", settings.accentB);
       document.body.dataset.format = settings.format;
+      document.body.dataset.mode = appMode;
       document.body.dataset.kiosk = document.body.dataset.kiosk || "false";
       els.stageTitle.textContent = settings.brand;
+      updateDisplayLink();
       renderProducts();
       renderCart();
       els.metricItems.textContent = String(cartEntries().reduce((n, item) => n + item.qty, 0));
@@ -1123,8 +1247,16 @@
         stopCamera();
         return;
       }
+      if (!state.cameraConsent) {
+        const ok = window.confirm("La cámara se usa solo en este navegador para detectar gestos. No se sube vídeo ni se guarda imagen. ¿Activar ahora?");
+        if (!ok) {
+          touch("Cámara no activada. Puedes usar botones, táctil o teclado.");
+          return;
+        }
+        state.cameraConsent = true;
+      }
       try {
-        touch("Preparando camara y MediaPipe...");
+        touch("Preparando cámara y MediaPipe...");
         if (!state.visionModule) {
           state.visionModule = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14");
         }
@@ -1138,13 +1270,13 @@
         els.camera.srcObject = state.stream;
         await els.camera.play();
         state.cameraOn = true;
-        els["btn-camera"].textContent = "Parar camara";
-        touch("Camara activa. Mueve la mano izquierda/derecha y cierra para seleccionar.");
+        els["btn-camera"].textContent = "Parar cámara";
+        touch("Cámara activa. Mueve la mano izquierda/derecha y cierra para seleccionar.");
         cameraLoop();
       } catch (error) {
         console.warn(error);
-        touch("No se pudo activar camara. Sigue con botones o teclado.");
-        showToast("Camara no disponible; fallback activo.");
+        touch("No se pudo activar cámara. Sigue con botones o teclado.");
+        showToast("Cámara no disponible; fallback activo.");
       }
     }
 
@@ -1155,8 +1287,8 @@
       state.cameraOn = false;
       state.handX = null;
       state.handY = null;
-      els["btn-camera"].textContent = "Activar camara";
-      touch("Camara parada. Fallback tactil activo.");
+      els["btn-camera"].textContent = "Activar cámara";
+      touch("Cámara parada. Fallback táctil activo.");
       render();
     }
 
@@ -1217,16 +1349,29 @@
       drawStage();
       const a = document.createElement("a");
       const s = currentSettings();
-      a.href = els.stage.toDataURL("image/png");
-      a.download = `rubik-retail-commerce-${slugify(s.campaign || s.brand)}-${timestampSlug()}.png`;
-      a.click();
-      showToast("PNG exportado con nombre unico.");
+      try {
+        a.href = els.stage.toDataURL("image/png");
+        a.download = `rubik-retail-commerce-${slugify(s.campaign || s.brand)}-${timestampSlug()}.png`;
+        a.click();
+        showToast("PNG exportado con nombre unico.");
+      } catch (error) {
+        console.warn(error);
+        showToast("No se pudo exportar: usa imagenes del repo o URLs con permiso CORS.");
+      }
     }
 
     function copyLink() {
       const url = conversionUrl();
       navigator.clipboard?.writeText(url).then(
         () => showToast("Enlace copiado."),
+        () => showToast(url)
+      );
+    }
+
+    function copyDisplayUrl() {
+      const url = displayUrl();
+      navigator.clipboard?.writeText(url).then(
+        () => showToast(url.length > 6000 ? "Enlace copiado. Para móvil conviene usar URLs de imagen, no archivos locales." : "Enlace de escaparate copiado."),
         () => showToast(url)
       );
     }
@@ -1238,9 +1383,17 @@
         els[id].addEventListener("change", () => { persist(); render(); });
       });
       ["productName","productPrice","productPromo"].forEach((id) => els[id].addEventListener("input", editActiveProduct));
+      els.productImageUrl.addEventListener("input", () => {
+        const product = activeProduct();
+        product.image = els.productImageUrl.value.trim();
+        state.productImages.delete(product.id);
+        persist();
+        render();
+      });
       els.productFile.addEventListener("change", () => readImage(els.productFile.files[0], (src) => {
         const product = activeProduct();
         product.image = src;
+        els.productImageUrl.value = "";
         state.productImages.delete(product.id);
         persist();
         render();
@@ -1253,7 +1406,10 @@
       }));
       els["btn-camera"].addEventListener("click", startCamera);
       els["btn-demo"].addEventListener("click", simulateGesture);
+      els["btn-display-copy"].addEventListener("click", copyDisplayUrl);
       els["btn-kiosk"].addEventListener("click", toggleKiosk);
+      els["btn-user-add"].addEventListener("click", addToCart);
+      els["btn-user-next"].addEventListener("click", () => selectProduct(state.active + 1));
       els["btn-export"].addEventListener("click", exportPng);
       els["btn-add"].addEventListener("click", addToCart);
       els["btn-wish"].addEventListener("click", toggleWish);
@@ -1278,6 +1434,9 @@
     syncProductEditors();
     bind();
     render();
+    touch(appMode === "display"
+      ? "Modo escaparate. Activa cámara, usa demo o toca Siguiente/Añadir."
+      : "Modo Studio. Personaliza la campaña y abre Vista escaparate para el usuario final.");
   </script>
 </body>
 </html>

@@ -124,7 +124,7 @@ Status: family documented, transversal engine layer.
 ## Current recommendation
 
 1. Keep the public catalog family-based.
-2. QA next: Gesture Retail Commerce v1 on desktop, mobile, QR scan and webcam.
+2. QA next: Gesture Retail Commerce v1.1 on desktop, mobile, QR scan and webcam, using Studio for the store owner and Display for the final storefront/MUPI user.
 3. Then package Gesture FX / Visual Shows.
 4. Then validate Gesture Gaming Arena.
 5. Use Gesture Interface Core as a shared internal layer, not as a standalone public product.

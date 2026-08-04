@@ -732,7 +732,7 @@ Cada módulo debe incluir, cuando aplique:
 - v2.12 - Retail Window Pro - estable actual
 - Living Maps 3D - familia conectada: La Batuta, Maqueta Viva 3D y Living Map
 - Ecosystem Audit - documentado en `docs/RUBIK_REPO_ECOSYSTEM_AUDIT.md`
-- Gesture Retail Commerce v1 - modulo creado / QA comercial movil y MUPI
+- Gesture Retail Commerce v1.1 - modulo creado / Studio cliente + Display escaparate para QA comercial movil y MUPI
 - Gesture FX / Visual Shows - familia documentada / segunda prioridad
 - Gesture Gaming Arena - familia documentada / tercera prioridad
 - Gesture Interface Core - capa transversal documentada
@@ -790,7 +790,7 @@ Cada módulo debe incluir, cuando aplique:
 - Dental Kids v2.11 publicado como coach educativo de cepillado real.
 - Retail Window Pro v2.12 publicado y funcional.
 - Living Maps 3D publicado como familia de catalogo con LM1 La Batuta, LM2 Maqueta Viva 3D y LM3 Living Map.
-- Gesture Retail Commerce v1 creado como primer modulo comercial nuevo: catalogo, carrito, wishlist, QR, CTA, branding, 16:9/9:16, modo escaparate, camara opcional y export PNG.
+- Gesture Retail Commerce v1.1 creado como primer modulo comercial nuevo: catalogo, carrito, wishlist, QR, CTA, branding, 16:9/9:16, Studio para cliente, Display escaparate para usuario final, enlace de campana compartible, camara opcional y export PNG.
 - Gesture FX / Visual Shows documentado como segunda prioridad.
 - Gesture Gaming Arena documentado como tercera prioridad.
 - Gesture Interface Core documentado como capa transversal.
