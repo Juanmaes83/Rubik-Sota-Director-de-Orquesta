@@ -1,6 +1,6 @@
 # Gesture Retail Commerce
 
-Status: family index. First recommended new module family after MIRRORA and Living Maps 3D.
+Status: family index + first browser-first commercial module.
 
 Goal: turn webcam gestures, storefront screens, MUPIs and product cards into conversion flows: select, wishlist, cart, QR, mobile continuation and campaign export.
 
@@ -20,20 +20,27 @@ This is the most direct commercial bridge between Rubik and revenue:
 - `https://github.com/Juanmaes83/Virtual-Shopping-Cart-OPENCV` - gesture shopping/cart reference.
 - `https://github.com/Juanmaes83/NonMouse` - optional control reference.
 
-## Suggested first product
+## First product
 
-Gesture Retail Commerce v1:
+Local module:
+
+`gesture-lab/gesture-retail-commerce/rubik-sota-gesture-retail-commerce-v1.html`
+
+Gesture Retail Commerce v1 includes:
 
 - live or demo input;
 - product grid;
-- gesture or button fallback;
+- optional MediaPipe camera gesture control;
+- button and keyboard fallback;
 - select product;
 - add to wishlist/cart;
-- QR for mobile continuation;
+- real QR for mobile continuation when the QR library loads;
 - CTA;
 - logo/campaign controls;
+- product image upload for the active product;
 - 16:9 and 9:16 display modes;
-- export PNG or short campaign summary.
+- clean storefront/kiosk mode;
+- unique PNG export.
 
 ## Target sectors
 
@@ -54,6 +61,10 @@ Gesture Retail Commerce v1:
 - Do not create many category-specific clones.
 - Do not expose low-level gesture engines as commercial modules.
 
-## Next decision
+## Current QA focus
 
-Build one browser-first v1 that extends the current Rubik retail patterns instead of importing an external repo wholesale.
+- Open locally and from GitHub Pages.
+- Validate mobile layout.
+- Validate QR scan with a real phone.
+- Validate camera gesture fallback on a device with webcam.
+- Confirm if v1 is stable enough to promote as a closed module.

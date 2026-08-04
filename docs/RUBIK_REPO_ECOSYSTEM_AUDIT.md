@@ -38,7 +38,7 @@ Why it matters:
 - can reuse Rubik patterns already validated: logo, products, CTA, QR, wishlist, mobile continuity and export;
 - should be the first new commercial module to develop.
 
-Status: family documented, module not implemented yet.
+Status: v1 QA module created in `gesture-lab/gesture-retail-commerce/rubik-sota-gesture-retail-commerce-v1.html`.
 
 ### Gesture FX / Visual Shows
 
@@ -124,7 +124,7 @@ Status: family documented, transversal engine layer.
 ## Current recommendation
 
 1. Keep the public catalog family-based.
-2. Develop next: Gesture Retail Commerce.
+2. QA next: Gesture Retail Commerce v1 on desktop, mobile, QR scan and webcam.
 3. Then package Gesture FX / Visual Shows.
 4. Then validate Gesture Gaming Arena.
 5. Use Gesture Interface Core as a shared internal layer, not as a standalone public product.

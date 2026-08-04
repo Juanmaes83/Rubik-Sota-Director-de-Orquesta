@@ -134,7 +134,7 @@ Do not copy those external repos into Rubik for now. Rubik should link, explain 
 
 Rubik should expose only the family layer in the public UX:
 
-- Gesture Retail Commerce: first implementation priority after this documentation pass. It should build on Retail Window Pro, Interactive Gesture Catalog and Virtual Shopping Cart ideas.
+- Gesture Retail Commerce: first implementation priority and now v1 QA module. It builds on Retail Window Pro, Interactive Gesture Catalog and Virtual Shopping Cart ideas.
 - Gesture FX / Visual Shows: second implementation priority. It should build on Camera FX, particle effects, audio visualizer and SwordArt references.
 - Gesture Gaming Arena: third implementation priority. It should organize racing, cube, character/game challenges and scoring, but needs more QA.
 - Gesture Interface Core: not a standalone product. It is the shared gesture UX/engine contract for privacy, calibration, fallback, confidence and gestures.

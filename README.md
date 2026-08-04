@@ -73,7 +73,7 @@ Documento local de familia: `gesture-lab/living-maps-3d/README.md`.
 
 Estas familias ordenan repos, forks y referencias sin convertirlos todavia en modulos finales. La regla es la misma que en MIRRORA y Living Maps 3D: primero documentar, despues elegir una experiencia v1 pequena, estable y personalizable.
 
-- **Gesture Retail Commerce** - proxima prioridad. Une Retail Window Pro, Interactive Gesture Catalog y Virtual Shopping Cart para escaparates, MUPIs, wishlist, carrito, QR, CTA y continuidad movil. Documento: `gesture-lab/gesture-retail-commerce/README.md`.
+- **Gesture Retail Commerce** - primer modulo comercial nuevo creado en `gesture-lab/gesture-retail-commerce/rubik-sota-gesture-retail-commerce-v1.html`. Une Retail Window Pro, Interactive Gesture Catalog y Virtual Shopping Cart para escaparates, MUPIs, wishlist, carrito, QR, CTA y continuidad movil. Documento: `gesture-lab/gesture-retail-commerce/README.md`.
 - **Gesture FX / Visual Shows** - siguiente fase visual. Une Camera FX, particulas, audio visualizer y SwordArt para efectos de marca con webcam. Documento: `gesture-lab/gesture-fx-visual-shows/README.md`.
 - **Gesture Gaming Arena** - fase posterior. Ordena racing, cubo, personaje 3D, scoring, ranking, premios y QA fisica. Documento: `gesture-lab/gesture-gaming-arena/README.md`.
 - **Gesture Interface Core** - capa transversal, no producto publico. Define vocabulario gestual, privacidad, calibracion, fallback y motor comun. Documento: `gesture-lab/gesture-interface-core/README.md`.
@@ -195,7 +195,7 @@ Documentacion estratégica:
 - LM1 - La Batuta de Torrevieja - Living Maps 3D - candidato estrella territorial
 - LM2 - Maqueta Viva 3D Torrevieja - Living Maps 3D - candidato estrella 3D / gesture-ready
 - LM3 - Living Map Experience - Living Maps 3D - mapa configurable turismo/sectores
-- GRC - Gesture Retail Commerce - Familia documentada - siguiente modulo recomendado
+- GRC - Gesture Retail Commerce - Modulo v1 QA comercial - escaparate/MUPI con QR y CTA
 - GFX - Gesture FX / Visual Shows - Familia documentada - segunda prioridad
 - GGA - Gesture Gaming Arena - Familia documentada - tercera prioridad / requiere QA
 - GIC - Gesture Interface Core - Capa transversal documentada - no modulo comercial
@@ -732,7 +732,7 @@ Cada módulo debe incluir, cuando aplique:
 - v2.12 - Retail Window Pro - estable actual
 - Living Maps 3D - familia conectada: La Batuta, Maqueta Viva 3D y Living Map
 - Ecosystem Audit - documentado en `docs/RUBIK_REPO_ECOSYSTEM_AUDIT.md`
-- Gesture Retail Commerce - familia documentada / siguiente modulo recomendado
+- Gesture Retail Commerce v1 - modulo creado / QA comercial movil y MUPI
 - Gesture FX / Visual Shows - familia documentada / segunda prioridad
 - Gesture Gaming Arena - familia documentada / tercera prioridad
 - Gesture Interface Core - capa transversal documentada
@@ -790,7 +790,7 @@ Cada módulo debe incluir, cuando aplique:
 - Dental Kids v2.11 publicado como coach educativo de cepillado real.
 - Retail Window Pro v2.12 publicado y funcional.
 - Living Maps 3D publicado como familia de catalogo con LM1 La Batuta, LM2 Maqueta Viva 3D y LM3 Living Map.
-- Gesture Retail Commerce documentado como siguiente familia a desarrollar.
+- Gesture Retail Commerce v1 creado como primer modulo comercial nuevo: catalogo, carrito, wishlist, QR, CTA, branding, 16:9/9:16, modo escaparate, camara opcional y export PNG.
 - Gesture FX / Visual Shows documentado como segunda prioridad.
 - Gesture Gaming Arena documentado como tercera prioridad.
 - Gesture Interface Core documentado como capa transversal.
