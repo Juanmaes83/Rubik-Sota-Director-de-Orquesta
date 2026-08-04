@@ -37,6 +37,40 @@ Documento de apoyo: [RUBIK_PUBLIC_NAVIGATION_MAP.md](docs/RUBIK_PUBLIC_NAVIGATIO
 
 ---
 
+## Fashion / Moda dentro de Director de Orquesta
+
+Director de Orquesta sigue siendo el cerebro global: Home, Gesture Lab, MIRRORA, ZOLTAN, Camera FX, moda, retail, turismo, real estate, salud, juegos y R&D se coordinan desde Rubik.
+
+Fashion Studio SOL entra como **modulo avanzado de acceso dentro de la familia Moda**, no como sustituto del cerebro. Su rol es alimentar la vertical fashion con schema, Wardrobe, outfits, AI Closet, poses, assets, jobs, aprobacion y publicacion.
+
+Familia Moda coordinada:
+
+- [Fashion Studio SOL](https://github.com/Juanmaes83/Fashion-Studio-SOL) - modulo externo avanzado para prendas, outfits, AI Closet, poses, assets y publicacion fashion.
+- `gesture-lab/selfie-style-outfit-visualizer/rubik-sota-selfie-style-outfit-visualizer-v2-10-1.html` - visualizador estable selfie/outfit.
+- `gesture-lab/fashion-lookbook/rubik-sota-fashion-lookbook-v2-9.html` - experiencia editorial/lookbook.
+- `gesture-lab/zoltan/style-oracle/` - recomendacion y reveal de estilo.
+- `gesture-lab/mirrora/display-mupi-live/` y `gesture-lab/mirrora/finger-frame-portal/` - capa de escaparate, MUPI, QR, portal y conversion aplicable a moda.
+
+Regla: Rubik orquesta y expone; Fashion Studio SOL especializa la vertical moda; los modulos publicados conservan sus rutas.
+
+## Living Maps 3D dentro de Director de Orquesta
+
+Living Maps 3D es la familia territorial de Rubik: mapas vivos, ciudad gestual, maqueta 3D, rutas, POIs, recompensas, QR, escaparates y continuidad movil.
+
+Director de Orquesta sigue siendo el cerebro global. Los motores y demos territoriales viven en repos externos y Rubik los expone como familia sin copiarlos:
+
+- [Map Gesture Controls](https://github.com/Juanmaes83/map-gesture-controls) - motor de mapas controlados por webcam/gestos, privacidad local y fallback sin camara.
+- [La Batuta de Torrevieja](https://juanmaes83.github.io/map-gesture-controls/demo/batuta-torrevieja.html) - experiencia premium narrativa: la ciudad responde a tus manos.
+- [Living Map Experience](https://juanmaes83.github.io/map-gesture-controls/demo/living-map.html) - mapa configurable por marca/sector con POIs, unlocks, reward, CTA, WhatsApp y kiosk mode.
+- [Little Big City / Maqueta Viva 3D](https://github.com/Juanmaes83/little-big-city) - experiencia territorial 3D con zonas, POIs, rutas, sectores y capa gesture-ready.
+- [Maqueta Viva 3D Torrevieja](https://juanmaes83.github.io/little-big-city/maqueta-viva-torrevieja.html) - demo publica 3D para validar frente a La Batuta como posible modulo estrella.
+
+Estado actual: turismo como primer vertical. La familia debe quedar preparada para real estate, retail, cultura, eventos, educacion, smart city y escaparates digitales/MUPIs. La Batuta y Maqueta Viva 3D se mantienen visibles en paralelo hasta comprobar cual esta mas desarrollada, cual funciona mejor y cual conviene vender como entrada principal.
+
+Documento local de familia: `gesture-lab/living-maps-3d/README.md`.
+
+---
+
 ## Gesture Lab
 
 Gesture Lab es el laboratorio modular de experiencias visuales controladas por gestos dentro de Rubik Sota.
@@ -141,10 +175,14 @@ Documentacion estratégica:
 - 08 - Interactive Gesture Catalog / Retail Catalog - Disponible - v2.7
 - 09 - Interactive Retail Window - Disponible - v2.8
 - 10 - Fashion Lookbook - Disponible - v2.9
+- F+ - Fashion Studio SOL - Acceso destacado externo - modulo avanzado de moda
 - 11 - Dynamic Motion Banners - Disponible - v0.3.9 stable / v0.4 gesture experimental
 - 12 - Selfie Style / Outfit Visualizer - Disponible - v2.10.1
 - M1 - MIRRORA Finger Frame Portal - Prototipo comercial v1.2.1
 - M2 - MIRRORA Display / MUPI Live - Prototipo live comercial v1.1.1
+- LM1 - La Batuta de Torrevieja - Living Maps 3D - candidato estrella territorial
+- LM2 - Maqueta Viva 3D Torrevieja - Living Maps 3D - candidato estrella 3D / gesture-ready
+- LM3 - Living Map Experience - Living Maps 3D - mapa configurable turismo/sectores
 
 **Linea conectada desde Escaparates Pro / Camera FX:**
 

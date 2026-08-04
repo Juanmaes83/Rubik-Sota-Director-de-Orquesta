@@ -32,6 +32,8 @@ It should be the public source of truth for:
 
 - active Core Gesture Lab modules;
 - MIRRORA;
+- Fashion / Moda Platform;
+- Living Maps 3D;
 - ZOLTAN;
 - Camera FX Cum Laude;
 - Gesture Gaming;
@@ -43,6 +45,8 @@ It should be the public source of truth for:
 Examples:
 
 - `/gesture-lab/#mirrora-platform`
+- `/gesture-lab/#fashion-platform`
+- `/gesture-lab/#living-maps-3d`
 - `/gesture-lab/#zoltan-platform`
 - `/gesture-lab/camera-fx-cum-laude/`
 
@@ -65,7 +69,51 @@ They should point back to Gesture Lab when the user needs the complete catalog.
 1. Root Home: public executive entry.
 2. Gesture Lab: catalog master.
 3. MIRRORA: identity/portal/live display family.
-4. ZOLTAN: commercial reveal/reward family.
-5. Camera FX: webcam activation family.
-6. Gesture Gaming and Sword: R&D/gameplay family.
-7. README: project memory and technical documentation, not the main public catalog.
+4. Fashion / Moda: fashion access family inside Director de Orquesta.
+5. Living Maps 3D: territorial, map, webcam and 3D city family.
+6. ZOLTAN: commercial reveal/reward family.
+7. Camera FX: webcam activation family with 7 submodules.
+8. Gesture Gaming and Sword: R&D/gameplay family.
+9. README: project memory and technical documentation, not the main public catalog.
+
+## Fashion / Moda Rule
+
+Director de Orquesta remains the global brain and public orchestrator.
+
+Fashion Studio SOL is not the global brain. It is the advanced external module for the Fashion vertical:
+
+- wardrobe and garment intake;
+- outfits and approval states;
+- AI Closet contracts;
+- pose/model consistency;
+- assets, jobs and publication rules.
+
+Rubik should expose Fashion Studio SOL beside the existing fashion modules:
+
+- Fashion Studio SOL;
+- Selfie Style / Outfit Visualizer;
+- Fashion Lookbook;
+- ZOLTAN Style Oracle;
+- MIRRORA fashion campaigns, MUPI and QR experiences.
+
+Do not copy Fashion Studio SOL into Rubik unless a future integration explicitly needs local runtime files. For now, link it, document it and use it as the advanced Fashion source.
+
+## Living Maps 3D Rule
+
+Director de Orquesta exposes Living Maps 3D as the territorial and map-based experience family.
+
+The current flagship candidates must stay visible together until QA proves which one is strongest:
+
+- La Batuta de Torrevieja: premium narrative gesture map, tourism-first, based on `map-gesture-controls`;
+- Maqueta Viva 3D Torrevieja: 3D territorial prototype in `little-big-city`, gesture-ready but not yet a live webcam module;
+- Living Map Experience: configurable map product with POIs, unlocks, reward, CTA, kiosk mode and privacy-first camera flow.
+
+Current sector focus is tourism. The same family should remain transversal for real estate, retail, culture, events, education, smart city and digital storefronts.
+
+Public links:
+
+- `https://juanmaes83.github.io/map-gesture-controls/demo/batuta-torrevieja.html`
+- `https://juanmaes83.github.io/little-big-city/maqueta-viva-torrevieja.html`
+- `https://juanmaes83.github.io/map-gesture-controls/demo/living-map.html`
+
+Do not copy those external repos into Rubik for now. Rubik should link, explain status and preserve the separation between orchestrator, engines and product demos.
