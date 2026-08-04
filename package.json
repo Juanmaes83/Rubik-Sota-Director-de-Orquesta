@@ -1,0 +1,27 @@
+{
+  "name": "rubik-sota-director-de-orquesta",
+  "version": "1.0.0",
+  "description": "Rubik Sota Director de Orquesta es una plataforma experimental para crear experiencias visuales, inmersivas e interactivas aplicadas a comunicación, venta, formación, demostración de producto y experiencias sectoriales.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Juanmaes83/Rubik-Sota-Director-de-Orquesta.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Juanmaes83/Rubik-Sota-Director-de-Orquesta/issues"
+  },
+  "homepage": "https://github.com/Juanmaes83/Rubik-Sota-Director-de-Orquesta#readme",
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

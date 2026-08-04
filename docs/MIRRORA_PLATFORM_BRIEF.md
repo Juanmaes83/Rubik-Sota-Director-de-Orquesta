@@ -1,6 +1,6 @@
 # MIRRORA Platform Brief
 
-Status: R&D foundation. No functional implementation yet.
+Status: R&D foundation plus first lightweight functional prototype.
 
 ## Definition
 
@@ -99,6 +99,11 @@ Primary R&D reference:
 
 Face Anything is documented as an R&D candidate for 4D facial reconstruction, dense tracking, depth, normals, canonical facial maps, point clouds, PLY outputs and videos. It is not a browser-ready dependency and must not be integrated until license, privacy and compute risks are resolved.
 
+Connected prototype references:
+
+- `Juanmaes83/finger-frame-effect-ai`: lightweight browser pipeline for uploaded videos, MediaPipe two-hand frame tracking, optional Gemini BYOK restyle and canvas export.
+- `Juanmaes83/blinkface`: live camera + FLUX.2 GPU backend reference for future MIRRORA Live Viewfinder. It requires a server/proxy/token/HTTPS architecture and must remain external until security, privacy, cost and deployment are reviewed.
+
 ## Validated Project Capabilities To Reuse
 
 - Gesture Lab as a modular experimental container.
@@ -136,6 +141,10 @@ Process outputs outside the repo and test whether `pointcloud.mp4`, `grand_tour.
 ### Phase 2 - MIRRORA Face Souvenir Prototype
 
 First transversal module: user uploads or captures a face, sees a preprocessed identity visual, and downloads a souvenir/reward.
+
+Current first prototype: `gesture-lab/mirrora/finger-frame-portal/`.
+
+It validates a lighter version of the same MIRRORA direction: user-provided video, consent-first copy, hand-frame visual portal, local demo fallback and optional remote AI generation with user-provided key.
 
 ### Phase 3 - MIRRORA Optic Fit / Beauty Mirror
 

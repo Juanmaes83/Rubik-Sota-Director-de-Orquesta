@@ -1,6 +1,6 @@
 # MIRRORA
 
-Status: R&D foundation. No implementation yet.
+Status: R&D foundation plus first lightweight prototype.
 
 Tagline: Your face becomes the experience.
 
@@ -31,16 +31,29 @@ The two blocks may share safe Gesture Lab primitives, but MIRRORA must not modif
 - MIRRORA StoryFace Portal.
 - MIRRORA Retail VIP Pass.
 
+## Functional Prototype
+
+- MIRRORA Finger Frame Portal: `finger-frame-portal/`.
+- Based on `Juanmaes83/finger-frame-effect-ai` as lightweight browser module.
+- Uses MediaPipe hand tracking, uploaded video, local demo compositing and optional Gemini BYOK restyle.
+- Documents `Juanmaes83/blinkface` as external GPU/live engine candidate, not embedded runtime.
+
+## Strategy Documents
+
+- `../../docs/MIRRORA_FINGER_FRAME_COMMERCIAL_STRATEGY.md`
+- `../../docs/MODULAR_IMPLEMENTATION_METHOD.md`
+
 ## Current Phase
 
-Foundation only:
+Foundation plus prototype:
 
 - Documentation.
 - R&D map.
 - Privacy and safety limits.
 - Application map.
+- Finger Frame Portal prototype.
 - No Face Anything implementation.
-- No backend.
+- No Rubik backend.
 - No dependencies.
 - No model files.
 
