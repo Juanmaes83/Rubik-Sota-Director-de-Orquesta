@@ -1,6 +1,6 @@
 # MIRRORA Finger Frame Portal
 
-Status: v1.2 commercial campaign prototype inside Gesture Lab.
+Status: v1.2.1 commercial campaign prototype inside Gesture Lab.
 
 ## What It Is
 
@@ -63,6 +63,17 @@ This phase keeps the single-module strategy and turns the prototype into a stron
 - Clean showcase mode for demos, digital windows and MUPI-style review.
 - Final conversion screen with brand, CTA and QR during the last seconds of the clip.
 - Provider architecture documented separately before adding more AI connectors.
+
+## v1.2.1 Mobile QA Stabilization
+
+This phase closes the uploaded-video module for mobile QA:
+
+- `Preparar demo local` now shows estimated preparation time and a progress bar.
+- Preview and export show elapsed time against total video duration.
+- Export clearly explains that it takes approximately the same time as the source video.
+- Button labels distinguish preparation, campaign preview and final video export.
+- Portal controls have safer limits, auto-fit and reset actions.
+- The app warns when portal scale/offset/expansion can push content outside the usable frame.
 
 ## Usage Guide
 

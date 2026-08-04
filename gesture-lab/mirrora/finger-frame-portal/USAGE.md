@@ -56,13 +56,16 @@ Use this first.
 9. Adjust frame expansion, content scale and X/Y offset.
 10. Adjust `Realce del portal` if the window needs to stand out more.
 11. Adjust `Oscurecer exterior` if the content inside the frame needs more contrast.
-12. Click `Probar modo demo local`.
-13. Click `Previsualizar`.
-14. If the hand frame is detected, the app reveals the uploaded portal content inside the finger frame.
-15. Use `Vista escaparate` for a clean demo view without the editing panels.
-16. Click `Exportar` to download the result if the browser supports recording.
+12. Click `Preparar demo local`.
+13. Wait for `Demo local lista`.
+14. Click `Previsualizar campana`.
+15. If the hand frame is detected, the app reveals the uploaded portal content inside the finger frame.
+16. Use `Vista escaparate` for a clean demo view without the editing panels.
+17. Click `Exportar video final` to create and download the new composed video if the browser supports recording.
 
 This mode does not need an API key and does not upload the videos, images or logo to an AI provider.
+
+Important: `Preparar demo local` does not create the final file. It only prepares the local composition mode. The new video is created when you click `Exportar video final`, and export takes approximately the same time as the source video duration.
 
 ## What To Upload As Portal Content
 
@@ -97,6 +100,8 @@ Use the frame as a campaign placement, not only as an effect:
 - Put the offer, destination, room, menu, product or experience inside `contenido del portal`.
 - Use `Expandir marco` to make the tracked hand frame a bit larger if the detected rectangle is too tight.
 - Use `Escala contenido` and X/Y offset to place the most important part of the image/video inside the opening.
+- Use `Auto ajustar portal` if the content starts leaving the frame.
+- Use `Restaurar encuadre` if the controls become too extreme.
 - Use `Realce del portal` to separate the portal from the original footage.
 - Use `Oscurecer exterior` when the background competes with the commercial content.
 - Add logo, headline, CTA and landing before export so the final video can be tested as an ad, MUPI asset, retail window clip or mobile story.
@@ -130,8 +135,10 @@ This is still based on uploaded video. The future live-camera/MUPI module should
 Before sharing an export:
 
 - Preview once and check that the portal appears for several seconds.
-- Export after the current v1.1.1 flow; it resets playback to the beginning before recording.
+- Export after the current v1.2.1 flow; it resets playback to the beginning before recording.
 - Check the downloaded file duration. It should match the uploaded base video duration, not only the final seconds of the preview.
+- During preview/export, check the progress indicator. It should count from `0.0s` to the total video duration.
+- If the portal warning appears, use `Auto ajustar portal` before exporting.
 - Check the QR with a phone before using it in a client demo.
 - Check both 16:9 and 9:16 exports if the campaign will run on screens and mobile.
 - If the browser downloads WebM instead of MP4, the composition is still valid; convert later if the media plan requires MP4.

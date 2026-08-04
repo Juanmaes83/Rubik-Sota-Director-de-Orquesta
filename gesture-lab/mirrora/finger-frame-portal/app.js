@@ -56,6 +56,8 @@ const btnExport = document.getElementById("btn-export");
 const btnShowcase = document.getElementById("btn-showcase");
 const presetSelect = document.getElementById("preset-select");
 const applyPresetBtn = document.getElementById("btn-apply-preset");
+const autoFitBtn = document.getElementById("btn-auto-fit");
+const resetFrameBtn = document.getElementById("btn-reset-frame");
 const portalFileInput = document.getElementById("portal-file");
 const logoFileInput = document.getElementById("logo-file");
 const clearPortalBtn = document.getElementById("btn-clear-portal");
@@ -79,6 +81,9 @@ const portalOffsetXValue = document.getElementById("portal-offset-x-value");
 const portalOffsetYValue = document.getElementById("portal-offset-y-value");
 const portalGlowValue = document.getElementById("portal-glow-value");
 const outsideDimValue = document.getElementById("outside-dim-value");
+const progressWrap = document.getElementById("progress-wrap");
+const progressBar = document.getElementById("progress-bar");
+const portalAdvice = document.getElementById("portal-advice");
 
 let landmarker = null;
 let videoFile = null;
@@ -100,6 +105,8 @@ let qrCanvas = null;
 let qrLanding = "";
 let activeFormat = "source";
 let sourceDraw = { x: 0, y: 0, width: 1, height: 1 };
+let playbackMode = "idle";
+let lastProgressStatusAt = 0;
 
 const PRESETS = {
   tourism: {
@@ -160,6 +167,40 @@ function status(msg) {
   statusEl.classList.toggle("working", msg.trim().endsWith("..."));
 }
 
+function fmtTime(seconds) {
+  if (!Number.isFinite(seconds)) return "0.0";
+  return Math.max(0, seconds).toFixed(1);
+}
+
+function clampValue(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function setProgress(active, value = 0) {
+  progressWrap.classList.toggle("active", active);
+  progressWrap.setAttribute("aria-hidden", active ? "false" : "true");
+  progressBar.style.width = `${Math.round(Math.max(0, Math.min(1, value)) * 100)}%`;
+}
+
+function updatePlaybackProgress(force = false) {
+  if (playbackMode === "idle" || !Number.isFinite(orig.duration) || !orig.duration) return;
+  const now = performance.now();
+  const ratio = Math.min(1, orig.currentTime / orig.duration);
+  setProgress(true, ratio);
+  if (!force && now - lastProgressStatusAt < 250) return;
+  lastProgressStatusAt = now;
+  const label = playbackMode === "export" ? "Exportando" : "Previsualizando";
+  const suffix = playbackMode === "export"
+    ? "Manten esta pantalla abierta hasta que se descargue el archivo."
+    : "Cuando termine puedes exportar el video final.";
+  status(`${label} ${fmtTime(orig.currentTime)} / ${fmtTime(orig.duration)}s. ${suffix}...`);
+}
+
+function setPortalAdvice(message = "") {
+  portalAdvice.textContent = message;
+  portalAdvice.classList.toggle("active", !!message);
+}
+
 function revokePortalUrl() {
   if (portalUrl) URL.revokeObjectURL(portalUrl);
   portalUrl = null;
@@ -180,6 +221,41 @@ function syncRangeLabels() {
   portalOffsetYValue.textContent = portalOffsetYInput.value;
   portalGlowValue.textContent = `${portalGlowInput.value}%`;
   outsideDimValue.textContent = `${outsideDimInput.value}%`;
+  updatePortalSafetyAdvice();
+}
+
+function updatePortalSafetyAdvice() {
+  const expand = Number(frameExpandInput.value);
+  const scale = Number(portalScaleInput.value);
+  const offsetX = Math.abs(Number(portalOffsetXInput.value));
+  const offsetY = Math.abs(Number(portalOffsetYInput.value));
+  if (scale > 145 || offsetX > 45 || offsetY > 45 || expand > 48) {
+    setPortalAdvice("El encuadre esta en zona limite: el contenido puede salirse del marco o perder el foco. Usa Auto ajustar portal o Restaurar encuadre antes de exportar.");
+  } else {
+    setPortalAdvice("");
+  }
+}
+
+function autoFitPortal() {
+  frameExpandInput.value = 24;
+  portalScaleInput.value = 118;
+  portalOffsetXInput.value = 0;
+  portalOffsetYInput.value = 0;
+  portalGlowInput.value = 62;
+  outsideDimInput.value = 22;
+  syncRangeLabels();
+  status("Portal auto ajustado a zona segura. Previsualiza la campana antes de exportar.");
+}
+
+function resetPortalFrame() {
+  frameExpandInput.value = 18;
+  portalScaleInput.value = 115;
+  portalOffsetXInput.value = 0;
+  portalOffsetYInput.value = 0;
+  portalGlowInput.value = 55;
+  outsideDimInput.value = 18;
+  syncRangeLabels();
+  status("Encuadre restaurado. Pulsa Previsualizar campana para revisar.");
 }
 
 function readComposer() {
@@ -192,10 +268,10 @@ function readComposer() {
     showEndScreen: endScreenSelect.value === "on",
     showQr: qrSelect.value === "on",
     campaignMode: campaignModeSelect.value,
-    frameExpand: Number(frameExpandInput.value) / 100,
-    portalScale: Number(portalScaleInput.value) / 100,
-    portalOffsetX: Number(portalOffsetXInput.value) / 100,
-    portalOffsetY: Number(portalOffsetYInput.value) / 100,
+    frameExpand: clampValue(Number(frameExpandInput.value), -10, 55) / 100,
+    portalScale: clampValue(Number(portalScaleInput.value), 75, 160) / 100,
+    portalOffsetX: clampValue(Number(portalOffsetXInput.value), -60, 60) / 100,
+    portalOffsetY: clampValue(Number(portalOffsetYInput.value), -60, 60) / 100,
     portalGlow: Number(portalGlowInput.value) / 100,
     outsideDim: Number(outsideDimInput.value) / 100,
   };
@@ -295,6 +371,8 @@ styleCustom.addEventListener("change", () =>
 portalFileInput.addEventListener("change", (e) => loadPortalContent(e.target.files[0]));
 logoFileInput.addEventListener("change", (e) => loadLogo(e.target.files[0]));
 applyPresetBtn.addEventListener("click", () => applyPreset(presetSelect.value));
+autoFitBtn.addEventListener("click", autoFitPortal);
+resetFrameBtn.addEventListener("click", resetPortalFrame);
 landingInput.addEventListener("input", refreshQr);
 campaignModeSelect.addEventListener("change", () => {
   setShowcaseMode(campaignModeSelect.value === "showcase");
@@ -363,6 +441,8 @@ async function loadVideo(file) {
   btnPlay.disabled = true;
   btnExport.disabled = true;
   btnShowcase.disabled = true;
+  playbackMode = "idle";
+  setProgress(false, 0);
   orig.src = URL.createObjectURL(file);
   await new Promise((res) => (orig.onloadedmetadata = res));
   configureCanvas();
@@ -371,7 +451,7 @@ async function loadVideo(file) {
   drawPoster();
   status(
     `Loaded ${file.name} (${orig.videoWidth}×${orig.videoHeight}, ` +
-    `${orig.duration.toFixed(1)}s). Generate the AI video, or test with the placeholder.`
+    `${orig.duration.toFixed(1)}s). Pulsa Preparar demo local para activar preview/export sin IA.`
   );
   if (!landmarker) initLandmarker();
 }
@@ -420,7 +500,7 @@ function drawSourceFrame(source) {
 }
 
 async function initLandmarker() {
-  status("Loading hand tracker…");
+  status("Cargando detector de manos...");
   const fileset = await FilesetResolver.forVisionTasks(WASM_URL);
   landmarker = await HandLandmarker.createFromOptions(fileset, {
     baseOptions: { modelAssetPath: MODEL_URL, delegate: "GPU" },
@@ -430,7 +510,9 @@ async function initLandmarker() {
     minHandPresenceConfidence: 0.3,
     minTrackingConfidence: 0.3,
   });
-  status("Tracking de manos listo.");
+  if (!usePlaceholder && !haveAI) {
+    status("Detector de manos listo. Pulsa Preparar demo local para activar previsualizacion y exportacion.");
+  }
 }
 
 // Dev hook: render one frame at time t (seconds) without realtime playback —
@@ -612,14 +694,33 @@ btnGenerate.addEventListener("click", async () => {
   }
 });
 
-btnPlaceholder.addEventListener("click", () => {
+btnPlaceholder.addEventListener("click", async () => {
   if (!videoFile) return;
+  btnPlaceholder.disabled = true;
+  btnPlay.disabled = true;
+  btnExport.disabled = true;
+  btnShowcase.disabled = true;
+  playbackMode = "idle";
+  setProgress(true, 0);
+  status("Preparando demo local. Tiempo estimado: menos de 2 segundos...");
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  setProgress(true, 0.45);
+  await sleep(250);
   usePlaceholder = true;
   haveAI = false;
+  if (portalType === "video" && portalElement) {
+    await portalElement.play().catch(() => {});
+    portalElement.pause();
+  }
+  setProgress(true, 1);
   btnPlay.disabled = false;
   btnExport.disabled = false;
   btnShowcase.disabled = false;
-  status("Placeholder style active (hue shift) — preview or export, no key needed.");
+  btnPlaceholder.disabled = false;
+  const readyMessage = portalElement
+    ? "Demo local lista con portal personalizado. Pulsa Previsualizar campana para revisar. El nuevo video se crea al pulsar Exportar video final."
+    : "Demo local lista. No has subido contenido del portal: se usara el efecto demo de color. El nuevo video se crea al pulsar Exportar video final.";
+  status(readyMessage);
 });
 
 // ---- tracking (ported from finger-frame-effect main.js) ----
@@ -1066,6 +1167,7 @@ function loop() {
   }
   drawCommercialOverlay();
   drawFinalConversionOverlay();
+  updatePlaybackProgress();
 }
 
 function seekVideo(video, time) {
@@ -1092,8 +1194,12 @@ async function resetPlayback() {
   drawCommercialOverlay();
 }
 
-async function playThrough() {
+async function playThrough(mode = "preview") {
+  playbackMode = mode;
+  lastProgressStatusAt = 0;
+  setProgress(true, 0);
   await resetPlayback();
+  updatePlaybackProgress(true);
   if (haveAI) {
     await sty.play();
   }
@@ -1106,14 +1212,22 @@ async function playThrough() {
 
 btnPlay.addEventListener("click", () => {
   if (exporting) return;
-  playThrough();
-  status("Previewing…");
+  playThrough("preview");
+  status(`Previsualizando 0.0 / ${fmtTime(orig.duration)}s. Cuando termine puedes exportar el video final...`);
 });
 
 btnShowcase.addEventListener("click", () => {
   const enabled = !document.body.classList.contains("showcase");
   setShowcaseMode(enabled);
-  if (enabled) playThrough();
+  if (enabled) playThrough("preview");
+});
+
+orig.addEventListener("ended", () => {
+  if (playbackMode === "preview") {
+    setProgress(true, 1);
+    playbackMode = "idle";
+    status("Previsualizacion terminada. Revisa el resultado y pulsa Exportar video final para descargar.");
+  }
 });
 
 // ---- export (canvas capture -> webm download) ----
@@ -1123,7 +1237,10 @@ btnExport.addEventListener("click", async () => {
   btnExport.disabled = true;
   btnPlay.disabled = true;
   btnShowcase.disabled = true;
-  status("Exporting — playing the video through once…");
+  playbackMode = "export";
+  lastProgressStatusAt = 0;
+  setProgress(true, 0);
+  status(`Exportando 0.0 / ${fmtTime(orig.duration)}s. Tardara aproximadamente lo que dura el video. Manten esta pantalla abierta...`);
 
   await resetPlayback();
   const stream = canvas.captureStream(30);
@@ -1161,11 +1278,13 @@ btnExport.addEventListener("click", async () => {
     a.download = `mirrora-finger-frame-portal.${ext}`;
     a.click();
     status(
-      `Exportado mirrora-finger-frame-portal.${ext}.` +
+      `Export terminado. Archivo descargado: mirrora-finger-frame-portal.${ext}.` +
       (isMp4
         ? ""
         : " (Este navegador graba WebM; puedes convertirlo con ffmpeg si necesitas MP4.)")
     );
+    setProgress(true, 1);
+    playbackMode = "idle";
     exporting = false;
     btnExport.disabled = false;
     btnPlay.disabled = false;

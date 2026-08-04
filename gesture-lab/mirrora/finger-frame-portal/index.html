@@ -298,6 +298,34 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .progress-wrap {
+      display: none;
+      width: min(720px, 100%);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 999px;
+      overflow: hidden;
+      height: 10px;
+    }
+    .progress-wrap.active { display: block; }
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--grad);
+      transition: width 0.18s linear;
+    }
+    #portal-advice {
+      display: none;
+      width: min(720px, 100%);
+      color: #ffd99a;
+      border: 1px solid rgba(255, 194, 75, 0.25);
+      background: rgba(255, 194, 75, 0.07);
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+    #portal-advice.active { display: block; }
 
     footer {
       margin-top: 34px;
@@ -320,6 +348,9 @@
     body.showcase #drop,
     body.showcase footer,
     body.showcase #status {
+      display: none !important;
+    }
+    body.showcase #portal-advice {
       display: none !important;
     }
     body.showcase #stage {
@@ -418,7 +449,7 @@
       <span class="opt">— contenido, marca y CTA exportables</span></div>
     <p>
       Sube una imagen o video para que aparezca dentro del marco. Ajusta el
-      tamaño del portal, encuadre del contenido, texto, CTA y logo antes de
+      tamano del portal, encuadre del contenido, texto, CTA y logo antes de
       previsualizar o exportar.
     </p>
     <div class="composer-actions">
@@ -430,6 +461,8 @@
         <option value="food">Restauracion / experiencias</option>
       </select>
       <button id="btn-apply-preset" type="button">Aplicar preset</button>
+      <button id="btn-auto-fit" type="button">Auto ajustar portal</button>
+      <button id="btn-reset-frame" type="button">Restaurar encuadre</button>
       <label class="upload-btn">Subir contenido del portal
         <input id="portal-file" type="file" accept="image/*,video/*" />
       </label>
@@ -472,19 +505,19 @@
       </div>
       <div>
         <div class="field-label">Expandir marco</div>
-        <div class="range-row"><input id="frame-expand" type="range" min="-20" max="80" value="18" /><span id="frame-expand-value" class="range-value">18%</span></div>
+        <div class="range-row"><input id="frame-expand" type="range" min="-10" max="55" value="18" /><span id="frame-expand-value" class="range-value">18%</span></div>
       </div>
       <div>
         <div class="field-label">Escala contenido</div>
-        <div class="range-row"><input id="portal-scale" type="range" min="60" max="180" value="115" /><span id="portal-scale-value" class="range-value">115%</span></div>
+        <div class="range-row"><input id="portal-scale" type="range" min="75" max="160" value="115" /><span id="portal-scale-value" class="range-value">115%</span></div>
       </div>
       <div>
         <div class="field-label">Mover contenido X</div>
-        <div class="range-row"><input id="portal-offset-x" type="range" min="-100" max="100" value="0" /><span id="portal-offset-x-value" class="range-value">0</span></div>
+        <div class="range-row"><input id="portal-offset-x" type="range" min="-60" max="60" value="0" /><span id="portal-offset-x-value" class="range-value">0</span></div>
       </div>
       <div>
         <div class="field-label">Mover contenido Y</div>
-        <div class="range-row"><input id="portal-offset-y" type="range" min="-100" max="100" value="0" /><span id="portal-offset-y-value" class="range-value">0</span></div>
+        <div class="range-row"><input id="portal-offset-y" type="range" min="-60" max="60" value="0" /><span id="portal-offset-y-value" class="range-value">0</span></div>
       </div>
       <div>
         <div class="field-label">Realce del portal</div>
@@ -502,7 +535,7 @@
         </select>
       </div>
       <div>
-        <div class="field-label">Modo campaña</div>
+        <div class="field-label">Modo campana</div>
         <select id="campaign-mode-select">
           <option value="composer">Composer</option>
           <option value="showcase">Escaparate limpio</option>
@@ -526,12 +559,14 @@
     <div class="canvas-wrap"><canvas id="canvas"></canvas></div>
     <div id="controls">
       <button id="btn-generate" class="primary">Generar video IA</button>
-      <button id="btn-placeholder">Probar modo demo local</button>
-      <button id="btn-play" disabled>Previsualizar</button>
-      <button id="btn-export" disabled>Exportar</button>
+      <button id="btn-placeholder">Preparar demo local</button>
+      <button id="btn-play" disabled>Previsualizar campana</button>
+      <button id="btn-export" disabled>Exportar video final</button>
       <button id="btn-showcase" disabled>Vista escaparate</button>
     </div>
+    <div class="progress-wrap" id="progress-wrap" aria-hidden="true"><div id="progress-bar"></div></div>
     <div id="status"></div>
+    <div id="portal-advice"></div>
   </div>
 
   <footer>
