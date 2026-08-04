@@ -1,23 +1,28 @@
 # MIRRORA Display / MUPI Live
 
-Status: v1.0 local live-camera module for Gesture Lab.
+Status: v1.1 local live-camera MUPI module with commercial personalization.
 
 ## What It Is
 
 MIRRORA Display / MUPI Live is the live-screen version of the MIRRORA finger-frame idea. It is designed for digital windows, MUPIs, event screens and mobile campaign demos.
 
-This module is cloned conceptually from `finger-frame-portal`, but it is not an editor. It is a clean activation screen:
+This module is cloned conceptually from `finger-frame-portal`, but adapted to public screens. It keeps a clean MUPI activation screen and adds an operator configuration layer:
 
 - camera live view;
 - two-hand finger-frame tracking;
 - portal overlay in real time;
-- persistent QR;
+- custom image/video inside the hand portal;
+- commercial presets;
+- editable brand, kicker, headline, CTA and landing;
+- optional logo;
+- persistent QR generated from the landing;
+- portal scale, offset, expansion, glow and exterior dim controls;
 - clear attract message: `Haz el marco con tus manos`;
 - 16:9 and 9:16 display formats;
 - automatic reset to attract mode;
-- optional PNG capture and 6-second clip recording.
+- PNG capture and optional 6-second clip recording with the commercial composition included.
 
-## Scope v1.0
+## Scope v1.1
 
 This first version stays local/browser-only:
 
@@ -26,6 +31,21 @@ This first version stays local/browser-only:
 - Does not send video to a backend.
 - Does not use Gemini/OpenAI/Kling/Higgsfield yet.
 - Does not embed `blinkface` GPU backend yet.
+
+## Operator Guide
+
+1. Open the module from GitHub Pages on HTTPS when testing with mobile or a real display.
+2. Press `Configurar campana`.
+3. Choose a preset: tourism, retail, event or culture.
+4. Edit brand, label, main message, CTA and landing.
+5. Upload a portal image/video. This is the content that appears inside the hand frame.
+6. Upload a logo if the campaign needs one.
+7. Adjust `Expandir marco`, `Escala portal`, `Mover X/Y`, `Realce portal` and `Oscurecer exterior`.
+8. Use `Auto encajar` if the content is being cropped too aggressively.
+9. Accept the camera permission and make the two-hand frame gesture.
+10. Use `Captura PNG` or `Grabar 6s` to export the composed result.
+
+Uploaded files stay local in the browser session. Text configuration persists in localStorage; media files should be reloaded after a page refresh.
 
 ## Why Not blinkface Yet
 
@@ -56,17 +76,21 @@ The future provider layer should follow `docs/MIRRORA_PROVIDER_ARCHITECTURE.md`:
 - Open from GitHub Pages over HTTPS on mobile.
 - Accept camera permission.
 - Confirm live camera appears.
+- Open `Configurar campana` and verify presets update text and QR.
+- Upload a portal image/video and confirm it appears inside the gesture frame.
+- Upload a logo and confirm it appears in the commercial overlay.
+- Adjust scale/offset/expansion and confirm the portal stays readable.
 - Make the two-hand finger-frame gesture.
 - Confirm portal appears inside the frame.
 - Confirm attract message returns after no gesture.
 - Test 16:9 and 9:16 modes.
 - Scan QR from another device.
-- Test PNG capture.
-- Test 6-second recording where supported by the browser.
+- Test PNG capture with logo, QR, CTA and portal content.
+- Test 6-second recording with the full commercial composition where supported by the browser.
 
 ## Known Limits
 
 - Requires camera permission and secure context.
 - Mobile browser MediaRecorder support varies.
 - This is not yet a GPU/AI restyle module.
-- The portal content is local demo art in v1.0.
+- Uploaded media is session-local and is not persisted after refresh.

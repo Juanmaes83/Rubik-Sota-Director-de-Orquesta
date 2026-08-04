@@ -1,6 +1,6 @@
 # MIRRORA
 
-Status: R&D foundation plus MIRRORA Finger Frame Portal v1.2 campaign prototype.
+Status: R&D foundation plus MIRRORA Finger Frame Portal v1.2.1 and Display / MUPI Live v1.1 campaign prototypes.
 
 Tagline: Your face becomes the experience.
 
@@ -37,7 +37,7 @@ The two blocks may share safe Gesture Lab primitives, but MIRRORA must not modif
 - Based on `Juanmaes83/finger-frame-effect-ai` as lightweight browser module.
 - Uses MediaPipe hand tracking, uploaded video, local demo compositing, presets, QR, 16:9/9:16 formats, showcase view, final conversion screen and optional Gemini BYOK restyle.
 - MIRRORA Display / MUPI Live: `display-mupi-live/`.
-- Live-camera version for digital windows, MUPIs, event screens and mobile demos. Uses local MediaPipe, QR, attract loop, 16:9/9:16, auto reset, PNG capture and optional 6-second recording.
+- Live-camera version for digital windows, MUPIs, event screens and mobile demos. Uses local MediaPipe, QR, attract loop, 16:9/9:16, auto reset, commercial personalization, custom portal media, logo, CTA, PNG capture and optional 6-second recording.
 - Documents `Juanmaes83/blinkface` as external GPU/live engine candidate, not embedded runtime.
 
 ## Strategy Documents
@@ -55,7 +55,7 @@ Foundation plus commercial prototype:
 - Privacy and safety limits.
 - Application map.
 - Finger Frame Portal v1.2.1 campaign prototype.
-- Display / MUPI Live v1.0 local live-camera prototype.
+- Display / MUPI Live v1.1 commercial live-camera prototype.
 - No Face Anything implementation.
 - No Rubik backend.
 - No dependencies.
@@ -64,7 +64,7 @@ Foundation plus commercial prototype:
 ## Next Steps
 
 1. Validate Finger Frame Portal v1.2.1 on GitHub Pages from mobile.
-2. Validate Display / MUPI Live v1.0 on GitHub Pages from mobile.
-3. Check QR readability, 16:9/9:16, camera permissions, attract loop, reset and capture.
+2. Validate Display / MUPI Live v1.1 on GitHub Pages from mobile.
+3. Check QR readability, 16:9/9:16, camera permissions, attract loop, reset, custom portal media, logo, CTA and capture.
 4. Review blinkface-style live camera requirements: HTTPS, consent, GPU/backend, token handling and cost.
 5. Prototype one provider path only after mobile QA passes.
