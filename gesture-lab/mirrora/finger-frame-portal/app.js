@@ -53,6 +53,9 @@ const btnGenerate = document.getElementById("btn-generate");
 const btnPlaceholder = document.getElementById("btn-placeholder");
 const btnPlay = document.getElementById("btn-play");
 const btnExport = document.getElementById("btn-export");
+const btnShowcase = document.getElementById("btn-showcase");
+const presetSelect = document.getElementById("preset-select");
+const applyPresetBtn = document.getElementById("btn-apply-preset");
 const portalFileInput = document.getElementById("portal-file");
 const logoFileInput = document.getElementById("logo-file");
 const clearPortalBtn = document.getElementById("btn-clear-portal");
@@ -60,6 +63,10 @@ const headlineInput = document.getElementById("headline-input");
 const ctaInput = document.getElementById("cta-input");
 const brandInput = document.getElementById("brand-input");
 const landingInput = document.getElementById("landing-input");
+const formatSelect = document.getElementById("format-select");
+const endScreenSelect = document.getElementById("end-screen-select");
+const qrSelect = document.getElementById("qr-select");
+const campaignModeSelect = document.getElementById("campaign-mode-select");
 const frameExpandInput = document.getElementById("frame-expand");
 const portalScaleInput = document.getElementById("portal-scale");
 const portalOffsetXInput = document.getElementById("portal-offset-x");
@@ -89,6 +96,63 @@ let portalElement = null;
 let portalType = "none";
 let logoUrl = null;
 let logoImage = null;
+let qrCanvas = null;
+let qrLanding = "";
+let activeFormat = "source";
+let sourceDraw = { x: 0, y: 0, width: 1, height: 1 };
+
+const PRESETS = {
+  tourism: {
+    brand: "MIRRORA Mediterranean",
+    headline: "Abre tu proxima escapada",
+    cta: "Reserva ahora",
+    landing: "https://example.com/turismo",
+    frameExpand: 24,
+    portalScale: 118,
+    portalGlow: 62,
+    outsideDim: 22,
+  },
+  retail: {
+    brand: "MIRRORA Retail Window",
+    headline: "Descubre la oferta dentro",
+    cta: "Comprar ahora",
+    landing: "https://example.com/retail",
+    frameExpand: 18,
+    portalScale: 125,
+    portalGlow: 70,
+    outsideDim: 28,
+  },
+  events: {
+    brand: "MIRRORA Event Pass",
+    headline: "Tu recuerdo empieza aqui",
+    cta: "Recibe tu clip",
+    landing: "https://example.com/eventos",
+    frameExpand: 22,
+    portalScale: 112,
+    portalGlow: 68,
+    outsideDim: 24,
+  },
+  realestate: {
+    brand: "MIRRORA Stay & Living",
+    headline: "Entra en tu proximo espacio",
+    cta: "Agenda visita",
+    landing: "https://example.com/visita",
+    frameExpand: 20,
+    portalScale: 110,
+    portalGlow: 55,
+    outsideDim: 20,
+  },
+  food: {
+    brand: "MIRRORA Taste Portal",
+    headline: "Prueba la experiencia",
+    cta: "Reservar mesa",
+    landing: "https://example.com/restaurante",
+    frameExpand: 18,
+    portalScale: 120,
+    portalGlow: 64,
+    outsideDim: 24,
+  },
+};
 
 function status(msg) {
   statusEl.textContent = msg;
@@ -124,6 +188,10 @@ function readComposer() {
     cta: ctaInput.value.trim(),
     brand: brandInput.value.trim(),
     landing: landingInput.value.trim(),
+    format: formatSelect.value,
+    showEndScreen: endScreenSelect.value === "on",
+    showQr: qrSelect.value === "on",
+    campaignMode: campaignModeSelect.value,
     frameExpand: Number(frameExpandInput.value) / 100,
     portalScale: Number(portalScaleInput.value) / 100,
     portalOffsetX: Number(portalOffsetXInput.value) / 100,
@@ -131,6 +199,46 @@ function readComposer() {
     portalGlow: Number(portalGlowInput.value) / 100,
     outsideDim: Number(outsideDimInput.value) / 100,
   };
+}
+
+function applyPreset(name) {
+  const preset = PRESETS[name] || PRESETS.tourism;
+  brandInput.value = preset.brand;
+  headlineInput.value = preset.headline;
+  ctaInput.value = preset.cta;
+  landingInput.value = preset.landing;
+  frameExpandInput.value = preset.frameExpand;
+  portalScaleInput.value = preset.portalScale;
+  portalGlowInput.value = preset.portalGlow;
+  outsideDimInput.value = preset.outsideDim;
+  portalOffsetXInput.value = 0;
+  portalOffsetYInput.value = 0;
+  syncRangeLabels();
+  refreshQr();
+  status(`Preset aplicado: ${presetSelect.options[presetSelect.selectedIndex].text}.`);
+}
+
+function setShowcaseMode(enabled) {
+  document.body.classList.toggle("showcase", enabled);
+  document.body.dataset.format = readComposer().format === "vertical" ? "vertical" : "landscape";
+  campaignModeSelect.value = enabled ? "showcase" : "composer";
+  btnShowcase.textContent = enabled ? "Salir escaparate" : "Vista escaparate";
+}
+
+function refreshQr() {
+  const landing = landingInput.value.trim();
+  qrLanding = landing;
+  qrCanvas = null;
+  if (!landing || !window.QRCode?.toCanvas) return;
+  const c = document.createElement("canvas");
+  window.QRCode.toCanvas(
+    c,
+    landing,
+    { margin: 1, width: 256, color: { dark: "#111111", light: "#ffffff" } },
+    (err) => {
+      if (!err && landing === qrLanding) qrCanvas = c;
+    }
+  );
 }
 
 function loadPortalContent(file) {
@@ -186,6 +294,19 @@ styleCustom.addEventListener("change", () =>
 );
 portalFileInput.addEventListener("change", (e) => loadPortalContent(e.target.files[0]));
 logoFileInput.addEventListener("change", (e) => loadLogo(e.target.files[0]));
+applyPresetBtn.addEventListener("click", () => applyPreset(presetSelect.value));
+landingInput.addEventListener("input", refreshQr);
+campaignModeSelect.addEventListener("change", () => {
+  setShowcaseMode(campaignModeSelect.value === "showcase");
+});
+formatSelect.addEventListener("change", () => {
+  activeFormat = formatSelect.value;
+  document.body.dataset.format = activeFormat === "vertical" ? "vertical" : "landscape";
+  if (orig.videoWidth && orig.videoHeight) {
+    configureCanvas();
+    drawPoster();
+  }
+});
 clearPortalBtn.addEventListener("click", () => {
   revokePortalUrl();
   revokeLogoUrl();
@@ -204,6 +325,7 @@ clearPortalBtn.addEventListener("click", () => {
   input.addEventListener("input", syncRangeLabels);
 });
 syncRangeLabels();
+refreshQr();
 function saveKey() {
   const key = keyInput.value.trim();
   localStorage.removeItem("gemini-key");
@@ -240,10 +362,10 @@ async function loadVideo(file) {
   usePlaceholder = false;
   btnPlay.disabled = true;
   btnExport.disabled = true;
+  btnShowcase.disabled = true;
   orig.src = URL.createObjectURL(file);
   await new Promise((res) => (orig.onloadedmetadata = res));
-  canvas.width = orig.videoWidth;
-  canvas.height = orig.videoHeight;
+  configureCanvas();
   stage.style.display = "flex";
   drop.classList.add("compact");
   drawPoster();
@@ -257,9 +379,44 @@ async function loadVideo(file) {
 function drawPoster() {
   orig.currentTime = 0.01;
   orig.onseeked = () => {
-    ctx.drawImage(orig, 0, 0, canvas.width, canvas.height);
+    drawSourceFrame(orig);
+    drawCommercialOverlay();
     orig.onseeked = null;
   };
+}
+
+function configureCanvas() {
+  activeFormat = formatSelect.value;
+  const sourceW = orig.videoWidth || 1280;
+  const sourceH = orig.videoHeight || 720;
+  if (activeFormat === "landscape") {
+    canvas.width = 1920;
+    canvas.height = 1080;
+  } else if (activeFormat === "vertical") {
+    canvas.width = 1080;
+    canvas.height = 1920;
+  } else {
+    canvas.width = sourceW;
+    canvas.height = sourceH;
+  }
+  const scale = activeFormat === "source"
+    ? Math.min(canvas.width / sourceW, canvas.height / sourceH)
+    : Math.max(canvas.width / sourceW, canvas.height / sourceH);
+  const width = sourceW * scale;
+  const height = sourceH * scale;
+  sourceDraw = {
+    x: (canvas.width - width) / 2,
+    y: (canvas.height - height) / 2,
+    width,
+    height,
+  };
+}
+
+function drawSourceFrame(source) {
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (!source) return;
+  ctx.drawImage(source, sourceDraw.x, sourceDraw.y, sourceDraw.width, sourceDraw.height);
 }
 
 async function initLandmarker() {
@@ -282,7 +439,7 @@ window.__step = (t) =>
   new Promise((resolve) => {
     orig.onseeked = () => {
       orig.onseeked = null;
-      ctx.drawImage(orig, 0, 0, canvas.width, canvas.height);
+      drawSourceFrame(orig);
       const res = landmarker.detectForVideo(orig, performance.now());
       updateTracker(res.landmarks || []);
       if (corners && presence > 0.01) {
@@ -445,6 +602,7 @@ btnGenerate.addEventListener("click", async () => {
     usePlaceholder = false;
     btnPlay.disabled = false;
     btnExport.disabled = false;
+    btnShowcase.disabled = false;
     status("AI video ready — preview or export.");
   } catch (err) {
     console.error(err);
@@ -460,12 +618,16 @@ btnPlaceholder.addEventListener("click", () => {
   haveAI = false;
   btnPlay.disabled = false;
   btnExport.disabled = false;
+  btnShowcase.disabled = false;
   status("Placeholder style active (hue shift) — preview or export, no key needed.");
 });
 
 // ---- tracking (ported from finger-frame-effect main.js) ----
 function toPixel(lm) {
-  return { x: lm.x * canvas.width, y: lm.y * canvas.height };
+  return {
+    x: sourceDraw.x + lm.x * sourceDraw.width,
+    y: sourceDraw.y + lm.y * sourceDraw.height,
+  };
 }
 function dist(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
@@ -617,10 +779,10 @@ function drawWindow(q) {
   if (portalElement && (portalType === "image" || portalElement.readyState >= 2)) {
     drawCoverSource(portalElement, bounds, composer.portalScale, composer.portalOffsetX, composer.portalOffsetY);
   } else if (haveAI) {
-    ctx.drawImage(sty, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(sty, sourceDraw.x, sourceDraw.y, sourceDraw.width, sourceDraw.height);
   } else {
     ctx.filter = "hue-rotate(140deg) saturate(1.7) contrast(1.15)";
-    ctx.drawImage(orig, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(orig, sourceDraw.x, sourceDraw.y, sourceDraw.width, sourceDraw.height);
     ctx.filter = "none";
   }
   ctx.restore();
@@ -684,6 +846,8 @@ function drawRoundRect(x, y, width, height, radius) {
 }
 
 function drawCommercialOverlay() {
+  drawCommercialOverlayV12();
+  return;
   const composer = readComposer();
   const margin = Math.max(28, canvas.width * 0.028);
   const panelHeight = Math.max(190, canvas.height * 0.19);
@@ -741,11 +905,142 @@ function drawCommercialOverlay() {
   ctx.restore();
 }
 
+function drawQrCard(x, y, size, label = "Escanea") {
+  const composer = readComposer();
+  if (!composer.showQr || !qrCanvas || !composer.landing) return false;
+  ctx.save();
+  drawRoundRect(x, y, size, size + size * 0.24, Math.max(12, size * 0.08));
+  ctx.fillStyle = "rgba(255, 255, 255, 0.96)";
+  ctx.fill();
+  const pad = size * 0.09;
+  ctx.drawImage(qrCanvas, x + pad, y + pad, size - pad * 2, size - pad * 2);
+  ctx.fillStyle = "#16130f";
+  ctx.font = `800 ${Math.max(14, size * 0.09)}px system-ui, sans-serif`;
+  ctx.textAlign = "center";
+  ctx.fillText(label, x + size / 2, y + size + size * 0.15);
+  ctx.restore();
+  return true;
+}
+
+function drawCommercialOverlayV12() {
+  const composer = readComposer();
+  const margin = Math.max(28, canvas.width * 0.028);
+  const panelHeight = Math.max(190, canvas.height * 0.19);
+  const panelY = canvas.height - panelHeight - margin;
+  const qrSize = composer.showQr && qrCanvas ? Math.min(panelHeight * 0.62, canvas.width * 0.12) : 0;
+  const qrX = canvas.width - margin * 1.55 - qrSize;
+  const textMaxRight = qrSize ? qrX - margin * 0.65 : canvas.width - margin * 1.6;
+
+  ctx.save();
+  ctx.globalAlpha = composer.campaignMode === "showcase" ? 0.96 : 0.92;
+  drawRoundRect(margin, panelY, canvas.width - margin * 2, panelHeight, 34);
+  ctx.fillStyle = "rgba(8, 8, 12, 0.72)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,0.18)";
+  ctx.lineWidth = Math.max(2, canvas.width * 0.0015);
+  ctx.stroke();
+
+  const brandSize = Math.max(20, canvas.width * 0.012);
+  const titleSize = Math.max(34, canvas.width * 0.025);
+  const ctaSize = Math.max(22, canvas.width * 0.016);
+  const textX = margin * 1.65;
+  let textY = panelY + panelHeight * 0.24;
+
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = "rgba(255,255,255,0.72)";
+  ctx.font = `800 ${brandSize}px system-ui, sans-serif`;
+  ctx.fillText(composer.brand || "MIRRORA", textX, textY);
+
+  textY += titleSize * 1.18;
+  ctx.fillStyle = "#ffffff";
+  ctx.font = `850 ${titleSize}px system-ui, sans-serif`;
+  const maxTitleWidth = Math.max(120, textMaxRight - textX);
+  const title = composer.headline || "Tu experiencia empieza aqui";
+  const titleText = ctx.measureText(title).width > maxTitleWidth
+    ? `${title.slice(0, 42).trim()}...`
+    : title;
+  ctx.fillText(titleText, textX, textY);
+
+  const ctaText = composer.cta || "Continuar";
+  const ctaWidth = Math.min(maxTitleWidth, ctx.measureText(ctaText).width + ctaSize * 1.8);
+  const ctaHeight = ctaSize * 1.85;
+  const ctaY = panelY + panelHeight - ctaHeight - panelHeight * 0.16;
+  drawRoundRect(textX, ctaY, ctaWidth, ctaHeight, ctaHeight / 2);
+  ctx.fillStyle = "rgba(255, 194, 75, 0.94)";
+  ctx.fill();
+  ctx.fillStyle = "#1a120b";
+  ctx.font = `850 ${ctaSize}px system-ui, sans-serif`;
+  ctx.fillText(ctaText, textX + ctaSize * 0.8, ctaY + ctaSize * 1.22);
+
+  if (qrSize) {
+    drawQrCard(qrX, panelY + panelHeight * 0.18, qrSize, "Escanea");
+  } else if (logoImage?.complete && logoImage.naturalWidth) {
+    const logoMaxW = canvas.width * 0.16;
+    const logoMaxH = panelHeight * 0.46;
+    const scale = Math.min(logoMaxW / logoImage.naturalWidth, logoMaxH / logoImage.naturalHeight, 1);
+    const logoW = logoImage.naturalWidth * scale;
+    const logoH = logoImage.naturalHeight * scale;
+    ctx.drawImage(logoImage, canvas.width - margin * 1.65 - logoW, panelY + panelHeight * 0.24, logoW, logoH);
+  }
+  ctx.restore();
+}
+
+function drawFinalConversionOverlay() {
+  const composer = readComposer();
+  if (!composer.showEndScreen || !Number.isFinite(orig.duration)) return;
+  const remaining = orig.duration - orig.currentTime;
+  if (remaining > 1.8) return;
+
+  ctx.save();
+  ctx.globalAlpha = Math.min(0.96, Math.max(0, (1.8 - remaining) / 0.7));
+  ctx.fillStyle = "rgba(4, 4, 7, 0.92)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const centerX = canvas.width / 2;
+  const baseY = canvas.height * 0.28;
+  const brandSize = Math.max(22, canvas.width * 0.018);
+  const titleSize = Math.max(42, canvas.width * 0.044);
+  const ctaSize = Math.max(26, canvas.width * 0.022);
+
+  if (logoImage?.complete && logoImage.naturalWidth) {
+    const maxW = canvas.width * 0.18;
+    const maxH = canvas.height * 0.11;
+    const scale = Math.min(maxW / logoImage.naturalWidth, maxH / logoImage.naturalHeight, 1);
+    const logoW = logoImage.naturalWidth * scale;
+    const logoH = logoImage.naturalHeight * scale;
+    ctx.drawImage(logoImage, centerX - logoW / 2, canvas.height * 0.11, logoW, logoH);
+  }
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(255,255,255,0.72)";
+  ctx.font = `850 ${brandSize}px system-ui, sans-serif`;
+  ctx.fillText(composer.brand || "MIRRORA", centerX, baseY);
+  ctx.fillStyle = "#fff";
+  ctx.font = `900 ${titleSize}px system-ui, sans-serif`;
+  ctx.fillText(composer.headline || "Tu experiencia empieza aqui", centerX, baseY + titleSize * 1.25);
+
+  const cta = composer.cta || "Continuar";
+  const pillW = Math.min(canvas.width * 0.64, ctx.measureText(cta).width + ctaSize * 3);
+  const pillH = ctaSize * 2.15;
+  drawRoundRect(centerX - pillW / 2, baseY + titleSize * 1.7, pillW, pillH, pillH / 2);
+  ctx.fillStyle = "rgba(255, 194, 75, 0.96)";
+  ctx.fill();
+  ctx.fillStyle = "#17120d";
+  ctx.font = `900 ${ctaSize}px system-ui, sans-serif`;
+  ctx.fillText(cta, centerX, baseY + titleSize * 1.7 + ctaSize * 1.42);
+
+  if (composer.showQr && qrCanvas) {
+    const size = Math.min(canvas.width * 0.22, canvas.height * 0.22);
+    drawQrCard(centerX - size / 2, baseY + titleSize * 2.55, size, "Escanea y continua");
+  }
+  ctx.restore();
+}
+
 let lastVideoTime = -1;
 function loop() {
   if (!orig.paused && !orig.ended) requestAnimationFrame(loop);
 
-  ctx.drawImage(orig, 0, 0, canvas.width, canvas.height);
+  drawSourceFrame(orig);
 
   if (landmarker && orig.currentTime !== lastVideoTime) {
     lastVideoTime = orig.currentTime;
@@ -770,6 +1065,7 @@ function loop() {
     drawOutline(visibleQuad || corners, orig.currentTime, composer.portalGlow);
   }
   drawCommercialOverlay();
+  drawFinalConversionOverlay();
 }
 
 function seekVideo(video, time) {
@@ -792,7 +1088,7 @@ async function resetPlayback() {
   await seekVideo(orig, 0);
   if (haveAI) await seekVideo(sty, 0);
   if (portalType === "video" && portalElement) await seekVideo(portalElement, 0);
-  ctx.drawImage(orig, 0, 0, canvas.width, canvas.height);
+  drawSourceFrame(orig);
   drawCommercialOverlay();
 }
 
@@ -814,12 +1110,19 @@ btnPlay.addEventListener("click", () => {
   status("Previewing…");
 });
 
+btnShowcase.addEventListener("click", () => {
+  const enabled = !document.body.classList.contains("showcase");
+  setShowcaseMode(enabled);
+  if (enabled) playThrough();
+});
+
 // ---- export (canvas capture -> webm download) ----
 btnExport.addEventListener("click", async () => {
   if (exporting) return;
   exporting = true;
   btnExport.disabled = true;
   btnPlay.disabled = true;
+  btnShowcase.disabled = true;
   status("Exporting — playing the video through once…");
 
   await resetPlayback();
@@ -866,6 +1169,7 @@ btnExport.addEventListener("click", async () => {
     exporting = false;
     btnExport.disabled = false;
     btnPlay.disabled = false;
+    btnShowcase.disabled = false;
   };
 
   orig.addEventListener("ended", stopRecorder, { once: true });

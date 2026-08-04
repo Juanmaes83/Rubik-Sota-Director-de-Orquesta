@@ -1,6 +1,6 @@
 # MIRRORA
 
-Status: R&D foundation plus first lightweight prototype.
+Status: R&D foundation plus MIRRORA Finger Frame Portal v1.2 campaign prototype.
 
 Tagline: Your face becomes the experience.
 
@@ -35,23 +35,24 @@ The two blocks may share safe Gesture Lab primitives, but MIRRORA must not modif
 
 - MIRRORA Finger Frame Portal: `finger-frame-portal/`.
 - Based on `Juanmaes83/finger-frame-effect-ai` as lightweight browser module.
-- Uses MediaPipe hand tracking, uploaded video, local demo compositing and optional Gemini BYOK restyle.
+- Uses MediaPipe hand tracking, uploaded video, local demo compositing, presets, QR, 16:9/9:16 formats, showcase view, final conversion screen and optional Gemini BYOK restyle.
 - Documents `Juanmaes83/blinkface` as external GPU/live engine candidate, not embedded runtime.
 
 ## Strategy Documents
 
 - `../../docs/MIRRORA_FINGER_FRAME_COMMERCIAL_STRATEGY.md`
 - `../../docs/MODULAR_IMPLEMENTATION_METHOD.md`
+- `../../docs/MIRRORA_PROVIDER_ARCHITECTURE.md`
 
 ## Current Phase
 
-Foundation plus prototype:
+Foundation plus commercial prototype:
 
 - Documentation.
 - R&D map.
 - Privacy and safety limits.
 - Application map.
-- Finger Frame Portal prototype.
+- Finger Frame Portal v1.2 campaign prototype.
 - No Face Anything implementation.
 - No Rubik backend.
 - No dependencies.
@@ -59,8 +60,8 @@ Foundation plus prototype:
 
 ## Next Steps
 
-1. Review documentation.
-2. Run offline compatibility tests with preprocessed outputs.
-3. Build a viewer-only Face Souvenir prototype using static assets.
-4. Validate privacy copy and mobile behavior.
-5. Only then evaluate try-on or avatar modules.
+1. Validate v1.2 on GitHub Pages from mobile.
+2. Check QR readability, 16:9/9:16 exports and final conversion screen.
+3. Decide whether the next module is MIRRORA Display / MUPI Live.
+4. Review blinkface-style live camera requirements: HTTPS, consent, GPU/backend, token handling and cost.
+5. Prototype one provider path only after mobile QA passes.

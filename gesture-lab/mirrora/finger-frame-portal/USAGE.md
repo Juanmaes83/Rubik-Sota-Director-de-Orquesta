@@ -10,6 +10,7 @@ This guide explains how to test and use the first MIRRORA Finger Frame prototype
 - Optional portal content: another image or video to reveal inside the hand frame.
 - Optional logo image.
 - Optional: a Gemini API key only if you want to test AI video restyling.
+- Optional landing URL for the generated QR.
 
 You do not need a webcam for this first version. The module works with uploaded video.
 
@@ -49,13 +50,17 @@ Use this first.
 3. Optional but recommended: in `Portal Composer`, upload an image or video as `contenido del portal`.
 4. Optional: upload a logo.
 5. Edit headline, brand, CTA and landing URL.
-6. Adjust frame expansion, content scale and X/Y offset.
-7. Adjust `Realce del portal` if the window needs to stand out more.
-8. Adjust `Oscurecer exterior` if the content inside the frame needs more contrast.
-9. Click `Probar modo demo local`.
-10. Click `Previsualizar`.
-11. If the hand frame is detected, the app reveals the uploaded portal content inside the finger frame.
-12. Click `Exportar` to download the result if the browser supports recording.
+6. Choose a preset or click `Aplicar preset` to load a campaign baseline.
+7. Choose `Original`, `16:9 horizontal` or `9:16 vertical`.
+8. Decide if QR and final screen should be active.
+9. Adjust frame expansion, content scale and X/Y offset.
+10. Adjust `Realce del portal` if the window needs to stand out more.
+11. Adjust `Oscurecer exterior` if the content inside the frame needs more contrast.
+12. Click `Probar modo demo local`.
+13. Click `Previsualizar`.
+14. If the hand frame is detected, the app reveals the uploaded portal content inside the finger frame.
+15. Use `Vista escaparate` for a clean demo view without the editing panels.
+16. Click `Exportar` to download the result if the browser supports recording.
 
 This mode does not need an API key and does not upload the videos, images or logo to an AI provider.
 
@@ -96,6 +101,30 @@ Use the frame as a campaign placement, not only as an effect:
 - Use `Oscurecer exterior` when the background competes with the commercial content.
 - Add logo, headline, CTA and landing before export so the final video can be tested as an ad, MUPI asset, retail window clip or mobile story.
 
+## v1.2 Presets
+
+Use presets as campaign starting points:
+
+- `Turismo`: destination, hotel, route, escape, rooftop, spa or beach.
+- `Retail`: product reveal, promotion, loyalty offer or launch.
+- `Eventos`: souvenir clip, event pass, sponsor activation or registration.
+- `Real estate / hoteles`: property view, room upgrade, visit booking or premium stay.
+- `Restauracion / experiencias`: menu, reservation, tasting, route or local experience.
+
+Presets change copy and visual emphasis only. You still decide the portal media, logo and landing.
+
+## Modo Escaparate
+
+`Vista escaparate` hides the editing panels and leaves the campaign output in a clean screen mode. Use it for:
+
+- client demos;
+- digital windows;
+- MUPI previews;
+- mobile presentation;
+- checking if the QR, CTA and final screen read from a distance.
+
+This is still based on uploaded video. The future live-camera/MUPI module should add camera capture, automatic loop and reset after interaction.
+
 ## Export QA
 
 Before sharing an export:
@@ -103,6 +132,8 @@ Before sharing an export:
 - Preview once and check that the portal appears for several seconds.
 - Export after the current v1.1.1 flow; it resets playback to the beginning before recording.
 - Check the downloaded file duration. It should match the uploaded base video duration, not only the final seconds of the preview.
+- Check the QR with a phone before using it in a client demo.
+- Check both 16:9 and 9:16 exports if the campaign will run on screens and mobile.
 - If the browser downloads WebM instead of MP4, the composition is still valid; convert later if the media plan requires MP4.
 
 ## Gemini AI Mode
@@ -129,8 +160,10 @@ Recommended Rubik workflow:
 3. Open the GitHub Pages URL on the phone.
 4. Upload a video from the phone gallery.
 5. Test local demo mode first.
-6. Test export on mobile.
-7. Only then test AI generation.
+6. Test QR scan from the exported/previewed screen.
+7. Test `Vista escaparate`.
+8. Test export on mobile.
+9. Only then test AI generation.
 
 GitHub Pages is the preferred test path because mobile browser behavior, file picker, canvas recording and WebM/MP4 support must be checked on the real device.
 
@@ -141,6 +174,9 @@ GitHub Pages is the preferred test path because mobile browser behavior, file pi
 - Local demo mode detects the hand frame.
 - Preview works.
 - Export works or fails gracefully.
+- QR is readable.
+- Final conversion screen appears near the end.
+- 16:9 and 9:16 canvas formats render without cropping the CTA/QR.
 - The Home/Gesture Lab navigation works.
 - Privacy copy is visible before upload.
 - Gemini mode is clearly marked as optional remote AI generation.

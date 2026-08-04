@@ -1,6 +1,6 @@
 # MIRRORA Finger Frame Portal
 
-Status: v1.1.1 functional lightweight prototype inside Gesture Lab.
+Status: v1.2 commercial campaign prototype inside Gesture Lab.
 
 ## What It Is
 
@@ -21,14 +21,17 @@ Rubik Sota should not absorb heavy GPU engines into the core. Therefore this mod
 2. User uploads a short video with the two-hand finger-frame gesture.
 3. User optionally uploads portal content: destination video, hotel image, product, campaign asset or other commercial visual.
 4. User optionally uploads a logo and edits headline, brand, CTA and landing URL.
-5. User adjusts frame expansion, portal scale and portal X/Y offset.
-6. User adjusts portal emphasis: glow/edge visibility and exterior dimming.
-7. User chooses:
+5. User chooses a commercial preset: tourism, retail, events, real estate/hotels or food/experiences.
+6. User adjusts frame expansion, portal scale and portal X/Y offset.
+7. User adjusts portal emphasis: glow/edge visibility and exterior dimming.
+8. User chooses export format: original, 16:9 or 9:16.
+9. User enables QR and final conversion screen if needed.
+10. User chooses:
    - local demo mode: custom portal content or hue-shift placeholder, no key, no remote upload;
    - Gemini mode: BYOK video-to-video restyle, remote generation by the provider.
-8. MediaPipe tracks the finger frame.
-9. The portal content appears only inside the tracked frame.
-10. User previews and exports a local MP4/WebM when the browser supports recording.
+11. MediaPipe tracks the finger frame.
+12. The portal content appears only inside the tracked frame.
+13. User previews, opens clean showcase view and exports a local MP4/WebM when the browser supports recording.
 
 ## v1.1 Portal Composer
 
@@ -49,6 +52,17 @@ This patch addresses the first commercial QA result:
 - Export now resets playback and tracking before recording, so the downloaded file starts at the beginning instead of capturing only the remaining seconds of a preview.
 - The portal has stronger adjustable visual hierarchy through `Realce del portal` and `Oscurecer exterior`.
 - The default experience is now clearer for campaign use: the gesture is not just detected, it becomes a branded media placement.
+
+## v1.2 Campaign Layer
+
+This phase keeps the single-module strategy and turns the prototype into a stronger campaign tool:
+
+- Commercial presets for tourism, retail, events, real estate/hotels and food/experiences.
+- QR generation from the landing URL rendered into the final canvas.
+- Export format selector: original, 16:9 horizontal and 9:16 vertical.
+- Clean showcase mode for demos, digital windows and MUPI-style review.
+- Final conversion screen with brand, CTA and QR during the last seconds of the clip.
+- Provider architecture documented separately before adding more AI connectors.
 
 ## Usage Guide
 

@@ -46,7 +46,7 @@ MIRRORA es un nuevo bloque independiente de Gesture Lab dedicado a experiencias 
 
 MIRRORA no pertenece a ZOLTAN. ZOLTAN trabaja magia, mentalismo, oraculos, revelacion y reward; MIRRORA trabaja identidad visual, rostro, avatar, try-on y recuerdo personalizado.
 
-Estado actual: R&D foundation + primer prototipo ligero funcional. No se ha integrado Face Anything, no se han anadido modelos ni backend a Rubik. El primer modulo conectado es `gesture-lab/mirrora/finger-frame-portal/`, basado en uploaded video, marco de dedos, MediaPipe, modo demo local y restyle IA opcional BYOK.
+Estado actual: R&D foundation + prototipo comercial v1.2. No se ha integrado Face Anything, no se han anadido modelos ni backend a Rubik. El primer modulo conectado es `gesture-lab/mirrora/finger-frame-portal/`, basado en uploaded video, marco de dedos, MediaPipe, modo demo local, presets comerciales, QR, formatos 16:9/9:16, vista escaparate y restyle IA opcional BYOK.
 
 Documentacion:
 
@@ -56,6 +56,7 @@ Documentacion:
 - `docs/MIRRORA_APPLICATION_MAP.md`
 - `docs/MIRRORA_PRIVACY_AND_SAFETY.md`
 - `docs/MODULAR_IMPLEMENTATION_METHOD.md`
+- `docs/MIRRORA_PROVIDER_ARCHITECTURE.md`
 - `gesture-lab/mirrora/README.md`
 
 ---
@@ -128,7 +129,7 @@ Documentacion estratégica:
 - 10 - Fashion Lookbook - Disponible - v2.9
 - 11 - Dynamic Motion Banners - Disponible - v0.3.9 stable / v0.4 gesture experimental
 - 12 - Selfie Style / Outfit Visualizer - Disponible - v2.10.1
-- M1 - MIRRORA Finger Frame Portal - Prototipo ligero funcional
+- M1 - MIRRORA Finger Frame Portal - Prototipo comercial v1.2
 
 **Linea conectada desde Escaparates Pro / Camera FX:**
 
