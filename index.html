@@ -575,6 +575,7 @@
       <nav class="nav-links" aria-label="Navegación principal">
         <a href="#mainExperience">Experiencia</a>
         <a href="#projectGallerySection">Proyectos</a>
+        <a href="./gesture-lab/">Gesture Lab</a>
         <a href="#contact">Contacto</a>
       </nav>
 
@@ -605,6 +606,8 @@
           </div>
 
           <div class="copy-actions">
+            <a class="btn btn-primary" href="./gesture-lab/">Abrir Gesture Lab</a>
+            <a class="btn btn-accent" href="./gesture-lab/#mirrora-platform">Ver MIRRORA</a>
             <button class="btn btn-primary" id="startExperienceBtn" type="button">Entrar en la experiencia</button>
             <button class="btn btn-accent" id="loadDemoBtn" type="button">Cargar proyecto demo</button>
             <button class="btn btn-danger" id="clearContentBtn" type="button">Limpiar contenido cargado</button>
@@ -669,7 +672,7 @@
         <div class="gallery-head">
           <div>
             <h2>Galería de proyectos</h2>
-            <p>Selecciona una pieza demo, sube contenido propio o abre directamente uno de los módulos activos de Rubik Sota. La galería funciona como escaparate comercial y lanzador de experiencias.</p>
+            <p>Selecciona una pieza demo, sube contenido propio o abre el catalogo maestro. La galeria funciona como escaparate comercial; Gesture Lab es la fuente publica completa de modulos, familias y roadmap.</p>
           </div>
         </div>
         <div class="project-gallery" id="projectGallery"></div>
@@ -983,6 +986,66 @@
           type: "módulo",
           href: "./gesture-lab/dynamic-motion-banners/rubik-sota-dynamic-motion-banners-v0-3.html",
           thumb: svgDataUri("Módulo activo", "Motion Banners", "#00ffcc", "#111111"),
+          createdAt: "module"
+        },
+        {
+          id: "hub-gesture-lab",
+          sourceKind: "module",
+          title: "Gesture Lab Catalogo Maestro",
+          description: "Entrada principal a todos los modulos activos, familias, R&D y roadmap publico.",
+          type: "hub",
+          href: "./gesture-lab/",
+          thumb: svgDataUri("Hub maestro", "Gesture Lab", "#7dd3fc", "#061014"),
+          createdAt: "module"
+        },
+        {
+          id: "module-mirrora-finger-frame",
+          sourceKind: "module",
+          title: "MIRRORA Finger Frame Portal",
+          description: "Video subido, marco de dedos, portal comercial, QR, CTA y export para campanas.",
+          type: "MIRRORA",
+          href: "./gesture-lab/mirrora/finger-frame-portal/",
+          thumb: svgDataUri("MIRRORA", "Finger Frame", "#7dd3fc", "#111111"),
+          createdAt: "module"
+        },
+        {
+          id: "module-mirrora-mupi-live",
+          sourceKind: "module",
+          title: "MIRRORA Display / MUPI Live",
+          description: "Camara live para escaparates y MUPIs con portal personalizable, QR, logo, CTA y grabacion configurable.",
+          type: "MIRRORA",
+          href: "./gesture-lab/mirrora/display-mupi-live/",
+          thumb: svgDataUri("MIRRORA", "MUPI Live", "#ffc24b", "#111111"),
+          createdAt: "module"
+        },
+        {
+          id: "family-zoltan",
+          sourceKind: "module",
+          title: "ZOLTAN Platform",
+          description: "Linea de asombro comercial: Oracle, Magic Square, Portal 1089, Style, Sneaker y Travel.",
+          type: "familia",
+          href: "./gesture-lab/#zoltan-platform",
+          thumb: svgDataUri("Familia activa", "ZOLTAN", "#e8d8a8", "#111111"),
+          createdAt: "module"
+        },
+        {
+          id: "family-camera-fx",
+          sourceKind: "module",
+          title: "Camera FX Cum Laude",
+          description: "Familia de experiencias webcam conectadas: pixelation, motion, red light, glitch y air guitar.",
+          type: "familia",
+          href: "./gesture-lab/camera-fx-cum-laude/index.html",
+          thumb: svgDataUri("Familia activa", "Camera FX", "#00ffcc", "#050505"),
+          createdAt: "module"
+        },
+        {
+          id: "family-gesture-gaming",
+          sourceKind: "module",
+          title: "Gesture Gaming / Sword R&D",
+          description: "Launchers y motores R&D para juegos de marca, control gestual avanzado y experiencias WOW.",
+          type: "R&D",
+          href: "./gesture-lab/#modules",
+          thumb: svgDataUri("R&D conectado", "Gaming + Sword", "#d8ff3e", "#101010"),
           createdAt: "module"
         }
       ];

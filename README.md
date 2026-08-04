@@ -23,6 +23,20 @@ Documentos clave:
 
 ---
 
+## Navegacion publica
+
+Rubik tiene tres niveles publicos coordinados:
+
+- Home raiz (`/#mainExperience`): entrada ejecutiva y portfolio interactivo.
+- Gesture Lab (`/gesture-lab/`): catalogo maestro de modulos, familias, R&D y roadmap.
+- Deep links por familia (`/gesture-lab/#mirrora-platform`, `/gesture-lab/#zoltan-platform`, `/gesture-lab/camera-fx-cum-laude/`): entradas comerciales o de QA.
+
+Regla: la Home destaca y dirige; Gesture Lab cataloga; README documenta.
+
+Documento de apoyo: [RUBIK_PUBLIC_NAVIGATION_MAP.md](docs/RUBIK_PUBLIC_NAVIGATION_MAP.md).
+
+---
+
 ## Gesture Lab
 
 Gesture Lab es el laboratorio modular de experiencias visuales controladas por gestos dentro de Rubik Sota.
@@ -129,7 +143,7 @@ Documentacion estratégica:
 - 10 - Fashion Lookbook - Disponible - v2.9
 - 11 - Dynamic Motion Banners - Disponible - v0.3.9 stable / v0.4 gesture experimental
 - 12 - Selfie Style / Outfit Visualizer - Disponible - v2.10.1
-- M1 - MIRRORA Finger Frame Portal - Prototipo comercial v1.2
+- M1 - MIRRORA Finger Frame Portal - Prototipo comercial v1.2.1
 - M2 - MIRRORA Display / MUPI Live - Prototipo live comercial v1.1.1
 
 **Linea conectada desde Escaparates Pro / Camera FX:**
